@@ -1,0 +1,24 @@
+#!/bin/sh
+# Runs PHPCS on staged PHP files. Installed by `make composer` (git config core.hooksPath .githooks).
+# Skip once with `git commit --no-verify` (not recommended).
+
+files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
+[ -z "$files" ] && exit 0
+
+if [ ! -x vendor/bin/phpcs ]; then
+	echo "pre-commit: vendor/bin/phpcs not found. Run 'make composer' first." >&2
+	exit 1
+fi
+
+if command -v php >/dev/null 2>&1; then
+	run="php vendor/bin/phpcs"
+else
+	run="docker compose run --rm -T --user $(id -u):$(id -g) -w /project cli php vendor/bin/phpcs"
+fi
+
+# shellcheck disable=SC2086
+if ! $run --filter=GitStaged $files; then
+	echo "" >&2
+	echo "pre-commit: PHPCS found problems. Fix them (try 'make lint-fix') and commit again." >&2
+	exit 1
+fi

@@ -1,0 +1,5 @@
+/* Small additions that theme.json cannot express. */
+
+.wp-block-post-title a {
+	text-decoration: none;
+}

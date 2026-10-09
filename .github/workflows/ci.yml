@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  phpcs:
+    name: PHPCS (WordPress Coding Standards)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - run: vendor/bin/phpcs
+
+  integration:
+    name: Site, activation and PHPUnit (Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - name: Start WordPress and MariaDB
+        run: make up
+      - name: Install WordPress, activate plugin and theme
+        run: make install
+      - name: Site loads with the theme
+        run: |
+          curl -fsS http://localhost:8080/ | grep -q 'guam-restaurants-theme'
+          curl -fsS -o /dev/null http://localhost:8080/restaurants/
+      - name: Plugin is active
+        run: docker compose run --rm cli wp plugin is-active guam-restaurants-core
+      - name: PHPUnit
+        run: make test
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
