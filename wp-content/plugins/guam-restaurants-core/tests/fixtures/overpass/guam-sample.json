@@ -1,0 +1,209 @@
+{
+ "version": 0.6,
+ "generator": "Overpass API (test fixture, hand-made)",
+ "osm3s": {
+  "copyright": "Synthetic test data; names and numbers are made up."
+ },
+ "elements": [
+  {
+   "type": "node",
+   "id": 1001,
+   "lat": 13.518,
+   "lon": 144.839,
+   "tags": {
+    "amenity": "restaurant",
+    "name": "Kusina Dededo",
+    "cuisine": "Filipino; seafood",
+    "phone": "+1 671 555 0101",
+    "website": "kusina.example.com",
+    "opening_hours": "Mo-Fr 10:00-21:00; Sa,Su 08:00-22:00",
+    "addr:housenumber": "100",
+    "addr:street": "Marine Corps Drive"
+   }
+  },
+  {
+   "type": "way",
+   "id": 2001,
+   "center": {
+    "lat": 13.514,
+    "lon": 144.804
+   },
+   "nodes": [
+    1,
+    2,
+    3,
+    1
+   ],
+   "tags": {
+    "amenity": "fast_food",
+    "name": "Burger Shack & Co",
+    "cuisine": "burger",
+    "opening_hours": "24/7"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1002,
+   "lat": 13.4757,
+   "lon": 144.7497,
+   "tags": {
+    "amenity": "cafe",
+    "name": "Café Hagåtña",
+    "cuisine": "coffee_shop;bubble_tea;kombucha",
+    "contact:phone": "671-555-0102"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1003,
+   "lat": 13.52,
+   "lon": 144.7,
+   "tags": {
+    "amenity": "bar",
+    "name": "Sunset Barge"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1004,
+   "lat": 13.5141,
+   "lon": 144.8041,
+   "tags": {
+    "amenity": "restaurant"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1005,
+   "lat": 13.5142,
+   "lon": 144.8045,
+   "tags": {
+    "amenity": "pub",
+    "name": "Tumon Pub",
+    "cuisine": "thai",
+    "opening_hours": "Mo-Th 17:00-02:00; Fr,Sa 17:00-26:00; PH off"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1006,
+   "lat": 13.5138,
+   "lon": 144.8038,
+   "tags": {
+    "amenity": "food_court",
+    "name": "Tumon Food Court"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1007,
+   "lat": 13.5138,
+   "lon": 144.8038,
+   "tags": {
+    "amenity": "parking",
+    "name": "Not a restaurant"
+   }
+  },
+  {
+   "type": "way",
+   "id": 3001,
+   "bounds": {
+    "minlat": 13.5175,
+    "minlon": 144.8385,
+    "maxlat": 13.5185,
+    "maxlon": 144.8395
+   },
+   "tags": {
+    "shop": "mall",
+    "name": "Micronesia Mall"
+   },
+   "geometry": [
+    {
+     "lat": 13.5175,
+     "lon": 144.8385
+    },
+    {
+     "lat": 13.5175,
+     "lon": 144.8395
+    },
+    {
+     "lat": 13.5185,
+     "lon": 144.8395
+    },
+    {
+     "lat": 13.5185,
+     "lon": 144.8385
+    },
+    {
+     "lat": 13.5175,
+     "lon": 144.8385
+    }
+   ]
+  },
+  {
+   "type": "node",
+   "id": 3002,
+   "lat": 13.476,
+   "lon": 144.75,
+   "tags": {
+    "shop": "mall",
+    "name": "Agana Shopping Center"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3003,
+   "bounds": {
+    "minlat": 13.4,
+    "minlon": 144.7,
+    "maxlat": 13.41,
+    "maxlon": 144.71
+   },
+   "tags": {
+    "shop": "mall",
+    "name": "Unknown Plaza",
+    "type": "multipolygon"
+   },
+   "members": [
+    {
+     "type": "way",
+     "ref": 1,
+     "role": "outer",
+     "geometry": [
+      {
+       "lat": 13.4,
+       "lon": 144.7
+      },
+      {
+       "lat": 13.4,
+       "lon": 144.71
+      },
+      {
+       "lat": 13.41,
+       "lon": 144.71
+      }
+     ]
+    },
+    {
+     "type": "way",
+     "ref": 2,
+     "role": "outer",
+     "geometry": [
+      {
+       "lat": 13.4,
+       "lon": 144.7
+      },
+      {
+       "lat": 13.41,
+       "lon": 144.7
+      },
+      {
+       "lat": 13.41,
+       "lon": 144.71
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
