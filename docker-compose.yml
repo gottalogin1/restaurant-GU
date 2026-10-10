@@ -1,0 +1,81 @@
+# Local development stack: WordPress (Apache + PHP 8.3), MariaDB 11.4 and WP-CLI.
+# Values come from .env when present (copy .env.example); defaults below otherwise.
+
+x-wp-env: &wp-env
+  WORDPRESS_DB_HOST: db
+  WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
+  WORDPRESS_DB_USER: ${DB_USER:-wordpress}
+  WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-wordpress}
+  WORDPRESS_DEBUG: ${WP_DEBUG:-1}
+  WORDPRESS_CONFIG_EXTRA: |
+    define( 'WP_ENVIRONMENT_TYPE', 'local' );
+    define( 'WP_DEBUG_LOG', true );
+    define( 'WP_DEBUG_DISPLAY', false );
+
+x-wp-volumes: &wp-volumes
+  - wordpress:/var/www/html
+  - ./wp-content/plugins/guam-restaurants-core:/var/www/html/wp-content/plugins/guam-restaurants-core
+  - ./wp-content/themes/guam-restaurants-theme:/var/www/html/wp-content/themes/guam-restaurants-theme
+
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-wordpress}
+      MARIADB_USER: ${DB_USER:-wordpress}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-wordpress}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+    volumes:
+      - db:/var/lib/mysql
+      # Creates the separate database PHPUnit uses (the test suite empties it on every run).
+      - ./docker/db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WP_PORT:-8080}:80"
+    environment: *wp-env
+    volumes: *wp-volumes
+
+  # WP-CLI and PHPUnit run here: `docker compose run --rm cli wp <command>`.
+  cli:
+    image: wordpress:cli-php8.3
+    profiles: ["tools"]
+    user: "33:33"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      <<: *wp-env
+      WP_TESTS_DB_NAME: wordpress_test
+      WP_TESTS_DB_USER: ${DB_USER:-wordpress}
+      WP_TESTS_DB_PASSWORD: ${DB_PASSWORD:-wordpress}
+      WP_TESTS_DB_HOST: db
+      WP_CORE_DIR: /var/www/html/
+    volumes:
+      - wordpress:/var/www/html
+      - ./wp-content/plugins/guam-restaurants-core:/var/www/html/wp-content/plugins/guam-restaurants-core
+      - ./wp-content/themes/guam-restaurants-theme:/var/www/html/wp-content/themes/guam-restaurants-theme
+      - .:/project
+
+  # Composer without installing PHP on your machine: `docker compose run --rm composer install`.
+  composer:
+    image: composer:2
+    profiles: ["tools"]
+    working_dir: /app
+    environment:
+      COMPOSER_HOME: /tmp/composer
+    volumes:
+      - .:/app
+
+volumes:
+  db:
+  wordpress:

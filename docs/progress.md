@@ -18,4 +18,14 @@
 ## Repo setup, 2026-10-09
 - Done: CLAUDE.md with the project description and 12 standing rules; researched docs added to the repo.
 - Remaining: two more award sources found but not yet checked: Stars and Stripes Guam "Best of Pacific" dining winners (https://guam.stripes.com/best-of-pacific, 2025-26 and 2026-27 lists) and The Guam Guide reader poll archive (https://archives.theguamguide.com/best-guam-reader-poll-food-drink/, about 2013-2014). Check terms and add to the register in data-sources.md if used.
-- Remaining: scaffold the guam-restaurants-core plugin and block theme; add .env.example once the first API is chosen; set up PHPCS (WordPress Coding Standards) and PHPUnit.
+- Remaining: add API keys to .env.example once the first API is chosen.
+
+## WordPress project setup, 2026-10-09
+- Done: Docker Compose stack (WordPress 7.1.3 on PHP 8.3 Apache, MariaDB 11.4, WP-CLI 2.12, Composer), Makefile, .env.example.
+- Done: plugin skeleton `wp-content/plugins/guam-restaurants-core` (WordPress-style autoloader, activation/deactivation hooks, uninstall.php, `gr_restaurant` post type with `gr_village`, `gr_mall`, `gr_cuisine` taxonomies) and PHPUnit 9.6 with the WordPress test library (wp-phpunit) against a separate `wordpress_test` database.
+- Done: block theme skeleton `wp-content/themes/guam-restaurants-theme` (theme.json, index/single/404 templates, header/footer parts), presentation only.
+- Done: PHPCS with WordPress Coding Standards 3 and PHPCompatibilityWP (PHP 8.1+, WP 6.6+); `.githooks/pre-commit` runs PHPCS on staged PHP files; GitHub Actions CI runs PHPCS, installs the site, checks plugin activation, and runs PHPUnit.
+- Done: README setup steps; docs/hosting.md (recommend Kinsta single site in Tokyo, about $30-35/month); docs/plugins.md (Yoast SEO, Happyforms, W3 Total Cache only where the host has no page cache, MailPoet, Advanced Ads, Akismet).
+- Verified in the cloud environment: fresh `make setup` finished in 17 s with images cached; home page and /restaurants/ return 200 with the theme stylesheet; `wp plugin is-active guam-restaurants-core` succeeds; PHPCS clean (12 files); PHPUnit 7 tests, 20 assertions OK; pre-commit hook rejects a non-compliant file.
+- Not verified here: wp-env (wordpress.org is blocked from the cloud environment, so Docker Compose with official images was used instead); `make composer` through the Docker composer image (GitHub downloads blocked here; host Composer used); Docker Desktop on macOS/Windows.
+- Remaining: choose host and buy plan; install the plugins in docs/plugins.md on staging; decide Yoast SEO vs owned Squirrly GEO; decide MailPoet vs hosted email service; confirm Advanced Ads on WP 7.1; build Happyforms owner-submission handling and sponsored-listing logic in the plugin.

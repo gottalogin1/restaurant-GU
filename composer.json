@@ -1,0 +1,33 @@
+{
+	"name": "gottalogin1/restaurant-gu",
+	"description": "Development tooling for the Guam restaurant directory (plugin and block theme).",
+	"type": "project",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.1"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"phpunit/phpunit": "^9.6",
+		"wp-coding-standards/wpcs": "^3.1",
+		"wp-phpunit/wp-phpunit": "^6.8 || ^7.0",
+		"yoast/phpunit-polyfills": "^4.0"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"platform": {
+			"php": "8.1.0"
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"post-install-cmd": "@hooks",
+		"hooks": "git config core.hooksPath .githooks || true",
+		"lint": "phpcs",
+		"lint:fix": "phpcbf",
+		"test": "phpunit -c wp-content/plugins/guam-restaurants-core/phpunit.xml.dist"
+	}
+}

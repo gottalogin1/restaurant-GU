@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<ruleset name="Guam Restaurants">
+	<description>WordPress Coding Standards for the guam-restaurants-core plugin and theme.</description>
+
+	<file>./wp-content/plugins/guam-restaurants-core</file>
+	<file>./wp-content/themes/guam-restaurants-theme</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="cache" value=".phpcs-cache"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+	<arg name="parallel" value="8"/>
+
+	<rule ref="WordPress"/>
+
+	<!-- PHP and WordPress versions the code must support. -->
+	<config name="testVersion" value="8.1-"/>
+	<config name="minimum_wp_version" value="6.6"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="guam-restaurants-core"/>
+				<element value="guam-restaurants-theme"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="GuamRestaurants"/>
+				<element value="guam_restaurants"/>
+				<element value="guam"/>
+				<element value="GUAM_RESTAURANTS"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Test files follow PHPUnit naming (Foo_Test in foo-test.php). -->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+	<!-- The test config must define WordPress's own constants (DB_NAME, ABSPATH, ...). -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.FunctionComment.MissingParamTag">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+</ruleset>
