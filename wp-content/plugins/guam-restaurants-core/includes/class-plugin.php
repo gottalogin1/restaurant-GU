@@ -65,12 +65,19 @@ final class Plugin {
 		Awards\Display::register();
 		Awards\Pages::register();
 		Structured_Data::register();
+		Monitoring\Change_Tracker::register();
+		Monitoring\Jobs::register();
+		Tagging\Tag_Store::register();
+		Admin\Ingestion_Runs_Screen::register();
+		Admin\Review_Queue_Screen::register();
+		Admin\Tag_Origins_Box::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			Cli\Commands::register();
 			Cli\Import_Commands::register();
 			Cli\Ratings_Commands::register();
 			Cli\Awards_Commands::register();
+			Cli\Monitoring_Commands::register();
 		}
 	}
 

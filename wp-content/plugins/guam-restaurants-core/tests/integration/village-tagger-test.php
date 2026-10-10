@@ -72,7 +72,7 @@ class Village_Tagger_Test extends Test_Case {
 		$this->assertSame( Village_Tagger::UPDATED, ( new Village_Tagger() )->tag( $post_id ) );
 		$this->assertSame( array( 'tamuning' ), $this->villages( $post_id ) );
 
-		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT old_value, new_value, source FROM ' . Schema::table( Schema::CHANGE_LOG ) . ' WHERE restaurant_id = %d', $post_id ), ARRAY_A ); // phpcs:ignore WordPress.DB
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT old_value, new_value, source FROM ' . Schema::table( Schema::CHANGE_LOG ) . ' WHERE restaurant_id = %d AND source = %s', $post_id, 'census' ), ARRAY_A ); // phpcs:ignore WordPress.DB
 		$this->assertSame(
 			array(
 				'old_value' => 'dededo',

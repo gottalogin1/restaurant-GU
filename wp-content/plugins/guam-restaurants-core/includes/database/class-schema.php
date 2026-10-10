@@ -20,7 +20,7 @@ final class Schema {
 	/**
 	 * Bump when a table definition changes so upgrades run dbDelta() again.
 	 */
-	public const VERSION = '3';
+	public const VERSION = '4';
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
@@ -157,6 +157,7 @@ final class Schema {
   unchanged int(10) unsigned NOT NULL DEFAULT 0,
   failed int(10) unsigned NOT NULL DEFAULT 0,
   notes text NULL,
+  errors longtext NULL,
   PRIMARY KEY  (id),
   KEY source_started (source,started_at)
 ) $charset;",

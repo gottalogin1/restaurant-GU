@@ -100,7 +100,7 @@ final class Element_Mapper {
 	 * Maps an element. Call skip_reason() first.
 	 *
 	 * @param array<string, mixed> $element Element.
-	 * @return array{osm_id: string, title: string, latitude: float, longitude: float, meta: array<string, mixed>, cuisines: string[], unmapped: string[]}
+	 * @return array{osm_id: string, title: string, latitude: float, longitude: float, meta: array<string, mixed>, cuisines: string[], cuisine_details: array<string, string>, unmapped: string[]}
 	 */
 	public function map( array $element ): array {
 		$tags              = array_map( 'strval', $element['tags'] ?? array() );
@@ -115,13 +115,14 @@ final class Element_Mapper {
 		);
 
 		return array(
-			'osm_id'    => self::osm_id( $element ),
-			'title'     => self::name( $tags ),
-			'latitude'  => $lat,
-			'longitude' => $lng,
-			'meta'      => $meta,
-			'cuisines'  => $cuisine['slugs'],
-			'unmapped'  => $cuisine['unmapped'],
+			'osm_id'          => self::osm_id( $element ),
+			'title'           => self::name( $tags ),
+			'latitude'        => $lat,
+			'longitude'       => $lng,
+			'meta'            => $meta,
+			'cuisines'        => $cuisine['slugs'],
+			'cuisine_details' => $cuisine['details'],
+			'unmapped'        => $cuisine['unmapped'],
 		);
 	}
 

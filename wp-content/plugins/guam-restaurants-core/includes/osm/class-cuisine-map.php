@@ -63,15 +63,19 @@ final class Cuisine_Map {
 	 * each value is lowercased and trimmed.
 	 *
 	 * @param array<string, string> $tags OSM tags.
-	 * @return array{slugs: string[], unmapped: string[]}
+	 * @return array{slugs: string[], unmapped: string[], details: array<string, string>}
 	 */
 	public function map( array $tags ): array {
 		$slugs    = array();
 		$unmapped = array();
+		$details  = array();
 
 		$amenity = strtolower( trim( (string) ( $tags['amenity'] ?? '' ) ) );
 		if ( isset( $this->amenity[ $amenity ] ) ) {
 			$slugs = array_merge( $slugs, $this->amenity[ $amenity ] );
+			foreach ( $this->amenity[ $amenity ] as $slug ) {
+				$details[ $slug ] = $details[ $slug ] ?? 'osm:amenity=' . $amenity;
+			}
 		}
 
 		foreach ( explode( ';', (string) ( $tags['cuisine'] ?? '' ) ) as $value ) {
@@ -81,6 +85,9 @@ final class Cuisine_Map {
 			}
 			if ( array_key_exists( $value, $this->cuisine ) ) {
 				$slugs = array_merge( $slugs, $this->cuisine[ $value ] );
+				foreach ( $this->cuisine[ $value ] as $slug ) {
+					$details[ $slug ] = $details[ $slug ] ?? 'osm:cuisine=' . $value;
+				}
 			} else {
 				$unmapped[] = $value;
 			}
@@ -89,6 +96,7 @@ final class Cuisine_Map {
 		return array(
 			'slugs'    => array_values( array_unique( $slugs ) ),
 			'unmapped' => array_values( array_unique( $unmapped ) ),
+			'details'  => $details,
 		);
 	}
 

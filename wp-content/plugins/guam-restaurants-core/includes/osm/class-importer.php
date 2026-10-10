@@ -14,7 +14,12 @@ use GuamRestaurants\Core\Database\Review_Queue;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Geo\Village_Locator;
 use GuamRestaurants\Core\Mall_Verification;
+use GuamRestaurants\Core\Monitoring\Change_Tracker;
+use GuamRestaurants\Core\Monitoring\Closures;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Tagging\Cuisine_Tagger;
+use GuamRestaurants\Core\Tagging\Mall_Tagger;
+use GuamRestaurants\Core\Tagging\Term_Slugs;
 use GuamRestaurants\Core\Term_Meta;
 
 defined( 'ABSPATH' ) || exit;
@@ -28,14 +33,21 @@ defined( 'ABSPATH' ) || exit;
  *   value; an empty OSM value never blanks a stored one.
  * - Coordinates and hours entered by an owner or editor (coord source or
  *   hours source `owner`/`manual`) are never overwritten.
- * - Cuisines from OSM are added; cuisines an editor added are kept.
+ * - Cuisines come from Cuisine_Tagger: OSM's categories (osm-cuisine-map.json)
+ *   plus the name rules (cuisine-rules.json). Cuisines an editor added or
+ *   removed by hand are never changed.
  * - The village always follows the coordinates (Census boundaries). A point
  *   outside every village goes to the review queue once.
- * - A mall is set only when the restaurant has none.
+ * - The mall comes from Mall_Tagger (OSM outline or radius, then the mall's
+ *   name in the address). A mall set or cleared by hand is never changed.
+ * - Every OSM-linked restaurant missing from a full import gets one
+ *   "closed" check (Closures); two in a row ask an administrator. A
+ *   response with far fewer restaurants than expected skips the checks.
  * - Post status is set only on creation, so trashed or unpublished
  *   restaurants stay that way.
  *
- * Every change to an existing restaurant is written to the change log.
+ * Every change to an existing restaurant is written to the change log, and
+ * each new restaurant gets a first_seen entry.
  */
 final class Importer {
 
@@ -43,6 +55,12 @@ final class Importer {
 	public const UPDATED   = 'updated';
 	public const UNCHANGED = 'unchanged';
 	public const FAILED    = 'failed';
+
+	/**
+	 * A closure check is skipped when the import holds fewer than this share
+	 * of the restaurants already linked to OSM (a truncated response).
+	 */
+	public const CLOSURE_CHECK_MIN_SHARE = 0.8;
 
 	/**
 	 * Fields recorded in the change log.
@@ -83,18 +101,52 @@ final class Importer {
 	private string $post_status;
 
 	/**
+	 * Cuisine tagger.
+	 *
+	 * @var Cuisine_Tagger
+	 */
+	private Cuisine_Tagger $cuisines;
+
+	/**
+	 * Whether a non-dry run records closure checks.
+	 *
+	 * @var bool
+	 */
+	private bool $closure_checks = true;
+
+	/**
+	 * Mall tagger for the current run.
+	 *
+	 * @var Mall_Tagger|null
+	 */
+	private ?Mall_Tagger $mall_tagger = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Element_Mapper       $mapper      Mapper.
 	 * @param Village_Locator|null $villages    Village locator; defaults to the bundled boundaries.
 	 * @param float                $mall_radius Metres around a mall point (malls without an outline).
 	 * @param string               $post_status Status for new restaurants.
+	 * @param Cuisine_Tagger|null  $cuisines    Cuisine tagger; defaults to data/cuisine-rules.json.
 	 */
-	public function __construct( Element_Mapper $mapper, ?Village_Locator $villages = null, float $mall_radius = 150.0, string $post_status = 'publish' ) {
+	public function __construct( Element_Mapper $mapper, ?Village_Locator $villages = null, float $mall_radius = 150.0, string $post_status = 'publish', ?Cuisine_Tagger $cuisines = null ) {
 		$this->mapper      = $mapper;
 		$this->villages    = $villages ?? Village_Locator::instance();
 		$this->mall_radius = $mall_radius;
 		$this->post_status = $post_status;
+		$this->cuisines    = $cuisines ?? Cuisine_Tagger::from_file();
+	}
+
+	/**
+	 * Turns closure checks on or off (off for partial input files).
+	 *
+	 * @param bool $enabled Enabled.
+	 * @return self
+	 */
+	public function with_closure_checks( bool $enabled ): self {
+		$this->closure_checks = $enabled;
+		return $this;
 	}
 
 	/**
@@ -102,12 +154,16 @@ final class Importer {
 	 *
 	 * @param array<int, array<string, mixed>> $elements Elements.
 	 * @param bool                             $dry_run  Report without writing (no ingestion run is logged).
-	 * @return array{counts: array<string, int>, skipped: array<string, int>, unmapped: array<string, int>, unmatched_malls: array<string, string>, village_unresolved: string[], errors: string[], run_id: int|null}
+	 * @return array{counts: array<string, int>, skipped: array<string, int>, unmapped: array<string, int>, unmatched_malls: array<string, string>, village_unresolved: string[], closures: array{checked: bool, closed: int[], queued: int[], note: string}, errors: string[], run_id: int|null}
 	 */
 	public function run( array $elements, bool $dry_run = false ): array {
 		return Mall_Verification::with_unverified(
 			function () use ( $elements, $dry_run ) {
-				return $this->import( $elements, $dry_run );
+				return Change_Tracker::suppress(
+					function () use ( $elements, $dry_run ) {
+						return $this->import( $elements, $dry_run );
+					}
+				);
 			}
 		);
 	}
@@ -136,17 +192,30 @@ final class Importer {
 			'unmapped'           => array(),
 			'unmatched_malls'    => array(),
 			'village_unresolved' => array(),
+			'closures'           => array(
+				'checked' => false,
+				'closed'  => array(),
+				'queued'  => array(),
+				'note'    => '',
+			),
 			'errors'             => array(),
 			'run_id'             => null,
 		);
 
-		$mall_locator              = new Mall_Locator( $malls, self::mall_terms(), $this->mall_radius );
+		$mall_terms                = self::mall_terms();
+		$mall_locator              = new Mall_Locator( $malls, $mall_terms, $this->mall_radius );
 		$result['unmatched_malls'] = $mall_locator->unmatched();
+		$this->mall_tagger         = new Mall_Tagger( $mall_locator, $mall_terms );
+		if ( ! $dry_run ) {
+			Mall_Tagger::save_geometries( $mall_locator->geometries() );
+		}
 
 		$run_id           = $dry_run ? 0 : Ingestion_Runs::start( 'osm' );
 		$run_id           = $run_id > 0 ? $run_id : null;
 		$result['run_id'] = $run_id;
 		$existing         = self::existing_ids();
+		$baseline         = null !== $run_id && ! Ingestion_Runs::has_previous( 'osm', $run_id );
+		$seen             = array();
 
 		foreach ( $restaurants as $element ) {
 			$reason = Element_Mapper::skip_reason( $element );
@@ -160,9 +229,11 @@ final class Importer {
 				$result['unmapped'][ $value ] = ( $result['unmapped'][ $value ] ?? 0 ) + 1;
 			}
 
+			$seen[ $record['osm_id'] ] = true;
+
 			try {
 				$post_id = $existing[ $record['osm_id'] ] ?? 0;
-				$outcome = $this->upsert( $record, $post_id, $mall_locator, $run_id, $dry_run, $result['village_unresolved'] );
+				$outcome = $this->upsert( $record, $post_id, $run_id, $dry_run, $baseline, $result['village_unresolved'] );
 				if ( self::CREATED === $outcome['status'] && $outcome['post_id'] ) {
 					$existing[ $record['osm_id'] ] = $outcome['post_id'];
 				}
@@ -175,11 +246,63 @@ final class Importer {
 
 		arsort( $result['unmapped'] );
 
+		if ( $run_id && $this->closure_checks ) {
+			$result['closures'] = self::check_closures( $existing, $seen, $run_id );
+		}
+
 		if ( $run_id ) {
-			Ingestion_Runs::finish( $run_id, $result['counts'], self::notes( $result ) );
+			Ingestion_Runs::finish( $run_id, $result['counts'], self::notes( $result ), $result['errors'] );
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Records a closure check for every active OSM-linked restaurant: closed
+	 * when its element is missing from this import, open when present.
+	 *
+	 * @param array<string, int>  $existing OSM id => post ID before this run.
+	 * @param array<string, bool> $seen     OSM ids in this run.
+	 * @param int                 $run_id   Ingestion run.
+	 * @return array{checked: bool, closed: int[], queued: int[], note: string}
+	 */
+	private static function check_closures( array $existing, array $seen, int $run_id ): array {
+		$out = array(
+			'checked' => false,
+			'closed'  => array(),
+			'queued'  => array(),
+			'note'    => '',
+		);
+
+		$active = array();
+		foreach ( $existing as $osm_id => $post_id ) {
+			$status = get_post_status( $post_id );
+			if ( $status && 'trash' !== $status && 'permanently_closed' !== get_post_meta( $post_id, Restaurant_Meta::STATUS, true ) ) {
+				$active[ $osm_id ] = $post_id;
+			}
+		}
+		if ( ! $active ) {
+			return $out;
+		}
+
+		$present = count( array_intersect_key( $active, $seen ) );
+		if ( $present < self::CLOSURE_CHECK_MIN_SHARE * count( $active ) ) {
+			$out['note'] = sprintf( 'closure checks skipped: only %d of %d known restaurants in the response', $present, count( $active ) );
+			return $out;
+		}
+
+		$out['checked'] = true;
+		foreach ( $active as $osm_id => $post_id ) {
+			$closed = ! isset( $seen[ $osm_id ] );
+			$check  = Closures::record_check( $post_id, 'osm', $closed, $run_id, $closed ? array( 'osm_id' => $osm_id ) : array() );
+			if ( $closed ) {
+				$out['closed'][] = $post_id;
+			}
+			if ( $check['queued'] ) {
+				$out['queued'][] = $post_id;
+			}
+		}
+		return $out;
 	}
 
 	/**
@@ -187,25 +310,25 @@ final class Importer {
 	 *
 	 * @param array<string, mixed> $record             Mapped element.
 	 * @param int                  $post_id            Existing post, or 0.
-	 * @param Mall_Locator         $malls              Mall locator.
 	 * @param int|null             $run_id             Ingestion run.
 	 * @param bool                 $dry_run            Dry run.
+	 * @param bool                 $baseline           Whether this is OSM's first run (new posts are not openings).
 	 * @param string[]             $village_unresolved OSM ids with no village, appended to.
 	 * @return array{status: string, post_id: int}
 	 * @throws \RuntimeException When WordPress refuses a write.
 	 */
-	private function upsert( array $record, int $post_id, Mall_Locator $malls, ?int $run_id, bool $dry_run, array &$village_unresolved ): array {
+	private function upsert( array $record, int $post_id, ?int $run_id, bool $dry_run, bool $baseline, array &$village_unresolved ): array {
 		list( $lat, $lng ) = self::effective_point( $post_id, $record );
 
 		$village = $this->villages->slug_for( $lat, $lng );
-		$mall    = $malls->slug_for( $lat, $lng );
 		if ( null === $village ) {
 			$village_unresolved[] = $record['osm_id'];
 		}
 
 		if ( ! $post_id ) {
 			if ( ! $dry_run ) {
-				$post_id = $this->create( $record, $village, $mall, $run_id );
+				$post_id = $this->create( $record, $village, $lat, $lng, $run_id );
+				Change_Tracker::record_first_seen( $post_id, 'osm', $run_id, $baseline, $record['osm_id'] );
 			}
 			return array(
 				'status'  => self::CREATED,
@@ -213,10 +336,32 @@ final class Importer {
 			);
 		}
 
-		$changes = $this->diff( $post_id, $record, $village, $mall );
+		$changes = $this->diff( $post_id, $record, $village );
 
 		if ( null === $village && ! $dry_run ) {
 			self::queue_unresolved_village( $post_id, $record, $run_id );
+		}
+
+		if ( ! $dry_run ) {
+			$this->apply( $post_id, $changes );
+		}
+
+		// Tags last, so the mall can use an updated address.
+		$cuisine = $this->cuisines->apply( $post_id, 'osm', $record['cuisine_details'], $dry_run );
+		if ( $cuisine['old'] !== $cuisine['new'] ) {
+			$changes[ 'tax:' . Content_Types::TAX_CUISINE ] = array(
+				'old'    => implode( ',', $cuisine['old'] ),
+				'new'    => implode( ',', $cuisine['new'] ),
+				'source' => 'osm',
+			);
+		}
+		$mall = $this->mall_tagger->apply( $post_id, $lat, $lng, $dry_run );
+		if ( $mall['old'] !== $mall['new'] ) {
+			$changes[ 'tax:' . Content_Types::TAX_MALL ] = array(
+				'old'    => $mall['old'],
+				'new'    => $mall['new'],
+				'source' => 'rule' === $mall['origin'] ? 'system' : 'osm',
+			);
 		}
 
 		if ( ! $changes ) {
@@ -227,9 +372,8 @@ final class Importer {
 		}
 
 		if ( ! $dry_run ) {
-			$this->apply( $post_id, $changes );
 			foreach ( $changes as $field => $change ) {
-				$source = 'tax:' . Content_Types::TAX_VILLAGE === $field ? 'census' : 'osm';
+				$source = $change['source'] ?? ( 'tax:' . Content_Types::TAX_VILLAGE === $field ? 'census' : 'osm' );
 				Change_Log::record( $post_id, $field, $change['old'], $change['new'], $source, $run_id );
 			}
 		}
@@ -264,12 +408,13 @@ final class Importer {
 	 *
 	 * @param array<string, mixed> $record  Mapped element.
 	 * @param string|null          $village Village slug.
-	 * @param string|null          $mall    Mall slug.
+	 * @param float                $lat     Latitude for the mall.
+	 * @param float                $lng     Longitude for the mall.
 	 * @param int|null             $run_id  Ingestion run.
 	 * @return int Post ID.
 	 * @throws \RuntimeException When the post cannot be created.
 	 */
-	private function create( array $record, ?string $village, ?string $mall, ?int $run_id ): int {
+	private function create( array $record, ?string $village, float $lat, float $lng, ?int $run_id ): int {
 		$post_id = wp_insert_post(
 			wp_slash(
 				array(
@@ -294,17 +439,16 @@ final class Importer {
 			}
 		}
 
-		if ( $record['cuisines'] ) {
-			wp_set_object_terms( $post_id, self::term_ids( $record['cuisines'], Content_Types::TAX_CUISINE ), Content_Types::TAX_CUISINE );
+		$missing = $this->cuisines->apply( $post_id, 'osm', $record['cuisine_details'] )['missing'];
+		if ( $missing ) {
+			throw new \RuntimeException( esc_html( 'No ' . Content_Types::TAX_CUISINE . ' term with slug ' . implode( ', ', $missing ) . '; run `wp guam seed`.' ) );
 		}
 		if ( $village ) {
 			wp_set_object_terms( $post_id, self::term_ids( array( $village ), Content_Types::TAX_VILLAGE ), Content_Types::TAX_VILLAGE );
 		} else {
 			self::queue_unresolved_village( $post_id, $record, $run_id );
 		}
-		if ( $mall ) {
-			wp_set_object_terms( $post_id, self::term_ids( array( $mall ), Content_Types::TAX_MALL ), Content_Types::TAX_MALL );
-		}
+		$this->mall_tagger->apply( $post_id, $lat, $lng );
 
 		return (int) $post_id;
 	}
@@ -315,10 +459,9 @@ final class Importer {
 	 * @param int                  $post_id Post ID.
 	 * @param array<string, mixed> $record  Mapped element.
 	 * @param string|null          $village Village slug from the coordinates.
-	 * @param string|null          $mall    Mall slug.
 	 * @return array<string, array{old: mixed, new: mixed}>
 	 */
-	private function diff( int $post_id, array $record, ?string $village, ?string $mall ): array {
+	private function diff( int $post_id, array $record, ?string $village ): array {
 		$changes = array();
 
 		$title     = (string) get_post_field( 'post_title', $post_id, 'raw' );
@@ -369,28 +512,11 @@ final class Importer {
 			}
 		}
 
-		$cuisines = self::slugs( $post_id, Content_Types::TAX_CUISINE );
-		$merged   = array_values( array_unique( array_merge( $cuisines, $record['cuisines'] ) ) );
-		if ( count( $merged ) !== count( $cuisines ) ) {
-			sort( $merged );
-			$changes[ 'tax:' . Content_Types::TAX_CUISINE ] = array(
-				'old' => implode( ',', $cuisines ),
-				'new' => implode( ',', $merged ),
-			);
-		}
-
-		$villages = self::slugs( $post_id, Content_Types::TAX_VILLAGE );
+		$villages = Term_Slugs::for_post( $post_id, Content_Types::TAX_VILLAGE );
 		if ( null !== $village && array( $village ) !== $villages ) {
 			$changes[ 'tax:' . Content_Types::TAX_VILLAGE ] = array(
 				'old' => implode( ',', $villages ),
 				'new' => $village,
-			);
-		}
-
-		if ( null !== $mall && ! self::slugs( $post_id, Content_Types::TAX_MALL ) ) {
-			$changes[ 'tax:' . Content_Types::TAX_MALL ] = array(
-				'old' => '',
-				'new' => $mall,
 			);
 		}
 
@@ -539,27 +665,6 @@ final class Importer {
 	}
 
 	/**
-	 * Term slugs on a post, sorted.
-	 *
-	 * @param int    $post_id  Post ID.
-	 * @param string $taxonomy Taxonomy.
-	 * @return string[]
-	 */
-	private static function slugs( int $post_id, string $taxonomy ): array {
-		$slugs = wp_get_object_terms(
-			$post_id,
-			$taxonomy,
-			array(
-				'fields'                                  => 'slugs',
-				Mall_Verification::INCLUDE_UNVERIFIED_ARG => true,
-			)
-		);
-		$slugs = is_wp_error( $slugs ) ? array() : $slugs;
-		sort( $slugs );
-		return $slugs;
-	}
-
-	/**
 	 * Term IDs for slugs; unknown slugs are an error (the cuisine map must
 	 * only name seeded terms).
 	 *
@@ -612,6 +717,11 @@ final class Importer {
 		}
 		if ( $result['unmatched_malls'] ) {
 			$parts[] = 'OSM malls with no term: ' . implode( ', ', array_filter( $result['unmatched_malls'] ) );
+		}
+		if ( $result['closures']['checked'] ) {
+			$parts[] = sprintf( '%d missing from OSM (closure check), %d queued for closure approval', count( $result['closures']['closed'] ), count( $result['closures']['queued'] ) );
+		} elseif ( '' !== $result['closures']['note'] ) {
+			$parts[] = $result['closures']['note'];
 		}
 		return implode( '; ', $parts );
 	}

@@ -22,6 +22,7 @@ final class Deactivator {
 	public static function deactivate(): void {
 		unregister_post_type( Content_Types::POST_TYPE );
 		Ratings\Refresher::unschedule();
+		Monitoring\Jobs::unschedule();
 		flush_rewrite_rules();
 	}
 }

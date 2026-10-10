@@ -41,6 +41,10 @@ class Osm_Mapping_Test extends Test_Case {
 			array(
 				'slugs'    => array( 'coffee-and-cafe', 'bakery-and-dessert' ),
 				'unmapped' => array( 'kombucha' ),
+				'details'  => array(
+					'coffee-and-cafe'    => 'osm:amenity=cafe',
+					'bakery-and-dessert' => 'osm:cuisine=donut',
+				),
 			),
 			$map->map(
 				array(
@@ -53,6 +57,10 @@ class Osm_Mapping_Test extends Test_Case {
 			array(
 				'slugs'    => array( 'japanese', 'bbq-and-grill' ),
 				'unmapped' => array(),
+				'details'  => array(
+					'japanese'      => 'osm:cuisine=yakiniku',
+					'bbq-and-grill' => 'osm:cuisine=yakiniku',
+				),
 			),
 			$map->map( array( 'amenity' => 'restaurant', 'cuisine' => 'yakiniku' ) ) // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 		);
@@ -73,6 +81,7 @@ class Osm_Mapping_Test extends Test_Case {
 			array(
 				'slugs'    => array(),
 				'unmapped' => array(),
+				'details'  => array(),
 			),
 			$map->map( array( 'amenity' => 'restaurant', 'cuisine' => 'regional' ) ) // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 		);

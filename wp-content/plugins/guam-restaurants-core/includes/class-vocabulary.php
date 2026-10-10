@@ -28,9 +28,11 @@ final class Vocabulary {
 
 	/**
 	 * Sources that may appear in the change log and review queue. Google and
-	 * Yelp content may not be stored, so they are not listed.
+	 * Yelp content may not be stored, so they are not listed. `system` is
+	 * this plugin's own derivations: cuisine rules, mall address matching
+	 * and automatic duplicate merges.
 	 */
-	public const FACT_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census' );
+	public const FACT_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census', 'system' );
 
 	/**
 	 * Sources that may add review queue items and ingestion runs. Google,
@@ -38,7 +40,14 @@ final class Vocabulary {
 	 * nothing from the source but its ID, which each source lets us keep
 	 * (docs/data-sources.md §2 to §4).
 	 */
-	public const REVIEW_QUEUE_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census', 'google', 'yelp', 'foursquare' );
+	public const REVIEW_QUEUE_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census', 'system', 'google', 'yelp', 'foursquare' );
+
+	/**
+	 * Where a cuisine or mall tag came from: a data source's own category,
+	 * one of our rules (data/cuisine-rules.json, mall address text), or a
+	 * person's edit. Manual tags are never changed by ingestion.
+	 */
+	public const TAG_ORIGINS = array( 'source', 'rule', 'manual' );
 
 	public const HOURS_SOURCES = array( 'osm', 'owner', 'manual' );
 
@@ -57,7 +66,7 @@ final class Vocabulary {
 	 */
 	public const MODERATION_REASONS = array( 'spam', 'profanity', 'personal_attack', 'hate_speech', 'personal_info', 'undisclosed_connection', 'fake', 'off_topic', 'wrong_business' );
 
-	public const REVIEW_QUEUE_TYPES = array( 'new_place', 'match_conflict', 'village_unresolved', 'mall_unresolved', 'closure_signal', 'owner_submission' );
+	public const REVIEW_QUEUE_TYPES = array( 'new_place', 'match_conflict', 'village_unresolved', 'mall_unresolved', 'closure_signal', 'owner_submission', 'duplicate' );
 
 	public const REVIEW_QUEUE_STATUSES = array( 'pending', 'approved', 'rejected', 'merged' );
 

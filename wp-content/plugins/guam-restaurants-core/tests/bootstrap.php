@@ -38,3 +38,5 @@ require $guam_tests_dir . '/includes/bootstrap.php';
 require __DIR__ . '/class-test-case.php';
 require __DIR__ . '/class-fake-api.php';
 require __DIR__ . '/class-ratings-fixtures.php';
+require __DIR__ . '/class-guam-fixtures.php';
+require __DIR__ . '/class-guam-test-case.php';
