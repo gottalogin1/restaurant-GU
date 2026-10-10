@@ -7,6 +7,7 @@
 
 namespace GuamRestaurants\Core\Highlights;
 
+use GuamRestaurants\Core\Advertising\Leads;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Restaurant_Meta;
 
@@ -18,6 +19,8 @@ defined( 'ABSPATH' ) || exit;
  * - `gr_moderate_highlights`: approve or reject every highlight type.
  *   Administrators only, so an approval is always an admin's.
  * - `gr_write_editor_notes`: write editor's notes. Administrators and editors.
+ * - `gr_manage_advertiser_leads` (Advertising\Leads::CAP): see and work
+ *   advertiser leads. Administrators only.
  * - `gr_submit_owner_content`: write owner quotes and reply to reviews, but
  *   only for restaurants linked to the user. The `gr_restaurant_owner` role
  *   has this and `read`, nothing else: owners cannot edit, hide or delete
@@ -38,7 +41,7 @@ final class Roles {
 	/**
 	 * Bump when capabilities change so maybe_install() runs again.
 	 */
-	public const VERSION        = '1';
+	public const VERSION        = '2';
 	public const VERSION_OPTION = 'guam_restaurants_core_roles_version';
 
 	/**
@@ -70,7 +73,7 @@ final class Roles {
 			);
 		}
 		$grants = array(
-			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER ),
+			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER, Leads::CAP ),
 			'editor'        => array( self::EDITOR ),
 		);
 		foreach ( $grants as $role_name => $caps ) {

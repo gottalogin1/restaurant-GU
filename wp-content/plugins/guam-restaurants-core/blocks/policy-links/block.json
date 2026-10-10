@@ -6,7 +6,7 @@
 	"title": "Policy links",
 	"category": "widgets",
 	"icon": "privacy",
-	"description": "Links to the editorial policy, privacy policy and terms of use, once each is published.",
+	"description": "Links to the editorial policy, privacy policy, terms of use and advertise page, once each is published.",
 	"textdomain": "guam-restaurants-core",
 	"attributes": {},
 	"supports": {

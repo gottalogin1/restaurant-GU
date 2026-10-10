@@ -60,7 +60,9 @@ Install on staging first and check each against the current WordPress version
 - [ ] Persistent object cache (Redis or Memcached), from the host or W3 Total
       Cache. Use W3 Total Cache's page cache only if the host has none.
 - [ ] An SMTP plugin so site email works. Without it, logged-out visitors can't
-      submit reviews and job alerts aren't sent.
+      submit reviews, job alerts aren't sent, and advertiser leads are saved
+      but neither the lead email (to Settings > General > Administration
+      Email Address) nor the sender's confirmation goes out.
 - [ ] Akismet on a paid plan, checking reviews and form submissions.
 - [ ] Happyforms: build the claim, correction and contact forms, add each to
       its draft page, then publish the three pages.

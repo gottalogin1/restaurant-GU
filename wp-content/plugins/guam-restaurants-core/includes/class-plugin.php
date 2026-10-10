@@ -62,6 +62,10 @@ final class Plugin {
 		Highlights\Submit_Screen::register();
 		Highlights\Display::register();
 		Highlights\Policy_Page::register();
+		Advertising\Leads::register();
+		Advertising\Rest_Controller::register();
+		Advertising\Admin::register();
+		Advertising\Display::register();
 		Awards\Display::register();
 		Awards\Pages::register();
 		Structured_Data::register();

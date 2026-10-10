@@ -17,6 +17,7 @@
 		'listing-context',
 		'map-explorer',
 		'sponsored-slot',
+		'advertiser-inquiry',
 	];
 
 	function number( props, name, label ) {
@@ -120,6 +121,7 @@
 		'map-explorer',
 		'data-attributions',
 		'policy-links',
+		'advertiser-inquiry',
 	];
 
 	names.forEach( function ( name ) {
