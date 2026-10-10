@@ -134,7 +134,7 @@ class Osm_Importer_Test extends Test_Case {
 		$this->assertSame( array( 'american', 'fast-food' ), $this->terms( $burger, Content_Types::TAX_CUISINE ) );
 		$this->assertTrue( get_post_meta( $burger, Restaurant_Meta::HOURS, true )['always_open'] );
 
-		$this->assertSame( array( 'kombucha' => 1, 'thai' => 1 ), $result['unmapped'] ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		$this->assertSame( array( 'kombucha' => 1, 'ethiopian' => 1 ), $result['unmapped'] ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 	}
 
 	/**
@@ -324,6 +324,6 @@ class Osm_Importer_Test extends Test_Case {
 		$this->assertSame( 'osm', $run['source'] );
 		$this->assertSame( array( '6', '0', '0', '0' ), array( $run['created'], $run['updated'], $run['unchanged'], $run['failed'] ) );
 		$this->assertNotNull( $run['finished_at'] );
-		$this->assertStringContainsString( 'unmapped cuisines: kombucha (1), thai (1)', $run['notes'] );
+		$this->assertStringContainsString( 'unmapped cuisines: kombucha (1), ethiopian (1)', $run['notes'] );
 	}
 }

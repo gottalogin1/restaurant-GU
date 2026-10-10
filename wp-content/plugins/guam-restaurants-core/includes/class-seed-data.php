@@ -256,6 +256,18 @@ final class Seed_Data {
 				'name' => 'Local plate lunch',
 				'osm'  => array(),
 			),
+			'thai'               => array(
+				'name' => 'Thai',
+				'osm'  => array( 'thai' ),
+			),
+			'vietnamese'         => array(
+				'name' => 'Vietnamese',
+				'osm'  => array( 'vietnamese' ),
+			),
+			'asian'              => array(
+				'name' => 'Asian',
+				'osm'  => array( 'asian', 'noodles' ),
+			),
 		);
 	}
 
