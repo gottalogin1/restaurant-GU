@@ -57,7 +57,7 @@ class Seeder_Test extends Test_Case {
 
 		$this->assertSame( 19, $first['villages']['created'] );
 		$this->assertSame( 6, $first['malls']['created'] );
-		$this->assertSame( 17, $first['cuisines']['created'] );
+		$this->assertSame( 20, $first['cuisines']['created'] );
 		$this->assertSame( 4, $first['price_levels']['created'] );
 
 		$second = Seeder::seed_all();
@@ -67,7 +67,7 @@ class Seeder_Test extends Test_Case {
 			$this->assertSame( 0, $counts['failed'], $name );
 		}
 		$this->assertSame( 19, $this->count_terms( Content_Types::TAX_VILLAGE ) );
-		$this->assertSame( 17, $this->count_terms( Content_Types::TAX_CUISINE ) );
+		$this->assertSame( 20, $this->count_terms( Content_Types::TAX_CUISINE ) );
 	}
 
 	/**
