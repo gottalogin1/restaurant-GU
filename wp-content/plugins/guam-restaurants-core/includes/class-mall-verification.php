@@ -47,6 +47,28 @@ final class Mall_Verification {
 	}
 
 	/**
+	 * Runs a callback with unverified malls visible to every term query,
+	 * including WordPress's own lookups (term_exists() inside
+	 * wp_set_object_terms() would otherwise not find an unverified mall).
+	 * For back-end jobs such as imports.
+	 *
+	 * @param callable $callback Callback.
+	 * @return mixed The callback's return value.
+	 */
+	public static function with_unverified( callable $callback ) {
+		$include = static function ( array $args ): array {
+			$args[ self::INCLUDE_UNVERIFIED_ARG ] = true;
+			return $args;
+		};
+		add_filter( 'get_terms_args', $include, 5 );
+		try {
+			return $callback();
+		} finally {
+			remove_filter( 'get_terms_args', $include, 5 );
+		}
+	}
+
+	/**
 	 * Whether a mall is verified.
 	 *
 	 * @param int $term_id Mall term ID.

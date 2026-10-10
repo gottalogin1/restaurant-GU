@@ -21,12 +21,19 @@ that page. Re-check before building an importer.
 |---|---|---|
 | OpenStreetMap (Overpass / extracts) | **Use** | Open licence, storable, good base for names, locations, cuisine tags. Attribution and ODbL share-alike apply. |
 | US Census TIGER/Line (Guam) | **Use** | Public domain (CC0) village boundaries for village tagging. |
-| Guam DPHSS inspection results | **Use with limits** | Public facts (grade, demerits, date) in periodic PDFs; no API, no stated terms. Show as facts with date and source link. |
+| Guam DPHSS inspection results | **Skip** | Project decision (2026-10-09): the site promotes businesses and will not publish inspection grades or other negative marks. |
 | Foursquare Open Source Places | **Use with limits** | Apache 2.0 bulk POI data (name, address, phone, website, category, closed date). Good for gap-filling; quality varies. |
 | Foursquare Places API | **Use with limits** (or skip) | Ratings, hours, tips are Premium-only and **cannot be cached** on a server on pay-as-you-go. Little gain over the OS dataset for a directory. |
-| Google Places API (New) | **Skip for now** | Google's terms bar use of Maps Core Services "in a listings or directory service", forbid caching ratings, and forbid showing Places content on a non-Google map. Revisit only with written confirmation from Google. |
-| Yelp Places API | **Skip** | Ad-supported site is "commercial use", which needs Yelp's written consent; 24-hour cache cap; Yelp ratings may not be shown alongside other user-generated content. Paid plans start at $229/month. |
+| Google Places API (New) | **Use with limits** | Attorney cleared the directory-use question (2026-10-10). Store only place IDs; fetch ratings live; never show Places content on or near a non-Google map. |
+| Yelp Places API | **Use with limits** (optional) | Attorney cleared the commercial-use question (2026-10-10). 24-hour cache cap; Yelp ratings may not sit alongside other user-generated content; paid plans start at $229/month. |
 | Pika's Best of Guam (PDN) | **Use with limits** | Facts only (year, category, placing) with source URL, pending PDN's reply. See §8 and `docs/awards-research.md`. |
+
+**Collection method (2026-10-10).** Data comes through the official APIs
+and open datasets above. Small, rate-limited fetches of other public pages
+are fine where the site's terms and robots.txt allow it. Google Maps and
+Yelp pages are never scraped: both terms ban it outright (Google ToS
+§3.2.3(a), Yelp API Terms §5(a)), so the APIs are the only route to their
+data (CLAUDE.md rule 1).
 
 ## 1. OpenStreetMap via Overpass API
 
@@ -185,12 +192,28 @@ Service ✅ <https://cloud.google.com/maps-platform/terms/maps-services>.
 An ad-supported restaurant directory fits that description on a plain
 reading.
 
-**Recommendation: Skip for now.** Do not use Google Places for listing
-data or ratings unless Google (Maps Platform sales or legal) confirms in
-writing that this use is allowed, and put that question to the Guam
-attorney alongside `docs/legal-and-policy.md`. If it is ever allowed, the
-only storable field is the place ID; ratings and counts must be fetched
-live per view, and the listing page must not also show our OSM map.
+**Attorney review (2026-10-10).** Sanjay's Guam attorney advised that
+the terms are fine for this use, which covers the §3.2.3(d)(iii) concern
+above. Keep a note of that advice with the project's legal records.
+
+**Recommendation: Use with limits.** Use Places for live ratings, review
+counts and (optionally) reviews on listing pages, within these rules:
+
+- Store only the place ID. Match restaurants to place IDs once, then fetch
+  `rating` and `userRatingCount` live per page view (Enterprise SKU).
+- Never use Google coordinates for village or mall tagging (use OSM).
+- On any page that shows Google content, the map must be a Google map. Use
+  the **Maps Embed API** there: it is "free to use with unlimited requests"
+  ✅ <https://developers.google.com/maps/documentation/embed/usage-and-billing>.
+  Browse and map pages that use MapTiler (§6a) show no Google content.
+- Show the Google Maps attribution and the review rules listed above.
+- Budget: 1,000 free Enterprise calls a month, then $20 per 1,000 views.
+- Discovery (`wp guam-restaurants discover`, 2026-10-10): Text Search
+  "restaurants in <village or mall>, Guam" restricted to Guam's box, with
+  field mask `places.id,places.displayName,places.businessStatus` (Text
+  Search Pro: 5,000 free a month; one full run is at most 75 requests).
+  Only the place ID is stored, in the review queue; names are compared in
+  memory to skip places we already list and are not kept.
 
 ## 3. Yelp Places API (formerly Fusion)
 
@@ -254,9 +277,16 @@ Yelp business page using the URL the API returns; attribute every excerpt
 to Yelp and its author; follow Yelp's logo size, clear-space, and colour
 rules.
 
-**Recommendation: Skip.** Cost, the commercial-use consent requirement,
-the 24-hour cap and the ban on showing Yelp ratings next to other UGC make
-it a poor fit. Revisit only with a written commercial licence from Yelp.
+**Attorney review (2026-10-10).** Sanjay's Guam attorney advised that
+the terms are fine for this use, which covers the §5(d) commercial-use
+concern above.
+
+**Recommendation: Use with limits (optional).** Worth adding only if
+Google ratings leave gaps, because it costs at least $229/month. If used:
+store only Yelp business IDs; cache other fields for no more than 24 hours;
+keep Yelp ratings on a page section with no other ratings or visitor
+content; use Yelp's star images, logo and links as returned. Read the
+display requirements by hand from a browser before launch.
 
 ## 4. Foursquare
 
@@ -319,51 +349,16 @@ schema <https://docs.foursquare.com/data-products/docs/places-os-data-schema>
 
 ## 5. Guam DPHSS food-establishment data
 
-**What exists.** The Division of Environmental Health publishes
-"DEH Sanitation Inspection Results" as PDFs covering a few weeks each,
-linked from <https://www.dphss.guam.gov/reports-resources>. Found by
-search on 2026-10-09:
+**Recommendation: Skip (project decision, 2026-10-09).** The directory is a
+tourist-friendly site that promotes businesses, so it will not show
+inspection grades, demerits, or closures.
 
-- 07.14.25–09.07.25, 09.08.25–09.28.25, 09.29.25–10.30.25,
-  11.07.25–11.25.25, 12.01.25–12.28.25, 03.30.26–04.26.26 (Revised), e.g.
-  <https://dphss.guam.gov/sites/default/files/DEH%20Sanitation%20Inspection%20Results%2003.30.26%20-%2004.26.26%20(Revised).pdf>
-
-Gaps: nothing was found for January–March 2026 or after April 2026, and the
-listing page shows only three files, so older files fall off it. Keep our
-own copy of each PDF's URL and download date.
-
-**Fields** ✅ (read from two PDFs): No., establishment name and village
-(one combined column), type of establishment, date of inspection, type of
-inspection (regular, follow-up, complaint, assessment), demerits, grade
-(A/B/N/A), violated item numbers, comments (including "cease operation"
-directives). The March–April 2026 file has 186 rows, 79 of them
-restaurants, across 14 village labels. Labels such as "Tumon" and "Upper
-Tumon" are not official villages, so map them to Tamuning.
-
-Grade scale (per a Marianas Business Journal summary, not DPHSS itself):
-A up to 10 demerits, B 11–20, C 20–40, D (closure) over 41
-<https://www.mbjguam.com/keeping-guam-safe-public-health-inspection-updates>.
-
-**No list of permitted establishments** is published on
-<https://dphss.guam.gov/sanitary-permits> or the DEH page
-<https://dphss.guam.gov/dphss-divisions/division-environmental-health-deh>.
-A public-records request to DEH for the sanitary permit roster (name,
-address, permit type, status) would be the best restaurant-existence
-check on Guam.
-
-**Pricing:** free. **Terms:** none stated on the pages. The rows are
-government facts; show them as facts (grade, demerits, date, inspection
-type) with the PDF link, and do not reproduce the free-text comments
-wholesale. ⚠️ Government of Guam works are not automatically public domain
-the way federal works are; confirm with the attorney.
-
-**Display caution.** Show the inspection date beside the grade, say it is
-"as published by DPHSS", never let ads affect it (CLAUDE.md rule 5), and
-handle matching errors carefully: a wrong match could defame a restaurant.
-Require a human check before a B-or-worse grade or a closure appears.
-
-**Recommendation: Use with limits.** Manual or semi-automated PDF import
-(parse tables, human-confirm matches), refreshed when a new PDF appears.
+For the record, DPHSS's Division of Environmental Health publishes "DEH
+Sanitation Inspection Results" PDFs (grade, demerits, inspection date and
+type per establishment) linked from
+<https://www.dphss.guam.gov/reports-resources>, and publishes no list of
+permitted establishments (<https://dphss.guam.gov/sanitary-permits>). No
+DPHSS data is imported.
 
 ## 6. US Census TIGER/Line for Guam villages
 
@@ -372,28 +367,80 @@ Require a human check before a B-or-worse grade or a closure appears.
 - Dataset: TIGER/Line 2024 County Subdivisions, Guam (state FIPS 66).
   Download: <https://www2.census.gov/geo/tiger/TIGER2024/COUSUB/tl_2024_66_cousub.zip>
   (check for a 2025 edition under `TIGER2025/` first).
-- Fields ✅ (checked in the file, 2026-10-10): `STATEFP`, `COUNTYFP`,
-  `COUSUBFP`, `COUSUBNS`, `GEOID`, `GEOIDFQ`, `NAME`, `NAMELSAD`, `LSAD`,
-  `CLASSFP`, `MTFCC`, `FUNCSTAT`, `ALAND`, `AWATER`, `INTPTLAT`, `INTPTLON`,
-  polygon geometry. Datum NAD83 (EPSG:4269), within about a metre of WGS84
-  on Guam.
-- Coverage ✅: 20 features, the 19 villages plus one "County subdivision not
-  defined" feature (GEOID 6601000000, open water, dropped). The Census uses
-  official Chamorro names for several villages (Hågat, Inalåhan, Malesso',
-  Humåtak, Talo'fo'fo, Sånta Rita-Sumai, Asan); our slugs use the common
-  English names and map by GEOID.
-- Stored as `wp-content/plugins/guam-restaurants-core/data/guam-villages.geojson`,
-  built by `bin/build-village-geojson.py` from the 2024 edition (zip SHA-256
-  `f90487aa2f5cce7ad712c0c2ad8cf6478c1e46d31e6103e9b8af9f78cccd8cdd`).
-  census.gov is blocked from the cloud environment, so the zip was
-  downloaded by hand.
+- Fields (standard TIGER county-subdivision layout ⚠️ confirm in the file):
+  `STATEFP`, `COUNTYFP`, `COUSUBFP`, `GEOID`, `NAME`, `NAMELSAD`, `ALAND`,
+  `AWATER`, internal point lat/lon, polygon geometry.
+- Coverage ✅ **confirmed 2026-10-10** via the TIGERweb REST service
+  (layer 22, `STATE='66'`): 19 villages ("municipality") plus one
+  "County subdivision not defined" feature (GEOID 6601000000, water/unassigned,
+  ignore it). Census uses Chamorro spellings, so store an alias for the
+  common English name:
+
+  | Census NAME | Common alias | GEOID |
+  |---|---|---|
+  | Agana Heights | | 6601004650 |
+  | Asan | Asan-Maina | 6601013100 |
+  | Barrigada | | 6601017650 |
+  | Chalan Pago-Ordot | | 6601026100 |
+  | Dededo | | 6601028050 |
+  | Hagåtña | Hagatna, Agana | 6601034800 |
+  | Hågat | Agat | 6601034653 |
+  | Humåtak | Umatac | 6601035528 |
+  | Inalåhan | Inarajan | 6601035503 |
+  | Malesso' | Merizo | 6601044403 |
+  | Mangilao | | 6601046250 |
+  | Mongmong-Toto-Maite | | 6601051450 |
+  | Piti | | 6601059250 |
+  | Sånta Rita-Sumai | Santa Rita | 6601062828 |
+  | Sinajana | | 6601065750 |
+  | Talo'fo'fo | Talofofo | 6601069650 |
+  | Tamuning | Tamuning-Tumon-Harmon | 6601071600 |
+  | Yigo | | 6601083300 |
+  | Yona | | 6601084600 |
+
+  Bounding box roughly 144.56–145.01°E, 13.18–13.71°N.
 - Licence: CC0 1.0 per data.gov. Store permanently. Attribution not
   required; credit "US Census Bureau TIGER/Line" anyway. Free, no limits.
 - Use: point-in-polygon on **OSM** (not Google) coordinates to tag each
-  restaurant's village. Informal areas (Tumon, Upper Tumon, Harmon) are
-  search aliases of Tamuning, not separate terms (decision 2026-10-10).
+  restaurant's village. Overlay names for informal areas (Tumon, Upper
+  Tumon, Harmon) as our own "area" tags inside the official village.
 
 **Recommendation: Use.**
+
+## 6a. Map tiles: MapTiler Cloud (chosen 2026-10-10)
+
+**Choice: MapTiler Cloud, Flex plan, with Leaflet or MapLibre GL JS.**
+Sanjay left the choice to Claude, asking for the most stable and most
+recommended option.
+
+Why MapTiler:
+- It is an established commercial OSM-based provider, and the OSM tile
+  policy itself points production sites to commercial providers.
+- It serves vector and raster tiles, works with Leaflet and MapLibre, and
+  has well-documented styles.
+- Flex allows commercial use.
+
+| | |
+|---|---|
+| Plan | Flex, $30/month: 25k map sessions and 500k API requests ✅ <https://www.maptiler.com/cloud/pricing/> |
+| Overage | $2.50 per 1k sessions, $0.15 per 1k API requests; set a spending limit |
+| Free plan | Testing and non-commercial use only, so use it for development, not production |
+| Attribution | MapTiler logo optional on Flex; **OSM attribution is always required** (ODbL, §1), e.g. "© MapTiler © OpenStreetMap contributors" |
+| Key handling | API key in a `wp-config.php` constant, restricted to the site's domains (CLAUDE.md rule 8) |
+
+**Fallback: Stadia Maps Starter**, $20/month for 1M credits (1 credit per
+basemap tile); commercial use is allowed on paid plans only ✅
+<https://stadiamaps.com/pricing/>. Keep the tile URL and attribution
+configurable so switching is a settings change.
+
+**Not for production: tile.openstreetmap.org.** The OSMF policy says
+availability is "best-effort" with "no SLA or guarantee", and heavy users
+may be blocked without notice ✅
+<https://operations.osmfoundation.org/policies/tiles/>.
+
+**Google rule.** Pages showing Google ratings use the Google Maps Embed
+API for their map instead (§2), so MapTiler maps and Google content never
+share a page.
 
 ## 7. Answers to the five questions
 
@@ -413,11 +460,11 @@ Require a human check before a B-or-worse grade or a closure appears.
   profile link when space allows), show the Google Maps logo or text,
   link each review to Google Maps and provide the report link, and show a
   notice explaining ordering. Summaries need the "Review summary" heading
-  and Google's disclosure text. Subject to the directory-use blocker in §2.
+  and Google's disclosure text. The directory-use question in §2 was cleared by the attorney.
 - Yelp: only the excerpts the API returns (up to 3 or 7 per business,
   160 characters each, depending on plan), unmodified, with Yelp's
   hyperlink intact, Yelp branding, and author attribution; not next to
-  other UGC; commercial use needs written consent.
+  other UGC; commercial use cleared by the attorney (§3).
 - Foursquare: tips are a Premium field; show as returned with "Powered by
   Foursquare"; no server caching.
 
@@ -426,7 +473,7 @@ No for every commercial source: Google forbids caching ratings, Yelp caps
 storage at 24 hours, Foursquare forbids server caching. A "rating over
 time" chart can only use first-party data (our own visitor highlights or
 editorial scores). Change tracking on facts (open/closed, address, hours
-from OSM and owner submissions, DPHSS grades, awards) is fine.
+from OSM and owner submissions, awards) is fine.
 
 **(4) What display rules apply to Yelp stars and logos?**
 ⚠️ Not verified (Yelp's display-requirements and brand pages block
@@ -447,7 +494,7 @@ Google Maps logo (or "Google Maps" text if space is tight) unaltered, any
 third-party attributions, author credit for reviews, links to Google Maps
 and to report content, and an ordering notice. Ratings are fetched live,
 not stored. Separately, ToS §3.2.3(d)(iii) bars using Core Services in a
-listings or directory service, which is why §2 recommends skipping Google.
+listings or directory service, which the attorney has cleared for this use (§2).
 
 ## 8. Pika's Best of Guam (Pacific Daily News)
 
@@ -472,17 +519,16 @@ permission email in `docs/awards-research.md` §8.
 | Mall polygons | OSM | **Stored permanently** | Re-import monthly |
 | POI cross-check fields, closed date | FSQ OS Places (Apache 2.0) | **Stored permanently** | Each release (use delta files) |
 | Village boundaries | Census TIGER/Line (CC0) | **Stored permanently** | Yearly |
-| Inspection grade, demerits, date, type, PDF URL | DPHSS PDFs | **Stored permanently** as dated facts, history kept | When a new PDF appears |
 | Award year, category, placing, source URL | Pika's Best (PDN) | **Stored permanently** as facts | Yearly, after winners announced |
 | Editorial copy, highlights, owner submissions, ad and sponsor data | First-party | **Stored permanently** | n/a |
-| Google place ID | Google | **Stored permanently** (only if Google is ever approved) | n/a |
+| Google place ID | Google | **Stored permanently** | n/a |
 | Google lat/lng | Google | **Cached with expiry** (30 days), never used for village/mall tagging | 30 days |
-| Yelp business ID | Yelp | **Stored** for back-end matching only (only if Yelp is ever licensed) | Delete on termination |
-| Yelp rating, count, excerpts, details | Yelp | **Cached with expiry**, 24 hours max (only if licensed) | 24 hours |
+| Yelp business ID | Yelp | **Stored** for back-end matching only | Delete on termination |
+| Yelp rating, count, excerpts, details | Yelp | **Cached with expiry**, 24 hours max | 24 hours |
 | Foursquare place ID | Foursquare API | **Stored permanently** (performance only) | n/a |
-| Google rating, count, reviews, hours, summaries | Google | **Fetched live** per view, never stored (only if approved) | n/a |
+| Google rating, count, reviews, hours, summaries | Google | **Fetched live** per view, never stored | n/a |
 | Foursquare rating, hours, tips, photos | Foursquare API | **Fetched live** per view (pay-as-you-go) | n/a |
-| Map tiles | OSM-based tile provider (to be chosen; osm.org tiles are not for production) | **Fetched live** | n/a |
+| Map tiles | MapTiler Cloud (Flex); Google Maps Embed on pages with Google content | **Fetched live** | n/a |
 
 ## 10. Research-only references (not data sources)
 
@@ -530,15 +576,21 @@ data sources. No listing data from them may be imported (CLAUDE.md rules
 | DEH Sanitation Inspection Results 09.29.25–10.30.25 PDF | Fetch error |
 | https://www.mbjguam.com/keeping-guam-safe-public-health-inspection-updates | Read |
 | https://catalog.data.gov/dataset/tiger-line-shapefile-2024-state-guam-gu-county-subdivision | Read |
+| https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/22/query (STATE='66') | Read 2026-10-10; 20 features (19 villages + undefined) |
+| https://www.maptiler.com/cloud/pricing/ | Read 2026-10-10 |
+| https://stadiamaps.com/pricing/ | Read 2026-10-10 |
+| https://operations.osmfoundation.org/policies/tiles/ | Read 2026-10-10 |
+| https://developers.google.com/maps/documentation/embed/usage-and-billing | Read 2026-10-10 |
 | https://www2.census.gov/geo/tiger/, https://tigerweb.geo.census.gov | Blocked by network proxy |
 
 ## 12. To do before the first import
 
-1. Run the three Overpass queries in §1 by hand and log counts.
-2. ~~Download the TIGER Guam county-subdivision file; confirm 19 villages.~~
-   Done 2026-10-10 (see §6).
-3. Read Yelp's display requirements by hand only if Yelp is reconsidered.
-4. Ask the Guam attorney about Google ToS §3.2.3(d)(iii), Yelp §5(d), and
-   reuse of Government of Guam inspection PDFs.
-5. Send DEH a records request for the sanitary permit roster.
-6. Pick a production map tile provider and record its terms here.
+- [x] Overpass coverage queries: closed. overpass-api.de disallows
+  automated fetching in robots.txt and its mirrors are unreachable from the
+  research environment. The queries in §1 stay available for manual use.
+- [x] Yelp display requirements: closed. Yelp's developer and brand pages
+  disallow automated fetching; read them by hand in a browser if Yelp is added.
+- [x] DPHSS records request: dropped with the DPHSS decision in §5.
+- [x] TIGER Guam villages: confirmed 19 villages (§6), 2026-10-10.
+- [x] Attorney review of Google ToS §3.2.3(d)(iii) and Yelp §5(d): cleared, 2026-10-10.
+- [x] Map tile provider: MapTiler Cloud Flex, Stadia Maps as fallback (§6a).

@@ -523,3 +523,13 @@ existing verified mall back.
   tables and allowed values (`Vocabulary`) are in place for them.
 - A single unverified mall can still be read by ID over REST; it is hidden
   from term lists, restaurant term lists, and its archive (404).
+- **Importers (2026-10-10).** `wp guam-restaurants import-osm` maps
+  cuisines with `data/osm-cuisine-map.json`; the `gr_osm_cuisine` term
+  meta seeded from §4.3 is not read by it. Mall assignment uses OSM
+  `shop=mall` outlines (or a radius for malls mapped as a point) matched to
+  mall terms by `gr_osm_id` or name; unmatched OSM malls are reported, not
+  created. `wp guam-restaurants discover` writes review-queue items with
+  source `google` whose payload holds only the place ID and how it was
+  found (`Vocabulary::REVIEW_QUEUE_SOURCES`); the change log still never
+  accepts Google as a source.
+

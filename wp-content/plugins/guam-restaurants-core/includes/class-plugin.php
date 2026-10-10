@@ -54,6 +54,7 @@ final class Plugin {
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			Cli\Commands::register();
+			Cli\Import_Commands::register();
 		}
 	}
 

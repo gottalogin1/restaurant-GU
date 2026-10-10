@@ -20,8 +20,8 @@ final class Review_Queue {
 	 * Adds a pending item.
 	 *
 	 * @param string               $type          One of Vocabulary::REVIEW_QUEUE_TYPES.
-	 * @param array<string, mixed> $payload       Data for the reviewer. Never Google or Yelp content.
-	 * @param string               $source        One of Vocabulary::FACT_SOURCES.
+	 * @param array<string, mixed> $payload       Data for the reviewer. Never Google or Yelp content; from Google, the place ID only.
+	 * @param string               $source        One of Vocabulary::REVIEW_QUEUE_SOURCES.
 	 * @param int|null             $restaurant_id Restaurant ID, or null for a new place.
 	 * @param float|null           $confidence    0 to 1.
 	 * @param int|null             $run_id        Ingestion run ID.
@@ -31,7 +31,7 @@ final class Review_Queue {
 	public static function enqueue( string $type, array $payload, string $source, ?int $restaurant_id = null, ?float $confidence = null, ?int $run_id = null ): int {
 		global $wpdb;
 
-		if ( ! in_array( $type, Vocabulary::REVIEW_QUEUE_TYPES, true ) || ! in_array( $source, Vocabulary::FACT_SOURCES, true ) ) {
+		if ( ! in_array( $type, Vocabulary::REVIEW_QUEUE_TYPES, true ) || ! in_array( $source, Vocabulary::REVIEW_QUEUE_SOURCES, true ) ) {
 			throw new \InvalidArgumentException( 'Unknown review queue type or source.' );
 		}
 
