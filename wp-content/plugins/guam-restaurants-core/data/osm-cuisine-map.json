@@ -60,6 +60,26 @@
 		"coffee_shop": "coffee-and-cafe",
 		"coffee": "coffee-and-cafe",
 		"tea": "coffee-and-cafe",
-		"bubble_tea": "coffee-and-cafe"
+		"bubble_tea": "coffee-and-cafe",
+		"crab": "seafood",
+		"breakfast": "american",
+		"pancake": "american",
+		"deli": "american",
+		"hotdog": "american",
+		"pannini": "american",
+		"pastries": "bakery-and-dessert",
+		"crepes": "bakery-and-dessert",
+		"muffins": "bakery-and-dessert",
+		"juice": "coffee-and-cafe",
+		"cafe": "coffee-and-cafe",
+		"asian": null,
+		"thai": null,
+		"vietnamese": null,
+		"noodles": null,
+		"mediterranean": null,
+		"bavarian": null,
+		"salad": null,
+		"buffet": null,
+		"international": null
 	}
 }
