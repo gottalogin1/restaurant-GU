@@ -101,14 +101,48 @@ stored permanently; no rating history is kept.
   page section with no other ratings or visitor content. Pages that show
   Google ratings must use a Google map (Maps Embed), not MapTiler.
 
-## Visitor reviews
+## Highlights and user reviews
 
-- Block `guam-restaurants/visitor-reviews` and shortcode
-  `[guam_visitor_reviews id="" form="yes" trend="yes"]` show approved visitor
-  reviews (newest first, positive and negative alike), a monthly trend chart
-  of their average rating, and a submission form. Content is loaded from
-  `/wp-json/guam-restaurants/v1/restaurants/{id}/visitor-reviews`.
-- New reviews wait in Restaurants > Visitor reviews. Rejecting one requires a
-  published rule. Do not place this block in the same page section as Yelp.
+All first-party content lives in the `gr_highlights` table and waits for an
+administrator before it appears.
+
+- **Types.** "From the owner" (owner quote: short description and up to five
+  signature dishes), "Editor's note" (staff), "User reviews" (visitors: star
+  rating and comment) and "Response from the owner" (one per review).
+- **Roles.** `gr_moderate_highlights` (administrators) approves or rejects;
+  `gr_write_editor_notes` (administrators, editors) writes notes; the
+  **Restaurant owner** role (`gr_restaurant_owner`) writes owner quotes and
+  responses for restaurants linked to it. Link an owner on their user profile
+  (Restaurant IDs this user manages), which sets the restaurant's
+  `gr_claimed_by_user_id`. Owners cannot hide, edit or delete reviews, and
+  nobody moderates reviews of a restaurant they are linked to.
+- **Screens.** Highlights > Moderate (queue, filter by type; reject only by
+  picking a published rule) and Highlights > Write (owner quotes, responses,
+  editor's notes).
+- **Display.** A "Highlights" section is appended to each restaurant page:
+  owner and editor boxes first, then "User reviews". Place it yourself with
+  the block `guam-restaurants/highlights` or
+  `[guam_restaurant_highlights id="" reviews="yes" form="yes" trend="yes"]`;
+  turn the automatic one off with `guam_restaurants_highlights_auto_section`.
+  The reviews part can also be placed alone with `guam-restaurants/visitor-reviews`
+  or `[guam_visitor_reviews]`; it is never shown twice. Do not put either in
+  the same page section as Yelp.
+- **Submitting a review.** Logged-in visitors submit directly. Others give an
+  email address and open a one-time link (valid 24 hours) before the review
+  enters the queue; the address is not stored. Confirmed addresses show a
+  "Verified email" badge, explained as proving nothing more. Honeypot field,
+  3-second minimum fill time, 3 reviews an hour and 1 per restaurant a day per
+  visitor and per email address. Site email must work (use an SMTP plugin),
+  or visitors who are not logged in cannot submit.
+- **Rules.** `Highlights\Policy::rules()` is the only list: spam, profanity,
+  personal attacks, hate speech, personal information, conflicts of interest,
+  fake, off topic, wrong business. `[guam_editorial_policy]` prints them, and
+  the plugin adds it to the page at `/editorial-policy/` (creating the page if
+  missing).
+- **Structured data.** One JSON-LD `Restaurant` node per page: award citations
+  plus `review`/`aggregateRating` from approved user reviews only. Owner
+  quotes, owner responses and editor's notes are never marked up, nor are
+  reviews whose writers disclosed a connection. Filters:
+  `guam_restaurants_review_structured_data`, `guam_restaurants_awards_structured_data`.
 - Behind a proxy or CDN, return the visitor's real IP from the
   `guam_restaurants_review_client_ip` filter so rate limits work.

@@ -40,6 +40,7 @@ final class Activator {
 		}
 
 		Database\Schema::install();
+		Highlights\Roles::install();
 
 		// Register the content model before seeding and flushing rewrite rules.
 		Content_Types::register();
@@ -48,6 +49,7 @@ final class Activator {
 		Awards\Pages::add_rewrite_rules();
 		flush_rewrite_rules();
 		update_option( Awards\Pages::ROUTES_OPTION, Awards\Pages::ROUTES_VERSION );
+		Highlights\Policy_Page::ensure();
 
 		update_option( 'guam_restaurants_core_version', GUAM_RESTAURANTS_CORE_VERSION );
 		add_option( 'guam_restaurants_core_activated_at', time() );

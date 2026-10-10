@@ -1,0 +1,34 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/highlights",
+	"version": "0.1.0",
+	"title": "Highlights",
+	"category": "widgets",
+	"icon": "format-quote",
+	"description": "Approved first-party highlights for a restaurant: the owner's quote and editor's notes, each labeled by who wrote it, and user reviews in their own section.",
+	"keywords": [ "highlights", "owner", "editor", "reviews" ],
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"restaurantId": {
+			"type": "integer",
+			"default": 0
+		},
+		"showReviews": {
+			"type": "boolean",
+			"default": true
+		},
+		"showForm": {
+			"type": "boolean",
+			"default": true
+		},
+		"showTrend": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./editor.js"
+}

@@ -7,9 +7,11 @@
 
 namespace GuamRestaurants\Core\Reviews;
 
-use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Schema;
-use GuamRestaurants\Core\Vocabulary;
+use GuamRestaurants\Core\Highlights\Email_Verification;
+use GuamRestaurants\Core\Highlights\Highlights;
+use GuamRestaurants\Core\Highlights\Policy;
+use GuamRestaurants\Core\Highlights\Roles;
 use WP_Error;
 
 defined( 'ABSPATH' ) || exit;
@@ -19,19 +21,24 @@ defined( 'ABSPATH' ) || exit;
  * (design/content-model.md §5.6), following the review policy in
  * docs/legal-and-policy.md §2.3, §2.4 and §9:
  *
- * - Every review waits for a moderator. Positive and negative reviews are
- *   treated alike: a review is rejected only under a published rule, and
- *   the rule is recorded. Nothing here looks at sentiment.
+ * - Every review waits for an administrator. Positive and negative reviews
+ *   are treated alike: a review is rejected only under a published rule
+ *   (Highlights\Policy::rules()), and the rule is recorded. Nothing here
+ *   looks at sentiment.
+ * - A visitor either is logged in or confirms an email address through a
+ *   one-time link before the review reaches the moderation queue. The
+ *   address is used to send that link and is never stored. A confirmed
+ *   address earns the "Verified email" badge, which claims nothing more.
  * - Reviewers say whether they are connected to the restaurant (16 CFR
  *   465.5); a connected review shows that disclosure next to its text.
+ *   Users linked to the restaurant as owners cannot review it.
  * - Text is stored and shown as written (sanitized for safety only).
- * - Only a display name is collected. The visitor's IP address is used,
- *   hashed, for rate limiting in short-lived transients and never stored
- *   with the review.
+ * - The visitor's IP address and email are used, hashed, for rate limiting
+ *   in short-lived transients and never stored with the review.
  */
 final class Visitor_Reviews {
 
-	public const TYPE = 'user_review';
+	public const TYPE = Policy::USER_REVIEW;
 
 	public const MIN_LENGTH      = 20;
 	public const MAX_LENGTH      = 2000;
@@ -44,7 +51,7 @@ final class Visitor_Reviews {
 	public const MIN_FILL_MS = 3000;
 
 	/**
-	 * Reviews one visitor may submit per hour, across all restaurants.
+	 * Reviews one visitor (or one email address) may submit per hour, across all restaurants.
 	 */
 	public const PER_HOUR = 3;
 
@@ -54,40 +61,37 @@ final class Visitor_Reviews {
 	public const TREND_MONTHS = 24;
 
 	/**
-	 * Published review rules, keyed by Vocabulary::MODERATION_REASONS.
+	 * Published review rules.
 	 *
 	 * @return array<string, string>
 	 */
 	public static function rules(): array {
-		return array(
-			'off_topic'              => __( 'Not about a visit to this restaurant (off topic).', 'guam-restaurants-core' ),
-			'wrong_business'         => __( 'About a different business.', 'guam-restaurants-core' ),
-			'hate_speech'            => __( 'Contains hate speech, threats or harassment.', 'guam-restaurants-core' ),
-			'personal_info'          => __( 'Contains personal information about someone, such as a phone number or home address.', 'guam-restaurants-core' ),
-			'undisclosed_connection' => __( 'Written by someone connected to the restaurant (owner, staff, relative, competitor) without saying so.', 'guam-restaurants-core' ),
-			'fake'                   => __( 'Shows clear signs of being fake, paid for or posted in bulk.', 'guam-restaurants-core' ),
-		);
+		return Policy::rules();
 	}
 
 	/**
-	 * Saves a submitted review as pending.
+	 * Checks a submission and, for a logged-in visitor, saves it as pending.
+	 * A visitor who is not logged in gets an email with a confirmation link
+	 * instead, and the review is saved when the link is opened.
 	 *
 	 * @param int                  $restaurant_id Restaurant.
 	 * @param array<string, mixed> $input {
 	 *     Submitted fields.
-	 *     @type int    $rating      1 to 5.
-	 *     @type string $body        Review text.
-	 *     @type string $author_name Display name.
-	 *     @type bool   $connected   Whether the reviewer is connected to the restaurant.
-	 *     @type string $connection  How, when connected.
-	 *     @type string $website     Honeypot; must be empty.
-	 *     @type int    $elapsed_ms  Time spent on the form.
+	 *     @type int    $rating       1 to 5.
+	 *     @type string $body         Review text.
+	 *     @type string $author_name  Display name (logged-in visitors may leave it empty).
+	 *     @type string $email        Required when not logged in; never stored.
+	 *     @type bool   $verify_email Logged in: also confirm the account email for the badge.
+	 *     @type bool   $connected    Whether the reviewer is connected to the restaurant.
+	 *     @type string $connection   How, when connected.
+	 *     @type string $website      Honeypot; must be empty.
+	 *     @type int    $elapsed_ms   Time spent on the form.
 	 * }
 	 * @param string               $client_key Hashed visitor key for rate limiting.
-	 * @return int|WP_Error Review ID.
+	 * @return array{status: string, id: int}|WP_Error `pending` with the review ID, or `awaiting_email` with ID 0.
 	 */
 	public static function submit( int $restaurant_id, array $input, string $client_key ) {
-		if ( Content_Types::POST_TYPE !== get_post_type( $restaurant_id ) || 'publish' !== get_post_status( $restaurant_id ) ) {
+		if ( ! Highlights::is_published_restaurant( $restaurant_id ) ) {
 			return new WP_Error( 'gr_review_restaurant', __( 'Unknown restaurant.', 'guam-restaurants-core' ), array( 'status' => 404 ) );
 		}
 
@@ -96,11 +100,20 @@ final class Visitor_Reviews {
 			return new WP_Error( 'gr_review_rejected', __( 'Your review could not be sent. Please try again.', 'guam-restaurants-core' ), array( 'status' => 400 ) );
 		}
 
+		$user_id = get_current_user_id();
+		if ( $user_id && Roles::owns( $user_id, $restaurant_id ) ) {
+			return new WP_Error( 'gr_review_owner', __( 'You manage this restaurant, so you cannot review it. You can reply to reviews instead.', 'guam-restaurants-core' ), array( 'status' => 403 ) );
+		}
+
 		$rating = (int) ( $input['rating'] ?? 0 );
 		$body   = trim( sanitize_textarea_field( (string) ( $input['body'] ?? '' ) ) );
 		$name   = trim( sanitize_text_field( (string) ( $input['author_name'] ?? '' ) ) );
 		$linked = filter_var( $input['connected'] ?? false, FILTER_VALIDATE_BOOLEAN );
 		$how    = trim( sanitize_text_field( (string) ( $input['connection'] ?? '' ) ) );
+		$email  = trim( sanitize_email( (string) ( $input['email'] ?? '' ) ) );
+		if ( '' === $name && $user_id ) {
+			$name = trim( (string) wp_get_current_user()->display_name );
+		}
 
 		$errors = new WP_Error();
 		if ( $rating < 1 || $rating > 5 ) {
@@ -117,49 +130,110 @@ final class Visitor_Reviews {
 		if ( $linked && ( '' === $how || mb_strlen( $how ) > self::MAX_DISCLOSURE ) ) {
 			$errors->add( 'gr_review_connection', __( 'Say how you are connected to the restaurant.', 'guam-restaurants-core' ) );
 		}
+		if ( ! $user_id && ! is_email( $email ) ) {
+			$errors->add( 'gr_review_email', __( 'Enter your email address so we can send you a confirmation link, or log in.', 'guam-restaurants-core' ) );
+		}
 		if ( $errors->has_errors() ) {
 			$errors->add_data( array( 'status' => 400 ) );
 			return $errors;
 		}
 
-		$limit = self::check_rate_limit( $restaurant_id, $client_key );
+		$email_key = $user_id ? '' : Email_Verification::email_key( $email );
+		$limit     = self::check_rate_limit( $restaurant_id, $client_key, $email_key );
 		if ( is_wp_error( $limit ) ) {
 			return $limit;
 		}
+		self::record_submission( $restaurant_id, $client_key, $email_key );
 
-		global $wpdb;
-		$row     = array(
+		$row = array(
 			'restaurant_id' => $restaurant_id,
 			'type'          => self::TYPE,
 			'rating'        => $rating,
 			'body'          => $body,
 			'author_name'   => $name,
-			'status'        => 'pending',
-			'created_at'    => current_time( 'mysql', true ),
+			'disclosure'    => $linked ? mb_substr( $how, 0, self::MAX_DISCLOSURE ) : null,
 		);
-		$formats = array( '%d', '%s', '%d', '%s', '%s', '%s', '%s' );
-		if ( $linked ) {
-			$row['disclosure'] = mb_substr( $how, 0, self::MAX_DISCLOSURE );
-			$formats[]         = '%s';
-		}
-		if ( get_current_user_id() ) {
-			$row['author_user_id'] = get_current_user_id();
-			$formats[]             = '%d';
+
+		if ( ! $user_id ) {
+			$token = Email_Verification::create(
+				array(
+					'kind' => 'review',
+					'row'  => $row,
+				)
+			);
+			if ( ! Email_Verification::send( $email, Rest_Controller::confirm_url( $token ), $restaurant_id ) ) {
+				return new WP_Error( 'gr_review_email_failed', __( 'We could not send the confirmation email. Please try again later.', 'guam-restaurants-core' ), array( 'status' => 500 ) );
+			}
+			return array(
+				'status' => 'awaiting_email',
+				'id'     => 0,
+			);
 		}
 
-		if ( ! $wpdb->insert( Schema::table( Schema::HIGHLIGHTS ), $row, $formats ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			return new WP_Error( 'gr_review_save', __( 'Your review could not be saved. Please try again later.', 'guam-restaurants-core' ), array( 'status' => 500 ) );
+		$row['author_user_id'] = $user_id;
+		$id                    = Highlights::insert( $row );
+		if ( is_wp_error( $id ) ) {
+			return $id;
 		}
-		$id = (int) $wpdb->insert_id;
 
-		self::record_submission( $restaurant_id, $client_key );
-		self::notify_moderators( $id, $restaurant_id );
+		if ( filter_var( $input['verify_email'] ?? false, FILTER_VALIDATE_BOOLEAN ) ) {
+			$token = Email_Verification::create(
+				array(
+					'kind' => 'badge',
+					'id'   => $id,
+				)
+			);
+			Email_Verification::send( (string) wp_get_current_user()->user_email, Rest_Controller::confirm_url( $token ), $restaurant_id );
+		}
 
-		return $id;
+		return array(
+			'status' => 'pending',
+			'id'     => $id,
+		);
 	}
 
 	/**
-	 * Approves or rejects a review. A rejection must name a published rule.
+	 * Opens a confirmation link: saves the review as pending (or, for a
+	 * logged-in reviewer, adds the badge) and marks the email as confirmed.
+	 *
+	 * @param string $token Token from the link.
+	 * @return array{id: int, restaurant_id: int}|WP_Error
+	 */
+	public static function confirm( string $token ) {
+		$payload = Email_Verification::take( $token );
+		if ( null === $payload ) {
+			return new WP_Error( 'gr_review_token', __( 'This link has expired or was already used.', 'guam-restaurants-core' ), array( 'status' => 410 ) );
+		}
+
+		if ( 'badge' === ( $payload['kind'] ?? '' ) ) {
+			$review = self::get( (int) ( $payload['id'] ?? 0 ) );
+			if ( null === $review ) {
+				return new WP_Error( 'gr_review_missing', __( 'Review not found.', 'guam-restaurants-core' ), array( 'status' => 404 ) );
+			}
+			Highlights::mark_email_verified( (int) $review['id'] );
+			return array(
+				'id'            => (int) $review['id'],
+				'restaurant_id' => (int) $review['restaurant_id'],
+			);
+		}
+
+		$row = (array) ( $payload['row'] ?? array() );
+		if ( self::TYPE !== ( $row['type'] ?? '' ) || ! Highlights::is_published_restaurant( (int) ( $row['restaurant_id'] ?? 0 ) ) ) {
+			return new WP_Error( 'gr_review_restaurant', __( 'Unknown restaurant.', 'guam-restaurants-core' ), array( 'status' => 404 ) );
+		}
+		$row['email_verified'] = 1;
+		$id                    = Highlights::insert( $row );
+		if ( is_wp_error( $id ) ) {
+			return $id;
+		}
+		return array(
+			'id'            => $id,
+			'restaurant_id' => (int) $row['restaurant_id'],
+		);
+	}
+
+	/**
+	 * Approves or rejects a review (see Highlights::moderate()).
 	 *
 	 * @param int    $review_id Review ID.
 	 * @param string $status    approved or rejected.
@@ -168,35 +242,10 @@ final class Visitor_Reviews {
 	 * @return true|WP_Error
 	 */
 	public static function moderate( int $review_id, string $status, string $reason, int $user_id ) {
-		global $wpdb;
-
-		if ( ! in_array( $status, array( 'approved', 'rejected' ), true ) ) {
-			return new WP_Error( 'gr_review_status', __( 'Unknown status.', 'guam-restaurants-core' ) );
-		}
-		if ( 'rejected' === $status && ! in_array( $reason, Vocabulary::MODERATION_REASONS, true ) ) {
-			return new WP_Error( 'gr_review_reason', __( 'Choose the review rule this review breaks.', 'guam-restaurants-core' ) );
-		}
 		if ( null === self::get( $review_id ) ) {
-			return new WP_Error( 'gr_review_missing', __( 'Review not found.', 'guam-restaurants-core' ) );
+			return new WP_Error( 'gr_review_missing', __( 'Review not found.', 'guam-restaurants-core' ), array( 'status' => 404 ) );
 		}
-
-		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			Schema::table( Schema::HIGHLIGHTS ),
-			array(
-				'status'            => $status,
-				'moderation_reason' => 'rejected' === $status ? $reason : null,
-				'moderated_by'      => $user_id,
-				'moderated_at'      => current_time( 'mysql', true ),
-				'updated_at'        => current_time( 'mysql', true ),
-			),
-			array(
-				'id'   => $review_id,
-				'type' => self::TYPE,
-			),
-			array( '%s', '%s', '%d', '%s', '%s' ),
-			array( '%d', '%s' )
-		);
-		return true;
+		return Highlights::moderate( $review_id, $status, $reason, $user_id );
 	}
 
 	/**
@@ -213,19 +262,20 @@ final class Visitor_Reviews {
 	}
 
 	/**
-	 * Approved reviews, newest first, in the public shape.
+	 * Approved reviews, newest first, in the public shape, each with the
+	 * owner's approved response if there is one.
 	 *
 	 * @param int $restaurant_id Restaurant.
 	 * @param int $per_page      Page size.
 	 * @param int $page          Page, from 1.
-	 * @return array<int, array{id: int, rating: int, text: string, author: string, disclosure: string, date: string}>
+	 * @return array<int, array{id: int, rating: int, text: string, author: string, disclosure: string, date: string, email_verified: bool, response: array{text: string, author: string, date: string}|null}>
 	 */
 	public static function approved( int $restaurant_id, int $per_page = 10, int $page = 1 ): array {
 		global $wpdb;
-		$table = Schema::table( Schema::HIGHLIGHTS );
-		$rows  = $wpdb->get_results( // phpcs:ignore WordPress.DB
+		$table     = Schema::table( Schema::HIGHLIGHTS );
+		$rows      = $wpdb->get_results( // phpcs:ignore WordPress.DB
 			$wpdb->prepare(
-				"SELECT id, rating, body, author_name, disclosure, created_at FROM {$table} WHERE restaurant_id = %d AND type = %s AND status = %s ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT id, rating, body, author_name, disclosure, created_at, email_verified FROM {$table} WHERE restaurant_id = %d AND type = %s AND status = %s ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$restaurant_id,
 				self::TYPE,
 				'approved',
@@ -234,19 +284,27 @@ final class Visitor_Reviews {
 			),
 			ARRAY_A
 		);
+		$responses = Highlights::responses_to( array_map( 'intval', array_column( (array) $rows, 'id' ) ) );
 
 		return array_map(
-			static function ( $row ) {
+			static function ( $row ) use ( $responses ) {
+				$response = $responses[ (int) $row['id'] ] ?? null;
 				return array(
-					'id'         => (int) $row['id'],
-					'rating'     => (int) $row['rating'],
-					'text'       => (string) $row['body'],
-					'author'     => (string) $row['author_name'],
-					'disclosure' => (string) $row['disclosure'],
-					'date'       => mysql2date( 'Y-m-d', $row['created_at'] ),
+					'id'             => (int) $row['id'],
+					'rating'         => (int) $row['rating'],
+					'text'           => (string) $row['body'],
+					'author'         => (string) $row['author_name'],
+					'disclosure'     => (string) $row['disclosure'],
+					'date'           => mysql2date( 'Y-m-d', $row['created_at'] ),
+					'email_verified' => (bool) (int) $row['email_verified'],
+					'response'       => null === $response ? null : array(
+						'text'   => (string) $response['body'],
+						'author' => (string) $response['author_name'],
+						'date'   => mysql2date( 'Y-m-d', (string) ( $response['moderated_at'] ?? $response['created_at'] ) ),
+					),
 				);
 			},
-			$rows
+			(array) $rows
 		);
 	}
 
@@ -315,18 +373,7 @@ final class Visitor_Reviews {
 	 * @return array<int, array<string, mixed>>
 	 */
 	public static function for_moderation( string $status, int $per_page = 50, int $page = 1 ): array {
-		global $wpdb;
-		$table = Schema::table( Schema::HIGHLIGHTS );
-		return $wpdb->get_results( // phpcs:ignore WordPress.DB
-			$wpdb->prepare(
-				"SELECT * FROM {$table} WHERE type = %s AND status = %s ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				self::TYPE,
-				$status,
-				max( 1, $per_page ),
-				max( 0, $page - 1 ) * max( 1, $per_page )
-			),
-			ARRAY_A
-		);
+		return Highlights::for_moderation( $status, self::TYPE, $per_page, $page );
 	}
 
 	/**
@@ -336,9 +383,7 @@ final class Visitor_Reviews {
 	 * @return int
 	 */
 	public static function count( string $status ): int {
-		global $wpdb;
-		$table = Schema::table( Schema::HIGHLIGHTS );
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE type = %s AND status = %s", self::TYPE, $status ) ); // phpcs:ignore WordPress.DB
+		return Highlights::count( $status, self::TYPE );
 	}
 
 	/**
@@ -361,20 +406,23 @@ final class Visitor_Reviews {
 	}
 
 	/**
-	 * Refuses a submission over the hourly limit or a second review of the
-	 * same restaurant within a day.
+	 * Refuses a submission over the hourly limit (per visitor and per email
+	 * address) or a second review of the same restaurant within a day.
 	 *
 	 * @param int    $restaurant_id Restaurant.
 	 * @param string $client_key    Visitor key.
+	 * @param string $email_key     Hashed email, or ''.
 	 * @return true|WP_Error
 	 */
-	private static function check_rate_limit( int $restaurant_id, string $client_key ) {
-		$key = substr( $client_key, 0, 32 );
-		if ( (int) get_transient( 'gr_review_rl_' . $key ) >= self::PER_HOUR ) {
-			return new WP_Error( 'gr_review_rate', __( 'You have sent several reviews recently. Please try again later.', 'guam-restaurants-core' ), array( 'status' => 429 ) );
-		}
-		if ( get_transient( 'gr_review_dup_' . $key . '_' . $restaurant_id ) ) {
-			return new WP_Error( 'gr_review_duplicate', __( 'You have already reviewed this restaurant today.', 'guam-restaurants-core' ), array( 'status' => 429 ) );
+	private static function check_rate_limit( int $restaurant_id, string $client_key, string $email_key ) {
+		foreach ( array_filter( array( $client_key, $email_key ) ) as $full_key ) {
+			$key = substr( $full_key, 0, 32 );
+			if ( (int) get_transient( 'gr_review_rl_' . $key ) >= self::PER_HOUR ) {
+				return new WP_Error( 'gr_review_rate', __( 'You have sent several reviews recently. Please try again later.', 'guam-restaurants-core' ), array( 'status' => 429 ) );
+			}
+			if ( get_transient( 'gr_review_dup_' . $key . '_' . $restaurant_id ) ) {
+				return new WP_Error( 'gr_review_duplicate', __( 'You have already reviewed this restaurant today.', 'guam-restaurants-core' ), array( 'status' => 429 ) );
+			}
 		}
 		return true;
 	}
@@ -384,32 +432,15 @@ final class Visitor_Reviews {
 	 *
 	 * @param int    $restaurant_id Restaurant.
 	 * @param string $client_key    Visitor key.
+	 * @param string $email_key     Hashed email, or ''.
 	 * @return void
 	 */
-	private static function record_submission( int $restaurant_id, string $client_key ): void {
-		$key   = substr( $client_key, 0, 32 );
-		$count = (int) get_transient( 'gr_review_rl_' . $key );
-		set_transient( 'gr_review_rl_' . $key, $count + 1, HOUR_IN_SECONDS );
-		set_transient( 'gr_review_dup_' . $key . '_' . $restaurant_id, 1, DAY_IN_SECONDS );
-	}
-
-	/**
-	 * Emails the site admin that a review is waiting.
-	 *
-	 * @param int $review_id     Review.
-	 * @param int $restaurant_id Restaurant.
-	 * @return void
-	 */
-	private static function notify_moderators( int $review_id, int $restaurant_id ): void {
-		wp_mail(
-			(string) get_option( 'admin_email' ),
-			/* translators: %s: restaurant name. */
-			sprintf( __( 'New visitor review waiting: %s', 'guam-restaurants-core' ), get_the_title( $restaurant_id ) ),
-			sprintf(
-				/* translators: %s: moderation screen URL. */
-				__( "A visitor review is waiting for moderation.\n\nReview it here: %s", 'guam-restaurants-core' ),
-				admin_url( 'edit.php?post_type=' . Content_Types::POST_TYPE . '&page=' . Moderation_Screen::PAGE . '#review-' . $review_id )
-			)
-		);
+	private static function record_submission( int $restaurant_id, string $client_key, string $email_key ): void {
+		foreach ( array_filter( array( $client_key, $email_key ) ) as $full_key ) {
+			$key   = substr( $full_key, 0, 32 );
+			$count = (int) get_transient( 'gr_review_rl_' . $key );
+			set_transient( 'gr_review_rl_' . $key, $count + 1, HOUR_IN_SECONDS );
+			set_transient( 'gr_review_dup_' . $key . '_' . $restaurant_id, 1, DAY_IN_SECONDS );
+		}
 	}
 }

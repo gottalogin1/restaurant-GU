@@ -191,11 +191,13 @@
 		] );
 	}
 
-	function reviewItem( review ) {
+	function reviewItem( review, data ) {
+		var badge = data.badge || {};
 		var children = [
 			el( 'div', { className: 'gr-vr-review__header' }, [
 				stars( review.rating ),
 				el( 'strong', { className: 'gr-vr-review__author', text: review.author } ),
+				review.email_verified ? el( 'span', { className: 'gr-vr-badge', title: badge.explanation, text: badge.label } ) : null,
 				el( 'time', { className: 'gr-vr-review__date', datetime: review.date, text: review.date } ),
 			] ),
 		];
@@ -203,16 +205,27 @@
 			children.push( el( 'p', { className: 'gr-vr-review__disclosure', text: sprintf( __( 'The reviewer says they are connected to this restaurant: %s', 'guam-restaurants-core' ), review.disclosure ) } ) );
 		}
 		children.push( el( 'p', { className: 'gr-vr-review__text', text: review.text } ) );
+		if ( review.response ) {
+			children.push( el( 'div', { className: 'gr-vr-response' }, [
+				el( 'p', { className: 'gr-vr-response__label' }, [
+					el( 'strong', { text: ( data.labels && data.labels.owner_response ) || __( 'Response from the owner', 'guam-restaurants-core' ) } ),
+					el( 'span', { text: ' · ' + review.response.author + ' · ' } ),
+					el( 'time', { datetime: review.response.date, text: review.response.date } ),
+				] ),
+				el( 'p', { className: 'gr-vr-response__text', text: review.response.text } ),
+			] ) );
+		}
 		return el( 'li', { className: 'gr-vr-review' }, children );
 	}
 
-	function rulesList( rules ) {
+	function rulesList( rules, policy ) {
 		return el( 'details', { className: 'gr-vr-rules' }, [
 			el( 'summary', { text: __( 'Our review rules', 'guam-restaurants-core' ) } ),
-			el( 'p', { text: __( 'We publish positive and negative reviews alike. A moderator checks each review first and removes it only if it breaks one of these rules, which apply the same way to every review. We never remove a review because a restaurant or advertiser asks, and we never pay for reviews.', 'guam-restaurants-core' ) } ),
+			el( 'p', { text: __( 'We publish positive and critical reviews alike. An administrator checks each review first and rejects it only if its content breaks one of these rules, which apply the same way whatever the rating. Owners can reply but cannot remove reviews, we never remove a review because a restaurant or advertiser asks, and we never pay for reviews.', 'guam-restaurants-core' ) } ),
 			el( 'ul', {}, rules.map( function ( rule ) {
 				return el( 'li', { text: rule.label } );
 			} ) ),
+			policy ? el( 'p', {}, [ el( 'a', { href: policy, text: __( 'Read our editorial policy', 'guam-restaurants-core' ) } ) ] ) : null,
 		] );
 	}
 
@@ -226,8 +239,10 @@
 		] );
 	}
 
-	function reviewForm( endpoint ) {
+	function reviewForm( endpoint, container ) {
 		var started = Date.now();
+		var nonce = container.getAttribute( 'data-nonce' );
+		var userName = container.getAttribute( 'data-user' ) || '';
 		var message = el( 'p', { className: 'gr-vr-form__message', role: 'status' } );
 
 		var ratingGroup = el( 'fieldset', { className: 'gr-vr-form__rating' }, [ el( 'legend', { text: __( 'Your rating', 'guam-restaurants-core' ) } ) ] );
@@ -239,7 +254,14 @@
 		} );
 
 		var body = el( 'textarea', { name: 'body', rows: '5', minlength: '20', maxlength: '2000', required: true } );
-		var name = el( 'input', { type: 'text', name: 'author_name', maxlength: '60', required: true, autocomplete: 'nickname' } );
+		var name = el( 'input', { type: 'text', name: 'author_name', maxlength: '60', required: ! nonce, autocomplete: 'nickname', value: userName } );
+		var email = el( 'input', { type: 'email', name: 'email', maxlength: '200', required: true, autocomplete: 'email' } );
+		var verify = el( 'input', { type: 'checkbox', name: 'verify_email', value: '1' } );
+		var identity = nonce
+			? el( 'p', { className: 'gr-vr-form__field gr-vr-form__check' }, [
+				el( 'label', {}, [ verify, el( 'span', { text: __( 'Email me a link to confirm my account email and show the "Verified email" badge. It shows only that I confirmed an email address.', 'guam-restaurants-core' ) } ) ] ),
+			] )
+			: field( __( 'Email address', 'guam-restaurants-core' ), email, __( 'We email you a link to confirm your review. We do not show or keep your address. Or log in to skip this step.', 'guam-restaurants-core' ) );
 		var connected = el( 'input', { type: 'checkbox', name: 'connected', value: '1' } );
 		var connection = el( 'input', { type: 'text', name: 'connection', maxlength: '200' } );
 		var connectionField = field( __( 'How are you connected?', 'guam-restaurants-core' ), connection, __( 'For example: I work there, or the owner is my cousin. This is shown with your review.', 'guam-restaurants-core' ) );
@@ -260,6 +282,7 @@
 			ratingGroup,
 			field( __( 'Your review', 'guam-restaurants-core' ), body, __( 'At least 20 characters. Shown as you write it.', 'guam-restaurants-core' ) ),
 			field( __( 'Display name', 'guam-restaurants-core' ), name, __( 'Shown with your review. Please do not use your full name.', 'guam-restaurants-core' ) ),
+			identity,
 			el( 'p', { className: 'gr-vr-form__field gr-vr-form__check' }, [
 				el( 'label', {}, [ connected, el( 'span', { text: __( 'I own, work for, or am related to someone at this restaurant, or I work for a competitor.', 'guam-restaurants-core' ) } ) ] ),
 			] ),
@@ -277,11 +300,13 @@
 			window.fetch( endpoint, {
 				method: 'POST',
 				credentials: 'same-origin',
-				headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+				headers: Object.assign( { 'Content-Type': 'application/json', Accept: 'application/json' }, nonce ? { 'X-WP-Nonce': nonce } : {} ),
 				body: JSON.stringify( {
 					rating: checked ? parseInt( checked.value, 10 ) : 0,
 					body: body.value,
 					author_name: name.value,
+					email: nonce ? '' : email.value,
+					verify_email: nonce ? verify.checked : false,
 					connected: connected.checked,
 					connection: connection.value,
 					website: form.querySelector( 'input[name="website"]' ).value,
@@ -296,6 +321,7 @@
 				.then( function ( result ) {
 					if ( result.ok ) {
 						form.reset();
+						name.value = userName;
 						connectionField.hidden = true;
 						message.textContent = result.data.message;
 					} else {
@@ -330,6 +356,18 @@
 		var endpoint = container.getAttribute( 'data-gr-visitor-reviews' );
 		var status = container.querySelector( '.gr-visitor-reviews__status' );
 
+		// Back from an email confirmation link.
+		var confirmed = /[?&]gr_review=(confirmed|expired)/.exec( window.location.search );
+		if ( confirmed ) {
+			container.insertBefore( el( 'p', {
+				className: 'gr-vr-notice',
+				role: 'status',
+				text: confirmed[ 1 ] === 'confirmed'
+					? __( 'Thanks, your email is confirmed. Your review will appear after an administrator checks it against our rules.', 'guam-restaurants-core' )
+					: __( 'That confirmation link has expired or was already used. Please send your review again.', 'guam-restaurants-core' ),
+			} ), status );
+		}
+
 		load( endpoint, 1 ).then( function ( data ) {
 			status.remove();
 			var summary = data.summary || {};
@@ -348,9 +386,17 @@
 				container.appendChild( trendChart( data.trend, container.clientWidth ) );
 			}
 
-			var list = el( 'ol', { className: 'gr-vr-list' }, ( data.reviews || [] ).map( reviewItem ) );
+			var item = function ( review ) {
+				return reviewItem( review, data );
+			};
+			var list = el( 'ol', { className: 'gr-vr-list' }, ( data.reviews || [] ).map( item ) );
 			if ( data.reviews && data.reviews.length ) {
-				container.appendChild( el( 'p', { className: 'gr-vr-order', text: __( 'Newest first. All approved reviews are shown, positive and negative.', 'guam-restaurants-core' ) } ) );
+				container.appendChild( el( 'p', { className: 'gr-vr-order', text: __( 'Newest first. All approved reviews are shown, positive and critical.', 'guam-restaurants-core' ) } ) );
+				if ( data.badge && data.reviews.some( function ( review ) {
+					return review.email_verified;
+				} ) ) {
+					container.appendChild( el( 'p', { className: 'gr-vr-order', text: data.badge.label + ': ' + data.badge.explanation } ) );
+				}
 				container.appendChild( list );
 			}
 
@@ -361,7 +407,7 @@
 					more.disabled = true;
 					load( endpoint, ++page ).then( function ( next ) {
 						next.reviews.forEach( function ( review ) {
-							list.appendChild( reviewItem( review ) );
+							list.appendChild( item( review ) );
 						} );
 						more.disabled = false;
 						if ( page >= next.pages ) {
@@ -372,9 +418,9 @@
 				container.appendChild( more );
 			}
 
-			container.appendChild( rulesList( data.rules || [] ) );
+			container.appendChild( rulesList( data.rules || [], container.getAttribute( 'data-policy' ) ) );
 			if ( container.getAttribute( 'data-form' ) === '1' ) {
-				container.appendChild( reviewForm( endpoint ) );
+				container.appendChild( reviewForm( endpoint, container ) );
 			}
 		} ).catch( function () {
 			status.textContent = __( 'Reviews could not be loaded.', 'guam-restaurants-core' );

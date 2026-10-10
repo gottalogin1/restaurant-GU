@@ -51,11 +51,11 @@ final class Vocabulary {
 	public const HIGHLIGHT_STATUSES = array( 'pending', 'approved', 'rejected' );
 
 	/**
-	 * Published review rules. A rejected highlight must name one; rules
-	 * apply equally to positive and negative reviews
-	 * (docs/legal-and-policy.md, review policy).
+	 * Published moderation rules (Highlights\Policy::rules()). A rejected
+	 * highlight must name one. They are about content only and apply
+	 * equally to positive and negative reviews (docs/legal-and-policy.md §9).
 	 */
-	public const MODERATION_REASONS = array( 'off_topic', 'wrong_business', 'hate_speech', 'personal_info', 'undisclosed_connection', 'fake' );
+	public const MODERATION_REASONS = array( 'spam', 'profanity', 'personal_attack', 'hate_speech', 'personal_info', 'undisclosed_connection', 'fake', 'off_topic', 'wrong_business' );
 
 	public const REVIEW_QUEUE_TYPES = array( 'new_place', 'match_conflict', 'village_unresolved', 'mall_unresolved', 'closure_signal', 'owner_submission' );
 

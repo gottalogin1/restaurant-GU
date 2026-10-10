@@ -340,10 +340,12 @@ Indexes: `KEY status_type (status, type, created_at)`,
 | + parent_id | BIGINT UNSIGNED NULL | Owner response → the user_review it answers (one per review) |
 | + author_user_id | BIGINT UNSIGNED NULL | Never exposed publicly |
 | + disclosure | VARCHAR(255) NULL | Material connection or insider relationship, shown next to the text |
-| + moderation_reason | VARCHAR(32) NULL | Required when `rejected`; one of the published rule ids (`off_topic, wrong_business, hate_speech, personal_info, undisclosed_connection, fake`) |
+| + moderation_reason | VARCHAR(32) NULL | Required when `rejected`; one of the published rule ids (`spam, profanity, personal_attack, hate_speech, personal_info, undisclosed_connection, fake, off_topic, wrong_business`; content rules only, never sentiment) |
 | + moderated_by, moderated_at | BIGINT UNSIGNED NULL, DATETIME NULL | Audit trail |
 | + updated_at | DATETIME NULL | |
 | + rating | TINYINT UNSIGNED NULL | 1 to 5 stars on `user_review` rows; NULL for other types. Added 2026-10-10 (schema version 2) for visitor reviews and the monthly trend chart |
+| + dishes | TEXT NULL | `owner_quote` only: signature dishes, one per line (up to 5). Schema version 3 |
+| + email_verified | TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 | 1 when the writer opened an emailed confirmation link ("Verified email" badge). The address itself is never stored. Schema version 3 |
 
 Indexes: `KEY restaurant_status_type (restaurant_id, status, type)`,
 `KEY status_created (status, created_at)`, `KEY parent_id (parent_id)`.
