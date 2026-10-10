@@ -19,7 +19,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Rating source commands. Both print a cost estimate first and stop at
- * the GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD hard cap.
+ * the GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD hard cap ($0 by default: free
+ * calls only).
  */
 final class Ratings_Commands {
 
@@ -100,9 +101,8 @@ final class Ratings_Commands {
 		$provider = $providers[ $source ];
 		$budget   = Budget::for_run();
 
-		$ids  = Matcher::pending( $provider, $rematch, max( 0, $limit ) );
-		$cost = Matcher::estimate( $provider, count( $ids ) );
-		self::print_estimate( sprintf( '%d restaurant(s) x 1 %s search at %s', count( $ids ), $source, '$' . $provider->search_cost() ), $cost, $budget );
+		$ids = Matcher::pending( $provider, $rematch, max( 0, $limit ) );
+		self::print_estimate( sprintf( '%d restaurant(s), one %s search each', count( $ids ), $source ), Matcher::estimate( $provider, count( $ids ) ), $budget );
 
 		if ( $estimate || ! $ids ) {
 			return;
@@ -114,12 +114,12 @@ final class Ratings_Commands {
 			WP_CLI::warning( $error );
 		}
 		if ( $result['stopped_at_cap'] ) {
-			WP_CLI::warning( sprintf( 'Stopped at the %s cap. Raise %s or run again later to continue.', Pricing::format( $budget->cap() ), Config::RUN_CAP_USD ) );
+			WP_CLI::warning( sprintf( 'Stopped: the next request would cost money past the %s cap (%s). Run again next month to continue for free.', Pricing::format( $budget->cap() ), Config::RUN_CAP_USD ) );
 		}
 		$counts = $result['counts'];
 		WP_CLI::log(
 			sprintf(
-				'%s: created %d, updated %d, unchanged %d, failed %d. Queued for review %d, no match %d, skipped %d. %d request(s), about %s.%s',
+				'%s: created %d, updated %d, unchanged %d, failed %d. Queued for review %d, no match %d, skipped %d. %d request(s), %s billed.%s',
 				$dry_run ? 'Dry run' : 'Done',
 				$counts['created'],
 				$counts['updated'],
@@ -159,17 +159,25 @@ final class Ratings_Commands {
 		$providers = Ratings::providers();
 		$budget    = Budget::for_run();
 
-		$cost  = 0.0;
-		$parts = array();
+		$estimate_total = array(
+			'calls' => 0,
+			'free'  => 0,
+			'cost'  => 0.0,
+		);
+		$parts          = array();
 		foreach ( Refresher::planned( $providers ) as $source => $count ) {
-			$cost   += $count * $providers[ $source ]->fetch_cost( true );
+			$provider = $providers[ $source ];
+			$one      = Budget::estimate( $provider->fetch_sku( true ), $count * $provider->fetch_calls( true ) );
+			foreach ( $estimate_total as $key => $value ) {
+				$estimate_total[ $key ] = $value + $one[ $key ];
+			}
 			$parts[] = sprintf( '%d %s restaurant(s)', $count, $source );
 		}
 		if ( ! $parts ) {
 			WP_CLI::log( 'No cacheable source is configured (only Yelp may be cached). Nothing to refresh.' );
 			return;
 		}
-		self::print_estimate( implode( ', ', $parts ), $cost, $budget );
+		self::print_estimate( implode( ', ', $parts ), $estimate_total, $budget );
 		if ( $estimate ) {
 			return;
 		}
@@ -187,16 +195,16 @@ final class Ratings_Commands {
 	/**
 	 * Prints the estimate and the cap.
 	 *
-	 * @param string $what   What will be called.
-	 * @param float  $cost   Estimated dollars.
-	 * @param Budget $budget Run budget.
+	 * @param string                                    $what     What will be called.
+	 * @param array{calls: int, free: int, cost: float} $estimate Estimate.
+	 * @param Budget                                    $budget   Run budget.
 	 * @return void
 	 */
-	private static function print_estimate( string $what, float $cost, Budget $budget ): void {
-		WP_CLI::log( sprintf( 'Cost estimate: %s = %s (worst case; free monthly allowances not subtracted).', $what, Pricing::format( $cost ) ) );
-		WP_CLI::log( sprintf( 'Hard cap for this run: %s (%s). The run stops before passing it.', Pricing::format( $budget->cap() ), Config::RUN_CAP_USD ) );
-		if ( $cost > $budget->cap() ) {
-			WP_CLI::warning( 'The estimate is above the cap, so this run will stop part way.' );
+	private static function print_estimate( string $what, array $estimate, Budget $budget ): void {
+		WP_CLI::log( sprintf( 'Cost estimate: %s = %d request(s), %d inside this month\'s free allowance, %s billable.', $what, $estimate['calls'], $estimate['free'], Pricing::format( $estimate['cost'] ) ) );
+		WP_CLI::log( sprintf( 'Hard cap for this run: %s (%s; 0 means free calls only). The run stops before passing it.', Pricing::format( $budget->cap() ), Config::RUN_CAP_USD ) );
+		if ( $estimate['cost'] > $budget->cap() ) {
+			WP_CLI::warning( 'Not all of it fits in the free allowance and the cap, so this run will stop part way. Run it again next month to continue.' );
 		}
 	}
 

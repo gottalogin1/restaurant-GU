@@ -58,8 +58,15 @@ stored permanently; no rating history is kept.
   `match_conflict`.
 - `wp guam-restaurants refresh-ratings [--estimate-only]` refreshes cached
   Yelp ratings now; WP-Cron runs it twice a day.
-- Both print a cost estimate first and stop at `GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD`.
-  Live page-view calls stop for the month at `GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD`.
+- Every API call is counted per billing unit for the month (`Ratings\Budget`)
+  and is free until 90% of the source's free monthly allowance is used
+  (`Ratings\Pricing`). Both caps (`GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD`,
+  `GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD`) default to $0, so by default
+  no paid call is made: matching and `discover` stop, and live ratings hide
+  until next month. Commands print the estimate (free and billable requests)
+  first. Free in practice: Google matching (4,500 searches a month) and about
+  1,800 Google rating views a month (900 with reviews, then 900 without).
+  Foursquare ratings and Yelp have no free tier, so they never show at $0.
 - `GuamRestaurants\Core\get_ratings( $restaurant_id, $args )` returns one
   entry per source (never a combined score). Google and Foursquare are
   fetched live; Yelp comes from a cache of at most 24 hours.

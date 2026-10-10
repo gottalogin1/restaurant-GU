@@ -64,17 +64,25 @@ interface Provider {
 	public function fetch( string $id, bool $with_reviews ): array;
 
 	/**
-	 * Cost of one candidates() call in US dollars.
+	 * Billing unit (Pricing SKU) of one candidates() call.
 	 *
-	 * @return float
+	 * @return string
 	 */
-	public function search_cost(): float;
+	public function search_sku(): string;
 
 	/**
-	 * Cost of one fetch() call in US dollars.
+	 * Billing unit (Pricing SKU) of the requests one fetch() makes.
 	 *
 	 * @param bool $with_reviews Whether reviews are fetched too.
-	 * @return float
+	 * @return string
 	 */
-	public function fetch_cost( bool $with_reviews ): float;
+	public function fetch_sku( bool $with_reviews ): string;
+
+	/**
+	 * Number of requests one fetch() makes.
+	 *
+	 * @param bool $with_reviews Whether reviews are fetched too.
+	 * @return int
+	 */
+	public function fetch_calls( bool $with_reviews ): int;
 }

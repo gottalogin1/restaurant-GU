@@ -85,6 +85,37 @@ class Ratings_Display_Test extends Test_Case {
 	}
 
 	/**
+	 * Removes a paid cap set by a test.
+	 */
+	public function tear_down() {
+		putenv( 'GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Config reads the environment.
+		parent::tear_down();
+	}
+
+	/**
+	 * Allows paid page-view calls (Foursquare ratings have no free tier).
+	 */
+	private function allow_paid_live_calls(): void {
+		putenv( 'GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD=5' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Config reads the environment.
+	}
+
+	/**
+	 * Sets this month's call counts.
+	 *
+	 * @param array<string, int> $calls Calls by SKU.
+	 */
+	private function set_usage( array $calls ): void {
+		update_option(
+			Budget::MONTHLY_OPTION,
+			array(
+				'month' => gmdate( 'Y-m' ),
+				'calls' => $calls,
+				'spend' => array(),
+			)
+		);
+	}
+
+	/**
 	 * Installs fake-backed providers through the providers filter.
 	 *
 	 * @param bool $with_yelp Include Yelp.
@@ -158,6 +189,7 @@ class Ratings_Display_Test extends Test_Case {
 	 * Foursquare keeps its 10-point scale and "Powered by Foursquare".
 	 */
 	public function test_foursquare_scale_and_attribution() {
+		$this->allow_paid_live_calls();
 		$fsq = get_ratings( $this->restaurant, array( 'sources' => 'foursquare' ) )[0];
 
 		$this->assertSame( 8.6, $fsq['rating'] );
@@ -174,6 +206,7 @@ class Ratings_Display_Test extends Test_Case {
 	 * Default sources are side by side, Google then Foursquare, with no combined score.
 	 */
 	public function test_sources_side_by_side_without_combined_score() {
+		$this->allow_paid_live_calls();
 		$ratings = get_ratings( $this->restaurant, array( 'sources' => '' ) );
 
 		$this->assertSame( array( 'google', 'foursquare' ), array_column( $ratings, 'source' ) );
@@ -208,7 +241,7 @@ class Ratings_Display_Test extends Test_Case {
 		$result = Refresher::run( Ratings::providers(), new Budget( 10 ) );
 
 		$this->assertSame( 1, $result['refreshed'] );
-		$this->assertEqualsWithDelta( 2 * Pricing::YELP_CALL, $result['spent'], 1e-9 );
+		$this->assertEqualsWithDelta( 2 * Pricing::price( Pricing::YELP_CALL ), $result['spent'], 1e-9 );
 
 		$timeout = (int) get_option( '_transient_timeout_' . Ratings::transient_key( 'yelp', $this->restaurant ) );
 		$this->assertLessThanOrEqual( time() + DAY_IN_SECONDS, $timeout );
@@ -281,7 +314,7 @@ class Ratings_Display_Test extends Test_Case {
 	 * The refresh stops at the run cap; Google and Foursquare are never refreshed or cached.
 	 */
 	public function test_refresh_cap_and_live_sources_untouched() {
-		$result = Refresher::run( Ratings::providers(), new Budget( Pricing::YELP_CALL ) );
+		$result = Refresher::run( Ratings::providers(), new Budget( 0 ) );
 
 		$this->assertTrue( $result['stopped_at_cap'] );
 		$this->assertSame( array(), $this->api->requests );
@@ -289,14 +322,40 @@ class Ratings_Display_Test extends Test_Case {
 	}
 
 	/**
-	 * Live sources stop at the monthly cap.
+	 * By default only free calls are made: Google within its free allowance,
+	 * Foursquare (no free tier for ratings) not at all.
 	 */
-	public function test_monthly_cap_hides_live_sources() {
-		update_option(
-			Budget::MONTHLY_OPTION,
+	public function test_default_is_free_calls_only() {
+		$ratings = get_ratings( $this->restaurant );
+
+		$this->assertSame( array( 'google' ), array_column( $ratings, 'source' ) );
+		$this->assertSame( array(), $this->api->requests_to( '#foursquare#' ) );
+		$usage = Budget::usage();
+		$this->assertSame( 1, $usage['calls'][ Pricing::GOOGLE_DETAILS_ATMOSPHERE ] );
+		$this->assertSame( 0.0, array_sum( $usage['spend'] ) );
+	}
+
+	/**
+	 * When the free review allowance is used, Google is shown without reviews (cheaper SKU, its own allowance).
+	 */
+	public function test_google_falls_back_to_rating_without_reviews() {
+		$this->set_usage( array( Pricing::GOOGLE_DETAILS_ATMOSPHERE => Pricing::free_per_month( Pricing::GOOGLE_DETAILS_ATMOSPHERE ) ) );
+
+		$google = get_ratings( $this->restaurant, array( 'sources' => 'google' ) )[0];
+
+		$this->assertSame( 4.3, $google['rating'] );
+		$this->assertSame( array(), $google['reviews'] );
+		$this->assertSame( Google_Provider::DETAILS_FIELD_MASK, $this->api->requests[0][1]['headers']['X-Goog-FieldMask'] );
+	}
+
+	/**
+	 * When every free allowance is used, live sources are hidden and no request is made.
+	 */
+	public function test_hidden_when_free_allowance_used() {
+		$this->set_usage(
 			array(
-				'month' => gmdate( 'Y-m' ),
-				'spend' => array( 'google' => 1000.0 ),
+				Pricing::GOOGLE_DETAILS_ATMOSPHERE => Pricing::free_per_month( Pricing::GOOGLE_DETAILS_ATMOSPHERE ),
+				Pricing::GOOGLE_DETAILS_ENTERPRISE => Pricing::free_per_month( Pricing::GOOGLE_DETAILS_ENTERPRISE ),
 			)
 		);
 
@@ -305,20 +364,26 @@ class Ratings_Display_Test extends Test_Case {
 	}
 
 	/**
-	 * Live views are counted against the monthly cap as dollar totals only.
+	 * A paid monthly cap records spend per source and stops at the cap.
 	 */
-	public function test_monthly_spend_is_recorded() {
+	public function test_paid_monthly_cap() {
+		$this->allow_paid_live_calls();
 		get_ratings( $this->restaurant );
 
-		$spend = Budget::monthly_spend();
-		$this->assertEqualsWithDelta( Pricing::GOOGLE_DETAILS_REVIEWS, $spend['google'], 1e-9 );
-		$this->assertEqualsWithDelta( 2 * Pricing::FOURSQUARE_PREMIUM, $spend['foursquare'], 1e-9 );
+		$usage = Budget::usage();
+		$this->assertSame( 0.0, (float) $usage['spend']['google'] );
+		$this->assertEqualsWithDelta( 2 * Pricing::price( Pricing::FOURSQUARE_PREMIUM ), $usage['spend']['foursquare'], 1e-9 );
+
+		$usage['spend']['foursquare'] = 5.0;
+		update_option( Budget::MONTHLY_OPTION, $usage );
+		$this->assertSame( array( 'google' ), array_column( get_ratings( $this->restaurant ), 'source' ) );
 	}
 
 	/**
 	 * A failing source is left out; the others still show.
 	 */
 	public function test_failed_source_is_skipped() {
+		$this->allow_paid_live_calls();
 		$api    = new Fake_Api( array( '#places-api\.foursquare\.com#' => Ratings_Fixtures::foursquare_details() ) );
 		$client = $api->client();
 		remove_all_filters( Ratings::PROVIDERS_FILTER );

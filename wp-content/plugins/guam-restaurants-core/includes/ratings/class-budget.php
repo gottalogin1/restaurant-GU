@@ -1,6 +1,6 @@
 <?php
 /**
- * Spending caps for rating API calls.
+ * Free-allowance tracking and spending caps for rating API calls.
  *
  * @package GuamRestaurants\Core
  */
@@ -12,13 +12,18 @@ use GuamRestaurants\Core\Config;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Tracks spend against a hard cap. A run budget lives for one command or
- * cron run; the monthly budget for live page-view calls is kept in an
- * option as dollar totals per source (no API content).
+ * Counts every API call per SKU for the calendar month (UTC) and prices it:
+ * free while the SKU's free allowance lasts, the SKU's price after that.
+ * A call is refused when its price would pass the cap. Both caps default
+ * to $0, so only free calls are made.
+ *
+ * A run budget lives for one command or cron run; page-view calls use the
+ * monthly cap. The month's counts are kept in one option (numbers only, no
+ * API content).
  */
 final class Budget {
 
-	public const MONTHLY_OPTION = 'guam_restaurants_core_ratings_spend';
+	public const MONTHLY_OPTION = 'guam_restaurants_core_ratings_usage';
 
 	/**
 	 * Cap in dollars.
@@ -37,14 +42,14 @@ final class Budget {
 	/**
 	 * Constructor.
 	 *
-	 * @param float $cap Cap in dollars.
+	 * @param float $cap Cap in dollars; 0 allows free calls only.
 	 */
 	public function __construct( float $cap ) {
 		$this->cap = max( 0.0, $cap );
 	}
 
 	/**
-	 * Run budget from the GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD constant.
+	 * Run budget from GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD (default $0).
 	 *
 	 * @return Budget
 	 */
@@ -53,21 +58,82 @@ final class Budget {
 	}
 
 	/**
-	 * Records a cost if it fits under the cap.
+	 * Records one call if it is free or fits under this run's cap.
 	 *
-	 * @param float $cost Dollars.
-	 * @return bool False when the request must not be made.
+	 * @param string $sku   SKU.
+	 * @param int    $calls Calls (some fetches are two requests).
+	 * @return bool False when the call must not be made.
 	 */
-	public function try_spend( float $cost ): bool {
+	public function try_call( string $sku, int $calls = 1 ): bool {
+		$cost = self::price_of( $sku, $calls );
 		if ( $this->spent + $cost > $this->cap + 1e-9 ) {
 			return false;
 		}
 		$this->spent += $cost;
+		self::record( $sku, $calls, $cost, '' );
 		return true;
 	}
 
 	/**
-	 * Dollars spent.
+	 * Records one page-view call if it is free or fits under the monthly cap
+	 * (GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD, default $0).
+	 *
+	 * @param string $source Source key.
+	 * @param string $sku    SKU.
+	 * @param int    $calls  Calls.
+	 * @return bool False when the call must not be made.
+	 */
+	public static function try_call_monthly( string $source, string $sku, int $calls = 1 ): bool {
+		$cost  = self::price_of( $sku, $calls );
+		$cap   = Config::money( Config::MONTHLY_CAP_USD, Config::DEFAULT_MONTHLY_CAP_USD );
+		$usage = self::usage();
+		if ( array_sum( $usage['spend'] ) + $cost > $cap + 1e-9 ) {
+			return false;
+		}
+		self::record( $sku, $calls, $cost, $source );
+		return true;
+	}
+
+	/**
+	 * Price of the next calls on a SKU, given this month's usage.
+	 *
+	 * @param string $sku   SKU.
+	 * @param int    $calls Calls.
+	 * @return float Dollars; 0 while the free allowance lasts.
+	 */
+	public static function price_of( string $sku, int $calls = 1 ): float {
+		$paid = max( 0, $calls - self::free_left( $sku ) );
+		return $paid * Pricing::price( $sku );
+	}
+
+	/**
+	 * Free calls left this month on a SKU.
+	 *
+	 * @param string $sku SKU.
+	 * @return int
+	 */
+	public static function free_left( string $sku ): int {
+		return max( 0, Pricing::free_per_month( $sku ) - (int) ( self::usage()['calls'][ $sku ] ?? 0 ) );
+	}
+
+	/**
+	 * Worst-case estimate for a number of calls on a SKU.
+	 *
+	 * @param string $sku   SKU.
+	 * @param int    $calls Calls.
+	 * @return array{calls: int, free: int, cost: float}
+	 */
+	public static function estimate( string $sku, int $calls ): array {
+		$free = min( $calls, self::free_left( $sku ) );
+		return array(
+			'calls' => $calls,
+			'free'  => $free,
+			'cost'  => ( $calls - $free ) * Pricing::price( $sku ),
+		);
+	}
+
+	/**
+	 * Dollars spent in this run.
 	 *
 	 * @return float
 	 */
@@ -85,40 +151,42 @@ final class Budget {
 	}
 
 	/**
-	 * Records a live page-view call against this month's cap.
+	 * This month's usage: calls per SKU and page-view spend per source.
 	 *
-	 * @param string $source Source key.
-	 * @param float  $cost   Dollars.
-	 * @return bool False when the monthly cap would be passed.
+	 * @return array{month: string, calls: array<string, int>, spend: array<string, float>}
 	 */
-	public static function try_spend_monthly( string $source, float $cost ): bool {
+	public static function usage(): array {
 		$month = gmdate( 'Y-m' );
 		$data  = get_option( self::MONTHLY_OPTION );
 		if ( ! is_array( $data ) || ( $data['month'] ?? '' ) !== $month ) {
-			$data = array(
+			return array(
 				'month' => $month,
+				'calls' => array(),
 				'spend' => array(),
 			);
 		}
-
-		$cap   = Config::money( Config::MONTHLY_CAP_USD, Config::DEFAULT_MONTHLY_CAP_USD );
-		$total = array_sum( $data['spend'] );
-		if ( $total + $cost > $cap + 1e-9 ) {
-			return false;
-		}
-
-		$data['spend'][ $source ] = (float) ( $data['spend'][ $source ] ?? 0 ) + $cost;
-		update_option( self::MONTHLY_OPTION, $data, false );
-		return true;
+		return array(
+			'month' => $month,
+			'calls' => (array) ( $data['calls'] ?? array() ),
+			'spend' => (array) ( $data['spend'] ?? array() ),
+		);
 	}
 
 	/**
-	 * This month's live spend by source.
+	 * Adds calls (and page-view spend) to this month's usage.
 	 *
-	 * @return array<string, float>
+	 * @param string $sku    SKU.
+	 * @param int    $calls  Calls.
+	 * @param float  $cost   Dollars.
+	 * @param string $source Source for page-view spend, or '' for runs.
+	 * @return void
 	 */
-	public static function monthly_spend(): array {
-		$data = get_option( self::MONTHLY_OPTION );
-		return is_array( $data ) && ( $data['month'] ?? '' ) === gmdate( 'Y-m' ) ? $data['spend'] : array();
+	private static function record( string $sku, int $calls, float $cost, string $source ): void {
+		$usage                  = self::usage();
+		$usage['calls'][ $sku ] = (int) ( $usage['calls'][ $sku ] ?? 0 ) + $calls;
+		if ( '' !== $source ) {
+			$usage['spend'][ $source ] = (float) ( $usage['spend'][ $source ] ?? 0 ) + $cost;
+		}
+		update_option( self::MONTHLY_OPTION, $usage, false );
 	}
 }

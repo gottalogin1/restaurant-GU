@@ -23,14 +23,16 @@ final class Config {
 
 	/**
 	 * Hard cap in US dollars for one matching or refresh run. The run stops
-	 * before the request that would pass it.
+	 * before the request that would pass it. The default, 0, allows only
+	 * calls inside each source's free monthly allowance.
 	 */
 	public const RUN_CAP_USD = 'GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD';
 
 	/**
 	 * Hard cap in US dollars per calendar month (UTC) for ratings fetched
 	 * live while visitors view pages (Google, Foursquare). Past it, those
-	 * sources are hidden until the next month.
+	 * sources are hidden until the next month. The default, 0, allows only
+	 * free calls.
 	 */
 	public const MONTHLY_CAP_USD = 'GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD';
 
@@ -47,8 +49,8 @@ final class Config {
 	public const GOOGLE_MAPS_LOGO_URL = 'GUAM_RESTAURANTS_GOOGLE_MAPS_LOGO_URL';
 	public const FOURSQUARE_LOGO_URL  = 'GUAM_RESTAURANTS_FOURSQUARE_LOGO_URL';
 
-	public const DEFAULT_RUN_CAP_USD     = 5.0;
-	public const DEFAULT_MONTHLY_CAP_USD = 25.0;
+	public const DEFAULT_RUN_CAP_USD     = 0.0;
+	public const DEFAULT_MONTHLY_CAP_USD = 0.0;
 
 	/**
 	 * Returns a setting, or the default when it is unset or empty.

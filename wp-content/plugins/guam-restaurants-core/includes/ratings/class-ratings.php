@@ -16,8 +16,9 @@ defined( 'ABSPATH' ) || exit;
  * Returns each source's current rating for a restaurant, following each
  * source's storage rule (docs/data-sources.md §9):
  *
- * - Google and Foursquare: fetched live, never stored. Counted against the
- *   monthly cap; past it they are left out until the next month.
+ * - Google and Foursquare: fetched live, never stored. Each call is counted
+ *   against the source's free monthly allowance; past it (and the monthly
+ *   cap, $0 by default) they are left out until the next month.
  * - Yelp: read from a transient that the scheduled refresh fills, kept at
  *   most 24 hours. A missing transient schedules a refresh; the visitor's
  *   request never waits for Yelp.
@@ -227,7 +228,10 @@ final class Ratings {
 	}
 
 	/**
-	 * A live rating, or null when the monthly cap is reached or the request fails.
+	 * A live rating, or null when no call is allowed or the request fails.
+	 *
+	 * With reviews, Google bills at a higher SKU with its own free allowance.
+	 * When that call is not allowed, the rating is fetched without reviews.
 	 *
 	 * @param Provider $provider Provider.
 	 * @param string   $id       Source ID.
@@ -235,16 +239,19 @@ final class Ratings {
 	 * @return array<string, mixed>|null
 	 */
 	private static function live( Provider $provider, string $id, bool $reviews ): ?array {
-		if ( ! Budget::try_spend_monthly( $provider->source(), $provider->fetch_cost( $reviews ) ) ) {
-			return null;
+		foreach ( $reviews ? array( true, false ) : array( false ) as $with_reviews ) {
+			if ( ! Budget::try_call_monthly( $provider->source(), $provider->fetch_sku( $with_reviews ), $provider->fetch_calls( $with_reviews ) ) ) {
+				continue;
+			}
+			try {
+				$rating                 = $provider->fetch( $id, $with_reviews );
+				$rating['cached_until'] = 0;
+				return $rating;
+			} catch ( \Throwable $e ) {
+				return null;
+			}
 		}
-		try {
-			$rating                 = $provider->fetch( $id, $reviews );
-			$rating['cached_until'] = 0;
-			return $rating;
-		} catch ( \Throwable $e ) {
-			return null;
-		}
+		return null;
 	}
 
 	/**

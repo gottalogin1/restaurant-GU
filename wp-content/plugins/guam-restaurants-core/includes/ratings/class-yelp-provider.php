@@ -75,22 +75,32 @@ final class Yelp_Provider extends Base_Provider {
 	}
 
 	/**
-	 * Cost of one search in US dollars.
+	 * Billing unit of one search.
 	 *
-	 * @return float
+	 * @return string
 	 */
-	public function search_cost(): float {
+	public function search_sku(): string {
 		return Pricing::YELP_CALL;
 	}
 
 	/**
-	 * Cost of one fetch in US dollars.
+	 * Billing unit of a fetch.
 	 *
 	 * @param bool $with_reviews Whether reviews are fetched too.
-	 * @return float
+	 * @return string
 	 */
-	public function fetch_cost( bool $with_reviews ): float {
-		return Pricing::YELP_CALL * ( $with_reviews ? 2 : 1 );
+	public function fetch_sku( bool $with_reviews ): string {
+		return Pricing::YELP_CALL;
+	}
+
+	/**
+	 * Requests one fetch makes.
+	 *
+	 * @param bool $with_reviews Whether reviews are fetched too.
+	 * @return int
+	 */
+	public function fetch_calls( bool $with_reviews ): int {
+		return $with_reviews ? 2 : 1;
 	}
 
 	/**

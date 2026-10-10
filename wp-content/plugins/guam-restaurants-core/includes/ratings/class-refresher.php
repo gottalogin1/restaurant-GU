@@ -83,7 +83,7 @@ final class Refresher {
 			return;
 		}
 		$provider = $providers[ $source ];
-		if ( ! Budget::try_spend_monthly( $source, $provider->fetch_cost( true ) ) ) {
+		if ( ! Budget::try_call_monthly( $source, $provider->fetch_sku( true ), $provider->fetch_calls( true ) ) ) {
 			return;
 		}
 		try {
@@ -122,7 +122,7 @@ final class Refresher {
 				continue;
 			}
 			foreach ( self::restaurants_with_id( $provider->id_meta_key() ) as $restaurant_id ) {
-				if ( ! $budget->try_spend( $provider->fetch_cost( true ) ) ) {
+				if ( ! $budget->try_call( $provider->fetch_sku( true ), $provider->fetch_calls( true ) ) ) {
 					$result['stopped_at_cap'] = true;
 					break 2;
 				}

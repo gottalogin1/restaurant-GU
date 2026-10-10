@@ -114,7 +114,9 @@ class Ratings_Matcher_Test extends Test_Case {
 		$this->assertSame( Google_Provider::SEARCH_FIELD_MASK, $args['headers']['X-Goog-FieldMask'] );
 		$this->assertSame( 'Test Grill', $body['textQuery'] );
 		$this->assertSame( 150.0, (float) $body['locationBias']['circle']['radius'] );
-		$this->assertEqualsWithDelta( Pricing::GOOGLE_SEARCH, $result['spent'], 1e-9 );
+		// Inside the free allowance: nothing billed, one call counted.
+		$this->assertSame( 0.0, $result['spent'] );
+		$this->assertSame( 1, Budget::usage()['calls'][ Pricing::GOOGLE_TEXT_SEARCH_PRO ] );
 	}
 
 	/**
@@ -179,25 +181,66 @@ class Ratings_Matcher_Test extends Test_Case {
 	}
 
 	/**
-	 * The run stops before the request that would pass the hard cap.
+	 * With the default $0 cap, the run stops when the free allowance runs out.
 	 */
-	public function test_stops_at_cap() {
+	public function test_stops_at_end_of_free_allowance() {
+		$this->set_usage( Pricing::GOOGLE_TEXT_SEARCH_PRO, Pricing::free_per_month( Pricing::GOOGLE_TEXT_SEARCH_PRO ) - 2 );
 		$ids                   = array( $this->restaurant( 'A' ), $this->restaurant( 'B' ), $this->restaurant( 'C' ) );
-		list( $matcher, $api ) = $this->google( array(), Pricing::GOOGLE_SEARCH * 2 );
+		list( $matcher, $api ) = $this->google( array(), 0.0 );
 
 		$result = $matcher->run( $ids );
 
 		$this->assertTrue( $result['stopped_at_cap'] );
 		$this->assertCount( 2, $api->requests );
-		$this->assertSame( 2, $result['requests'] );
+		$this->assertSame( 0.0, $result['spent'] );
 	}
 
 	/**
-	 * The estimate is restaurants times the search price.
+	 * A paid cap allows paid calls up to the cap.
+	 */
+	public function test_paid_cap_allows_paid_calls_up_to_cap() {
+		$this->set_usage( Pricing::GOOGLE_TEXT_SEARCH_PRO, Pricing::free_per_month( Pricing::GOOGLE_TEXT_SEARCH_PRO ) );
+		$ids                   = array( $this->restaurant( 'A' ), $this->restaurant( 'B' ), $this->restaurant( 'C' ) );
+		list( $matcher, $api ) = $this->google( array(), Pricing::price( Pricing::GOOGLE_TEXT_SEARCH_PRO ) * 2 );
+
+		$result = $matcher->run( $ids );
+
+		$this->assertTrue( $result['stopped_at_cap'] );
+		$this->assertCount( 2, $api->requests );
+	}
+
+	/**
+	 * The estimate splits free and billable requests.
 	 */
 	public function test_estimate() {
 		$provider = new Google_Provider( 'k', ( new Fake_Api( array() ) )->client() );
-		$this->assertEqualsWithDelta( 240 * Pricing::GOOGLE_SEARCH, Matcher::estimate( $provider, 240 ), 1e-9 );
+		$this->assertSame(
+			array(
+				'calls' => 240,
+				'free'  => 240,
+				'cost'  => 0.0,
+			),
+			Matcher::estimate( $provider, 240 )
+		);
+
+		$this->set_usage( Pricing::GOOGLE_TEXT_SEARCH_PRO, Pricing::free_per_month( Pricing::GOOGLE_TEXT_SEARCH_PRO ) - 40 );
+		$estimate = Matcher::estimate( $provider, 240 );
+		$this->assertSame( 40, $estimate['free'] );
+		$this->assertEqualsWithDelta( 200 * Pricing::price( Pricing::GOOGLE_TEXT_SEARCH_PRO ), $estimate['cost'], 1e-9 );
+	}
+
+	/**
+	 * Sets this month's call count for a SKU.
+	 */
+	private function set_usage( string $sku, int $calls ): void {
+		update_option(
+			Budget::MONTHLY_OPTION,
+			array(
+				'month' => gmdate( 'Y-m' ),
+				'calls' => array( $sku => $calls ),
+				'spend' => array(),
+			)
+		);
 	}
 
 	/**

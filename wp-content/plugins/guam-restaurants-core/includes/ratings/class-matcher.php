@@ -142,14 +142,15 @@ final class Matcher {
 	}
 
 	/**
-	 * Estimated worst-case cost of matching the given restaurants.
+	 * Estimate for matching the given number of restaurants: one search each,
+	 * free while this month's free allowance lasts.
 	 *
-	 * @param Provider $provider       Provider.
+	 * @param Provider $provider         Provider.
 	 * @param int      $restaurant_count Restaurants.
-	 * @return float Dollars.
+	 * @return array{calls: int, free: int, cost: float}
 	 */
-	public static function estimate( Provider $provider, int $restaurant_count ): float {
-		return $restaurant_count * $provider->search_cost();
+	public static function estimate( Provider $provider, int $restaurant_count ): array {
+		return Budget::estimate( $provider->search_sku(), $restaurant_count );
 	}
 
 	/**
@@ -181,7 +182,7 @@ final class Matcher {
 				continue;
 			}
 
-			if ( ! $this->budget->try_spend( $this->provider->search_cost() ) ) {
+			if ( ! $this->budget->try_call( $this->provider->search_sku() ) ) {
 				$result['stopped_at_cap'] = true;
 				break;
 			}
@@ -210,13 +211,13 @@ final class Matcher {
 				$run_id,
 				$counts,
 				sprintf(
-					'%s match: %d requests, %d queued for review, %d no match, about $%.2f%s',
+					'%s match: %d requests, %d queued for review, %d no match, $%.2f billed%s',
 					$this->provider->source(),
 					$result['requests'],
 					$counts[ self::QUEUED ],
 					$counts[ self::NO_MATCH ],
 					$result['spent'],
-					$result['stopped_at_cap'] ? ', stopped at cap' : ''
+					$result['stopped_at_cap'] ? ', stopped at the cap or the end of the free allowance' : ''
 				)
 			);
 		}

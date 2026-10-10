@@ -534,7 +534,7 @@ permission email in `docs/awards-research.md` §8.
 | Yelp rating, count, excerpts, details | Yelp | **Cached with expiry**, 24 hours max | 24 hours |
 | Foursquare place ID | Foursquare API | **Stored permanently** (performance only) | n/a |
 | Match confidence per source (our own score from name similarity and distance) | First-party | **Stored permanently** | Each match run |
-| Monthly API spend per source (dollar totals only) | First-party | **Stored**, one month | Monthly |
+| Monthly API call counts per billing unit and page-view spend (numbers only) | First-party | **Stored**, current month | Monthly |
 | Google rating, count, reviews, hours, summaries | Google | **Fetched live** per view, never stored | n/a |
 | Foursquare rating, hours, tips, photos | Foursquare API | **Fetched live** per view (pay-as-you-go) | n/a |
 | Map tiles | MapTiler Cloud (Flex); Google Maps Embed on pages with Google content | **Fetched live** | n/a |

@@ -269,4 +269,23 @@ class Discoverer_Test extends Test_Case {
 		$this->assertStringContainsString( 'HTTP 403', $result['errors'][0] );
 		$this->assertSame( '1', $wpdb->get_var( $wpdb->prepare( 'SELECT failed FROM ' . Schema::table( Schema::INGESTION_RUNS ) . ' WHERE id = %d', $result['run_id'] ) ) ); // phpcs:ignore WordPress.DB
 	}
+
+	/**
+	 * Discovery counts its Text Search requests against the free allowance and stops at the end of it.
+	 */
+	public function test_stops_at_end_of_free_allowance() {
+		update_option(
+			\GuamRestaurants\Core\Ratings\Budget::MONTHLY_OPTION,
+			array(
+				'month' => gmdate( 'Y-m' ),
+				'calls' => array( \GuamRestaurants\Core\Ratings\Pricing::GOOGLE_TEXT_SEARCH_PRO => \GuamRestaurants\Core\Ratings\Pricing::free_per_month( \GuamRestaurants\Core\Ratings\Pricing::GOOGLE_TEXT_SEARCH_PRO ) ),
+				'spend' => array(),
+			)
+		);
+
+		$result = $this->discoverer( array() )->run( self::yigo() );
+
+		$this->assertTrue( $result['stopped_at_cap'] );
+		$this->assertSame( array(), $this->sent );
+	}
 }

@@ -153,7 +153,9 @@ final class Import_Commands {
 	 * Stores only each candidate's place ID (Google allows nothing else to
 	 * be kept). Needs the GUAM_RESTAURANTS_GOOGLE_PLACES_KEY constant or
 	 * environment variable. Each request is billed as Text Search Pro: 19
-	 * villages plus the malls, up to 3 pages each.
+	 * villages plus the malls, up to 3 pages each. Requests count against
+	 * the free monthly allowance; with the default $0 run cap it stops
+	 * rather than make a paid request.
 	 *
 	 * ## OPTIONS
 	 *
@@ -210,6 +212,9 @@ final class Import_Commands {
 
 		foreach ( $result['errors'] as $error ) {
 			WP_CLI::warning( $error );
+		}
+		if ( $result['stopped_at_cap'] ) {
+			WP_CLI::warning( 'Stopped: this month\'s free Text Search allowance is used up and GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD allows no paid calls.' );
 		}
 		WP_CLI::log( sprintf( '%d queries, %d requests.', $result['queries'], $result['requests'] ) );
 		WP_CLI::log( sprintf( '%s %d new candidate(s) to the review queue; %d result(s) already listed, queued or permanently closed; %d failed queries.', $dry_run ? 'Would add' : 'Added', $result['counts']['created'], $result['counts']['unchanged'], $result['counts']['failed'] ) );

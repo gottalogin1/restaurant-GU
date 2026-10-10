@@ -65,22 +65,32 @@ final class Google_Provider extends Base_Provider {
 	}
 
 	/**
-	 * Cost of one search in US dollars.
+	 * Billing unit of one search.
 	 *
-	 * @return float
+	 * @return string
 	 */
-	public function search_cost(): float {
-		return Pricing::GOOGLE_SEARCH;
+	public function search_sku(): string {
+		return Pricing::GOOGLE_TEXT_SEARCH_PRO;
 	}
 
 	/**
-	 * Cost of one fetch in US dollars.
+	 * Billing unit of a fetch.
 	 *
 	 * @param bool $with_reviews Whether reviews are fetched too.
-	 * @return float
+	 * @return string
 	 */
-	public function fetch_cost( bool $with_reviews ): float {
-		return $with_reviews ? Pricing::GOOGLE_DETAILS_REVIEWS : Pricing::GOOGLE_DETAILS;
+	public function fetch_sku( bool $with_reviews ): string {
+		return $with_reviews ? Pricing::GOOGLE_DETAILS_ATMOSPHERE : Pricing::GOOGLE_DETAILS_ENTERPRISE;
+	}
+
+	/**
+	 * Requests one fetch makes.
+	 *
+	 * @param bool $with_reviews Whether reviews are fetched too.
+	 * @return int
+	 */
+	public function fetch_calls( bool $with_reviews ): int {
+		return 1;
 	}
 
 	/**
