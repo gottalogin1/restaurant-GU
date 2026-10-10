@@ -269,7 +269,7 @@ published by the plugin with the claim form block). Steps:
    listing. An administrator cannot approve their own claim. The claimant gets
    an email either way; a rejection includes the reason typed.
 
-Claims are stored in the `gr_claims` table (schema version 6).
+Claims are stored in the `gr_claims` table (schema version 7).
 
 **What a claimed owner can change** (My restaurant screen,
 `Owners\Owner_Content`): opening hours (saved with source "owner", so the OSM

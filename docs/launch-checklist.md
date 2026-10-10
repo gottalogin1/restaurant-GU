@@ -19,7 +19,12 @@ Each of these changes what gets installed or paid for, so they come first.
 - [ ] Host: Kinsta single-site, Tokyo data center, about $35/month
       ([hosting.md](hosting.md)). Confirm Tokyo is offered when creating the site.
 - [ ] SEO plugin: Yoast SEO (recommended) or the owned Squirrly GEO plugin. Run only one.
-- [ ] Newsletter: MailPoet or a hosted email service.
+- [x] Newsletter: SendFox on a paid plan (Sanjay, 2026-10-10), so the API
+      creates each weekly draft. Set `GUAM_RESTAURANTS_SENDFOX_TOKEN` on the
+      host; without it, copy the HTML from Restaurants > Newsletter
+      ([seo-and-analytics.md](seo-and-analytics.md), [monetization.md](monetization.md) §8).
+- [ ] Google Business Profile for the site: check eligibility first (a
+      website-only business may not qualify; [seo-and-analytics.md](seo-and-analytics.md) §3).
 - [ ] Sponsored label: "Sponsored" alone or "Sponsored · Ad". Ask counsel
       (question 1 in [legal-and-policy.md](legal-and-policy.md) §8).
 - [ ] Ratings sources at launch: Google only, or also Yelp. Yelp needs written
@@ -65,9 +70,23 @@ Install on staging first and check each against the current WordPress version
       but neither the lead email (to Settings > General > Administration
       Email Address) nor the sender's confirmation goes out.
 - [ ] Akismet on a paid plan, checking reviews and form submissions.
-- [ ] Happyforms: build the correction and contact forms, add each to its
-      draft page, then publish the two pages. (The claim page is published by
-      the plugin with its own claim form; docs/billing.md §5.)
+- [ ] Happyforms: build the contact form, add it to its draft page, then
+      publish it. The claim and correction forms are built into the plugin
+      and their pages are published automatically (docs/billing.md §5).
+- [ ] Matomo for WordPress: install, tick "Disable cookies", set its own
+      tracking code to Disabled, and set the four `GUAM_RESTAURANTS_ANALYTICS*`
+      constants ([seo-and-analytics.md](seo-and-analytics.md) §1).
+- [ ] Privacy policy: mention cookieless Matomo analytics, the per-listing view
+      counts (no visitor data), and what the correction form stores.
+- [ ] Search Console: verify the domain, submit the sitemap, add a second
+      owner ([seo-and-analytics.md](seo-and-analytics.md) §2).
+- [ ] SendFox: set the from name and a from address on the site's domain
+      (`GUAM_RESTAURANTS_NEWSLETTER_FROM_*`), confirm the footer shows the
+      physical mailing address and unsubscribe link (CAN-SPAM), add the
+      SendFox signup form to the site, and set `GUAM_RESTAURANTS_SENDFOX_TOKEN`
+      if on a paid plan.
+- [ ] Review the first newsletter draft on the Monday after launch; drafts are
+      never sent automatically.
 - [ ] Settings > General: turn on "Anyone can register" (default role
       Subscriber) so owners can create an account to claim a listing.
 - [ ] Before the first invoice: answer the DRT and accountant questions in
@@ -116,7 +135,7 @@ full list is in [.env.example](../.env.example).
       tested from the build environment.
 - [ ] Run Lighthouse on the live home, archive, restaurant and map pages.
 - [ ] Check that the footer attributions match the sources actually switched on.
-- [ ] Submit a test review, claim and correction as a logged-out visitor and
-      confirm the emails arrive.
+- [ ] Submit a test review, claim, correction and removal request as a
+      logged-out visitor and confirm the emails arrive.
 - [ ] Run `wp guam-restaurants run-job health-check` and confirm the alert email arrives.
 - [ ] Take a backup before opening the site to the public.

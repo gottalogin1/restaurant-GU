@@ -20,7 +20,10 @@ defined( 'ABSPATH' ) || exit;
  * - marks filtered and sorted listing URLs noindex,follow, so the endless
  *   filter combinations do not compete with the clean village, mall and
  *   cuisine pages;
- * - prints a meta description on directory pages when no SEO plugin does.
+ * - prints a meta description on directory pages when no SEO plugin does;
+ * - gives every village, mall, cuisine and price page its own title and
+ *   description ("Restaurants in Dededo, Guam"), in the page title and in
+ *   Yoast SEO's, unless an editor wrote one for that term in Yoast.
  */
 final class Seo {
 
@@ -35,6 +38,128 @@ final class Seo {
 		add_filter( 'wp_robots', array( self::class, 'robots' ) );
 		add_filter( 'wpseo_robots_array', array( self::class, 'yoast_robots' ) );
 		add_action( 'wp_head', array( self::class, 'meta_description' ), 1 );
+		add_filter( 'document_title_parts', array( self::class, 'title_parts' ) );
+		add_filter( 'wpseo_title', array( self::class, 'yoast_title' ) );
+		add_filter( 'wpseo_opengraph_title', array( self::class, 'yoast_title' ) );
+		add_filter( 'wpseo_metadesc', array( self::class, 'yoast_description' ) );
+		add_filter( 'wpseo_opengraph_desc', array( self::class, 'yoast_description' ) );
+	}
+
+	/**
+	 * The directory term on this page, or null.
+	 *
+	 * @return \WP_Term|null
+	 */
+	private static function current_term(): ?\WP_Term {
+		if ( ! is_tax( array_values( Filters::FACETS ) ) ) {
+			return null;
+		}
+		$term = get_queried_object();
+		return $term instanceof \WP_Term ? $term : null;
+	}
+
+	/**
+	 * Title for a village, mall, cuisine or price page, without the site name.
+	 *
+	 * @param \WP_Term $term Term.
+	 * @return string
+	 */
+	public static function term_title( \WP_Term $term ): string {
+		switch ( $term->taxonomy ) {
+			case Content_Types::TAX_VILLAGE:
+				/* translators: %s: village. */
+				return sprintf( __( 'Restaurants in %s, Guam', 'guam-restaurants-core' ), $term->name );
+			case Content_Types::TAX_MALL:
+				$village = get_term( (int) get_term_meta( $term->term_id, Term_Meta::MALL_VILLAGE, true ), Content_Types::TAX_VILLAGE );
+				return $village instanceof \WP_Term
+					/* translators: 1: mall, 2: village. */
+					? sprintf( __( 'Restaurants at %1$s, %2$s, Guam', 'guam-restaurants-core' ), $term->name, $village->name )
+					/* translators: %s: mall. */
+					: sprintf( __( 'Restaurants at %s, Guam', 'guam-restaurants-core' ), $term->name );
+			case Content_Types::TAX_CUISINE:
+				/* translators: %s: cuisine. */
+				return sprintf( __( '%s Restaurants on Guam', 'guam-restaurants-core' ), $term->name );
+			case Content_Types::TAX_PRICE:
+				/* translators: %s: price level, for example $$. */
+				return sprintf( __( '%s Restaurants on Guam by Price', 'guam-restaurants-core' ), $term->name );
+		}
+		return $term->name;
+	}
+
+	/**
+	 * Description for a term page: the editor's intro, else the generated
+	 * line, which names the count and the top related terms, so each page's
+	 * description is its own.
+	 *
+	 * @param \WP_Term $term Term.
+	 * @return string Plain text.
+	 */
+	public static function term_description( \WP_Term $term ): string {
+		$intro = trim( wp_strip_all_tags( term_description( $term ) ) );
+		if ( '' !== $intro ) {
+			return $intro;
+		}
+		return Intro::default_text( $term ) . ' ' . __( 'See hours, maps, awards and reviews for each.', 'guam-restaurants-core' );
+	}
+
+	/**
+	 * Core page title on term pages.
+	 *
+	 * @param array<string, string> $parts Title parts.
+	 * @return array<string, string>
+	 */
+	public static function title_parts( $parts ): array {
+		$parts = (array) $parts;
+		$term  = self::current_term();
+		if ( null !== $term ) {
+			$parts['title'] = self::term_title( $term );
+		}
+		return $parts;
+	}
+
+	/**
+	 * Whether an editor set this Yoast field for the term.
+	 *
+	 * @param \WP_Term $term  Term.
+	 * @param string   $field `title` or `desc`.
+	 * @return bool
+	 */
+	private static function yoast_term_has( \WP_Term $term, string $field ): bool {
+		if ( ! class_exists( '\WPSEO_Taxonomy_Meta' ) ) {
+			return false;
+		}
+		return '' !== trim( (string) \WPSEO_Taxonomy_Meta::get_term_meta( $term, $term->taxonomy, $field ) );
+	}
+
+	/**
+	 * Yoast title (and Open Graph title) on term pages.
+	 *
+	 * @param string $title Yoast's title.
+	 * @return string
+	 */
+	public static function yoast_title( $title ): string {
+		$term = self::current_term();
+		if ( null === $term || self::yoast_term_has( $term, 'title' ) ) {
+			return (string) $title;
+		}
+		$page = (int) get_query_var( 'paged' );
+		/* translators: %d: page number. */
+		$suffix = $page > 1 ? ' - ' . sprintf( __( 'Page %d', 'guam-restaurants-core' ), $page ) : '';
+		return self::term_title( $term ) . $suffix . ' - ' . wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES );
+	}
+
+	/**
+	 * Yoast description (and Open Graph description) on term pages.
+	 *
+	 * @param string $description Yoast's description.
+	 * @return string
+	 */
+	public static function yoast_description( $description ): string {
+		$term = self::current_term();
+		if ( null === $term || self::yoast_term_has( $term, 'desc' ) ) {
+			return (string) $description;
+		}
+		return wp_trim_words( self::term_description( $term ), 30, '…' );
 	}
 
 	/**
@@ -166,12 +291,9 @@ final class Seo {
 			$text = $parts ? sprintf( __( '%1$s: %2$s, Guam. Hours, map, awards and reviews.', 'guam-restaurants-core' ), get_the_title( $id ), implode( ' in ', $parts ) ) : sprintf( __( '%1$s, Guam. Hours, map, awards and reviews.', 'guam-restaurants-core' ), get_the_title( $id ) );
 			return '' !== $excerpt ? $excerpt : $text;
 		}
-		if ( is_tax( array_values( Filters::FACETS ) ) ) {
-			$term = get_queried_object();
-			if ( $term instanceof \WP_Term ) {
-				$intro = wp_strip_all_tags( term_description( $term ) );
-				return '' !== $intro ? $intro : Intro::default_text( $term );
-			}
+		$term = self::current_term();
+		if ( null !== $term ) {
+			return self::term_description( $term );
 		}
 		if ( is_post_type_archive( Content_Types::POST_TYPE ) ) {
 			return __( 'Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews.', 'guam-restaurants-core' );

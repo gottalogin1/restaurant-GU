@@ -66,6 +66,11 @@ final class Plugin {
 		Advertising\Rest_Controller::register();
 		Advertising\Admin::register();
 		Advertising\Display::register();
+		Corrections\Rest_Controller::register();
+		Corrections\Display::register();
+		Newsletter\Admin::register();
+		Analytics\Listing_Views::register();
+		Analytics\Tracker::register();
 		Ads\Ads::register();
 		Ads\Guard::register();
 		Ads\Tracking::register();
@@ -89,6 +94,7 @@ final class Plugin {
 		Site\Rest_Controller::register();
 		Site\Pages::register();
 		Site\Seo::register();
+		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();
 		Monitoring\Jobs::register();
 		Tagging\Tag_Store::register();

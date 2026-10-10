@@ -144,8 +144,18 @@ issue's own content. It follows CAN-SPAM ([legal-and-policy.md](legal-and-policy
 | 2,000 to 5,000 | $75 to $150 |
 | 5,000 to 10,000 | $150 to $300 |
 
-Price within a band by the list's size and open rate at the time of sale. The
-newsletter platform (MailPoet or a hosted service) is not chosen yet.
+Price within a band by the list's size and open rate at the time of sale.
+
+**Platform: SendFox.** The plugin assembles a draft every Monday morning
+(Guam time) from the week's openings, closures, new award results and most
+viewed listings, with the sponsor block last and labeled "Sponsored"
+(Restaurants > Newsletter; set the sponsor there before Monday). A person
+reviews and sends every issue; nothing is sent automatically. The SendFox
+API, which creates the draft campaign, needs a paid SendFox plan ([API
+requests](https://help.sendfox.com/article/309-creating-api-requests),
+[endpoints](https://help.sendfox.com/article/278-endpoints), checked
+2026-10-10); without it the screen shows the HTML to paste into a new
+campaign. The sponsor never affects which restaurants appear in the issue.
 
 ### 9. Sponsored feature ($200)
 

@@ -1,6 +1,6 @@
 # Third-party plugins
 
-Recommended plugins for SEO, forms, caching, email newsletter and ad management.
+Recommended plugins for SEO, forms, caching, email newsletter, analytics and ad management.
 Checked on 2026-10-09 against each plugin's wordpress.org page and its `readme.txt`
 (`plugins.svn.wordpress.org/<slug>/trunk/readme.txt`). WordPress core at the time: 7.1.3.
 
@@ -17,7 +17,8 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
 | SEO | [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/) (free) | No | GPLv3 | 28.6 | 2026-09-29 | 10+ million |
 | Forms | [Happyforms](https://wordpress.org/plugins/happyforms/) | Yes | GPLv2 or later | 1.26.17 | 2026-10-05 | 20,000+ |
 | Caching | [W3 Total Cache](https://wordpress.org/plugins/w3-total-cache/) | Yes | GPLv2 or later | 2.10.7 | about 2026-10-02 | 900,000+ |
-| Email newsletter | [MailPoet](https://wordpress.org/plugins/mailpoet/) | No | GPLv3 | 5.41.0 | about 2026-10-06 | 500,000+ |
+| Email newsletter | SendFox (hosted service, not a plugin) | No | n/a | n/a | n/a | n/a |
+| Analytics | [Matomo for WordPress](https://wordpress.org/plugins/matomo/) | No | GPLv3 or later | not recorded | checked 2026-10-10 (tested up to WP 7.1) | 100,000+ |
 | Ad management | Built into `guam-restaurants-core` (Advanced Ads not needed) | | | | | |
 | Checkout (premium profiles) | [WooCommerce](https://github.com/woocommerce/woocommerce/releases/tag/11.2.1) + [WooCommerce PayPal Payments](https://wordpress.org/plugins/woocommerce-paypal-payments/) | No (free) | GPLv3 / GPLv2 | 11.2.1 / 4.1.3 | 2026-10-10 checked | |
 | Form spam (supports Forms) | [Akismet](https://wordpress.org/plugins/akismet/) | Yes | GPLv2 or later | 5.7.2 | about 2026-08 | 5+ million |
@@ -75,19 +76,22 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
   is about 450 KB raw and 40 KB gzipped at 1,700 restaurants. The local Docker setup does
   this in `docker/apache/compression.conf`.
 
-## Email newsletter: MailPoet
+## Email newsletter: SendFox (2026-10-10)
 
-- **Why:** Newsletter signup, lists, and sending from inside WordPress, with a block-based
-  email editor; maintained by Automattic/WooCommerce (5.41.0, about 2026-10-06, tested up to
-  7.1.3). Nothing on the owned list does email newsletters (Gravitec is web push).
-- **Cost:** The free version allows up to 1,000 subscribers, shows MailPoet branding, and
-  requires your own sending method (SMTP or an email service). MailPoet's Sending Service is
-  paid above a small subscriber count.
+- **Why:** Chosen in the brief. The plugin builds the weekly issue itself
+  (`includes/newsletter/`) and either creates a SendFox draft campaign through the API
+  or shows HTML to paste. No newsletter plugin is needed. MailPoet was the earlier
+  suggestion and is no longer needed.
+- **Cost:** SendFox's API needs a paid plan; the free plan works with copy and paste.
 - **Compliance:** Follow the CAN-SPAM notes in `docs/legal-and-policy.md` (physical address,
-  unsubscribe link, honest subject lines).
-- **Alternative:** If the owner prefers a hosted email service (Mailchimp, Brevo, etc.), use
-  that service's signup form instead and skip MailPoet. Decide before collecting subscribers,
-  since moving lists later needs re-consent checks.
+  unsubscribe link, honest subject lines). SendFox adds the address and unsubscribe link.
+
+## Analytics: Matomo for WordPress (2026-10-10)
+
+- **Why:** Free, open source, data stays on the site's host, and it can run without cookies.
+  The plugin prints a cookieless tracker from `GUAM_RESTAURANTS_ANALYTICS*` constants, so
+  Matomo's own tracking code is set to Disabled. Setup and alternatives (Umami, Plausible)
+  are in `docs/seo-and-analytics.md`.
 
 ## Ad management: built into the plugin (2026-10-10)
 

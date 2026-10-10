@@ -20,6 +20,8 @@
 		'advertiser-inquiry',
 		'claim-form',
 		'owner-content',
+		'correction-form',
+		'related-links',
 	];
 
 	function number( props, name, label ) {
@@ -126,6 +128,8 @@
 		'advertiser-inquiry',
 		'claim-form',
 		'owner-content',
+		'correction-form',
+		'related-links',
 	];
 
 	names.forEach( function ( name ) {

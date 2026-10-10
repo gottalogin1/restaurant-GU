@@ -10,6 +10,7 @@ cron can run it directly. WP-Cron is the fallback.
 | Yelp status check (off unless enabled, see below) | `wp guam-restaurants run-job yelp-status` | monthly, plus 3 days grace | `45 4 2 * *` |
 | Renewal reminder emails (docs/billing.md §2) | `wp guam-restaurants run-job renewal-reminders` | daily, plus 1 day grace | `30 22 * * *` (08:30 Guam) |
 | Health check | `wp guam-restaurants run-job health-check` | daily | `0 7 * * *` |
+| Newsletter draft (Monday 06:00 Guam time; never sends) | `wp guam-restaurants run-job newsletter` | weekly, plus 1 day grace | `0 20 * * 0` |
 
 `wp guam-restaurants jobs` prints the same table with the last success and
 the next deadline. Restaurants > Import runs shows it in the admin, with every

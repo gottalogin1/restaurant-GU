@@ -96,6 +96,41 @@ final class Config {
 	 */
 	public const CLAIM_PHONE_CODES = 'GUAM_RESTAURANTS_CLAIM_PHONE_CODES';
 
+	/**
+	 * Privacy-respecting analytics (docs/seo-and-analytics.md): `matomo` or
+	 * `umami`; empty (the default) prints no tracker. Both run without
+	 * cookies. SCRIPT_URL is the tracker script (matomo.js or Umami's
+	 * script.js); ENDPOINT is Matomo's tracking endpoint (matomo.php, or
+	 * the REST hit URL of Matomo for WordPress); SITE_ID is Matomo's site ID
+	 * or Umami's website ID.
+	 */
+	public const ANALYTICS            = 'GUAM_RESTAURANTS_ANALYTICS';
+	public const ANALYTICS_SCRIPT_URL = 'GUAM_RESTAURANTS_ANALYTICS_SCRIPT_URL';
+	public const ANALYTICS_ENDPOINT   = 'GUAM_RESTAURANTS_ANALYTICS_ENDPOINT';
+	public const ANALYTICS_SITE_ID    = 'GUAM_RESTAURANTS_ANALYTICS_SITE_ID';
+
+	/**
+	 * SendFox personal access token for creating newsletter drafts. The API
+	 * needs a paid SendFox plan; without a token (or on the free plan) the
+	 * newsletter screen shows HTML to paste instead. LIST_ID is optional: the
+	 * draft is assigned to that list but is never scheduled or sent.
+	 */
+	public const SENDFOX_TOKEN   = 'GUAM_RESTAURANTS_SENDFOX_TOKEN';
+	public const SENDFOX_LIST_ID = 'GUAM_RESTAURANTS_SENDFOX_LIST_ID';
+
+	/**
+	 * Sender of the newsletter. Defaults to the site name and admin email.
+	 */
+	public const NEWSLETTER_FROM_NAME  = 'GUAM_RESTAURANTS_NEWSLETTER_FROM_NAME';
+	public const NEWSLETTER_FROM_EMAIL = 'GUAM_RESTAURANTS_NEWSLETTER_FROM_EMAIL';
+
+	/**
+	 * Links to the site's own profiles (Google Business Profile, Facebook,
+	 * Instagram...), comma-separated, for the Organization structured data
+	 * (`sameAs`).
+	 */
+	public const BRAND_PROFILES = 'GUAM_RESTAURANTS_BRAND_PROFILES';
+
 	public const DEFAULT_CLOSURE_ALERT_THRESHOLD = 5;
 
 	public const DEFAULT_RUN_CAP_USD     = 0.0;

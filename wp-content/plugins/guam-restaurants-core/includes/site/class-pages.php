@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Advertising\Page_Content;
+use GuamRestaurants\Core\Corrections\Display as Correction_Display;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,9 +20,10 @@ defined( 'ABSPATH' ) || exit;
  * - claim: published, with the claim form block (Claims\Claim_Form). A
  *   claim page still holding the old editor placeholder is upgraded and
  *   published once (VERSION 3).
- * - correction, contact: drafts. Each needs a form (Happyforms, per
- *   docs/plugins.md) added in the editor; links to them appear on
- *   restaurant pages only once they are published.
+ * - contact: a draft. It needs a form added in the editor; links to it
+ *   appear on restaurant pages only once it is published.
+ * - correction: published, with the plugin's correction form and our
+ *   published response times (Corrections\Display).
  * - terms: a draft for the terms of use, to be written with counsel
  *   (docs/legal-and-policy.md §7). The footer links to it once published.
  * - advertise and media kit: published. The advertise page holds the
@@ -89,8 +91,9 @@ final class Pages {
 			'correction' => array(
 				'slug'    => 'suggest-a-correction',
 				'title'   => __( 'Suggest a correction', 'guam-restaurants-core' ),
-				'status'  => 'draft',
-				'content' => '<!-- wp:guam-restaurants/listing-context /-->' . "\n\n" . $p( __( 'Spotted wrong hours, a new phone number or a closure? Tell us what changed and, if you can, where you saw it.', 'guam-restaurants-core' ) ) . "\n\n" . $p( __( '[Editor: add the correction form here, then publish this page.]', 'guam-restaurants-core' ) ),
+				'status'  => 'publish',
+				'content' => array( Correction_Display::class, 'page_content' ),
+				'excerpt' => __( 'Report a wrong fact on a restaurant listing, or ask as the owner to change or remove it. We reply within 7 to 14 days.', 'guam-restaurants-core' ),
 			),
 			'contact'    => array(
 				'slug'    => 'contact-the-owner',

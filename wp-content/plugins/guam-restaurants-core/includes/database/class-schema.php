@@ -20,7 +20,7 @@ final class Schema {
 	/**
 	 * Bump when a table definition changes so upgrades run dbDelta() again.
 	 */
-	public const VERSION = '6';
+	public const VERSION = '7';
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
@@ -33,6 +33,7 @@ final class Schema {
 	public const OPEN_HOURS     = 'gr_open_hours';
 	public const CLAIMS         = 'gr_claims';
 	public const LISTING_STATS  = 'gr_listing_daily_stats';
+	public const LISTING_VIEWS  = 'gr_listing_views';
 
 	/**
 	 * Tables with a restaurant_id column, cleaned up when a restaurant is deleted.
@@ -45,6 +46,7 @@ final class Schema {
 		self::OPEN_HOURS,
 		self::CLAIMS,
 		self::LISTING_STATS,
+		self::LISTING_VIEWS,
 	);
 
 	/**
@@ -121,6 +123,7 @@ final class Schema {
 		$open_hours     = self::table( self::OPEN_HOURS );
 		$claims         = self::table( self::CLAIMS );
 		$listing_stats  = self::table( self::LISTING_STATS );
+		$listing_views  = self::table( self::LISTING_VIEWS );
 
 		return array(
 			self::AWARDS         => "CREATE TABLE $awards (
@@ -262,6 +265,15 @@ final class Schema {
   views int(10) unsigned NOT NULL DEFAULT 0,
   website_clicks int(10) unsigned NOT NULL DEFAULT 0,
   phone_clicks int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY  (restaurant_id,stat_date),
+  KEY stat_date (stat_date)
+) $charset;",
+
+			// Page views per restaurant per day (Guam date). Counts only: no IP, cookie, user or User-Agent.
+			self::LISTING_VIEWS  => "CREATE TABLE $listing_views (
+  restaurant_id bigint(20) unsigned NOT NULL,
+  stat_date date NOT NULL,
+  views int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY  (restaurant_id,stat_date),
   KEY stat_date (stat_date)
 ) $charset;",
