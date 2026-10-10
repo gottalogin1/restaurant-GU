@@ -14,6 +14,7 @@ use GuamRestaurants\Core\Awards\Policy as Awards_Policy;
 use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Highlights\Policy_Page;
+use GuamRestaurants\Core\Legal\Pages as Legal_Pages;
 use GuamRestaurants\Core\Monitoring\Queries;
 use GuamRestaurants\Core\Owners\Listing_Stats;
 use GuamRestaurants\Core\Restaurant_Meta;
@@ -641,6 +642,8 @@ final class Blocks {
 			__( 'Editorial policy', 'guam-restaurants-core' ) => $policy instanceof \WP_Post && 'publish' === $policy->post_status ? (string) get_permalink( $policy ) : '',
 			__( 'Privacy policy', 'guam-restaurants-core' ) => (string) get_privacy_policy_url(),
 			__( 'Terms of use', 'guam-restaurants-core' ) => Pages::url( 'terms' ),
+			__( 'Advertising disclosure', 'guam-restaurants-core' ) => Legal_Pages::url( 'disclosure' ),
+			__( 'Data sources', 'guam-restaurants-core' ) => Legal_Pages::url( 'sources' ),
 			__( 'Advertise with us', 'guam-restaurants-core' ) => Pages::url( 'advertise' ),
 		);
 		$items  = '';

@@ -35,9 +35,12 @@ Each of these changes what gets installed or paid for, so they come first.
 The Google and Yelp terms questions are already cleared. These remain for a
 Guam-licensed attorney ([legal-and-policy.md](legal-and-policy.md) §7 to §9).
 
-- [ ] Privacy policy: write it with counsel, include a line about review data,
-      and publish it from Settings > Privacy.
-- [ ] Terms of use: write with counsel and publish the "Terms of use" draft page.
+- [ ] Privacy policy: the draft is filled in on activation
+      ([legal-pages.md](legal-pages.md)); counsel fills the bracketed parts
+      (owner, contact, host, email service, retention), then publish it from
+      Settings > Privacy.
+- [ ] Terms of use: counsel fills the bracketed parts (refunds, DMCA agent,
+      liability, disputes), then publish the "Terms of use" draft page.
 - [ ] Editorial policy: have counsel review the wording at /editorial-policy/
       ([editorial-policy.md](editorial-policy.md)), add the statement,
       corrections and sponsored-feature sections to the page, and link it from
@@ -113,6 +116,34 @@ full list is in [.env.example](../.env.example).
       with `GUAM_RESTAURANTS_CRON_MODE=server`.
 - [ ] Confirm the host gzips JSON. The map data is about 450 KB without it and
       40 KB with it.
+
+## Production readiness ([deployment.md](deployment.md))
+
+- [ ] `wp-config.php` constants from [deployment.md](deployment.md) §2 on staging
+      and production; `deploy/staging.env` and `deploy/production.env` on the
+      machine that deploys.
+- [ ] Two Factor plugin installed, every administrator enrolled with backup codes,
+      then `GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA` on ([security.md](security.md) §4).
+- [ ] LoginPress Pro license and its Limit Login Attempts add-on, tested on
+      staging with WordPress 7.1; or MalCare's login CAPTCHA.
+- [ ] MalCare free connected (firewall, malware scan alerts).
+- [ ] Rename or remove any user called `admin`.
+- [ ] Server headers and the `xmlrpc.php` block at the host or CDN
+      ([security.md](security.md) §3); `expose_php = Off`.
+- [ ] Cloudflare (or the host CDN): cache rules, POST rate limit on
+      `/wp-json/guam-restaurants/v1/`, then
+      `GUAM_RESTAURANTS_CLIENT_IP_HEADER` ([performance.md](performance.md) §5,
+      [security.md](security.md) §5).
+- [ ] Page cache exclusions ([performance.md](performance.md) §2) and ShortPixel
+      API key and settings (§3).
+- [ ] Off-site backups: B2 bucket, rclone crypt remote, `~/.guam-backup.env`,
+      Healthchecks.io ping, crontab; first restore test into staging, logged in
+      [backups.md](backups.md) §4.
+- [ ] Uptime monitor on the health endpoint and the home page
+      ([monitoring.md](monitoring.md) §1); Google Cloud budget alert.
+- [ ] `wp guam-restaurants preflight --strict` passes on production.
+- [ ] After a clean week: `GUAM_RESTAURANTS_HSTS` on, then
+      `GUAM_RESTAURANTS_CSP=enforce`.
 
 ## Content and data
 

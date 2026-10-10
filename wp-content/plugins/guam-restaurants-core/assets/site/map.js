@@ -1,5 +1,5 @@
 /**
- * Maps with MapLibre GL JS. The library (about 800 KB) is loaded only when
+ * Maps with MapLibre GL JS. The library (about 1 MB plus its worker) is loaded only when
  * a map is about to be seen: on restaurant pages when the map scrolls into
  * view, on the map page straight away.
  *
@@ -15,27 +15,18 @@
 	};
 	var loading = null;
 
+	// MapLibre 6 ships only as an ES module; it starts its worker from the
+	// file next to it (maplibre-gl-worker.mjs). The server must send .mjs
+	// files as JavaScript (docs/deployment.md).
 	function loadLibrary() {
-		if ( window.maplibregl ) {
-			return Promise.resolve( window.maplibregl );
-		}
 		if ( loading ) {
 			return loading;
 		}
-		loading = new Promise( function ( resolve, reject ) {
-			var css = document.createElement( 'link' );
-			css.rel = 'stylesheet';
-			css.href = settings.library.css;
-			document.head.appendChild( css );
-			var script = document.createElement( 'script' );
-			script.src = settings.library.js;
-			script.async = true;
-			script.onload = function () {
-				resolve( window.maplibregl );
-			};
-			script.onerror = reject;
-			document.head.appendChild( script );
-		} );
+		var css = document.createElement( 'link' );
+		css.rel = 'stylesheet';
+		css.href = settings.library.css;
+		document.head.appendChild( css );
+		loading = import( settings.library.js );
 		return loading;
 	}
 

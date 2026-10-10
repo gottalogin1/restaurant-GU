@@ -49,6 +49,11 @@ final class Plugin {
 		// Boot runs on plugins_loaded, so tables are upgraded before anything uses them.
 		Database\Schema::maybe_upgrade();
 		Highlights\Roles::maybe_install();
+		add_action( 'admin_notices', array( Database\Schema::class, 'admin_notice' ) );
+
+		Security\Headers::register();
+		Security\Hardening::register();
+		Security\Two_Factor_Policy::register();
 
 		Village_Aliases::register();
 		Mall_Verification::register();
@@ -97,6 +102,8 @@ final class Plugin {
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();
 		Monitoring\Jobs::register();
+		Monitoring\Health_Endpoint::register();
+		Legal\Pages::register();
 		Tagging\Tag_Store::register();
 		Admin\Ingestion_Runs_Screen::register();
 		Admin\Review_Queue_Screen::register();
@@ -110,6 +117,7 @@ final class Plugin {
 			Cli\Monitoring_Commands::register();
 			Cli\Site_Commands::register();
 			Cli\Premium_Commands::register();
+			Cli\Operations_Commands::register();
 		}
 	}
 

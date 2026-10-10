@@ -51,6 +51,7 @@ final class Jobs {
 	public const HEALTH_CHECK    = 'health-check';
 	public const RENEWALS        = 'renewal-reminders';
 	public const NEWSLETTER      = 'newsletter';
+	public const SPEND_REPORT    = 'spend-report';
 	public const MODE_SERVER     = 'server';
 	public const MODE_WP_CRON    = 'wp-cron';
 	public const HEALTH_MIN_HOUR = 20;
@@ -109,6 +110,14 @@ final class Jobs {
 				'grace'      => DAY_IN_SECONDS,
 				'recurrence' => 'weekly',
 				'cron'       => '0 20 * * 0',
+			),
+			self::SPEND_REPORT  => array(
+				'label'      => 'Monthly API spend report',
+				'source'     => 'spend_report',
+				'interval'   => 31 * DAY_IN_SECONDS,
+				'grace'      => 3 * DAY_IN_SECONDS,
+				'recurrence' => self::MONTHLY,
+				'cron'       => '0 22 1 * *',
 			),
 		);
 	}
@@ -239,6 +248,9 @@ final class Jobs {
 				case self::RENEWALS:
 					$outcome = self::run_renewals( $options );
 					break;
+				case self::SPEND_REPORT:
+					$outcome = self::outcome( true, null, Spend_Report::run(), '' );
+					break;
 				case self::NEWSLETTER:
 					$draft   = Newsletter::assemble( $options );
 					$outcome = self::outcome( true, null, Newsletter::summary( $draft ), '', $draft );
@@ -247,7 +259,9 @@ final class Jobs {
 					$outcome = self::outcome( true, null, Health_Check::run(), '' );
 			}
 		} catch ( \Throwable $e ) {
-			$run_id  = in_array( $job, array( self::HEALTH_CHECK, self::RENEWALS ), true ) ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage() );
+			$run_id = in_array( $job, array( self::HEALTH_CHECK, self::RENEWALS, self::SPEND_REPORT ), true ) ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage() );
+			// Also to the PHP error log, which the host's log monitoring reads (docs/monitoring.md §2).
+			error_log( sprintf( '[guam-restaurants] job %s failed: %s', $job, $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intended production log line.
 			$outcome = self::outcome( false, $run_id ? $run_id : null, '', $e->getMessage() );
 		}
 

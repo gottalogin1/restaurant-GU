@@ -131,7 +131,58 @@ final class Config {
 	 */
 	public const BRAND_PROFILES = 'GUAM_RESTAURANTS_BRAND_PROFILES';
 
+	/**
+	 * Security headers sent by the plugin (docs/security.md §3). On unless
+	 * set to 0, for servers or CDNs that already send them.
+	 */
+	public const SECURITY_HEADERS = 'GUAM_RESTAURANTS_SECURITY_HEADERS';
+
+	/**
+	 * Strict-Transport-Security. Off until HTTPS works on every host name
+	 * the site answers on; 1 sends a one-year max-age without preload.
+	 */
+	public const HSTS = 'GUAM_RESTAURANTS_HSTS';
+
+	/**
+	 * Content-Security-Policy on public pages: `report-only` (default),
+	 * `enforce` once the browser console shows no violations, or `off`.
+	 */
+	public const CSP = 'GUAM_RESTAURANTS_CSP';
+
+	/**
+	 * $_SERVER key holding the visitor's address behind a CDN or proxy, for
+	 * example HTTP_CF_CONNECTING_IP. Only set it when the origin accepts
+	 * traffic from that CDN alone; otherwise anyone can fake the header.
+	 */
+	public const CLIENT_IP_HEADER = 'GUAM_RESTAURANTS_CLIENT_IP_HEADER';
+
+	/**
+	 * 1 sends administrators to their profile until they turn on two-factor
+	 * sign-in (needs the Two Factor plugin).
+	 */
+	public const REQUIRE_ADMIN_2FA = 'GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA';
+
+	/**
+	 * Largest upload in megabytes for everyone (default 10). The server's
+	 * own upload_max_filesize still applies when it is lower.
+	 */
+	public const MAX_UPLOAD_MB = 'GUAM_RESTAURANTS_MAX_UPLOAD_MB';
+
+	/**
+	 * 1 keeps XML-RPC on (off by default; nothing on this site uses it).
+	 */
+	public const ALLOW_XMLRPC = 'GUAM_RESTAURANTS_ALLOW_XMLRPC';
+
+	/**
+	 * `auto` (default) upgrades custom tables on the first request after a
+	 * deploy; `cli` leaves it to `wp guam-restaurants db upgrade`, which
+	 * the deploy script runs (docs/deployment.md).
+	 */
+	public const DB_UPGRADE = 'GUAM_RESTAURANTS_DB_UPGRADE';
+
 	public const DEFAULT_CLOSURE_ALERT_THRESHOLD = 5;
+
+	public const DEFAULT_MAX_UPLOAD_MB = 10;
 
 	public const DEFAULT_RUN_CAP_USD     = 0.0;
 	public const DEFAULT_MONTHLY_CAP_USD = 0.0;

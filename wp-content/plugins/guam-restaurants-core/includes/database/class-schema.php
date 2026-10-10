@@ -24,6 +24,10 @@ final class Schema {
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
+	public const LOCK_OPTION = 'guam_restaurants_core_db_upgrade_lock';
+
+	public const LOCK_TTL = 600;
+
 	public const AWARDS         = 'gr_awards';
 	public const CHANGE_LOG     = 'gr_change_log';
 	public const INGESTION_RUNS = 'gr_ingestion_runs';
@@ -81,9 +85,68 @@ final class Schema {
 	 * @return void
 	 */
 	public static function maybe_upgrade(): void {
-		if ( get_option( self::VERSION_OPTION ) !== self::VERSION ) {
-			self::install();
+		if ( self::is_current() ) {
+			return;
 		}
+		// With GUAM_RESTAURANTS_DB_UPGRADE=cli only WP-CLI upgrades (the deploy script runs it).
+		if ( 'cli' === strtolower( \GuamRestaurants\Core\Config::get( \GuamRestaurants\Core\Config::DB_UPGRADE ) ) && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			return;
+		}
+		self::upgrade();
+	}
+
+	/**
+	 * Whether the stored schema version matches this code.
+	 *
+	 * @return bool
+	 */
+	public static function is_current(): bool {
+		return get_option( self::VERSION_OPTION ) === self::VERSION;
+	}
+
+	/**
+	 * Runs install() under a lock, so the first requests after a deploy do
+	 * not all run dbDelta() at once. A lock older than LOCK_TTL is treated
+	 * as left over from a crashed run.
+	 *
+	 * @return bool False when another upgrade holds the lock.
+	 */
+	public static function upgrade(): bool {
+		if ( ! add_option( self::LOCK_OPTION, time(), '', false ) ) {
+			if ( time() - (int) get_option( self::LOCK_OPTION ) < self::LOCK_TTL ) {
+				return false;
+			}
+			update_option( self::LOCK_OPTION, time(), false );
+		}
+		try {
+			self::install();
+		} finally {
+			delete_option( self::LOCK_OPTION );
+		}
+		return true;
+	}
+
+	/**
+	 * Warns administrators when the tables are older than the code
+	 * (GUAM_RESTAURANTS_DB_UPGRADE=cli and the upgrade has not run).
+	 *
+	 * @return void
+	 */
+	public static function admin_notice(): void {
+		if ( self::is_current() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-error"><p>%s</p></div>',
+			esc_html(
+				sprintf(
+					/* translators: 1: stored version, 2: code version. */
+					__( 'Guam Restaurants database tables are at version %1$s but the plugin needs %2$s. Run: wp guam-restaurants db upgrade', 'guam-restaurants-core' ),
+					(string) get_option( self::VERSION_OPTION, '0' ),
+					self::VERSION
+				)
+			)
+		);
 	}
 
 	/**

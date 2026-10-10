@@ -26,6 +26,14 @@ final class Budget {
 	public const MONTHLY_OPTION = 'guam_restaurants_core_ratings_usage';
 
 	/**
+	 * Earlier months' usage, kept for the monthly spend report
+	 * (Monitoring\Spend_Report): month => calls and spend. Numbers only.
+	 */
+	public const HISTORY_OPTION = 'guam_restaurants_core_ratings_usage_history';
+
+	public const HISTORY_MONTHS = 24;
+
+	/**
 	 * Cap in dollars.
 	 *
 	 * @var float
@@ -182,11 +190,55 @@ final class Budget {
 	 * @return void
 	 */
 	private static function record( string $sku, int $calls, float $cost, string $source ): void {
+		self::archive_previous_month();
 		$usage                  = self::usage();
 		$usage['calls'][ $sku ] = (int) ( $usage['calls'][ $sku ] ?? 0 ) + $calls;
 		if ( '' !== $source ) {
 			$usage['spend'][ $source ] = (float) ( $usage['spend'][ $source ] ?? 0 ) + $cost;
 		}
 		update_option( self::MONTHLY_OPTION, $usage, false );
+	}
+
+	/**
+	 * Moves a finished month's counts into the history option before the
+	 * monthly counts start again. Safe to call any time.
+	 *
+	 * @return void
+	 */
+	public static function archive_previous_month(): void {
+		$data = get_option( self::MONTHLY_OPTION );
+		if ( ! is_array( $data ) || empty( $data['month'] ) || gmdate( 'Y-m' ) === $data['month'] ) {
+			return;
+		}
+		$history                            = (array) get_option( self::HISTORY_OPTION, array() );
+		$history[ (string) $data['month'] ] = array(
+			'calls' => (array) ( $data['calls'] ?? array() ),
+			'spend' => (array) ( $data['spend'] ?? array() ),
+		);
+		krsort( $history );
+		update_option( self::HISTORY_OPTION, array_slice( $history, 0, self::HISTORY_MONTHS, true ), false );
+		delete_option( self::MONTHLY_OPTION );
+	}
+
+	/**
+	 * Usage for any month (YYYY-MM): this month's live counts, or the
+	 * archived counts of an earlier month (empty when none were recorded).
+	 *
+	 * @param string $month Month.
+	 * @return array{month: string, calls: array<string, int>, spend: array<string, float>}
+	 */
+	public static function usage_for( string $month ): array {
+		if ( gmdate( 'Y-m' ) === $month ) {
+			return self::usage();
+		}
+		$data = get_option( self::MONTHLY_OPTION );
+		if ( ! is_array( $data ) || ( $data['month'] ?? '' ) !== $month ) {
+			$data = ( (array) get_option( self::HISTORY_OPTION, array() ) )[ $month ] ?? array();
+		}
+		return array(
+			'month' => $month,
+			'calls' => array_map( 'intval', (array) ( $data['calls'] ?? array() ) ),
+			'spend' => array_map( 'floatval', (array) ( $data['spend'] ?? array() ) ),
+		);
 	}
 }
