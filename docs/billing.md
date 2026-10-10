@@ -143,12 +143,19 @@ checked 2026-10-10), and WooPayments runs on Stripe.
 
 Premium profiles are **prepaid time** on one listing: 1 month ($39, 30 days) or
 12 months ($390, 365 days), from [monetization.md](monetization.md) §2. There
-is **no automatic renewal**, because that needs the WooCommerce Subscriptions
-extension ($279/year, not zero-spend). Instead the owner gets reminder emails
+is **no automatic renewal yet**. Until then, the owner gets reminder emails
 14 and 3 days before the end (the same daily `renewal-reminders` job as ads)
-with a link to buy more time; new time starts the day after the current end
-date, so nothing paid for is lost. Auto-renewal can be added later with
-Subscriptions; PayPal Payments' readme says it works with it.
+with a link to buy more time. New time starts the day after the current end
+date, so nothing paid for is lost.
+
+**Planned (Sanjay, 2026-10-10): WPXPO WowSubscriptions** for automatic
+renewal, once WPXPO releases it. It needs WooCommerce, which Sanjay is
+installing. Nothing is built for it yet because its documentation is not out.
+When it ships, check how it records a renewal payment. If each renewal is a
+WooCommerce order that reaches processing or completed with the same product
+line, the existing paid-order hook adds the days with no change; otherwise add
+a small hook for its renewal event. Reminders should then skip listings with
+an active subscription. WooCommerce Subscriptions ($279/year) is not needed.
 
 1. **Products.** `wp guam-restaurants premium-products` creates the two
    products (virtual, one per order, hidden from the shop and search). It is
@@ -194,9 +201,9 @@ Nothing here goes in the repository; no keys or account details are committed.
    2026-10-10, GPLv2). Go to WooCommerce > Settings > Payments > PayPal and
    connect Sanjay's PayPal account (log in to PayPal when the plugin asks).
    Its readme says a business or personal account works, with no monthly or
-   setup fee; PayPal's per-payment fees apply. Its readme does not list Guam;
-   connecting the account is the test. If PayPal refuses, keep manual invoicing
-   (section 2) and tell Claude.
+   setup fee; PayPal's per-payment fees apply. Its readme does not list
+   countries, but Sanjay confirmed PayPal works for Guam (2026-10-10). No
+   Stripe.
    The WPXPO docs checked for section 1 did not show a payment gateway of
    their own; if a WPXPO plugin offers a PayPal setting, the PayPal Payments
    connection is still the one WooCommerce checkout uses.
@@ -305,7 +312,8 @@ planned for `/ads/events` to `/listing/events` too.
 - Sanjay: the wp-admin setup in section 4 (WooCommerce, PayPal Payments,
   WowInvoice prefix `GRW-`, Site visibility Live), then one test purchase and
   refund.
-- Automatic renewal: needs WooCommerce Subscriptions ($279/year). Not bought.
+- Automatic renewal: WPXPO WowSubscriptions when it is released; then check
+  its renewal orders against the paid-order hook (section 4).
 - Sanjay with DRT and an accountant: section 3, before the first invoice.
 - Premium profile contents are now: call-to-action button, 20 photos instead
   of 8, no rival restaurants' ads on the page (section 4). Menu links stay free

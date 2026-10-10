@@ -33,8 +33,8 @@ defined( 'ABSPATH' ) || exit;
  * - Owners keep their wp-admin dashboard: WooCommerce otherwise sends
  *   users without edit_posts to My Account.
  *
- * There is no automatic renewal (that needs the paid WooCommerce
- * Subscriptions extension; docs/billing.md §4). Owners renew by buying
+ * There is no automatic renewal yet; WPXPO WowSubscriptions is planned
+ * for it once released (docs/billing.md §4). Owners renew by buying
  * again, and time already paid for is kept (Premium::extend).
  */
 final class Woo_Checkout {

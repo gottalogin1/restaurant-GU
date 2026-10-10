@@ -135,4 +135,4 @@ should stay inactive.
 - **Versions checked:** WooCommerce 11.2.1 (GitHub release; requires WordPress 7.0 and PHP
   7.4), pinned for local development in the `Makefile`. PayPal Payments 4.1.3 (readme on
   plugins.svn.wordpress.org; requires WooCommerce 9.6, tested up to WordPress 7.1).
-- **Not used:** WooCommerce Subscriptions ($279/year) until automatic renewal is worth paying for.
+- **Automatic renewal:** WPXPO WowSubscriptions (owned suite) once WPXPO releases it; WooCommerce Subscriptions ($279/year) is not needed.
