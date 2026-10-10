@@ -3,32 +3,51 @@
 	"version": 3,
 	"settings": {
 		"appearanceTools": true,
+		"useRootPaddingAwareAlignments": true,
 		"layout": {
-			"contentSize": "720px",
+			"contentSize": "760px",
 			"wideSize": "1200px"
 		},
 		"color": {
 			"defaultPalette": false,
+			"defaultGradients": false,
 			"palette": [
 				{ "slug": "base", "name": "Base", "color": "#ffffff" },
 				{ "slug": "contrast", "name": "Contrast", "color": "#1b1b1b" },
 				{ "slug": "primary", "name": "Primary", "color": "#0b6e8a" },
-				{ "slug": "accent", "name": "Accent", "color": "#e2725b" },
-				{ "slug": "muted", "name": "Muted", "color": "#f4f1ec" }
+				{ "slug": "accent", "name": "Accent", "color": "#b5462f" },
+				{ "slug": "secondary", "name": "Secondary text", "color": "#4a4a4a" },
+				{ "slug": "muted", "name": "Muted", "color": "#f4f1ec" },
+				{ "slug": "border", "name": "Border", "color": "#c9c3b8" }
 			]
 		},
 		"typography": {
 			"fluid": true,
+			"defaultFontSizes": false,
 			"fontFamilies": [
 				{
 					"slug": "system",
 					"name": "System",
 					"fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
 				}
+			],
+			"fontSizes": [
+				{ "slug": "small", "name": "Small", "size": "0.875rem", "fluid": false },
+				{ "slug": "medium", "name": "Medium", "size": "1rem", "fluid": false },
+				{ "slug": "large", "name": "Large", "size": "1.375rem", "fluid": { "min": "1.25rem", "max": "1.5rem" } },
+				{ "slug": "x-large", "name": "Extra large", "size": "2rem", "fluid": { "min": "1.625rem", "max": "2.25rem" } },
+				{ "slug": "xx-large", "name": "Huge", "size": "2.75rem", "fluid": { "min": "2rem", "max": "3rem" } }
 			]
 		},
 		"spacing": {
-			"units": [ "px", "rem", "%", "vw" ]
+			"units": [ "px", "rem", "%", "vw" ],
+			"spacingSizes": [
+				{ "slug": "20", "name": "Small", "size": "0.5rem" },
+				{ "slug": "30", "name": "Medium small", "size": "1rem" },
+				{ "slug": "40", "name": "Medium", "size": "1.5rem" },
+				{ "slug": "50", "name": "Large", "size": "2.5rem" },
+				{ "slug": "60", "name": "Extra large", "size": "4rem" }
+			]
 		}
 	},
 	"styles": {
@@ -36,16 +55,55 @@
 			"background": "var(--wp--preset--color--base)",
 			"text": "var(--wp--preset--color--contrast)"
 		},
+		"spacing": {
+			"padding": {
+				"left": "1rem",
+				"right": "1rem"
+			},
+			"blockGap": "1.25rem"
+		},
 		"typography": {
 			"fontFamily": "var(--wp--preset--font-family--system)",
+			"fontSize": "var(--wp--preset--font-size--medium)",
 			"lineHeight": "1.6"
 		},
 		"elements": {
 			"link": {
-				"color": { "text": "var(--wp--preset--color--primary)" }
+				"color": { "text": "var(--wp--preset--color--primary)" },
+				"typography": { "textDecoration": "underline" },
+				":hover": { "typography": { "textDecoration": "none" } }
+			},
+			"heading": {
+				"typography": { "lineHeight": "1.25", "fontWeight": "700" }
+			},
+			"h1": { "typography": { "fontSize": "var(--wp--preset--font-size--x-large)" } },
+			"h2": { "typography": { "fontSize": "var(--wp--preset--font-size--large)" } },
+			"h3": { "typography": { "fontSize": "1.125rem" } },
+			"button": {
+				"color": {
+					"background": "var(--wp--preset--color--primary)",
+					"text": "var(--wp--preset--color--base)"
+				},
+				"border": { "radius": "0.5rem" },
+				"spacing": { "padding": { "top": "0.6rem", "bottom": "0.6rem", "left": "1.1rem", "right": "1.1rem" } },
+				"typography": { "fontWeight": "600" },
+				":hover": {
+					"color": { "background": "var(--wp--preset--color--contrast)" }
+				}
+			}
+		},
+		"blocks": {
+			"core/site-title": {
+				"typography": { "fontSize": "1.25rem", "fontWeight": "700" },
+				"elements": { "link": { "typography": { "textDecoration": "none" }, "color": { "text": "var(--wp--preset--color--contrast)" } } }
+			},
+			"core/navigation": {
+				"typography": { "fontSize": "1rem", "fontWeight": "600" },
+				"elements": { "link": { "typography": { "textDecoration": "none" }, "color": { "text": "var(--wp--preset--color--contrast)" } } }
 			}
 		}
 	},
+	"customTemplates": [],
 	"templateParts": [
 		{ "name": "header", "title": "Header", "area": "header" },
 		{ "name": "footer", "title": "Footer", "area": "footer" }

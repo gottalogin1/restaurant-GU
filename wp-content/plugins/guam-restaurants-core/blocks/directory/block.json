@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/directory",
+	"version": "0.1.0",
+	"title": "Restaurant directory",
+	"category": "widgets",
+	"icon": "list-view",
+	"description": "Filter form and results for the restaurant archive and the village, mall, cuisine and price pages. Reads its filters from the page URL.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

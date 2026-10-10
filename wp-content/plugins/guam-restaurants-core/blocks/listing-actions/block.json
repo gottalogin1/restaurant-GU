@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/listing-actions",
+	"version": "0.1.0",
+	"title": "Listing links",
+	"category": "widgets",
+	"icon": "admin-links",
+	"description": "Links to claim the listing, suggest a correction and contact the owner. Each shows once its page is published.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/map-explorer",
+	"version": "0.1.0",
+	"title": "Restaurant map with filters",
+	"category": "widgets",
+	"icon": "location-alt",
+	"description": "All restaurants on a clustered map, with the directory filters and a link to the same results as a list.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/restaurant-map",
+	"version": "0.1.0",
+	"title": "Restaurant map",
+	"category": "widgets",
+	"icon": "location",
+	"description": "A map of the restaurant: OpenStreetMap-based, or a Google map on pages that can show Google ratings.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

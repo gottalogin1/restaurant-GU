@@ -1,8 +1,23 @@
-<!-- wp:group {"tagName":"footer","backgroundColor":"muted","style":{"spacing":{"padding":{"top":"2rem","bottom":"2rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<footer class="wp-block-group has-muted-background-color has-background" style="padding-top:2rem;padding-bottom:2rem">
-	<!-- wp:site-tagline /-->
-	<!-- wp:paragraph -->
-	<p><a href="/editorial-policy/">Editorial policy</a></p>
-	<!-- /wp:paragraph -->
-</footer>
+<!-- wp:group {"tagName":"div","backgroundColor":"muted","style":{"spacing":{"padding":{"top":"2.5rem","bottom":"2.5rem"},"margin":{"top":"4rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group has-muted-background-color has-background" style="margin-top:4rem;padding-top:2.5rem;padding-bottom:2.5rem">
+	<!-- wp:columns -->
+	<div class="wp-block-columns">
+		<!-- wp:column {"width":"40%"} -->
+		<div class="wp-block-column" style="flex-basis:40%">
+			<!-- wp:site-title {"level":0} /-->
+			<!-- wp:site-tagline /-->
+			<!-- wp:guam-restaurants/policy-links /-->
+		</div>
+		<!-- /wp:column -->
+		<!-- wp:column {"width":"60%"} -->
+		<div class="wp-block-column" style="flex-basis:60%">
+			<!-- wp:heading {"level":2,"style":{"typography":{"fontSize":"1rem"}}} -->
+			<h2 class="wp-block-heading" style="font-size:1rem">Data sources</h2>
+			<!-- /wp:heading -->
+			<!-- wp:guam-restaurants/data-attributions /-->
+		</div>
+		<!-- /wp:column -->
+	</div>
+	<!-- /wp:columns -->
+</div>
 <!-- /wp:group -->

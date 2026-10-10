@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/sponsored-slot",
+	"version": "0.1.0",
+	"title": "Sponsored slot",
+	"category": "widgets",
+	"icon": "megaphone",
+	"description": "An ad placement from the ad plugin, labeled Sponsored. Prints nothing when there is no ad.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"placement": {
+			"type": "string",
+			"default": "home"
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/data-attributions",
+	"version": "0.1.0",
+	"title": "Data attributions",
+	"category": "widgets",
+	"icon": "info-outline",
+	"description": "Credits required by the data and map sources.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}
