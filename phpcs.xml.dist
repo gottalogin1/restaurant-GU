@@ -49,6 +49,10 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound">
 		<exclude-pattern>*/tests/*</exclude-pattern>
 	</rule>
+	<!-- Block asset files must be named <script>.asset.php for register_block_type(). -->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>*/blocks/*/*.asset.php</exclude-pattern>
+	</rule>
 	<rule ref="Squiz.Commenting.FunctionComment.MissingParamTag">
 		<exclude-pattern>*/tests/*</exclude-pattern>
 	</rule>

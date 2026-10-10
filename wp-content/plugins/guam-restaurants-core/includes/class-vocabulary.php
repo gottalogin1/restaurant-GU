@@ -33,11 +33,12 @@ final class Vocabulary {
 	public const FACT_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census' );
 
 	/**
-	 * Sources that may add review queue items and ingestion runs. Google
-	 * is allowed here only because discovery stores nothing from Google but
-	 * the place ID, which may be kept indefinitely (docs/data-sources.md §2).
+	 * Sources that may add review queue items and ingestion runs. Google,
+	 * Yelp and Foursquare are allowed here only because their items hold
+	 * nothing from the source but its ID, which each source lets us keep
+	 * (docs/data-sources.md §2 to §4).
 	 */
-	public const REVIEW_QUEUE_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census', 'google' );
+	public const REVIEW_QUEUE_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census', 'google', 'yelp', 'foursquare' );
 
 	public const HOURS_SOURCES = array( 'osm', 'owner', 'manual' );
 

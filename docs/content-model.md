@@ -273,6 +273,10 @@ table.
 So at launch no third-party ratings are shown at all, and no provider
 class is built until a source is approved.
 
+*Update 2026-10-10:* Google and Yelp were cleared by the attorney, and the
+providers are built (`includes/ratings/`): Google and Foursquare live per
+view, Yelp in this transient for at most 24 hours. Still no table.
+
 ### 5.3 `grc_change_log`
 
 | Column | Type | Notes |

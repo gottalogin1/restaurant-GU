@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/ratings",
+	"version": "0.1.0",
+	"title": "Restaurant ratings",
+	"category": "widgets",
+	"icon": "star-filled",
+	"description": "Shows each source's current rating side by side, with the source's logo, attribution and link. Ratings load in the browser, so page caches never hold them.",
+	"keywords": [ "rating", "reviews", "google", "yelp", "foursquare" ],
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"restaurantId": {
+			"type": "integer",
+			"default": 0
+		},
+		"sources": {
+			"type": "string",
+			"default": ""
+		},
+		"showReviews": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./editor.js"
+}

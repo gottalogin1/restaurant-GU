@@ -1,0 +1,114 @@
+/* Ratings: one section per source, side by side. */
+.gr-ratings__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+	gap: 1rem;
+}
+
+.gr-ratings__source {
+	border: 1px solid currentcolor;
+	border-color: rgb(0 0 0 / 15%);
+	border-radius: 0.5rem;
+	padding: 1rem;
+}
+
+.gr-ratings__brand {
+	display: inline-block;
+	margin-bottom: 0.5rem;
+	text-decoration: none;
+}
+
+/* Google Maps logo: 16 to 19 px tall (Places policies). */
+.gr-ratings__source--google .gr-ratings__logo {
+	height: 18px;
+	width: auto;
+}
+
+.gr-ratings__logo {
+	height: 24px;
+	width: auto;
+}
+
+.gr-ratings__attribution {
+	font-weight: 600;
+}
+
+.gr-ratings__summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	text-decoration: none;
+}
+
+.gr-ratings__stars {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.gr-stars {
+	--gr-stars-fill: 0%;
+	display: inline-block;
+	font-size: 1.1em;
+	line-height: 1;
+	background: linear-gradient(90deg, #f5a623 var(--gr-stars-fill), #ccc var(--gr-stars-fill));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.gr-stars::before {
+	content: "★★★★★";
+}
+
+.gr-ratings__score {
+	font-weight: 700;
+	font-size: 1.25em;
+}
+
+.gr-ratings__stars-image {
+	height: 20px;
+	width: auto;
+}
+
+.gr-ratings__providers,
+.gr-ratings__notice,
+.gr-review__time,
+.gr-review__footer {
+	font-size: 0.85em;
+	opacity: 0.8;
+}
+
+.gr-ratings__reviews {
+	list-style: none;
+	margin: 1rem 0 0;
+	padding: 0;
+}
+
+.gr-review + .gr-review {
+	border-top: 1px solid rgb(0 0 0 / 10%);
+	margin-top: 0.75rem;
+	padding-top: 0.75rem;
+}
+
+.gr-review__header,
+.gr-review__footer {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.gr-review__avatar {
+	border-radius: 50%;
+}
+
+.gr-review__stars-image {
+	height: 16px;
+	width: auto;
+}
+
+/* Review text as returned, line breaks kept. */
+.gr-review__text {
+	white-space: pre-line;
+}

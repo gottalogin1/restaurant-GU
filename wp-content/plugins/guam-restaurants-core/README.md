@@ -46,3 +46,34 @@ failed counts and record each run in `gr_ingestion_runs` (CLAUDE.md rule 9).
   only the place ID. Never creates posts. Needs
   `GUAM_RESTAURANTS_GOOGLE_PLACES_KEY` (wp-config.php constant or
   environment variable).
+
+## Ratings
+
+Rules come from `docs/data-sources.md` §7 and §9. Only each source's ID is
+stored permanently; no rating history is kept.
+
+- `wp guam-restaurants match-ratings --source=<google|yelp|foursquare> [--limit=<n>] [--rematch] [--dry-run] [--estimate-only] [--delay=<seconds>]`
+  matches restaurants by name and distance (150 m). Clear matches store the
+  ID and `gr_<source>_match_confidence`; others go to the review queue as
+  `match_conflict`.
+- `wp guam-restaurants refresh-ratings [--estimate-only]` refreshes cached
+  Yelp ratings now; WP-Cron runs it twice a day.
+- Every API call is counted per billing unit for the month (`Ratings\Budget`)
+  and is free until 90% of the source's free monthly allowance is used
+  (`Ratings\Pricing`). Both caps (`GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD`,
+  `GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD`) default to $0, so by default
+  no paid call is made: matching and `discover` stop, and live ratings hide
+  until next month. Commands print the estimate (free and billable requests)
+  first. Free in practice: Google matching (4,500 searches a month) and about
+  1,800 Google rating views a month (900 with reviews, then 900 without).
+  Foursquare ratings and Yelp have no free tier, so they never show at $0.
+- `GuamRestaurants\Core\get_ratings( $restaurant_id, $args )` returns one
+  entry per source (never a combined score). Google and Foursquare are
+  fetched live; Yelp comes from a cache of at most 24 hours.
+- Block `guam-restaurants/ratings` and shortcode
+  `[guam_restaurant_ratings id="" sources="google,foursquare" reviews="yes"]`
+  print a placeholder filled in the browser from
+  `GET /wp-json/guam-restaurants/v1/restaurants/{id}/ratings`, so page caches
+  never store ratings. Yelp is shown only on its own (`sources="yelp"`), in a
+  page section with no other ratings or visitor content. Pages that show
+  Google ratings must use a Google map (Maps Embed), not MapTiler.

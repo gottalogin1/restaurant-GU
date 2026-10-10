@@ -13,6 +13,8 @@ use GuamRestaurants\Core\Database\Review_Queue;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Names;
+use GuamRestaurants\Core\Ratings\Budget;
+use GuamRestaurants\Core\Ratings\Pricing;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Seed_Data;
 use GuamRestaurants\Core\Term_Meta;
@@ -72,18 +74,28 @@ final class Discoverer {
 	private int $max_pages;
 
 	/**
+	 * Run budget: each request is a Text Search Pro call, free within the
+	 * monthly allowance.
+	 *
+	 * @var Budget
+	 */
+	private Budget $budget;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Places_Client $client    Client.
 	 * @param int           $delay     Seconds between requests.
 	 * @param int           $max_pages Pages per query, 1 to 3.
 	 * @param callable|null $sleeper   Defaults to sleep().
+	 * @param Budget|null   $budget    Defaults to the run cap ($0: free calls only).
 	 */
-	public function __construct( Places_Client $client, int $delay = 1, int $max_pages = 3, ?callable $sleeper = null ) {
+	public function __construct( Places_Client $client, int $delay = 1, int $max_pages = 3, ?callable $sleeper = null, ?Budget $budget = null ) {
 		$this->client    = $client;
 		$this->delay     = max( 0, $delay );
 		$this->max_pages = max( 1, min( 3, $max_pages ) );
 		$this->sleeper   = $sleeper ?? 'sleep';
+		$this->budget    = $budget ?? Budget::for_run();
 	}
 
 	/**
@@ -133,7 +145,7 @@ final class Discoverer {
 	 *
 	 * @param array<int, array{kind: string, slug: string, name: string, village: string}> $areas   Areas to search.
 	 * @param bool                                                                         $dry_run Report without writing.
-	 * @return array{counts: array<string, int>, queries: int, requests: int, errors: string[], run_id: int|null}
+	 * @return array{counts: array<string, int>, queries: int, requests: int, errors: string[], run_id: int|null, stopped_at_cap: bool}
 	 */
 	public function run( array $areas, bool $dry_run = false ): array {
 		$listing   = self::listing();
@@ -141,11 +153,12 @@ final class Discoverer {
 		$known_ids = array_fill_keys( $known_ids, true );
 
 		$result = array(
-			'counts'   => array_fill_keys( array( self::CREATED, 'updated', self::UNCHANGED, self::FAILED ), 0 ),
-			'queries'  => 0,
-			'requests' => 0,
-			'errors'   => array(),
-			'run_id'   => null,
+			'counts'         => array_fill_keys( array( self::CREATED, 'updated', self::UNCHANGED, self::FAILED ), 0 ),
+			'queries'        => 0,
+			'requests'       => 0,
+			'errors'         => array(),
+			'run_id'         => null,
+			'stopped_at_cap' => false,
 		);
 
 		$run_id           = $dry_run ? 0 : Ingestion_Runs::start( 'google' );
@@ -158,6 +171,10 @@ final class Discoverer {
 			$token = '';
 
 			for ( $page = 0; $page < $this->max_pages; $page++ ) {
+				if ( ! $this->budget->try_call( Pricing::GOOGLE_TEXT_SEARCH_PRO ) ) {
+					$result['stopped_at_cap'] = true;
+					break 2;
+				}
 				if ( $result['requests'] > 0 && $this->delay > 0 ) {
 					call_user_func( $this->sleeper, $this->delay );
 				}

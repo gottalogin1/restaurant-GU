@@ -17,6 +17,8 @@ use WP_UnitTestCase;
  *
  * The custom tables are created once in the bootstrap, as real tables, so
  * tests never run CREATE TABLE (which would commit the test transaction).
+ *
+ * Every real HTTP request is blocked: API tests use Fake_Api transports.
  */
 abstract class Test_Case extends WP_UnitTestCase {
 
@@ -27,5 +29,15 @@ abstract class Test_Case extends WP_UnitTestCase {
 		parent::set_up();
 		Restaurant_Meta::register();
 		Term_Meta::register();
+		add_filter( 'pre_http_request', array( $this, 'block_http' ), 1 );
+	}
+
+	/**
+	 * Fails any request that reaches WordPress's HTTP API.
+	 *
+	 * @return \WP_Error
+	 */
+	public function block_http(): \WP_Error {
+		return new \WP_Error( 'http_blocked', 'Tests never call live APIs.' );
 	}
 }
