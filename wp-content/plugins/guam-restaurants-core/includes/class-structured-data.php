@@ -10,11 +10,13 @@ namespace GuamRestaurants\Core;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Combines the award citations (Awards\Display) and first-party user
- * reviews (Highlights\Display) into a single JSON-LD Restaurant node, so
- * search engines never see two descriptions of the same restaurant.
+ * Combines our facts (Site\Business_Data: address, hours, cuisine...), the
+ * award citations (Awards\Display) and first-party user reviews
+ * (Highlights\Display) into a single JSON-LD Restaurant node, so search
+ * engines never see two descriptions of the same restaurant.
  *
- * Turn either part off with `guam_restaurants_awards_structured_data` or
+ * Turn a part off with `guam_restaurants_business_structured_data`,
+ * `guam_restaurants_awards_structured_data` or
  * `guam_restaurants_review_structured_data` (for example, if an SEO plugin
  * prints its own Restaurant node).
  */
@@ -37,6 +39,16 @@ final class Structured_Data {
 	 */
 	public static function node( int $restaurant_id ): ?array {
 		$parts = array();
+
+		/**
+		 * Filters whether address, hours and other facts are given in structured data.
+		 *
+		 * @param bool $print         Whether to include them.
+		 * @param int  $restaurant_id Restaurant.
+		 */
+		if ( apply_filters( 'guam_restaurants_business_structured_data', true, $restaurant_id ) ) {
+			$parts += Site\Business_Data::properties( $restaurant_id );
+		}
 
 		/**
 		 * Filters whether award citations are given in structured data.

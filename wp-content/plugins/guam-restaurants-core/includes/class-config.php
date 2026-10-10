@@ -74,6 +74,20 @@ final class Config {
 	 */
 	public const YELP_STATUS_CHECKS = 'GUAM_RESTAURANTS_YELP_STATUS_CHECKS';
 
+	/**
+	 * MapLibre style URL for the map page and restaurant maps. Defaults to
+	 * OpenFreeMap (free, no key, commercial use allowed; Maps::DEFAULT_STYLE_URL).
+	 * Set a MapTiler or Stadia style URL (with its key) to switch providers.
+	 */
+	public const MAP_STYLE_URL = 'GUAM_RESTAURANTS_MAP_STYLE_URL';
+
+	/**
+	 * Google Maps Embed API key (free, unlimited). Restaurant pages that can
+	 * show Google ratings must use a Google map (docs/data-sources.md §2);
+	 * without this key they show directions links instead of a map.
+	 */
+	public const GOOGLE_MAPS_EMBED_KEY = 'GUAM_RESTAURANTS_GOOGLE_MAPS_EMBED_KEY';
+
 	public const DEFAULT_CLOSURE_ALERT_THRESHOLD = 5;
 
 	public const DEFAULT_RUN_CAP_USD     = 0.0;

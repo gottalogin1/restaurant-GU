@@ -645,6 +645,7 @@ class Highlights_Test extends Test_Case {
 		$this->assertArrayNotHasKey( 'aggregateRating', $data );
 
 		add_filter( 'guam_restaurants_review_structured_data', '__return_false' );
+		add_filter( 'guam_restaurants_business_structured_data', '__return_false' );
 		$this->assertNull( Structured_Data::node( $this->restaurant ) );
 	}
 

@@ -55,6 +55,20 @@ final class Pages {
 		add_filter( 'pre_handle_404', array( self::class, 'handle_404' ), 10, 2 );
 		add_filter( 'template_include', array( self::class, 'template_include' ), 99 );
 		add_filter( 'document_title_parts', array( self::class, 'document_title' ) );
+		add_action( 'parse_query', array( self::class, 'not_home' ) );
+	}
+
+	/**
+	 * Awards URLs match no other query, so WordPress would treat them as the
+	 * blog home (body class "home", home-page SEO). They are not.
+	 *
+	 * @param \WP_Query $query Query.
+	 * @return void
+	 */
+	public static function not_home( $query ): void {
+		if ( $query instanceof \WP_Query && $query->is_main_query() && in_array( (string) $query->get( self::QUERY_VAR ), self::PAGES, true ) ) {
+			$query->is_home = false;
+		}
 	}
 
 	/**

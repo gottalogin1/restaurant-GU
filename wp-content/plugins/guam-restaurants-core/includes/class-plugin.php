@@ -65,6 +65,13 @@ final class Plugin {
 		Awards\Display::register();
 		Awards\Pages::register();
 		Structured_Data::register();
+		Site\Assets::register();
+		Site\Blocks::register();
+		Site\Directory_Query::register();
+		Site\Open_Hours::register();
+		Site\Rest_Controller::register();
+		Site\Pages::register();
+		Site\Seo::register();
 		Monitoring\Change_Tracker::register();
 		Monitoring\Jobs::register();
 		Tagging\Tag_Store::register();
@@ -78,6 +85,7 @@ final class Plugin {
 			Cli\Ratings_Commands::register();
 			Cli\Awards_Commands::register();
 			Cli\Monitoring_Commands::register();
+			Cli\Site_Commands::register();
 		}
 	}
 
