@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/visitor-reviews",
+	"version": "0.1.0",
+	"title": "Visitor reviews",
+	"category": "widgets",
+	"icon": "testimonial",
+	"description": "Reviews written by visitors to this site: average rating, monthly trend, approved reviews and the review form. Loads in the browser, so page caches never hold it.",
+	"keywords": [ "reviews", "rating", "trend" ],
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"restaurantId": {
+			"type": "integer",
+			"default": 0
+		},
+		"showForm": {
+			"type": "boolean",
+			"default": true
+		},
+		"showTrend": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./editor.js"
+}

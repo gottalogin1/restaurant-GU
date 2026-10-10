@@ -77,3 +77,15 @@ stored permanently; no rating history is kept.
   never store ratings. Yelp is shown only on its own (`sources="yelp"`), in a
   page section with no other ratings or visitor content. Pages that show
   Google ratings must use a Google map (Maps Embed), not MapTiler.
+
+## Visitor reviews
+
+- Block `guam-restaurants/visitor-reviews` and shortcode
+  `[guam_visitor_reviews id="" form="yes" trend="yes"]` show approved visitor
+  reviews (newest first, positive and negative alike), a monthly trend chart
+  of their average rating, and a submission form. Content is loaded from
+  `/wp-json/guam-restaurants/v1/restaurants/{id}/visitor-reviews`.
+- New reviews wait in Restaurants > Visitor reviews. Rejecting one requires a
+  published rule. Do not place this block in the same page section as Yelp.
+- Behind a proxy or CDN, return the visitor's real IP from the
+  `guam_restaurants_review_client_ip` filter so rate limits work.
