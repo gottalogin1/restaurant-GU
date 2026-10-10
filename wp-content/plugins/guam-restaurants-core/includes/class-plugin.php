@@ -51,10 +51,14 @@ final class Plugin {
 
 		Village_Aliases::register();
 		Mall_Verification::register();
+		Ratings\Refresher::register();
+		Ratings\Rest_Controller::register();
+		Ratings\Display::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			Cli\Commands::register();
 			Cli\Import_Commands::register();
+			Cli\Ratings_Commands::register();
 		}
 	}
 

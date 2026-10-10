@@ -214,6 +214,13 @@ counts and (optionally) reviews on listing pages, within these rules:
   Search Pro: 5,000 free a month; one full run is at most 75 requests).
   Only the place ID is stored, in the review queue; names are compared in
   memory to skip places we already list and are not kept.
+- Matching (`wp guam-restaurants match-ratings --source=google`,
+  2026-10-10): Text Search with the restaurant's name, biased to 150 m
+  around its OSM coordinates, field mask
+  `places.id,places.displayName,places.location` (Text Search Pro). Google
+  names and coordinates are compared in memory for a confidence score and
+  dropped; only the place ID and our score are stored. Google coordinates
+  are not used for any point-in-polygon tagging.
 
 ## 3. Yelp Places API (formerly Fusion)
 
@@ -526,6 +533,8 @@ permission email in `docs/awards-research.md` §8.
 | Yelp business ID | Yelp | **Stored** for back-end matching only | Delete on termination |
 | Yelp rating, count, excerpts, details | Yelp | **Cached with expiry**, 24 hours max | 24 hours |
 | Foursquare place ID | Foursquare API | **Stored permanently** (performance only) | n/a |
+| Match confidence per source (our own score from name similarity and distance) | First-party | **Stored permanently** | Each match run |
+| Monthly API spend per source (dollar totals only) | First-party | **Stored**, one month | Monthly |
 | Google rating, count, reviews, hours, summaries | Google | **Fetched live** per view, never stored | n/a |
 | Foursquare rating, hours, tips, photos | Foursquare API | **Fetched live** per view (pay-as-you-go) | n/a |
 | Map tiles | MapTiler Cloud (Flex); Google Maps Embed on pages with Google content | **Fetched live** | n/a |

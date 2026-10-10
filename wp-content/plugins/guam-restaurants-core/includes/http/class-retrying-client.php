@@ -52,6 +52,13 @@ class Retrying_Client {
 	private int $rate_limit_wait;
 
 	/**
+	 * Retries after the first attempt.
+	 *
+	 * @var int
+	 */
+	private int $max_retries;
+
+	/**
 	 * Log of failed attempts, for the command output.
 	 *
 	 * @var string[]
@@ -65,16 +72,18 @@ class Retrying_Client {
 	 * @param callable|null $sleeper          Defaults to sleep().
 	 * @param int[]         $rate_limit_codes Codes treated as rate limiting.
 	 * @param int           $rate_limit_wait  Seconds to wait after one of them.
+	 * @param int           $max_retries      Retries after the first attempt; 0 for requests made while a visitor waits.
 	 */
-	public function __construct( ?callable $transport = null, ?callable $sleeper = null, array $rate_limit_codes = array( 429 ), int $rate_limit_wait = 30 ) {
+	public function __construct( ?callable $transport = null, ?callable $sleeper = null, array $rate_limit_codes = array( 429 ), int $rate_limit_wait = 30, int $max_retries = self::MAX_RETRIES ) {
 		$this->transport        = $transport ?? 'wp_remote_request';
 		$this->sleeper          = $sleeper ?? 'sleep';
 		$this->rate_limit_codes = $rate_limit_codes;
 		$this->rate_limit_wait  = $rate_limit_wait;
+		$this->max_retries      = max( 0, $max_retries );
 	}
 
 	/**
-	 * Sends a request, retrying up to MAX_RETRIES times. Waits between
+	 * Sends a request, retrying up to the configured number of times. Waits between
 	 * attempts: the Retry-After header or the rate-limit wait after a
 	 * rate-limit response, otherwise 2, 4, 8, 16 and 32 seconds.
 	 *
@@ -87,7 +96,7 @@ class Retrying_Client {
 		$last_error = '';
 		$last_wait  = null;
 
-		for ( $attempt = 0; $attempt <= self::MAX_RETRIES; $attempt++ ) {
+		for ( $attempt = 0; $attempt <= $this->max_retries; $attempt++ ) {
 			if ( $attempt > 0 ) {
 				call_user_func( $this->sleeper, $last_wait ?? 2 ** $attempt );
 			}
@@ -125,7 +134,7 @@ class Retrying_Client {
 			}
 		}
 
-		throw new \RuntimeException( esc_html( sprintf( 'Gave up after %d attempts (%s).', self::MAX_RETRIES + 1, $last_error ) ) );
+		throw new \RuntimeException( esc_html( sprintf( 'Gave up after %d attempts (%s).', $this->max_retries + 1, $last_error ) ) );
 	}
 
 	/**

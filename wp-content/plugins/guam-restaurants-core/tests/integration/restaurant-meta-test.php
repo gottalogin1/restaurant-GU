@@ -28,7 +28,7 @@ class Restaurant_Meta_Test extends Test_Case {
 			$this->assertArrayHasKey( $key, $registered, $key );
 			$this->assertNotEmpty( $registered[ $key ]['show_in_rest'], $key );
 		}
-		$this->assertCount( 15, Restaurant_Meta::fields() );
+		$this->assertCount( 18, Restaurant_Meta::fields() );
 	}
 
 	/**
@@ -152,7 +152,7 @@ class Restaurant_Meta_Test extends Test_Case {
 		$this->assertSame( '+16716461234', $public['meta'][ Restaurant_Meta::PHONE ] );
 		$this->assertEquals( 13.518, $public['meta'][ Restaurant_Meta::LATITUDE ] );
 		$this->assertEquals( 0, $public['meta'][ Restaurant_Meta::LONGITUDE ], 'Unset coordinates read as 0 over REST' );
-		foreach ( array( Restaurant_Meta::YELP_ID, Restaurant_Meta::GOOGLE_PLACE_ID, Restaurant_Meta::CLAIMED_BY_USER_ID, Restaurant_Meta::COORD_SOURCE ) as $key ) {
+		foreach ( array( Restaurant_Meta::YELP_ID, Restaurant_Meta::GOOGLE_PLACE_ID, Restaurant_Meta::CLAIMED_BY_USER_ID, Restaurant_Meta::COORD_SOURCE, Restaurant_Meta::GOOGLE_MATCH_CONFIDENCE ) as $key ) {
 			$this->assertArrayNotHasKey( $key, $public['meta'], $key );
 		}
 

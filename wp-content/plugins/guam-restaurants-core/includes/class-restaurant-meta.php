@@ -37,6 +37,13 @@ final class Restaurant_Meta {
 	public const OSM_ID             = 'gr_osm_id';
 
 	/**
+	 * Match confidence (0 to 1) for each rating source's stored ID.
+	 */
+	public const GOOGLE_MATCH_CONFIDENCE     = 'gr_google_match_confidence';
+	public const YELP_MATCH_CONFIDENCE       = 'gr_yelp_match_confidence';
+	public const FOURSQUARE_MATCH_CONFIDENCE = 'gr_foursquare_match_confidence';
+
+	/**
 	 * Year, year-month, or full date. Many opening and closing dates are only
 	 * known to the year.
 	 */
@@ -74,6 +81,16 @@ final class Restaurant_Meta {
 	}
 
 	/**
+	 * Match confidence meta key for a rating source.
+	 *
+	 * @param string $source google, yelp or foursquare.
+	 * @return string
+	 */
+	public static function match_confidence_key( string $source ): string {
+		return 'gr_' . sanitize_key( $source ) . '_match_confidence';
+	}
+
+	/**
 	 * Only users who can edit the restaurant may change its meta.
 	 *
 	 * @param bool   $allowed  Whether the user can edit the meta (unused).
@@ -92,14 +109,14 @@ final class Restaurant_Meta {
 	 */
 	public static function fields(): array {
 		return array(
-			self::ADDRESS            => array(
+			self::ADDRESS                     => array(
 				'type'        => 'string',
 				'description' => __( 'Street address line; the village comes from the village taxonomy.', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_address' ),
 				'schema'      => array( 'maxLength' => 255 ),
 			),
-			self::LATITUDE           => array(
+			self::LATITUDE                    => array(
 				'type'        => 'number',
 				'description' => __( 'Latitude (WGS84).', 'guam-restaurants-core' ),
 				'default'     => null,
@@ -109,7 +126,7 @@ final class Restaurant_Meta {
 					'maximum' => 90,
 				),
 			),
-			self::LONGITUDE          => array(
+			self::LONGITUDE                   => array(
 				'type'        => 'number',
 				'description' => __( 'Longitude (WGS84).', 'guam-restaurants-core' ),
 				'default'     => null,
@@ -119,7 +136,7 @@ final class Restaurant_Meta {
 					'maximum' => 180,
 				),
 			),
-			self::COORD_SOURCE       => array(
+			self::COORD_SOURCE                => array(
 				'type'        => 'string',
 				'description' => __( 'Where the coordinates came from.', 'guam-restaurants-core' ),
 				'default'     => '',
@@ -127,49 +144,49 @@ final class Restaurant_Meta {
 				'private'     => true,
 				'schema'      => array( 'enum' => array_merge( array( '' ), Vocabulary::COORD_SOURCES ) ),
 			),
-			self::PHONE              => array(
+			self::PHONE                       => array(
 				'type'        => 'string',
 				'description' => __( 'Phone number, stored as E.164 (+1671XXXXXXX).', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_phone' ),
 				'schema'      => array(),
 			),
-			self::WEBSITE            => array(
+			self::WEBSITE                     => array(
 				'type'        => 'string',
 				'description' => __( 'Website URL.', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => 'esc_url_raw',
 				'schema'      => array(),
 			),
-			self::HOURS              => array(
+			self::HOURS                       => array(
 				'type'        => 'object',
 				'description' => __( 'Structured weekly opening hours.', 'guam-restaurants-core' ),
 				'default'     => array(),
 				'sanitize'    => array( self::class, 'sanitize_hours' ),
 				'schema'      => self::hours_schema(),
 			),
-			self::STATUS             => array(
+			self::STATUS                      => array(
 				'type'        => 'string',
 				'description' => __( 'Business status.', 'guam-restaurants-core' ),
 				'default'     => 'unknown',
 				'sanitize'    => array( self::class, 'sanitize_status' ),
 				'schema'      => array( 'enum' => Vocabulary::RESTAURANT_STATUSES ),
 			),
-			self::OPENED_ON          => array(
+			self::OPENED_ON                   => array(
 				'type'        => 'string',
 				'description' => __( 'Opening date: YYYY, YYYY-MM or YYYY-MM-DD.', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_partial_date' ),
 				'schema'      => array( 'pattern' => '^$|' . self::PARTIAL_DATE_PATTERN ),
 			),
-			self::CLOSED_ON          => array(
+			self::CLOSED_ON                   => array(
 				'type'        => 'string',
 				'description' => __( 'Closing date: YYYY, YYYY-MM or YYYY-MM-DD.', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_partial_date' ),
 				'schema'      => array( 'pattern' => '^$|' . self::PARTIAL_DATE_PATTERN ),
 			),
-			self::CLAIMED_BY_USER_ID => array(
+			self::CLAIMED_BY_USER_ID          => array(
 				'type'        => 'integer',
 				'description' => __( 'User who claimed this listing; 0 when unclaimed.', 'guam-restaurants-core' ),
 				'default'     => 0,
@@ -177,35 +194,68 @@ final class Restaurant_Meta {
 				'private'     => true,
 				'schema'      => array( 'minimum' => 0 ),
 			),
-			self::GOOGLE_PLACE_ID    => array(
+			self::GOOGLE_PLACE_ID             => array(
 				'type'        => 'string',
-				'description' => __( 'Google place ID. Unused while Google is skipped (docs/data-sources.md §2).', 'guam-restaurants-core' ),
+				'description' => __( 'Google place ID, the only Google value that may be stored (docs/data-sources.md §2).', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_identifier' ),
 				'private'     => true,
 				'schema'      => array(),
 			),
-			self::YELP_ID            => array(
+			self::YELP_ID                     => array(
 				'type'        => 'string',
-				'description' => __( 'Yelp business ID, for back-end matching only (Yelp API Terms §5(a)). Unused while Yelp is skipped.', 'guam-restaurants-core' ),
+				'description' => __( 'Yelp business ID, for back-end matching only (Yelp API Terms §5(a)).', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_identifier' ),
 				'private'     => true,
 				'schema'      => array(),
 			),
-			self::FOURSQUARE_ID      => array(
+			self::FOURSQUARE_ID               => array(
 				'type'        => 'string',
-				'description' => __( 'Foursquare Open Source Places ID.', 'guam-restaurants-core' ),
+				'description' => __( 'Foursquare place ID (shared by Open Source Places and the Places API).', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_identifier' ),
 				'schema'      => array(),
 			),
-			self::OSM_ID             => array(
+			self::OSM_ID                      => array(
 				'type'        => 'string',
 				'description' => __( 'OpenStreetMap element, for example node/123.', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_osm_id' ),
 				'schema'      => array( 'pattern' => '^$|' . self::OSM_ID_PATTERN ),
+			),
+			self::GOOGLE_MATCH_CONFIDENCE     => array(
+				'type'        => 'number',
+				'description' => __( 'Confidence (0 to 1) of the Google match, from name similarity and distance.', 'guam-restaurants-core' ),
+				'default'     => 0,
+				'sanitize'    => array( self::class, 'sanitize_confidence' ),
+				'private'     => true,
+				'schema'      => array(
+					'minimum' => 0,
+					'maximum' => 1,
+				),
+			),
+			self::YELP_MATCH_CONFIDENCE       => array(
+				'type'        => 'number',
+				'description' => __( 'Confidence (0 to 1) of the Yelp match, from name similarity and distance.', 'guam-restaurants-core' ),
+				'default'     => 0,
+				'sanitize'    => array( self::class, 'sanitize_confidence' ),
+				'private'     => true,
+				'schema'      => array(
+					'minimum' => 0,
+					'maximum' => 1,
+				),
+			),
+			self::FOURSQUARE_MATCH_CONFIDENCE => array(
+				'type'        => 'number',
+				'description' => __( 'Confidence (0 to 1) of the Foursquare match, from name similarity and distance.', 'guam-restaurants-core' ),
+				'default'     => 0,
+				'sanitize'    => array( self::class, 'sanitize_confidence' ),
+				'private'     => true,
+				'schema'      => array(
+					'minimum' => 0,
+					'maximum' => 1,
+				),
 			),
 		);
 	}
@@ -433,6 +483,16 @@ final class Restaurant_Meta {
 	 */
 	public static function sanitize_identifier( $value ): string {
 		return (string) preg_replace( '/[^A-Za-z0-9_\-:.]/', '', (string) $value );
+	}
+
+	/**
+	 * Sanitizes a match confidence to 0..1 with three decimals.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return float
+	 */
+	public static function sanitize_confidence( $value ): float {
+		return is_numeric( $value ) ? round( max( 0.0, min( 1.0, (float) $value ) ), 3 ) : 0.0;
 	}
 
 	/**

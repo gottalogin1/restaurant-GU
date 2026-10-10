@@ -24,6 +24,7 @@ define( 'GUAM_RESTAURANTS_CORE_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once GUAM_RESTAURANTS_CORE_DIR . 'includes/class-autoloader.php';
 Autoloader::register( __NAMESPACE__, GUAM_RESTAURANTS_CORE_DIR . 'includes/' );
+require_once GUAM_RESTAURANTS_CORE_DIR . 'includes/functions.php';
 
 register_activation_hook( __FILE__, array( Activator::class, 'activate' ) );
 register_deactivation_hook( __FILE__, array( Deactivator::class, 'deactivate' ) );

@@ -18,6 +18,37 @@ final class Config {
 	public const GOOGLE_PLACES_KEY = 'GUAM_RESTAURANTS_GOOGLE_PLACES_KEY';
 	public const OVERPASS_URL      = 'GUAM_RESTAURANTS_OVERPASS_URL';
 	public const USER_AGENT        = 'GUAM_RESTAURANTS_USER_AGENT';
+	public const YELP_KEY          = 'GUAM_RESTAURANTS_YELP_API_KEY';
+	public const FOURSQUARE_KEY    = 'GUAM_RESTAURANTS_FOURSQUARE_API_KEY';
+
+	/**
+	 * Hard cap in US dollars for one matching or refresh run. The run stops
+	 * before the request that would pass it.
+	 */
+	public const RUN_CAP_USD = 'GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD';
+
+	/**
+	 * Hard cap in US dollars per calendar month (UTC) for ratings fetched
+	 * live while visitors view pages (Google, Foursquare). Past it, those
+	 * sources are hidden until the next month.
+	 */
+	public const MONTHLY_CAP_USD = 'GUAM_RESTAURANTS_RATINGS_MONTHLY_CAP_USD';
+
+	/**
+	 * Base URL of Yelp's official star images and logo, downloaded by hand
+	 * from Yelp's brand kit. Yelp ratings are not shown without them.
+	 */
+	public const YELP_ASSETS_URL = 'GUAM_RESTAURANTS_YELP_ASSETS_URL';
+
+	/**
+	 * Optional URLs of the official Google Maps and Foursquare logos. Without
+	 * them the text attribution is shown, which both sources allow.
+	 */
+	public const GOOGLE_MAPS_LOGO_URL = 'GUAM_RESTAURANTS_GOOGLE_MAPS_LOGO_URL';
+	public const FOURSQUARE_LOGO_URL  = 'GUAM_RESTAURANTS_FOURSQUARE_LOGO_URL';
+
+	public const DEFAULT_RUN_CAP_USD     = 5.0;
+	public const DEFAULT_MONTHLY_CAP_USD = 25.0;
 
 	/**
 	 * Returns a setting, or the default when it is unset or empty.
@@ -32,6 +63,18 @@ final class Config {
 		}
 		$env = getenv( $name );
 		return false === $env || '' === $env ? $fallback : (string) $env;
+	}
+
+	/**
+	 * A dollar cap; falls back to the default when unset or not a number.
+	 *
+	 * @param string $name     Constant / environment variable name.
+	 * @param float  $fallback Default.
+	 * @return float
+	 */
+	public static function money( string $name, float $fallback ): float {
+		$value = self::get( $name );
+		return is_numeric( $value ) && (float) $value >= 0 ? (float) $value : $fallback;
 	}
 
 	/**
