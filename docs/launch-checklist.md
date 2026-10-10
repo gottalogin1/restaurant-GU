@@ -12,9 +12,9 @@ add new launch items here rather than only in progress.md.
 
 Each of these changes what gets installed or paid for, so they come first.
 
-- [ ] Merge PR #11, the public site.
-- [ ] Map tiles: OpenFreeMap (free, no uptime guarantee) or MapTiler Flex
-      ($30/month). Switching later is one setting
+- [x] Merge PR #11, the public site (merged 2026-10-10).
+- [x] Map tiles: OpenFreeMap chosen 2026-10-10 (free, no uptime guarantee).
+      MapTiler Flex ($30/month) is the fallback. Switching later is one setting
       (`GUAM_RESTAURANTS_MAP_STYLE_URL`; [data-sources.md](data-sources.md) §6a).
 - [ ] Host: Kinsta single-site, Tokyo data center, about $35/month
       ([hosting.md](hosting.md)). Confirm Tokyo is offered when creating the site.
@@ -69,7 +69,7 @@ full list is in [.env.example](../.env.example).
       Cloud as a backstop.
 - [ ] Google Maps Embed key (free), restricted to the site's domain, if Google
       ratings are shown (`GUAM_RESTAURANTS_GOOGLE_MAPS_EMBED_KEY`).
-- [ ] Map style URL, only if MapTiler is chosen.
+- [ ] Map style URL: leave empty for OpenFreeMap; set it only if switching to MapTiler.
 - [ ] Logo and asset URLs for Google Maps, Foursquare and Yelp (if used),
       downloaded from each brand page by hand.
 - [ ] Alert email (`GUAM_RESTAURANTS_ALERT_EMAIL`).

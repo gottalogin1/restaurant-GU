@@ -427,6 +427,8 @@ DPHSS data is imported.
 the vector style URL set by `GUAM_RESTAURANTS_MAP_STYLE_URL`.** Switching
 providers is a configuration change, not a code change.
 
+**Decision (Sanjay, 2026-10-10): launch on OpenFreeMap.** If it has outages, switch to MapTiler Flex by setting the style URL.
+
 **Default when the setting is empty: OpenFreeMap** (Positron style,
 `https://tiles.openfreemap.org/styles/positron`). Read 2026-10-10 at
 <https://openfreemap.org/> and <https://openfreemap.org/tos/>:
@@ -628,4 +630,4 @@ data sources. No listing data from them may be imported (CLAUDE.md rules
 - [x] DPHSS records request: dropped with the DPHSS decision in §5.
 - [x] TIGER Guam villages: confirmed 19 villages (§6), 2026-10-10.
 - [x] Attorney review of Google ToS §3.2.3(d)(iii) and Yelp §5(d): cleared, 2026-10-10.
-- [x] Map tile provider: OpenFreeMap by default (free, no SLA); MapTiler Cloud Flex or Stadia Maps by setting the style URL (§6a). Sanjay to confirm which one to use at launch.
+- [x] Map tile provider: OpenFreeMap by default (free, no SLA); MapTiler Cloud Flex or Stadia Maps by setting the style URL (§6a). Sanjay chose OpenFreeMap for launch, 2026-10-10.
