@@ -7,6 +7,8 @@
 
 namespace GuamRestaurants\Core\Site;
 
+use GuamRestaurants\Core\Advertising\Page_Content;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -19,13 +21,18 @@ defined( 'ABSPATH' ) || exit;
  *   restaurant pages only once they are published.
  * - terms: a draft for the terms of use, to be written with counsel
  *   (docs/legal-and-policy.md §7). The footer links to it once published.
+ * - advertise and media kit: published. The advertise page holds the
+ *   advertiser inquiry form; restaurant pages link to it once published.
+ *   The media kit shows the rate card (docs/monetization.md) and leaves
+ *   audience figures unmeasured until analytics have 90 days of data
+ *   (docs/media-kit-outline.md). Both link to the editorial policy.
  *
  * The privacy page is WordPress's own (Settings > Privacy).
  */
 final class Pages {
 
 	public const OPTION  = 'guam_restaurants_site_pages';
-	public const VERSION = '1';
+	public const VERSION = '2';
 
 	/**
 	 * Hooks registration.
@@ -39,7 +46,7 @@ final class Pages {
 	/**
 	 * Page definitions keyed by role.
 	 *
-	 * @return array<string, array{slug: string, title: string, status: string, content: string, excerpt?: string}> The excerpt is the page's meta description when no SEO plugin sets one.
+	 * @return array<string, array{slug: string, title: string, status: string, content: string|callable, excerpt?: string}> Content may be a callable, built only when the page is created. The excerpt is the page's meta description when no SEO plugin sets one.
 	 */
 	public static function definitions(): array {
 		$p = static function ( string $text ): string {
@@ -89,6 +96,20 @@ final class Pages {
 				'status'  => 'draft',
 				'content' => $p( __( '[Draft: write the terms of use with counsel (docs/legal-and-policy.md section 7), then publish this page.]', 'guam-restaurants-core' ) ),
 			),
+			'media_kit'  => array(
+				'slug'    => 'media-kit',
+				'title'   => __( 'Media kit', 'guam-restaurants-core' ),
+				'status'  => 'publish',
+				'content' => array( Page_Content::class, 'media_kit' ),
+				'excerpt' => __( 'Audience, advertising products, rates and ad specifications for restaurants and businesses on Guam.', 'guam-restaurants-core' ),
+			),
+			'advertise'  => array(
+				'slug'    => 'advertise',
+				'title'   => __( 'Advertise with us', 'guam-restaurants-core' ),
+				'status'  => 'publish',
+				'content' => array( Page_Content::class, 'advertise' ),
+				'excerpt' => __( 'Reach people choosing where to eat on Guam. Ask about premium profiles and sponsored listings.', 'guam-restaurants-core' ),
+			),
 		);
 	}
 
@@ -124,7 +145,7 @@ final class Pages {
 					'post_status'  => $page['status'],
 					'post_name'    => $page['slug'],
 					'post_title'   => $page['title'],
-					'post_content' => $page['content'],
+					'post_content' => is_callable( $page['content'] ) ? (string) call_user_func( $page['content'] ) : $page['content'],
 					'post_excerpt' => $page['excerpt'] ?? '',
 				),
 				true

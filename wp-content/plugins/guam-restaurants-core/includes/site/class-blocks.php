@@ -508,6 +508,7 @@ final class Blocks {
 			'claim'      => $claimed ? '' : __( 'Own this restaurant? Claim this listing', 'guam-restaurants-core' ),
 			'correction' => __( 'Suggest a correction', 'guam-restaurants-core' ),
 			'contact'    => $claimed ? __( 'Contact the owner', 'guam-restaurants-core' ) : '',
+			'advertise'  => __( 'Advertise on this page', 'guam-restaurants-core' ),
 		) as $role => $text ) {
 			$url = '' === $text ? '' : Pages::url( $role );
 			if ( '' !== $url ) {
@@ -629,6 +630,7 @@ final class Blocks {
 			__( 'Editorial policy', 'guam-restaurants-core' ) => $policy instanceof \WP_Post && 'publish' === $policy->post_status ? (string) get_permalink( $policy ) : '',
 			__( 'Privacy policy', 'guam-restaurants-core' ) => (string) get_privacy_policy_url(),
 			__( 'Terms of use', 'guam-restaurants-core' ) => Pages::url( 'terms' ),
+			__( 'Advertise with us', 'guam-restaurants-core' ) => Pages::url( 'advertise' ),
 		);
 		$items  = '';
 		foreach ( $links as $text => $url ) {

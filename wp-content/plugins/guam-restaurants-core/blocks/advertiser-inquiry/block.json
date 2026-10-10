@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/advertiser-inquiry",
+	"version": "0.1.0",
+	"title": "Advertiser inquiry form",
+	"category": "widgets",
+	"icon": "megaphone",
+	"description": "The \"Advertise with us\" form. Each inquiry is saved as a private advertiser lead and emailed to the site admin. A ?restaurant= link pre-fills the restaurant.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"align": [
+			"wide"
+		]
+	},
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

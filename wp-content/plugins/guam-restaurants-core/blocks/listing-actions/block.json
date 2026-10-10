@@ -6,7 +6,7 @@
 	"title": "Listing links",
 	"category": "widgets",
 	"icon": "admin-links",
-	"description": "Links to claim the listing, suggest a correction and contact the owner. Each shows once its page is published.",
+	"description": "Links to claim the listing, suggest a correction, contact the owner and advertise. Each shows once its page is published.",
 	"textdomain": "guam-restaurants-core",
 	"attributes": {},
 	"supports": {
