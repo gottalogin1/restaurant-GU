@@ -565,6 +565,8 @@ permission email in `docs/awards-research.md` §8.
 | Google rating, count, reviews, hours, summaries | Google | **Fetched live** per view, never stored | n/a |
 | Foursquare rating, hours, tips, photos | Foursquare API | **Fetched live** per view (pay-as-you-go) | n/a |
 | Map tiles | OpenFreeMap by default, or MapTiler Cloud (Flex) via `GUAM_RESTAURANTS_MAP_STYLE_URL`; Google Maps Embed on pages with Google content | **Fetched live** in the visitor's browser | n/a |
+| Corrections and owner listing requests | Visitors and owners via the correction form | Stored privately in the review queue; only verified facts are published, with a source | Kept in the queue |
+| Listing view counts | Our own site (anonymous daily counts) | Stored, aggregate only | 400 days |
 
 ## 10. Research-only references (not data sources)
 
@@ -573,6 +575,9 @@ Competitor pages reviewed for `docs/competitive-analysis.md`
 honolulumagazine.com, theguamguide.com) are research references, not
 data sources. No listing data from them may be imported (CLAUDE.md rules
 1 and 3). Legal sources are listed in `docs/legal-and-policy.md`.
+Services used but not data sources (SendFox, Matomo, Umami, Plausible,
+Google Search Console and Business Profile) are listed with their sources
+in `docs/seo-and-analytics.md` and `docs/monetization.md` §8.
 
 ## 11. Every URL checked for this document
 

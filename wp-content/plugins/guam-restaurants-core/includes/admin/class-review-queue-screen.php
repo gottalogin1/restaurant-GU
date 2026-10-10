@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Admin;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Corrections\Corrections;
 use GuamRestaurants\Core\Database\Review_Queue;
 use GuamRestaurants\Core\Monitoring\Closures;
 use GuamRestaurants\Core\Restaurant_Meta;
@@ -19,8 +20,9 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Pending review items. Administrators approve or reject closures and
- * merge or separate probable duplicates; other item types can be dismissed
- * once handled by hand. Only administrators see the screen, so every
+ * merge or separate probable duplicates, and close correction and listing
+ * requests with a private note; other item types can be dismissed once
+ * handled by hand. Only administrators see the screen, so every
  * closure is an administrator's decision.
  */
 final class Review_Queue_Screen {
@@ -88,7 +90,9 @@ final class Review_Queue_Screen {
 		$decision = isset( $_POST['decision'] ) ? sanitize_key( wp_unslash( $_POST['decision'] ) ) : '';
 		$type     = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
 
-		$notice = self::decide( $item_id, $decision, get_current_user_id() ) ? 'gr_review_done' : 'gr_review_failed';
+		$note = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+
+		$notice = self::decide( $item_id, $decision, get_current_user_id(), $note ) ? 'gr_review_done' : 'gr_review_failed';
 		wp_safe_redirect( add_query_arg( 'gr_notice', $notice, self::url( $type ) ) );
 		exit;
 	}
@@ -97,11 +101,12 @@ final class Review_Queue_Screen {
 	 * Applies a decision to an item.
 	 *
 	 * @param int    $item_id  Item.
-	 * @param string $decision approve_closure, reject_closure, merge, not_duplicate or dismiss.
+	 * @param string $decision approve_closure, reject_closure, merge, not_duplicate, request_done, request_decline or dismiss.
 	 * @param int    $user_id  Administrator.
+	 * @param string $note     Private note, kept with correction and listing requests.
 	 * @return bool
 	 */
-	public static function decide( int $item_id, string $decision, int $user_id ): bool {
+	public static function decide( int $item_id, string $decision, int $user_id, string $note = '' ): bool {
 		$item = Review_Queue::get( $item_id );
 		if ( ! $item || 'pending' !== $item['status'] || ! user_can( $user_id, self::CAPABILITY ) ) {
 			return false;
@@ -125,6 +130,9 @@ final class Review_Queue_Screen {
 					}
 					Duplicate_Detector::mark_not_duplicate( (int) $item['restaurant_id'], (int) ( $item['payload']['duplicate_of'] ?? 0 ) );
 					return Review_Queue::resolve( $item_id, 'rejected', $user_id );
+				case 'request_done':
+				case 'request_decline':
+					return Corrections::close( $item_id, 'request_done' === $decision, $note, $user_id );
 				case 'dismiss':
 					return Review_Queue::resolve( $item_id, 'rejected', $user_id );
 			}
@@ -228,11 +236,55 @@ final class Review_Queue_Screen {
 			return;
 		}
 
+		if ( Corrections::is_request( $item ) ) {
+			self::render_request( $payload );
+			return;
+		}
+
 		echo '<ul style="margin:0">';
 		foreach ( $payload as $key => $value ) {
 			echo '<li><code>' . esc_html( (string) $key ) . '</code>: ' . esc_html( is_scalar( $value ) || null === $value ? (string) $value : (string) wp_json_encode( $value ) ) . '</li>';
 		}
 		echo '</ul>';
+	}
+
+	/**
+	 * A correction or listing request: what was asked, by whom, and the reply-by date.
+	 *
+	 * @param array<string, mixed> $payload Payload.
+	 * @return void
+	 */
+	private static function render_request( array $payload ): void {
+		$request = (string) ( $payload['request'] ?? '' );
+		$choices = Corrections::REMOVAL === $request ? Corrections::removal_reasons() : Corrections::topics();
+		$by      = (string) ( $payload['respond_by'] ?? '' );
+		$late    = '' !== $by && $by < gmdate( 'Y-m-d' );
+
+		echo '<p><strong>' . esc_html( Corrections::requests()[ $request ] ?? $request ) . '</strong>: ' . esc_html( $choices[ (string) ( $payload['topic'] ?? '' ) ] ?? (string) ( $payload['topic'] ?? '' ) ) . '</p>';
+		echo '<blockquote style="margin:0 0 .5em;white-space:pre-wrap">' . esc_html( (string) ( $payload['details'] ?? '' ) ) . '</blockquote>';
+		if ( '' !== (string) ( $payload['evidence'] ?? '' ) ) {
+			echo '<p>' . esc_html__( 'Where to check:', 'guam-restaurants-core' ) . ' ' . esc_html( (string) $payload['evidence'] ) . '</p>';
+		}
+		$email = (string) ( $payload['email'] ?? '' );
+		printf(
+			'<p>%1$s %2$s · <a href="%3$s">%4$s</a> · %5$s</p>',
+			esc_html__( 'From:', 'guam-restaurants-core' ),
+			esc_html( '' !== (string) ( $payload['name'] ?? '' ) ? (string) $payload['name'] : __( '(no name)', 'guam-restaurants-core' ) ),
+			esc_url( 'mailto:' . $email ),
+			esc_html( $email ),
+			esc_html( Corrections::relationships()[ (string) ( $payload['relationship'] ?? '' ) ] ?? '' )
+		);
+		printf(
+			'<p%1$s>%2$s</p>',
+			$late ? ' style="color:#b32d2e;font-weight:600"' : '',
+			/* translators: %s: date. */
+			esc_html( sprintf( $late ? __( 'Reply was due %s (overdue).', 'guam-restaurants-core' ) : __( 'Reply by %s.', 'guam-restaurants-core' ), $by ) )
+		);
+		if ( Corrections::REMOVAL === $request ) {
+			echo '<p><em>' . esc_html__( 'If you agree to remove it, set the restaurant to Draft. Do not add any note about the removal to the listing.', 'guam-restaurants-core' ) . '</em></p>';
+		} else {
+			echo '<p><em>' . esc_html__( 'Check the fact against a source, then edit the restaurant. The change history records the edit.', 'guam-restaurants-core' ) . '</em></p>';
+		}
 	}
 
 	/**
@@ -281,6 +333,13 @@ final class Review_Queue_Screen {
 					'not_duplicate' => __( 'Not the same place', 'guam-restaurants-core' ),
 				);
 				break;
+			case Corrections::QUEUE_CORRECTION:
+			case Corrections::QUEUE_LISTING:
+				$buttons = array(
+					'request_done'    => __( 'Done: change made', 'guam-restaurants-core' ),
+					'request_decline' => __( 'Decline', 'guam-restaurants-core' ),
+				);
+				break;
 			default:
 				$buttons = array( 'dismiss' => __( 'Mark handled', 'guam-restaurants-core' ) );
 		}
@@ -288,8 +347,11 @@ final class Review_Queue_Screen {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		wp_nonce_field( self::ACTION . '_' . $item['id'] );
 		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" /><input type="hidden" name="item_id" value="' . esc_attr( (string) $item['id'] ) . '" /><input type="hidden" name="type" value="' . esc_attr( $type ) . '" />';
+		if ( Corrections::is_request( $item ) ) {
+			echo '<p><label for="gr-note-' . esc_attr( (string) $item['id'] ) . '">' . esc_html__( 'Private note: what you checked, or why you declined', 'guam-restaurants-core' ) . '</label><br /><textarea id="gr-note-' . esc_attr( (string) $item['id'] ) . '" name="note" rows="2" cols="30" maxlength="' . esc_attr( (string) Corrections::MAX_NOTE ) . '"></textarea></p>';
+		}
 		foreach ( $buttons as $value => $label ) {
-			echo '<button type="submit" class="button' . ( 'approve_closure' === $value || 'merge' === $value ? ' button-primary' : '' ) . '" name="decision" value="' . esc_attr( $value ) . '" style="margin:0 .5em .5em 0">' . esc_html( $label ) . '</button>';
+			echo '<button type="submit" class="button' . ( in_array( $value, array( 'approve_closure', 'merge', 'request_done' ), true ) ? ' button-primary' : '' ) . '" name="decision" value="' . esc_attr( $value ) . '" style="margin:0 .5em .5em 0">' . esc_html( $label ) . '</button>';
 		}
 		echo '</form>';
 	}
@@ -309,6 +371,8 @@ final class Review_Queue_Screen {
 			'closure_signal'     => __( 'Closure to approve', 'guam-restaurants-core' ),
 			'owner_submission'   => __( 'Owner submission', 'guam-restaurants-core' ),
 			'duplicate'          => __( 'Possible duplicate', 'guam-restaurants-core' ),
+			'correction'         => __( 'Correction', 'guam-restaurants-core' ),
+			'listing_request'    => __( 'Owner listing request', 'guam-restaurants-core' ),
 		);
 		return $labels[ $type ] ?? $type;
 	}

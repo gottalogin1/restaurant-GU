@@ -14,7 +14,7 @@
 	--gr-radius: 0.5rem;
 }
 
-:where(.gr-card, .gr-chips, .gr-recent, .gr-details, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links) {
+:where(.gr-card, .gr-chips, .gr-recent, .gr-details, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-related) {
 	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
 	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
@@ -635,4 +635,18 @@
 .gr-ad__text {
 	margin: 0;
 	font-size: 0.95rem;
+}
+
+/* Related pages (Site\Related_Links). */
+.gr-related {
+	margin-block: 2rem;
+}
+
+.gr-related__group + .gr-related__group {
+	margin-top: 1.25rem;
+}
+
+.gr-related__title {
+	margin: 0 0 0.5rem;
+	font-size: 1.125rem;
 }

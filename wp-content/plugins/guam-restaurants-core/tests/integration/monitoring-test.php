@@ -138,7 +138,7 @@ class Monitoring_Test extends Guam_Test_Case {
 	public function test_health_check_alerts_on_missed_job() {
 		update_option( Jobs::SINCE_OPTION, time() - 10 * DAY_IN_SECONDS );
 
-		$this->assertSame( array( Jobs::OSM ), array_keys( Health_Check::overdue() ), 'Google is off without a key.' );
+		$this->assertSame( array( Jobs::OSM, Jobs::NEWSLETTER ), array_keys( Health_Check::overdue() ), 'Google is off without a key.' );
 		Health_Check::run();
 		$this->assertCount( 1, $this->mails );
 		$this->assertStringContainsString( 'missed their window', $this->mails[0]['subject'] );
@@ -149,12 +149,13 @@ class Monitoring_Test extends Guam_Test_Case {
 
 		$outcome = Jobs::run( Jobs::OSM, array( 'elements' => Guam_Fixtures::elements() ) );
 		$this->assertTrue( $outcome['ok'] );
+		$this->assertTrue( Jobs::run( Jobs::NEWSLETTER, array( 'notify' => false ) )['ok'] );
 		$this->assertSame( array(), Health_Check::overdue() );
 		$this->assertSame( 'All jobs ran in their windows.', Health_Check::run() );
 		$this->assertCount( 1, $this->mails );
 
 		$this->assertSame( array(), Health_Check::overdue( time() + 7 * DAY_IN_SECONDS ), 'Within interval plus grace.' );
-		$this->assertSame( array( Jobs::OSM ), array_keys( Health_Check::overdue( time() + 9 * DAY_IN_SECONDS ) ) );
+		$this->assertSame( array( Jobs::OSM, Jobs::NEWSLETTER ), array_keys( Health_Check::overdue( time() + 9 * DAY_IN_SECONDS ) ) );
 	}
 
 	/**

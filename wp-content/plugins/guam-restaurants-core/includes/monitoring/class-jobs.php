@@ -9,6 +9,7 @@ namespace GuamRestaurants\Core\Monitoring;
 
 use GuamRestaurants\Core\Config;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
+use GuamRestaurants\Core\Newsletter\Newsletter;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
 use GuamRestaurants\Core\Osm\Element_Mapper;
 use GuamRestaurants\Core\Osm\Importer;
@@ -19,13 +20,15 @@ use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Four jobs:
+ * Five jobs:
  *
  * - `osm`: weekly OpenStreetMap import, then duplicate detection.
  * - `google-status`: monthly Google business-status check (needs a key;
  *   stays inside the free allowance with the default $0 cap).
  * - `yelp-status`: monthly Yelp check, off unless enabled (Yelp has no free tier).
  * - `health-check`: daily; emails the owner when a job missed its window.
+ * - `newsletter`: weekly, Monday 06:00 Guam time; assembles the newsletter
+ *   draft (Newsletter\Newsletter). It never sends anything to subscribers.
  *
  * Preferred: a real server cron runs `wp guam-restaurants run-job <job>`
  * (set GUAM_RESTAURANTS_CRON_MODE=server; docs/scheduling.md). Otherwise
@@ -43,6 +46,7 @@ final class Jobs {
 	public const GOOGLE_STATUS   = 'google-status';
 	public const YELP_STATUS     = 'yelp-status';
 	public const HEALTH_CHECK    = 'health-check';
+	public const NEWSLETTER      = 'newsletter';
 	public const MODE_SERVER     = 'server';
 	public const MODE_WP_CRON    = 'wp-cron';
 	public const HEALTH_MIN_HOUR = 20;
@@ -85,6 +89,14 @@ final class Jobs {
 				'grace'      => 0,
 				'recurrence' => 'daily',
 				'cron'       => '0 7 * * *',
+			),
+			self::NEWSLETTER    => array(
+				'label'      => 'Newsletter draft',
+				'source'     => 'newsletter',
+				'interval'   => WEEK_IN_SECONDS,
+				'grace'      => DAY_IN_SECONDS,
+				'recurrence' => 'weekly',
+				'cron'       => '0 20 * * 0',
 			),
 		);
 	}
@@ -211,6 +223,10 @@ final class Jobs {
 				case self::GOOGLE_STATUS:
 				case self::YELP_STATUS:
 					$outcome = self::run_status( $job, $options );
+					break;
+				case self::NEWSLETTER:
+					$draft   = Newsletter::assemble( $options );
+					$outcome = self::outcome( true, null, Newsletter::summary( $draft ), '', $draft );
 					break;
 				default:
 					$outcome = self::outcome( true, null, Health_Check::run(), '' );

@@ -54,7 +54,7 @@ final class Monitoring_Commands {
 	 * ## OPTIONS
 	 *
 	 * <job>
-	 * : osm (weekly import + duplicates), google-status, yelp-status (monthly), or health-check (daily).
+	 * : osm (weekly import + duplicates), newsletter (weekly draft), google-status, yelp-status (monthly), or health-check (daily).
 	 *
 	 * ## EXAMPLES
 	 *
