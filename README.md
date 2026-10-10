@@ -4,7 +4,7 @@ A WordPress-based Guam restaurant directory. Restaurants are tagged by village, 
 cuisine. The site shows awards history, third-party ratings, and first-party highlights, and
 earns revenue from restaurant advertising.
 
-Project rules are in [CLAUDE.md](CLAUDE.md). Research and decisions are in [docs/](docs/).
+Project rules are in [CLAUDE.md](CLAUDE.md). Research and decisions are in [docs/](docs/). What's left before going live is in [docs/launch-checklist.md](docs/launch-checklist.md).
 
 ## What's in the repo
 
@@ -102,6 +102,7 @@ make test    # PHPUnit: should end with "OK"
 
 ## More docs
 
+- [docs/launch-checklist.md](docs/launch-checklist.md): everything left before launch, as a checklist.
 - [docs/progress.md](docs/progress.md): what's done and what's next.
 - [docs/hosting.md](docs/hosting.md): production hosting recommendation and costs.
 - [docs/plugins.md](docs/plugins.md): third-party plugins to install and why.
