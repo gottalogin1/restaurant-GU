@@ -35,6 +35,7 @@ final class Restaurant_Meta {
 	public const YELP_ID            = 'gr_yelp_id';
 	public const FOURSQUARE_ID      = 'gr_foursquare_id';
 	public const OSM_ID             = 'gr_osm_id';
+	public const FORMER_NAMES       = 'gr_former_names';
 
 	/**
 	 * Match confidence (0 to 1) for each rating source's stored ID.
@@ -223,6 +224,13 @@ final class Restaurant_Meta {
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_osm_id' ),
 				'schema'      => array( 'pattern' => '^$|' . self::OSM_ID_PATTERN ),
+			),
+			self::FORMER_NAMES                => array(
+				'type'        => 'string',
+				'description' => __( 'Earlier names of the restaurant, one per line. Award imports match these as well as the current name.', 'guam-restaurants-core' ),
+				'default'     => '',
+				'sanitize'    => array( self::class, 'sanitize_former_names' ),
+				'schema'      => array( 'maxLength' => 2000 ),
 			),
 			self::GOOGLE_MATCH_CONFIDENCE     => array(
 				'type'        => 'number',
@@ -442,6 +450,33 @@ final class Restaurant_Meta {
 		}
 
 		return $clean;
+	}
+
+	/**
+	 * Sanitizes former names: one plain-text name per line, blank and repeated lines dropped.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string
+	 */
+	public static function sanitize_former_names( $value ): string {
+		$names = array();
+		foreach ( preg_split( '/\R/', (string) $value ) as $line ) {
+			$line = mb_substr( sanitize_text_field( $line ), 0, 191 );
+			if ( '' !== $line ) {
+				$names[ strtolower( $line ) ] = $line;
+			}
+		}
+		return mb_substr( implode( "\n", $names ), 0, 2000 );
+	}
+
+	/**
+	 * Former names as a list.
+	 *
+	 * @param int $post_id Restaurant.
+	 * @return string[]
+	 */
+	public static function former_names( int $post_id ): array {
+		return array_values( array_filter( array_map( 'trim', preg_split( '/\R/', (string) get_post_meta( $post_id, self::FORMER_NAMES, true ) ) ) ) );
 	}
 
 	/**

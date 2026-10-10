@@ -1,0 +1,7 @@
+program,year,category,placement,restaurant_name,source_url,source_note
+Test Awards,2022,Best Burger,winner,The Kracked Egg,https://example.com/2022-results,Example 2022 results page
+Test Awards,2022,Best Burger,2nd,Old Harbor Grill,https://example.com/2022-results,
+Test Awards,2023,Best Burger,winner,kracked egg,https://example.com/2023-results,
+Test Awards,2023,Best Breakfast,finalist,Kings,https://example.com/2023-results,
+Test Awards,2023,Best Pizza,winner,Long Gone Pizza Co,https://example.com/2023-results,
+Test Awards,2023,Best Soup,winner,No Source Diner,,

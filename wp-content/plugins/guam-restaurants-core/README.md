@@ -47,6 +47,29 @@ failed counts and record each run in `gr_ingestion_runs` (CLAUDE.md rule 9).
   `GUAM_RESTAURANTS_GOOGLE_PLACES_KEY` (wp-config.php constant or
   environment variable).
 
+## Awards
+
+Results only: program, year, category, placement, restaurant and the URL of
+the page that gave the result, plus an optional note in our own words. No
+program logos, badges, graphics, descriptions, photos or write-ups; no badge
+or embed for restaurants; awards are never part of ads, featured listings
+or sponsor offers (`Awards\Policy`).
+
+- `data/awards-template.csv` and `data/awards-README.md`: the input format
+  and how to fill it.
+- `wp guam-restaurants import-awards <file.csv> [--dry-run] [--unmatched-status=<unknown|permanently_closed>]`
+  (`Awards\Importer`): rejects rows without a source URL; matches names by
+  current and former names (`gr_former_names`); possible matches go to the
+  review queue (`match_conflict`, kind `award_match`); unknown names become
+  draft restaurants; idempotent on restaurant, program, year and category.
+- `wp guam-restaurants awards-report`: years and categories recorded and
+  the gaps.
+- Restaurant pages get an "Awards" section (or use `[guam_restaurant_awards]`)
+  and JSON-LD `award` text. `/awards/`, `/awards/category/{slug}/` and
+  `/awards/most-awarded/` are served by `Awards\Pages` with the
+  `templates/awards-page.php` template. Every awards page shows the
+  "not affiliated with Pacific Daily News" notice.
+
 ## Ratings
 
 Rules come from `docs/data-sources.md` §7 and §9. Only each source's ID is

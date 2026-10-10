@@ -45,7 +45,9 @@ final class Activator {
 		Content_Types::register();
 		Term_Meta::register();
 		Seeder::seed_all();
+		Awards\Pages::add_rewrite_rules();
 		flush_rewrite_rules();
+		update_option( Awards\Pages::ROUTES_OPTION, Awards\Pages::ROUTES_VERSION );
 
 		update_option( 'guam_restaurants_core_version', GUAM_RESTAURANTS_CORE_VERSION );
 		add_option( 'guam_restaurants_core_activated_at', time() );
