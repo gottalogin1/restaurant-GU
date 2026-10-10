@@ -42,6 +42,19 @@ final class Plugin {
 	private function boot(): void {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( Content_Types::class, 'register' ) );
+		add_action( 'init', array( Restaurant_Meta::class, 'register' ) );
+		add_action( 'init', array( Term_Meta::class, 'register' ) );
+		add_action( 'before_delete_post', array( Database\Schema::class, 'delete_restaurant_rows' ) );
+
+		// Boot runs on plugins_loaded, so tables are upgraded before anything uses them.
+		Database\Schema::maybe_upgrade();
+
+		Village_Aliases::register();
+		Mall_Verification::register();
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			Cli\Commands::register();
+		}
 	}
 
 	/**

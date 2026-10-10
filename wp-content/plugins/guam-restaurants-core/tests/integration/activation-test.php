@@ -10,7 +10,6 @@ namespace GuamRestaurants\Core\Tests;
 use GuamRestaurants\Core\Activator;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Deactivator;
-use WP_UnitTestCase;
 
 /**
  * Activation, deactivation and content model.
@@ -19,7 +18,7 @@ use WP_UnitTestCase;
  * @covers \GuamRestaurants\Core\Deactivator
  * @covers \GuamRestaurants\Core\Content_Types
  */
-class Activation_Test extends WP_UnitTestCase {
+class Activation_Test extends Test_Case {
 
 	/**
 	 * Activation stores the version and registers the content model.
@@ -47,18 +46,28 @@ class Activation_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Restaurants can be tagged by village, mall and cuisine.
+	 * Activation creates the tables and seeds the taxonomies.
+	 */
+	public function test_activate_installs_tables_and_seeds() {
+		Activator::activate();
+
+		$this->assertSame( \GuamRestaurants\Core\Database\Schema::VERSION, get_option( \GuamRestaurants\Core\Database\Schema::VERSION_OPTION ) );
+		$this->assertInstanceOf( \WP_Term::class, get_term_by( 'slug', 'dededo', Content_Types::TAX_VILLAGE ) );
+	}
+
+	/**
+	 * Restaurants can be tagged by village, mall, cuisine and price level.
 	 */
 	public function test_taxonomies_attach_to_restaurants() {
-		foreach ( array( Content_Types::TAX_VILLAGE, Content_Types::TAX_MALL, Content_Types::TAX_CUISINE ) as $taxonomy ) {
+		foreach ( array( Content_Types::TAX_VILLAGE, Content_Types::TAX_MALL, Content_Types::TAX_CUISINE, Content_Types::TAX_PRICE ) as $taxonomy ) {
 			$this->assertTrue( taxonomy_exists( $taxonomy ), $taxonomy );
 			$this->assertContains( Content_Types::POST_TYPE, get_taxonomy( $taxonomy )->object_type, $taxonomy );
 		}
 
 		$post_id = self::factory()->post->create( array( 'post_type' => Content_Types::POST_TYPE ) );
-		wp_set_object_terms( $post_id, 'Tumon', Content_Types::TAX_VILLAGE );
+		wp_set_object_terms( $post_id, 'Dededo', Content_Types::TAX_VILLAGE );
 
-		$this->assertSame( array( 'Tumon' ), wp_get_object_terms( $post_id, Content_Types::TAX_VILLAGE, array( 'fields' => 'names' ) ) );
+		$this->assertSame( array( 'Dededo' ), wp_get_object_terms( $post_id, Content_Types::TAX_VILLAGE, array( 'fields' => 'names' ) ) );
 	}
 
 	/**

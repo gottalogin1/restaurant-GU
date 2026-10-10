@@ -30,3 +30,8 @@ tests_add_filter(
 );
 
 require $guam_tests_dir . '/includes/bootstrap.php';
+
+// Real tables, created once before any test transaction starts.
+\GuamRestaurants\Core\Database\Schema::install();
+
+require __DIR__ . '/class-test-case.php';
