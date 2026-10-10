@@ -51,14 +51,21 @@ restaurants are listed.
 
 ### 1. Claimed basic listing (free)
 
-An owner claims their restaurant's existing listing. After an administrator
-links the account (the `gr_claimed_by_user_id` meta), the owner can:
+An owner claims their restaurant's existing listing: they confirm with a
+code sent to an email at the restaurant's website domain (or, when switched
+on, a text to its listed phone), then an administrator approves and the
+account is linked (the `gr_claimed_by_user_id` meta). Built 2026-10-10; see
+[billing.md](billing.md) §5-6. The owner can:
 
-- submit corrections to facts (hours, phone, address, menu link, closed or
-  moved), which are published once verified;
+- edit opening hours, up to 5 menu links, up to 5 specials and up to 8 photos,
+  live at once and logged in the change log as the owner's;
+- see listing views, website and phone clicks, and their ads' performance on
+  the My restaurant dashboard;
 - post an owner quote and signature dishes ("From the owner"), pending
   administrator approval like every highlight;
-- post one public response to each review.
+- post one public response to each review;
+- report other fact errors (phone, address, closed or moved) through the
+  correction form, published once verified.
 
 Claiming is free because it is how owners correct facts, and because claimed
 owners are the people the paid products are sold to.
@@ -229,7 +236,11 @@ free claimed listings as the way in.
 - [legal-and-policy.md](legal-and-policy.md) §9 drafted a line noting which
   restaurants advertise on award and ranking pages. It is not in the new
   editorial statement; decide with counsel (question 7 in §8).
-- Premium profile contents and deal posts are not built yet.
+- Premium profile contents and deal posts are not built yet. Claimed owners
+  now get menu links and photos for free (task 10d), so premium profiles need
+  other contents; see [billing.md](billing.md) §7.
+- Self-serve checkout is waiting for a decision; Stripe does not accept
+  Guam-based businesses ([billing.md](billing.md) §4).
 
 ## Ad serving
 

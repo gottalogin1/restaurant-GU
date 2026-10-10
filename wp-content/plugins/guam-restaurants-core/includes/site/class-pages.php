@@ -16,7 +16,10 @@ defined( 'ABSPATH' ) || exit;
  * and finds them for links. Content lives in the page, so it stays editable.
  *
  * - map, recently opened and closed: published, made of this plugin's blocks.
- * - claim, correction, contact: drafts. Each needs a form (Happyforms, per
+ * - claim: published, with the claim form block (Claims\Claim_Form). A
+ *   claim page still holding the old editor placeholder is upgraded and
+ *   published once (VERSION 3).
+ * - correction, contact: drafts. Each needs a form (Happyforms, per
  *   docs/plugins.md) added in the editor; links to them appear on
  *   restaurant pages only once they are published.
  * - terms: a draft for the terms of use, to be written with counsel
@@ -32,7 +35,12 @@ defined( 'ABSPATH' ) || exit;
 final class Pages {
 
 	public const OPTION  = 'guam_restaurants_site_pages';
-	public const VERSION = '2';
+	public const VERSION = '3';
+
+	/**
+	 * Placeholder the claim page shipped with before the claim form existed.
+	 */
+	public const OLD_CLAIM_PLACEHOLDER = '[Editor: add the claim form here, then publish this page.]';
 
 	/**
 	 * Hooks registration.
@@ -75,8 +83,8 @@ final class Pages {
 			'claim'      => array(
 				'slug'    => 'claim-this-listing',
 				'title'   => __( 'Claim this listing', 'guam-restaurants-core' ),
-				'status'  => 'draft',
-				'content' => '<!-- wp:guam-restaurants/listing-context /-->' . "\n\n" . $p( __( 'Own or manage this restaurant? Tell us who you are and how we can confirm it, and we will link the listing to your account so you can add an owner quote and reply to reviews.', 'guam-restaurants-core' ) ) . "\n\n" . $p( __( '[Editor: add the claim form here, then publish this page.]', 'guam-restaurants-core' ) ),
+				'status'  => 'publish',
+				'content' => self::claim_content(),
 			),
 			'correction' => array(
 				'slug'    => 'suggest-a-correction',
@@ -123,7 +131,43 @@ final class Pages {
 		if ( is_array( $stored ) && self::VERSION === ( $stored['version'] ?? '' ) ) {
 			return;
 		}
+		self::upgrade_claim_page();
 		self::ensure();
+	}
+
+	/**
+	 * Claim page content: who it is for, the steps, and the form.
+	 *
+	 * @return string
+	 */
+	public static function claim_content(): string {
+		$p = static function ( string $text ): string {
+			return '<!-- wp:paragraph --><p>' . esc_html( $text ) . '</p><!-- /wp:paragraph -->';
+		};
+		return '<!-- wp:guam-restaurants/listing-context /-->' . "\n\n"
+			. $p( __( 'Own or manage this restaurant? Claim the listing to keep its hours, menu links, photos and specials up to date, see how many people view it and click through, and reply to reviews.', 'guam-restaurants-core' ) ) . "\n\n"
+			. $p( __( 'We send a code to an email address at the restaurant\'s own website domain to confirm you work there, then a person reviews the claim. Claiming is free. Owners cannot change ratings, awards or reviews.', 'guam-restaurants-core' ) ) . "\n\n"
+			. '<!-- wp:guam-restaurants/claim-form /-->';
+	}
+
+	/**
+	 * Puts the claim form on a claim page that still has the old editor
+	 * placeholder, and publishes it. A page someone edited is left alone.
+	 *
+	 * @return void
+	 */
+	public static function upgrade_claim_page(): void {
+		$page = get_page_by_path( self::definitions()['claim']['slug'], OBJECT, 'page' );
+		if ( ! $page instanceof \WP_Post || 'draft' !== $page->post_status || false === strpos( $page->post_content, self::OLD_CLAIM_PLACEHOLDER ) ) {
+			return;
+		}
+		wp_update_post(
+			array(
+				'ID'           => $page->ID,
+				'post_content' => self::claim_content(),
+				'post_status'  => 'publish',
+			)
+		);
 	}
 
 	/**

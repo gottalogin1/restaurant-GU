@@ -56,6 +56,7 @@ advertising.
    | Yoast Duplicate Post | |
    | Your Gallery | |
    | Your Gallery - PRO | Pro |
+   | WPXPO suite: PostX, WowStore, WowRevenue, WowInvoice, WowAddons, WowOptin, WholesaleX, WowShipping, WowRecommend (fit notes in `docs/billing.md` §1) | Pro |
 
 7. **Coding standards.** Follow WordPress coding standards. Sanitize input,
    escape output, use nonces and capability checks, and use

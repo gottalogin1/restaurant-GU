@@ -14,7 +14,7 @@
 	--gr-radius: 0.5rem;
 }
 
-:where(.gr-card, .gr-chips, .gr-recent, .gr-details, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links) {
+:where(.gr-card, .gr-chips, .gr-recent, .gr-details, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim) {
 	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
 	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
@@ -635,4 +635,56 @@
 .gr-ad__text {
 	margin: 0;
 	font-size: 0.95rem;
+}
+
+/* From the owner (Owners\Owner_Content) */
+.gr-owner__menus,
+.gr-owner__specials {
+	padding-left: 1.25rem;
+}
+.gr-owner__specials li + li {
+	margin-top: 0.5rem;
+}
+.gr-owner__ends,
+.gr-owner__note {
+	color: var(--gr-muted-text);
+	font-size: 0.875em;
+}
+.gr-owner__photos {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+	gap: 0.75rem;
+}
+.gr-owner__photos img {
+	width: 100%;
+	height: auto;
+	border-radius: var(--gr-radius);
+}
+
+/* Claim form (Claims\Claim_Form) */
+.gr-claim__form {
+	max-width: 32rem;
+	padding: 1rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	margin-bottom: 1rem;
+}
+.gr-claim__form fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+.gr-claim__form input[type="email"],
+.gr-claim__form input[type="text"] {
+	width: 100%;
+	max-width: 24rem;
+}
+.gr-claim__message {
+	padding: 0.75rem 1rem;
+	border-radius: var(--gr-radius);
+	background: var(--gr-surface);
+	border-left: 4px solid var(--gr-primary);
+}
+.gr-claim__message--error {
+	border-left-color: #b32d2e;
 }

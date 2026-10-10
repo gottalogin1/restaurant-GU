@@ -71,6 +71,12 @@ final class Plugin {
 		Ads\Tracking::register();
 		Ads\Admin::register();
 		Ads\Report::register();
+		Billing\Admin::register();
+		Claims\Claim_Form::register();
+		Claims\Admin::register();
+		Owners\Owner_Content::register();
+		Owners\Listing_Stats::register();
+		Owners\Dashboard::register();
 		Awards\Display::register();
 		Awards\Pages::register();
 		Structured_Data::register();

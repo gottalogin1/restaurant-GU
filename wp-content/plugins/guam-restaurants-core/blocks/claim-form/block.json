@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/claim-form",
+	"version": "0.1.0",
+	"title": "Claim form",
+	"category": "widgets",
+	"icon": "id",
+	"description": "Lets a logged-in owner claim the restaurant in the page address: confirm by a code sent to an email at the restaurant's website domain (or, when switched on, a text to its listed phone), then wait for an administrator's approval.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

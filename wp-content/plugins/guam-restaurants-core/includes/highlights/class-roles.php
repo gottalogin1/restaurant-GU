@@ -9,6 +9,7 @@ namespace GuamRestaurants\Core\Highlights;
 
 use GuamRestaurants\Core\Ads\Ads;
 use GuamRestaurants\Core\Advertising\Leads;
+use GuamRestaurants\Core\Claims\Claims;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Restaurant_Meta;
 
@@ -22,15 +23,19 @@ defined( 'ABSPATH' ) || exit;
  * - `gr_write_editor_notes`: write editor's notes. Administrators and editors.
  * - `gr_manage_advertiser_leads` (Advertising\Leads::CAP): see and work
  *   advertiser leads. Administrators only.
- * - `gr_submit_owner_content`: write owner quotes and reply to reviews, but
- *   only for restaurants linked to the user. The `gr_restaurant_owner` role
- *   has this and `read`, nothing else: owners cannot edit, hide or delete
- *   any review.
+ * - `gr_approve_claims` (Claims\Claims::CAP): approve or reject listing
+ *   claims. Administrators only.
+ * - `gr_submit_owner_content`: write owner quotes, reply to reviews and edit
+ *   the owner fields (hours, menu links, photos, specials; Owners\Owner_Content),
+ *   but only for restaurants linked to the user. The `gr_restaurant_owner`
+ *   role has this and `read`, nothing else: owners cannot edit the
+ *   restaurant post, its ratings, awards or status history, and cannot
+ *   edit, hide or delete any review.
  *
  * Which restaurant an owner speaks for is the restaurant's existing
  * `gr_claimed_by_user_id` meta (design/content-model.md §3), one account
- * per restaurant. An administrator sets it from the user's profile screen
- * after checking ownership; there is no self-service claim.
+ * per restaurant. It is set when an administrator approves a verified
+ * claim (Claims\Claims), or by an administrator from the user's profile.
  */
 final class Roles {
 
@@ -42,7 +47,7 @@ final class Roles {
 	/**
 	 * Bump when capabilities change so maybe_install() runs again.
 	 */
-	public const VERSION        = '3';
+	public const VERSION        = '4';
 	public const VERSION_OPTION = 'guam_restaurants_core_roles_version';
 
 	/**
@@ -74,7 +79,7 @@ final class Roles {
 			);
 		}
 		$grants = array(
-			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER, Leads::CAP, Ads::CAP ),
+			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER, Leads::CAP, Ads::CAP, Claims::CAP ),
 			'editor'        => array( self::EDITOR ),
 		);
 		foreach ( $grants as $role_name => $caps ) {

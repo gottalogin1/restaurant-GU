@@ -20,7 +20,7 @@ final class Schema {
 	/**
 	 * Bump when a table definition changes so upgrades run dbDelta() again.
 	 */
-	public const VERSION = '5';
+	public const VERSION = '6';
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
@@ -31,6 +31,8 @@ final class Schema {
 	public const HIGHLIGHTS     = 'gr_highlights';
 	public const AD_DAILY_STATS = 'gr_ad_daily_stats';
 	public const OPEN_HOURS     = 'gr_open_hours';
+	public const CLAIMS         = 'gr_claims';
+	public const LISTING_STATS  = 'gr_listing_daily_stats';
 
 	/**
 	 * Tables with a restaurant_id column, cleaned up when a restaurant is deleted.
@@ -41,6 +43,8 @@ final class Schema {
 		self::REVIEW_QUEUE,
 		self::HIGHLIGHTS,
 		self::OPEN_HOURS,
+		self::CLAIMS,
+		self::LISTING_STATS,
 	);
 
 	/**
@@ -115,6 +119,8 @@ final class Schema {
 		$highlights     = self::table( self::HIGHLIGHTS );
 		$ad_daily_stats = self::table( self::AD_DAILY_STATS );
 		$open_hours     = self::table( self::OPEN_HOURS );
+		$claims         = self::table( self::CLAIMS );
+		$listing_stats  = self::table( self::LISTING_STATS );
 
 		return array(
 			self::AWARDS         => "CREATE TABLE $awards (
@@ -225,6 +231,39 @@ final class Schema {
   closes_at smallint(5) unsigned NOT NULL,
   PRIMARY KEY  (restaurant_id,opens_at),
   KEY opens_closes (opens_at,closes_at)
+) $charset;",
+
+			// Listing claims (Claims\Claims). The code is stored only as a keyed hash.
+			self::CLAIMS         => "CREATE TABLE $claims (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  restaurant_id bigint(20) unsigned NOT NULL,
+  user_id bigint(20) unsigned NOT NULL,
+  method varchar(10) NOT NULL,
+  contact varchar(191) NOT NULL DEFAULT '',
+  code_hash varchar(64) NOT NULL DEFAULT '',
+  code_expires datetime NULL,
+  attempts tinyint(3) unsigned NOT NULL DEFAULT 0,
+  status varchar(20) NOT NULL,
+  reason varchar(255) NOT NULL DEFAULT '',
+  created_at datetime NOT NULL,
+  verified_at datetime NULL,
+  decided_at datetime NULL,
+  decided_by bigint(20) unsigned NULL,
+  PRIMARY KEY  (id),
+  KEY restaurant_status (restaurant_id,status),
+  KEY user_status (user_id,status),
+  KEY status (status)
+) $charset;",
+
+			// Daily listing counters for owner dashboards; no visitor data (Owners\Listing_Stats).
+			self::LISTING_STATS  => "CREATE TABLE $listing_stats (
+  restaurant_id bigint(20) unsigned NOT NULL,
+  stat_date date NOT NULL,
+  views int(10) unsigned NOT NULL DEFAULT 0,
+  website_clicks int(10) unsigned NOT NULL DEFAULT 0,
+  phone_clicks int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY  (restaurant_id,stat_date),
+  KEY stat_date (stat_date)
 ) $charset;",
 		);
 	}

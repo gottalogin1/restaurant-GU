@@ -65,8 +65,13 @@ Install on staging first and check each against the current WordPress version
       but neither the lead email (to Settings > General > Administration
       Email Address) nor the sender's confirmation goes out.
 - [ ] Akismet on a paid plan, checking reviews and form submissions.
-- [ ] Happyforms: build the claim, correction and contact forms, add each to
-      its draft page, then publish the three pages.
+- [ ] Happyforms: build the correction and contact forms, add each to its
+      draft page, then publish the two pages. (The claim page is published by
+      the plugin with its own claim form; docs/billing.md §5.)
+- [ ] Settings > General: turn on "Anyone can register" (default role
+      Subscriber) so owners can create an account to claim a listing.
+- [ ] Before the first invoice: answer the DRT and accountant questions in
+      docs/billing.md §3.
 
 ## Hosting, keys and settings
 

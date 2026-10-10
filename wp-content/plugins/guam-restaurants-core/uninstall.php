@@ -23,12 +23,13 @@ delete_option( 'guam_restaurants_core_roles_version' );
 delete_option( 'guam_restaurants_policy_page' );
 
 // The owner role and highlight and lead capabilities. Owner links (the restaurants'
-// gr_claimed_by_user_id meta), advertiser leads, ads and the editorial policy page are content and are kept.
+// gr_claimed_by_user_id meta), advertiser leads, ads (with their invoice numbers and the invoice
+// sequence option), claims and the editorial policy page are content and are kept.
 remove_role( 'gr_restaurant_owner' );
 foreach ( array( 'administrator', 'editor' ) as $guam_role_name ) {
 	$guam_role = get_role( $guam_role_name );
 	if ( $guam_role ) {
-		foreach ( array( 'gr_moderate_highlights', 'gr_write_editor_notes', 'gr_submit_owner_content', 'gr_manage_advertiser_leads', 'gr_manage_ads' ) as $guam_cap ) {
+		foreach ( array( 'gr_moderate_highlights', 'gr_write_editor_notes', 'gr_submit_owner_content', 'gr_manage_advertiser_leads', 'gr_manage_ads', 'gr_approve_claims' ) as $guam_cap ) {
 			$guam_role->remove_cap( $guam_cap );
 		}
 	}

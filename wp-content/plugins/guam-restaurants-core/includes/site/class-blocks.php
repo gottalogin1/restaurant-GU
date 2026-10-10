@@ -15,6 +15,7 @@ use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Highlights\Policy_Page;
 use GuamRestaurants\Core\Monitoring\Queries;
+use GuamRestaurants\Core\Owners\Listing_Stats;
 use GuamRestaurants\Core\Restaurant_Meta;
 
 defined( 'ABSPATH' ) || exit;
@@ -351,6 +352,7 @@ final class Blocks {
 			return '';
 		}
 		Assets::enqueue( 'hours' );
+		wp_enqueue_script( Listing_Stats::SCRIPT );
 
 		$rows   = array();
 		$place  = array_filter( array( Restaurant_View::term_links( $id, Content_Types::TAX_MALL ), Restaurant_View::term_links( $id, Content_Types::TAX_VILLAGE ) ) );
@@ -369,11 +371,11 @@ final class Blocks {
 		}
 		$phone = (string) get_post_meta( $id, Restaurant_Meta::PHONE, true );
 		if ( '' !== $phone ) {
-			$rows[ __( 'Phone', 'guam-restaurants-core' ) ] = sprintf( '<a href="tel:%1$s">%2$s</a>', esc_attr( $phone ), esc_html( Restaurant_View::format_phone( $phone ) ) );
+			$rows[ __( 'Phone', 'guam-restaurants-core' ) ] = sprintf( '<a href="tel:%1$s" data-gr-listing-click="phone">%2$s</a>', esc_attr( $phone ), esc_html( Restaurant_View::format_phone( $phone ) ) );
 		}
 		$website = (string) get_post_meta( $id, Restaurant_Meta::WEBSITE, true );
 		if ( '' !== $website ) {
-			$rows[ __( 'Website', 'guam-restaurants-core' ) ] = sprintf( '<a href="%1$s" rel="noopener">%2$s</a>', esc_url( $website ), esc_html( Restaurant_View::website_label( $website ) ) );
+			$rows[ __( 'Website', 'guam-restaurants-core' ) ] = sprintf( '<a href="%1$s" rel="noopener" data-gr-listing-click="website">%2$s</a>', esc_url( $website ), esc_html( Restaurant_View::website_label( $website ) ) );
 		}
 		$directions = Maps::directions_url( $id );
 		if ( '' !== $directions ) {
@@ -391,7 +393,14 @@ final class Blocks {
 		$out   .= '' !== $list ? '<dl class="gr-details__list">' . $list . '</dl>' : '';
 		$out   .= self::hours_table( $id, '' === $status );
 
-		return self::wrap( 'section', '<h2 class="gr-section-title">' . esc_html__( 'Details', 'guam-restaurants-core' ) . '</h2>' . $out, array( 'class' => 'gr-details' ) );
+		return self::wrap(
+			'section',
+			'<h2 class="gr-section-title">' . esc_html__( 'Details', 'guam-restaurants-core' ) . '</h2>' . $out,
+			array(
+				'class'           => 'gr-details',
+				'data-gr-listing' => (string) $id,
+			)
+		);
 	}
 
 	/**

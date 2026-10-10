@@ -99,6 +99,16 @@ CSV report. Do not install Advanced Ads. If it was installed on staging for the 
 placement, its "home" placement is no longer printed by the theme and can be deleted with
 the plugin.
 
+## WPXPO suite (owned, Pro, unlimited sites), 2026-10-10
+
+Checked plugin by plugin in [billing.md](billing.md) §1. Every WPXPO plugin
+except PostX needs WooCommerce, which the site does not run, so none of them
+can do manual invoicing, claims or the owner dashboard. WowStore, WowInvoice
+and WowRevenue come into use if WooCommerce checkout for premium profiles is
+approved ([billing.md](billing.md) §4). WholesaleX does not fit listing claims.
+PostX is not needed for the directory blocks. Pro licenses are activated in
+wp-admin on the host and never committed.
+
 ## Other owned plugins worth using
 
 Not part of this request, listed so they are not forgotten: ShortPixel Image Optimizer

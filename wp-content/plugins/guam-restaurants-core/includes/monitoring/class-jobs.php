@@ -7,6 +7,7 @@
 
 namespace GuamRestaurants\Core\Monitoring;
 
+use GuamRestaurants\Core\Billing\Reminders;
 use GuamRestaurants\Core\Config;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
@@ -19,12 +20,14 @@ use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Four jobs:
+ * Five jobs:
  *
  * - `osm`: weekly OpenStreetMap import, then duplicate detection.
  * - `google-status`: monthly Google business-status check (needs a key;
  *   stays inside the free allowance with the default $0 cap).
  * - `yelp-status`: monthly Yelp check, off unless enabled (Yelp has no free tier).
+ * - `renewal-reminders`: daily; emails advertisers 14 and 3 days before an
+ *   ad ends (Billing\Reminders).
  * - `health-check`: daily; emails the owner when a job missed its window.
  *
  * Preferred: a real server cron runs `wp guam-restaurants run-job <job>`
@@ -43,6 +46,7 @@ final class Jobs {
 	public const GOOGLE_STATUS   = 'google-status';
 	public const YELP_STATUS     = 'yelp-status';
 	public const HEALTH_CHECK    = 'health-check';
+	public const RENEWALS        = 'renewal-reminders';
 	public const MODE_SERVER     = 'server';
 	public const MODE_WP_CRON    = 'wp-cron';
 	public const HEALTH_MIN_HOUR = 20;
@@ -77,6 +81,14 @@ final class Jobs {
 				'grace'      => 3 * DAY_IN_SECONDS,
 				'recurrence' => self::MONTHLY,
 				'cron'       => '45 4 2 * *',
+			),
+			self::RENEWALS      => array(
+				'label'      => 'Renewal reminder emails',
+				'source'     => 'renewal_reminders',
+				'interval'   => DAY_IN_SECONDS,
+				'grace'      => DAY_IN_SECONDS,
+				'recurrence' => 'daily',
+				'cron'       => '30 22 * * *',
 			),
 			self::HEALTH_CHECK  => array(
 				'label'      => 'Daily health check',
@@ -212,11 +224,14 @@ final class Jobs {
 				case self::YELP_STATUS:
 					$outcome = self::run_status( $job, $options );
 					break;
+				case self::RENEWALS:
+					$outcome = self::run_renewals( $options );
+					break;
 				default:
 					$outcome = self::outcome( true, null, Health_Check::run(), '' );
 			}
 		} catch ( \Throwable $e ) {
-			$run_id  = self::HEALTH_CHECK === $job ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage() );
+			$run_id  = in_array( $job, array( self::HEALTH_CHECK, self::RENEWALS ), true ) ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage() );
 			$outcome = self::outcome( false, $run_id ? $run_id : null, '', $e->getMessage() );
 		}
 
@@ -298,6 +313,24 @@ final class Jobs {
 		Alerts::closures_in_run( ucfirst( $source->source() ) . ' status check', $result['closed'], $result['queued'], $result['run_id'] );
 
 		return self::outcome( true, $result['run_id'], Status_Checker::notes( $source->source(), $result ), '', $result );
+	}
+
+	/**
+	 * The renewal reminder job. Nothing is written to ingestion runs: it
+	 * imports nothing; its outcome is kept in the job state.
+	 *
+	 * @param array<string, mixed> $options Options: `today` (Y-m-d, for tests).
+	 * @return array<string, mixed>
+	 */
+	private static function run_renewals( array $options ): array {
+		$counts = Reminders::run( isset( $options['today'] ) ? (string) $options['today'] : null );
+		return self::outcome(
+			0 === $counts['failed'],
+			null,
+			sprintf( 'sent %d, skipped (no billing email) %d, failed %d', $counts['sent'], $counts['skipped_no_email'], $counts['failed'] ),
+			$counts['failed'] > 0 ? sprintf( '%d reminder emails could not be sent; check the site email setup.', $counts['failed'] ) : '',
+			$counts
+		);
 	}
 
 	/**
