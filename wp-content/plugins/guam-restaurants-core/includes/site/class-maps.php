@@ -121,7 +121,7 @@ final class Maps {
 			'center'  => self::GUAM_CENTER,
 			'zoom'    => self::GUAM_ZOOM,
 			'library' => array(
-				'js'  => plugins_url( 'assets/vendor/maplibre-gl/maplibre-gl.js', GUAM_RESTAURANTS_CORE_FILE ),
+				'js'  => plugins_url( 'assets/vendor/maplibre-gl/maplibre-gl.mjs', GUAM_RESTAURANTS_CORE_FILE ),
 				'css' => plugins_url( 'assets/vendor/maplibre-gl/maplibre-gl.css', GUAM_RESTAURANTS_CORE_FILE ),
 			),
 		);

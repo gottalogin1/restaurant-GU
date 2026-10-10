@@ -7,6 +7,7 @@
 
 namespace GuamRestaurants\Core\Reviews;
 
+use GuamRestaurants\Core\Config;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Highlights\Email_Verification;
 use GuamRestaurants\Core\Highlights\Highlights;
@@ -393,6 +394,16 @@ final class Visitor_Reviews {
 	 */
 	public static function client_key(): string {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+
+		// Behind a CDN every visitor shares the CDN's addresses, so one
+		// visitor's limit would block everyone (docs/security.md §5).
+		$header = strtoupper( Config::get( Config::CLIENT_IP_HEADER ) );
+		if ( '' !== $header && preg_match( '/^HTTP_[A-Z0-9_]+$/', $header ) && ! empty( $_SERVER[ $header ] ) ) {
+			$forwarded = trim( explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) ) )[0] );
+			if ( false !== filter_var( $forwarded, FILTER_VALIDATE_IP ) ) {
+				$ip = $forwarded;
+			}
+		}
 
 		/**
 		 * Filters the visitor IP used for rate limiting, for hosts behind a

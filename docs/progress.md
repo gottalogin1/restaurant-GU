@@ -173,3 +173,35 @@
 - Found: Google Business Profile requires a place customers visit or a service area; a website-only directory may not qualify (docs/seo-and-analytics.md §3).
 - Decided (Sanjay, 2026-10-10): SendFox paid plan, so drafts go through the API once the token is set on the host. Sanjay will install Matomo on the live site (it can't be installed from the build environment).
 - Remaining: set the SendFox token and from address on the host; install Matomo and set its constants; Search Console; decide on GBP eligibility; privacy policy lines for analytics and the form.
+
+## Production readiness, 2026-10-10
+- Requested by Sanjay (2026-10-10): a security review (nonces, capabilities, escaping, prepared queries, upload limits, admin hardening, login rate limiting, admin two-factor, security headers, dependency audit); performance (object cache, page cache exclusions, images, EXPLAIN on the five slowest queries, CDN); deployment (staging and production steps, constants, custom table migrations, rollback); daily off-site backups with a restore test; monitoring (uptime, error logging, monthly API spend per source); legal pages (privacy, terms, editorial, advertising disclosure, data attributions, cookie notice if needed). Using the owned plugins from CLAUDE.md rule 6.
+- Done: **security review** (docs/security.md §1). Every handler has a nonce and a capability check, every query with input is prepared, PHPCS escaping passes. Fixed: form rate limits keyed on the CDN's address instead of the visitor's (`GUAM_RESTAURANTS_CLIENT_IP_HEADER`).
+- Done: **hardening and headers** (`includes/security/`). XML-RPC off, no user enumeration (REST users, `?author=`, author archives, user sitemap), no generator tag, upload cap (10 MB, 40 megapixels, images and PDF only for non-admins); nosniff, Referrer-Policy, X-Frame-Options, Permissions-Policy, optional HSTS, and a report-only CSP checked with no violations on 8 local pages. `Security\Two_Factor_Policy` makes administrators enroll in the Two Factor plugin once `GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA` is on. Login limits: LoginPress Pro's Limit Login Attempts add-on (owned), MalCare as fallback.
+- Done: **dependency audit** (docs/security.md §6). `composer audit` clean, no npm. **MapLibre GL JS 5.24.0 had a critical XSS (CVE-2026-85061) with no 5.x fix; updated to 6.13.0**, which is ES-module only, so `assets/site/map.js` now uses `import()`. Checked in Chromium: clusters, popups and the restaurant page marker work with no console errors.
+- Done: **performance** (docs/performance.md). Object cache via host Redis or W3TC, page cache exclusion list, ShortPixel settings, Cloudflare cache and rate-limit rules. EXPLAIN on the five slowest queries at 1,740 restaurants: all under 18 ms; no index changes, revisit at 10,000 restaurants or 50 ms.
+- Done: **deployment** (docs/deployment.md). `bin/deploy.sh` (git archive build, pre-deploy database and code backup, rsync, `db upgrade`, cache purge, preflight, smoke test) and `bin/rollback.sh`; `deploy/example.env`. `wp guam-restaurants db status|upgrade` with an upgrade lock, `GUAM_RESTAURANTS_DB_UPGRADE=cli` for production, and `wp guam-restaurants preflight [--strict]` with 17 checks.
+- Done: **backups** (docs/backups.md). `bin/backup.sh` (daily `wp db export` plus manifest, uploads sync with 30 days of history, rclone crypt remote, Healthchecks.io ping) and `bin/restore-test.sh` (checksum, import, counts, schema, health, uploads sample; refuses production).
+- Done: **monitoring** (docs/monitoring.md). Health endpoint `GET /wp-json/guam-restaurants/v1/health` (ok, degraded, error 503) for an uptime keyword monitor; failed jobs write to the PHP error log; monthly `spend-report` job emails last month's calls and estimated cost per source (Google Places, Yelp, Foursquare) from archived `Ratings\Budget` counts; `wp guam-restaurants spend-report --month=`.
+- Done: **legal pages** (docs/legal-pages.md, `includes/legal/`, `data/legal/`). Privacy policy and terms filled into their drafts for counsel; advertising disclosure and data sources pages published; editorial statement, corrections and sponsored-feature sections added to the editorial policy; footer links. No cookie banner: analytics are cookieless and there are no ad cookies (the privacy policy has the cookie table).
+- Checked: PHPUnit 354 tests, 2,184 assertions pass (16 new in production-readiness-test.php); PHPCS clean; shellcheck clean on `bin/`. Locally (`DEPLOY_SSH=local`): a staging deploy, rollback, a backup to a local rclone remote and a restore drill (all PASS, production URL refused).
+- Not checked on a real host: SSH deploy, Cloudflare rules, Redis, the off-site bucket, LoginPress Pro on WordPress 7.1, MalCare, Two Factor enrollment.
+
+### Open items (production)
+Live-host setup (all in docs/launch-checklist.md, "Production readiness"):
+1. Choose and buy the host (Kinsta Tokyo recommended), create staging, fill `wp-config.php` from docs/deployment.md §2 and the `deploy/*.env` files.
+2. Off-site backups: Backblaze B2 bucket and key, rclone crypt remote (store the password), `~/.guam-backup.env`, Healthchecks.io check, crontab; first real restore test into staging, logged in docs/backups.md §4.
+3. CDN: Cloudflare account (or the host's), cache rules, POST rate limit on `/wp-json/guam-restaurants/v1/` (covers the ad and listing beacons), then set `GUAM_RESTAURANTS_CLIENT_IP_HEADER`.
+4. Install Two Factor, enroll every administrator with backup codes, then turn on `GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA`.
+5. LoginPress Pro license and the Limit Login Attempts add-on (tested only to WordPress 7.0; try on staging) or MalCare's login CAPTCHA; connect MalCare free.
+6. Persistent object cache (host Redis or W3TC); page cache exclusions; ShortPixel API key.
+7. Uptime monitor (keyword on the health endpoint plus the home page); Google Cloud budget alert.
+8. SMTP so alerts, reminders and form emails send.
+9. Server headers and an `xmlrpc.php` block at the host or CDN; `expose_php = Off`.
+10. Rename or remove any `admin` user.
+11. After a clean week live: HSTS on, then CSP to `enforce`.
+Legal and code:
+12. Counsel fills the privacy policy and terms placeholders; then publish both.
+13. Register a DMCA designated agent and add it to the terms.
+14. Set retention periods with counsel, then build a purge job for leads, corrections and claims.
+15. WordPress privacy export/erase hooks for leads, corrections and claims.

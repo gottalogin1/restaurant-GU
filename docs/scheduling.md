@@ -1,6 +1,6 @@
 # Scheduled jobs
 
-The plugin runs five jobs. Each one is a WP-CLI command, so a real server
+The plugin runs seven jobs. Each one is a WP-CLI command, so a real server
 cron can run it directly. WP-Cron is the fallback.
 
 | Job | Command | Window | Suggested crontab (UTC) |
@@ -11,6 +11,7 @@ cron can run it directly. WP-Cron is the fallback.
 | Renewal reminder emails (docs/billing.md §2) | `wp guam-restaurants run-job renewal-reminders` | daily, plus 1 day grace | `30 22 * * *` (08:30 Guam) |
 | Health check | `wp guam-restaurants run-job health-check` | daily | `0 7 * * *` |
 | Newsletter draft (Monday 06:00 Guam time; never sends) | `wp guam-restaurants run-job newsletter` | weekly, plus 1 day grace | `0 20 * * 0` |
+| API spend report for last month (docs/monitoring.md §3) | `wp guam-restaurants run-job spend-report` | monthly, plus 3 days grace | `0 22 1 * *` (08:00 Guam on the 2nd) |
 
 `wp guam-restaurants jobs` prints the same table with the last success and
 the next deadline. Restaurants > Import runs shows it in the admin, with every
@@ -36,7 +37,12 @@ run's counts, notes and errors.
    30 4 2 * *  cd /path/to/wordpress && wp guam-restaurants run-job google-status >> /var/log/guam-jobs.log 2>&1
    30 22 * * * cd /path/to/wordpress && wp guam-restaurants run-job renewal-reminders >> /var/log/guam-jobs.log 2>&1
    0 7 * * *   cd /path/to/wordpress && wp guam-restaurants run-job health-check >> /var/log/guam-jobs.log 2>&1
+   0 22 1 * *  cd /path/to/wordpress && wp guam-restaurants run-job spend-report >> /var/log/guam-jobs.log 2>&1
+   15 17 * * * /path/to/bin/backup.sh >> /var/log/guam-backup.log 2>&1
    ```
+
+   The last line is the daily off-site backup (docs/backups.md); it is a shell
+   script, not a plugin job.
 
 3. Optional: `define( 'DISABLE_WP_CRON', true );` and run WP-Cron itself from
    the crontab (`*/15 * * * * cd /path/to/wordpress && wp cron event run --due-now`),

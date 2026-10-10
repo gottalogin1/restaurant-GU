@@ -6,3 +6,7 @@ node_modules/
 .DS_Store
 *.log
 /.cache/
+
+# Deploy and backup settings (bin/deploy.sh, bin/backup.sh); only the example is committed.
+/deploy/*.env
+!/deploy/example.env

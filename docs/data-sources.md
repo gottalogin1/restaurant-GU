@@ -423,7 +423,8 @@ DPHSS data is imported.
 
 ## 6a. Map tiles
 
-**Built 2026-10-10: MapLibre GL JS 5.24.0 (self-hosted, BSD-3-Clause), with
+**Built 2026-10-10: MapLibre GL JS 6.13.0 (self-hosted, BSD-3-Clause; updated
+from 5.24.0 for CVE-2026-85061, docs/security.md §6), with
 the vector style URL set by `GUAM_RESTAURANTS_MAP_STYLE_URL`.** Switching
 providers is a configuration change, not a code change.
 

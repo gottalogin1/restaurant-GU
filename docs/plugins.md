@@ -22,6 +22,10 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
 | Ad management | Built into `guam-restaurants-core` (Advanced Ads not needed) | | | | | |
 | Checkout (premium profiles) | [WooCommerce](https://github.com/woocommerce/woocommerce/releases/tag/11.2.1) + [WooCommerce PayPal Payments](https://wordpress.org/plugins/woocommerce-paypal-payments/) | No (free) | GPLv3 / GPLv2 | 11.2.1 / 4.1.3 | 2026-10-10 checked | |
 | Form spam (supports Forms) | [Akismet](https://wordpress.org/plugins/akismet/) | Yes | GPLv2 or later | 5.7.2 | about 2026-08 | 5+ million |
+| Login rate limiting | LoginPress Pro, Limit Login Attempts add-on | Yes (Pro) | GPLv2 or later | 6.2.5 (free core readme) | checked 2026-10-10 (tested up to WP 7.0) | |
+| Firewall, malware scan | [MalCare](https://wordpress.org/plugins/malcare-security/) (free tier) | Yes | GPLv2 or later | 6.72 | checked 2026-10-10 (tested up to WP 7.1) | |
+| Two-factor sign-in | [Two Factor](https://wordpress.org/plugins/two-factor/) | No (free) | GPLv2 or later | 0.17.0 | checked 2026-10-10 (tested up to WP 7.1) | |
+| Image optimization | [ShortPixel Image Optimizer](https://wordpress.org/plugins/shortpixel-image-optimiser/) (100 free credits a month) | Yes | GPLv2 or later | not recorded | checked 2026-10-10 | |
 
 ## SEO: Yoast SEO (free)
 
@@ -114,12 +118,24 @@ approved ([billing.md](billing.md) §4). WholesaleX does not fit listing claims.
 PostX is not needed for the directory blocks. Pro licenses are activated in
 wp-admin on the host and never committed.
 
+## Security and images (production readiness, 2026-10-10)
+
+- **LoginPress Pro (owned):** use its Limit Login Attempts add-on and Turnstile on the
+  login form. Settings and the WordPress 7.1 caveat: docs/security.md §4.
+- **MalCare (owned, free tier):** firewall and malware scanning. Its backups and
+  hardening are paid and not used; backups are `bin/backup.sh` (docs/backups.md).
+- **Two Factor (free, not owned):** none of the owned plugins documents two-factor sign-in.
+  The plugin enforces it for administrators once `GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA` is
+  on (docs/security.md §4).
+- **ShortPixel (owned):** settings in docs/performance.md §3.
+- **WP .htaccess Editor (owned):** only on Apache hosts, to add the header and
+  `xmlrpc.php` rules in docs/security.md §3. Not needed on nginx hosts such as Kinsta.
+- **Health Check & Troubleshooting (owned):** Site Health plus troubleshooting mode for
+  plugin conflicts; the plugin's own checks are `wp guam-restaurants preflight`.
+
 ## Other owned plugins worth using
 
-Not part of this request, listed so they are not forgotten: ShortPixel Image Optimizer
-(image compression), MalCare (security and malware scanning, if the host does not include
-it), Yoast Duplicate Post (cloning restaurant drafts), Health Check & Troubleshooting
-(debugging conflicts). Classic Editor, CSS Hero and DiviFlash do not fit a block theme and
+Not part of this request, listed so they are not forgotten: Yoast Duplicate Post (cloning restaurant drafts). Classic Editor, CSS Hero and DiviFlash do not fit a block theme and
 should stay inactive.
 
 ## How to re-check
