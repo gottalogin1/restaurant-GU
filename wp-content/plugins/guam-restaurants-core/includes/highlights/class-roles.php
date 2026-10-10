@@ -7,6 +7,7 @@
 
 namespace GuamRestaurants\Core\Highlights;
 
+use GuamRestaurants\Core\Ads\Ads;
 use GuamRestaurants\Core\Advertising\Leads;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Restaurant_Meta;
@@ -41,7 +42,7 @@ final class Roles {
 	/**
 	 * Bump when capabilities change so maybe_install() runs again.
 	 */
-	public const VERSION        = '2';
+	public const VERSION        = '3';
 	public const VERSION_OPTION = 'guam_restaurants_core_roles_version';
 
 	/**
@@ -73,7 +74,7 @@ final class Roles {
 			);
 		}
 		$grants = array(
-			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER, Leads::CAP ),
+			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER, Leads::CAP, Ads::CAP ),
 			'editor'        => array( self::EDITOR ),
 		);
 		foreach ( $grants as $role_name => $caps ) {

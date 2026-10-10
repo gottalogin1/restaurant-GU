@@ -600,3 +600,39 @@
 .gr-ratings-section:has(.gr-ratings[hidden]) {
 	display: none;
 }
+
+/* Ads (Ads\Slot): each ad carries its own "Sponsored" label. */
+.gr-ads__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.gr-ad {
+	margin: 0;
+	min-width: 0;
+}
+
+.gr-ad .gr-sponsored__label {
+	margin-bottom: 0.35rem;
+}
+
+.gr-ad__media img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: var(--gr-radius);
+}
+
+.gr-ad__headline {
+	font-weight: 700;
+	margin: 0.4rem 0 0.15rem;
+}
+
+.gr-ad__text {
+	margin: 0;
+	font-size: 0.95rem;
+}

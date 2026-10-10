@@ -7,6 +7,7 @@
 
 namespace GuamRestaurants\Core\Site;
 
+use GuamRestaurants\Core\Ads\Slot;
 use GuamRestaurants\Core\Awards\Display as Awards_Display;
 use GuamRestaurants\Core\Awards\Pages as Awards_Pages;
 use GuamRestaurants\Core\Awards\Policy as Awards_Policy;
@@ -312,13 +313,14 @@ final class Blocks {
 	}
 
 	/**
-	 * Sponsored slot.
+	 * Sponsored slot: ads of one product that target this page (Ads\Slot).
 	 *
 	 * @param array<string, mixed> $attributes Attributes.
 	 * @return string
 	 */
 	public static function sponsored_slot( $attributes ): string {
-		return Sponsored::render( (string) ( $attributes['placement'] ?? 'home' ) );
+		$html = Slot::render( (string) ( $attributes['product'] ?? 'banner' ), (int) ( $attributes['count'] ?? 1 ) );
+		return '' === $html ? '' : self::wrap( 'div', $html, array( 'class' => 'gr-sponsored-slot' ) );
 	}
 
 	/**

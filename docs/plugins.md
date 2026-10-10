@@ -18,7 +18,7 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
 | Forms | [Happyforms](https://wordpress.org/plugins/happyforms/) | Yes | GPLv2 or later | 1.26.17 | 2026-10-05 | 20,000+ |
 | Caching | [W3 Total Cache](https://wordpress.org/plugins/w3-total-cache/) | Yes | GPLv2 or later | 2.10.7 | about 2026-10-02 | 900,000+ |
 | Email newsletter | [MailPoet](https://wordpress.org/plugins/mailpoet/) | No | GPLv3 | 5.41.0 | about 2026-10-06 | 500,000+ |
-| Ad management | [Advanced Ads](https://wordpress.org/plugins/advanced-ads/) | No | GPLv2 or later | 2.0.26 | 2026-08-03 | 100,000+ |
+| Ad management | Built into `guam-restaurants-core` (Advanced Ads not needed) | | | | | |
 | Form spam (supports Forms) | [Akismet](https://wordpress.org/plugins/akismet/) | Yes | GPLv2 or later | 5.7.2 | about 2026-08 | 5+ million |
 
 ## SEO: Yoast SEO (free)
@@ -88,23 +88,16 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
   that service's signup form instead and skip MailPoet. Decide before collecting subscribers,
   since moving lists later needs re-consent checks.
 
-## Ad management: Advanced Ads
+## Ad management: built into the plugin (2026-10-10)
 
-- **Why:** Ad placements (after paragraph, in content, header, footer, manual placement in
-  block templates via shortcode), weighted rotation within groups, start and expiry scheduling,
-  and a configurable label above ads, which we set to "Sponsored" (rule 5; see also the
-  "Sponsored · Ad" recommendation in `docs/legal-and-policy.md`).
-- **How the theme uses it (2026-10-10):** the home page's Sponsored slot block runs
-  `[the_ad_placement id="home"]` and prints its own "Sponsored" label, so turn off Advanced
-  Ads' label for that placement to avoid showing it twice. With no ad in the placement the
-  block prints nothing. The block has no effect on search order, ratings or awards.
-- **Limits:** Click and impression tracking is a paid add-on. Latest release 2026-08-03 and
-  tested up to 7.0.7, two months behind core; confirm it works on the staging site before
-  launch.
-- **Custom code still needed:** Sponsored *listings* (a restaurant promoted in search
-  results) are directory logic, not banner ads. They belong in `guam-restaurants-core`, kept
-  separate from organic ranking, ratings and awards, always labeled, and covered by PHPUnit
-  tests (rule 10).
+Advanced Ads was the first choice, but its click and impression tracking is a paid add-on,
+its tracking does not count pages served from a page cache without extra setup, and
+sponsored listings need directory logic anyway. The plugin now serves ads itself
+(`includes/ads/`, described in `docs/monetization.md`, "Ad serving"): an `gr_ad` post type,
+the Sponsored slot block, rotation, a beacon that counts behind page caches, and a monthly
+CSV report. Do not install Advanced Ads. If it was installed on staging for the old home
+placement, its "home" placement is no longer printed by the theme and can be deleted with
+the plugin.
 
 ## Other owned plugins worth using
 
