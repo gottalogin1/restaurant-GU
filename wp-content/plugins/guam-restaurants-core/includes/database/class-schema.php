@@ -20,7 +20,7 @@ final class Schema {
 	/**
 	 * Bump when a table definition changes so upgrades run dbDelta() again.
 	 */
-	public const VERSION = '1';
+	public const VERSION = '2';
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
@@ -193,6 +193,7 @@ final class Schema {
   moderation_reason varchar(32) NULL,
   moderated_by bigint(20) unsigned NULL,
   moderated_at datetime NULL,
+  rating tinyint(3) unsigned NULL,
   PRIMARY KEY  (id),
   KEY restaurant_status_type (restaurant_id,status,type),
   KEY status_created (status,created_at),

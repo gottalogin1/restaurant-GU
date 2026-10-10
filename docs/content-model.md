@@ -343,6 +343,7 @@ Indexes: `KEY status_type (status, type, created_at)`,
 | + moderation_reason | VARCHAR(32) NULL | Required when `rejected`; one of the published rule ids (`off_topic, wrong_business, hate_speech, personal_info, undisclosed_connection, fake`) |
 | + moderated_by, moderated_at | BIGINT UNSIGNED NULL, DATETIME NULL | Audit trail |
 | + updated_at | DATETIME NULL | |
+| + rating | TINYINT UNSIGNED NULL | 1 to 5 stars on `user_review` rows; NULL for other types. Added 2026-10-10 (schema version 2) for visitor reviews and the monthly trend chart |
 
 Indexes: `KEY restaurant_status_type (restaurant_id, status, type)`,
 `KEY status_created (status, created_at)`, `KEY parent_id (parent_id)`.

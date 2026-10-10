@@ -1,0 +1,180 @@
+/* Visitor reviews and their monthly trend chart. */
+.gr-visitor-reviews {
+	/* Colors follow the theme (its background and text color), so the block is right in light and dark themes alike. */
+	--gr-vr-surface: var(--wp--preset--color--base, Canvas);
+	--gr-vr-text-secondary: color-mix(in srgb, currentColor 72%, transparent);
+	--gr-vr-grid: color-mix(in srgb, currentColor 15%, transparent);
+	--gr-vr-series: #2a78d6;
+	--gr-vr-star: #f5a623;
+	--gr-vr-star-empty: #b5b3ad;
+}
+
+.gr-vr-stars {
+	--gr-vr-fill: 0%;
+	display: inline-block;
+	line-height: 1;
+	background: linear-gradient(90deg, var(--gr-vr-star) var(--gr-vr-fill), var(--gr-vr-star-empty) var(--gr-vr-fill));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.gr-vr-stars::before {
+	content: "★★★★★";
+}
+
+.gr-vr-summary {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.5rem;
+}
+
+.gr-vr-summary span:not(.gr-vr-stars),
+.gr-vr-order,
+.gr-vr-review__date,
+.gr-vr-chart__caption {
+	color: var(--gr-vr-text-secondary);
+	font-size: 0.9em;
+}
+
+/* Trend chart: 2px line, 8px dots with a surface ring, hairline grid. */
+.gr-vr-chart {
+	margin: 1rem 0;
+}
+
+.gr-vr-chart__plot {
+	position: relative;
+}
+
+.gr-vr-chart__svg {
+	display: block;
+	width: 100%;
+	height: auto;
+	overflow: visible;
+}
+
+.gr-vr-chart__grid {
+	stroke: var(--gr-vr-grid);
+	stroke-width: 1;
+}
+
+.gr-vr-chart__axis,
+.gr-vr-chart__value {
+	fill: var(--gr-vr-text-secondary);
+	font-size: 12px;
+}
+
+.gr-vr-chart__value {
+	fill: currentcolor;
+	font-weight: 600;
+}
+
+.gr-vr-chart__line {
+	fill: none;
+	stroke: var(--gr-vr-series);
+	stroke-width: 2;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+}
+
+.gr-vr-chart__dot {
+	fill: var(--gr-vr-series);
+	stroke: var(--gr-vr-surface);
+	stroke-width: 2;
+}
+
+.gr-vr-chart__dot:focus {
+	outline: none;
+	stroke: currentcolor;
+}
+
+.gr-vr-chart__hit {
+	fill: transparent;
+}
+
+.gr-vr-chart__tooltip {
+	position: absolute;
+	transform: translate(-50%, calc(-100% - 10px));
+	padding: 0.25rem 0.5rem;
+	border-radius: 4px;
+	background: var(--gr-vr-surface);
+	border: 1px solid var(--gr-vr-grid);
+	font-size: 0.85em;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+.gr-vr-chart__table table {
+	border-collapse: collapse;
+}
+
+.gr-vr-chart__table th,
+.gr-vr-chart__table td {
+	padding: 0.25rem 0.75rem 0.25rem 0;
+	text-align: left;
+}
+
+.gr-vr-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.gr-vr-review + .gr-vr-review {
+	border-top: 1px solid var(--gr-vr-grid);
+	margin-top: 0.75rem;
+	padding-top: 0.75rem;
+}
+
+.gr-vr-review__header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.5rem;
+}
+
+.gr-vr-review__disclosure {
+	font-style: italic;
+	font-size: 0.9em;
+}
+
+/* Text as written, line breaks kept. */
+.gr-vr-review__text {
+	white-space: pre-line;
+}
+
+.gr-vr-rules {
+	margin: 1rem 0;
+}
+
+.gr-vr-form__field label,
+.gr-vr-form__field small {
+	display: block;
+}
+
+.gr-vr-form__field textarea,
+.gr-vr-form__field input[type="text"] {
+	width: 100%;
+	max-width: 36rem;
+	box-sizing: border-box;
+}
+
+.gr-vr-form__check label {
+	display: flex;
+	gap: 0.5rem;
+	align-items: flex-start;
+}
+
+.gr-vr-form__rating label {
+	margin-right: 0.75rem;
+}
+
+/* Honeypot: off screen for people, still in the form for bots. */
+.gr-vr-form__trap {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}

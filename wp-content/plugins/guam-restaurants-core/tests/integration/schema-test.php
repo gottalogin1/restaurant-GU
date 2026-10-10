@@ -43,7 +43,7 @@ class Schema_Test extends Test_Case {
 		$this->assertSame( array( 'id', 'restaurant_id', 'field', 'old_value', 'new_value', 'source', 'detected_at', 'run_id' ), $this->columns( Schema::CHANGE_LOG ) );
 		$this->assertSame( array( 'id', 'source', 'started_at', 'finished_at', 'created', 'updated', 'unchanged', 'failed', 'notes' ), $this->columns( Schema::INGESTION_RUNS ) );
 		$this->assertSame( array( 'id', 'type', 'payload', 'confidence', 'status', 'created_at', 'restaurant_id', 'source', 'run_id', 'resolved_by', 'resolved_at' ), $this->columns( Schema::REVIEW_QUEUE ) );
-		$this->assertSame( array( 'id', 'restaurant_id', 'type', 'body', 'author_name', 'status', 'created_at', 'updated_at', 'parent_id', 'author_user_id', 'disclosure', 'moderation_reason', 'moderated_by', 'moderated_at' ), $this->columns( Schema::HIGHLIGHTS ) );
+		$this->assertSame( array( 'id', 'restaurant_id', 'type', 'body', 'author_name', 'status', 'created_at', 'updated_at', 'parent_id', 'author_user_id', 'disclosure', 'moderation_reason', 'moderated_by', 'moderated_at', 'rating' ), $this->columns( Schema::HIGHLIGHTS ) );
 		$this->assertSame( array( 'ad_id', 'stat_date', 'page_type', 'impressions', 'clicks' ), $this->columns( Schema::AD_DAILY_STATS ) );
 
 		$this->assertNull( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . 'gr_rating_snapshots' ) ) ); // phpcs:ignore WordPress.DB

@@ -54,6 +54,9 @@ final class Plugin {
 		Ratings\Refresher::register();
 		Ratings\Rest_Controller::register();
 		Ratings\Display::register();
+		Reviews\Rest_Controller::register();
+		Reviews\Display::register();
+		Reviews\Moderation_Screen::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			Cli\Commands::register();
