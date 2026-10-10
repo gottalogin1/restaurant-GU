@@ -23,3 +23,8 @@ restaurants with their village from their coordinates.
 To update: download the newer edition, run the script, run `make test`
 (the locator tests check that all 19 villages are present and that each
 Census interior point lands in its own village), and update this file.
+
+## awards-template.csv
+
+Header-only input for `wp guam-restaurants import-awards`. How to fill it,
+and what may and may not be recorded: `awards-README.md`.

@@ -18,6 +18,7 @@ delete_option( 'guam_restaurants_core_version' );
 delete_option( 'guam_restaurants_core_activated_at' );
 delete_option( 'guam_restaurants_core_db_version' );
 delete_option( 'guam_restaurants_core_ratings_usage' );
+delete_option( 'guam_restaurants_awards_routes' );
 
 global $wpdb;
 $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery

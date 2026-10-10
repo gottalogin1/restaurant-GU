@@ -1,0 +1,59 @@
+/* Award results: plain text and tables only. No program logos or badges. */
+.gr-awards__list {
+	padding-left: 1.25em;
+}
+
+.gr-awards__item + .gr-awards__item {
+	margin-top: 0.25em;
+}
+
+.gr-awards__source,
+.gr-awards__notice,
+.gr-awards__method {
+	font-size: 0.875em;
+}
+
+.gr-awards__notice {
+	margin-top: 1.5em;
+	opacity: 0.8;
+}
+
+.gr-awards__nav {
+	margin: 0 0 1em;
+}
+
+.gr-awards__filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em 1em;
+	align-items: end;
+	margin: 0 0 1.5em;
+}
+
+.gr-awards__table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0 0 1.5em;
+}
+
+.gr-awards__table caption {
+	text-align: left;
+	font-weight: 600;
+	padding: 0 0 0.5em;
+}
+
+.gr-awards__table th,
+.gr-awards__table td {
+	text-align: left;
+	padding: 0.4em 0.6em;
+	border-bottom: 1px solid currentColor;
+	border-bottom-color: color-mix(in srgb, currentColor 20%, transparent);
+	vertical-align: top;
+}
+
+@media (max-width: 600px) {
+	.gr-awards__table {
+		display: block;
+		overflow-x: auto;
+	}
+}

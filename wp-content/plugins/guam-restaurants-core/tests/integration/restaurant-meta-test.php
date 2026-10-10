@@ -28,7 +28,7 @@ class Restaurant_Meta_Test extends Test_Case {
 			$this->assertArrayHasKey( $key, $registered, $key );
 			$this->assertNotEmpty( $registered[ $key ]['show_in_rest'], $key );
 		}
-		$this->assertCount( 18, Restaurant_Meta::fields() );
+		$this->assertCount( 19, Restaurant_Meta::fields() );
 	}
 
 	/**

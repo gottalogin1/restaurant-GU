@@ -57,11 +57,14 @@ final class Plugin {
 		Reviews\Rest_Controller::register();
 		Reviews\Display::register();
 		Reviews\Moderation_Screen::register();
+		Awards\Display::register();
+		Awards\Pages::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			Cli\Commands::register();
 			Cli\Import_Commands::register();
 			Cli\Ratings_Commands::register();
+			Cli\Awards_Commands::register();
 		}
 	}
 
