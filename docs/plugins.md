@@ -65,6 +65,14 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
 - **Directory-specific:** Sponsored placements must stay labeled and must not change organic
   ranking (rule 5). If ad rotation happens at render time, exclude those fragments from page
   caching or rotate client-side, so cached pages do not freeze one sponsor in place.
+- **Public site (2026-10-10).** The directory, map and recent-changes blocks cache their
+  queries with `wp_cache_*` (`Site\Cache`). Without a persistent object cache that only
+  lasts one request, so turn on W3 Total Cache's object cache with Redis or Memcached, or
+  use the host's object cache. Page cache: listings filtered by "Open now" set
+  `DONOTCACHEPAGE`, and the REST endpoints send `Cache-Control: public, max-age=300`
+  (60 seconds for open now). Make sure the host gzips `application/json`; the map endpoint
+  is about 450 KB raw and 40 KB gzipped at 1,700 restaurants. The local Docker setup does
+  this in `docker/apache/compression.conf`.
 
 ## Email newsletter: MailPoet
 
@@ -86,6 +94,10 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
   block templates via shortcode), weighted rotation within groups, start and expiry scheduling,
   and a configurable label above ads, which we set to "Sponsored" (rule 5; see also the
   "Sponsored · Ad" recommendation in `docs/legal-and-policy.md`).
+- **How the theme uses it (2026-10-10):** the home page's Sponsored slot block runs
+  `[the_ad_placement id="home"]` and prints its own "Sponsored" label, so turn off Advanced
+  Ads' label for that placement to avoid showing it twice. With no ad in the placement the
+  block prints nothing. The block has no effect on search order, ratings or awards.
 - **Limits:** Click and impression tracking is a paid add-on. Latest release 2026-08-03 and
   tested up to 7.0.7, two months behind core; confirm it works on the staging site before
   launch.
