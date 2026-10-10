@@ -135,6 +135,23 @@ final class Review_Queue {
 	}
 
 	/**
+	 * Merges keys into an item's payload, for example a reviewer's note.
+	 *
+	 * @param int                  $item_id Item.
+	 * @param array<string, mixed> $values  Keys to add or replace.
+	 * @return bool
+	 */
+	public static function annotate( int $item_id, array $values ): bool {
+		global $wpdb;
+		$item = self::get( $item_id );
+		if ( ! $item ) {
+			return false;
+		}
+		$payload = array_merge( (array) $item['payload'], $values );
+		return false !== $wpdb->update( Schema::table( Schema::REVIEW_QUEUE ), array( 'payload' => (string) wp_json_encode( $payload ) ), array( 'id' => $item_id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	}
+
+	/**
 	 * Decodes a row's payload.
 	 *
 	 * @param array<string, mixed> $row Row.

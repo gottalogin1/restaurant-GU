@@ -86,22 +86,42 @@ together.
 
 ## Corrections
 
-Anyone can report a factual error through the "Suggest a correction" page.
-Owners who have claimed their listing can also submit corrections from their
-account.
+Anyone can report a factual error through the "Suggest a correction" page,
+which every listing links to. Owners and managers use the same form to ask
+for their listing to be changed or removed. Claimed owners can also submit
+corrections from their account.
 
-1. **Receive.** Every request is logged privately with the date, who asked,
-   what they asked for, the decision, and the reason.
+**Response times** (also shown on the form and its page):
+
+- Corrections to facts: we reply within **7 days**.
+- Owner or manager requests to change or remove a listing: we reply within
+  **14 days**.
+
+1. **Receive.** Every request goes into the private review queue with the
+   date, who asked, what they asked for, and the reply-by date. The sender
+   gets a confirmation email stating the response time. Nothing from a
+   request is published.
 2. **Verify.** We check the fact against a source: the restaurant's own
    website or signage, a government record, a published award result, or
    direct confirmation from the restaurant's verified owner account.
 3. **Publish.** Verified corrections to facts (hours, phone, address, menu
-   link, cuisine, closed or moved) are published, usually within 2 business
-   days, and appear in the listing's change history with the date and source.
-4. **Closed restaurants** are marked "Closed" with the date rather than
+   link, cuisine, closed or moved) are published and appear in the listing's
+   change history with the date and source.
+4. **Close.** The editor marks the request done or declined with a reason,
+   which is kept in the queue. We reply to the sender either way.
+5. **Closed restaurants** are marked "Closed" with the date rather than
    deleted, so award history stays accurate.
-5. **Our own errors.** When we get a fact wrong in our own writing, we fix it
+6. **Our own errors.** When we get a fact wrong in our own writing, we fix it
    and add a dated correction note if the error was significant.
+
+**Removal and listing-change requests from owners.** The form asks the
+sender's role (owner or manager) and name, and the reason. We remove a
+listing when it shows personal information, is not open to the public (for
+example, a home kitchen or private catering only), is a duplicate, or is not
+a real restaurant. Other changes (name, cuisine, photos, description) are
+made when the owner's information can be confirmed. A request is never shown
+on the listing, and a declined or pending request never adds anything
+negative to it: no note, label, badge or change to its position.
 
 What we do not change on request:
 

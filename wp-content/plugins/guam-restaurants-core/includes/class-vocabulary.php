@@ -38,9 +38,10 @@ final class Vocabulary {
 	 * Sources that may add review queue items and ingestion runs. Google,
 	 * Yelp and Foursquare are allowed here only because their items hold
 	 * nothing from the source but its ID, which each source lets us keep
-	 * (docs/data-sources.md §2 to §4).
+	 * (docs/data-sources.md §2 to §4). `visitor` is a correction or listing
+	 * request sent through the public form by someone who is not a linked owner.
 	 */
-	public const REVIEW_QUEUE_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census', 'system', 'google', 'yelp', 'foursquare' );
+	public const REVIEW_QUEUE_SOURCES = array( 'osm', 'fsq_os', 'owner', 'editor', 'census', 'system', 'google', 'yelp', 'foursquare', 'visitor' );
 
 	/**
 	 * Where a cuisine or mall tag came from: a data source's own category,
@@ -66,7 +67,7 @@ final class Vocabulary {
 	 */
 	public const MODERATION_REASONS = array( 'spam', 'profanity', 'personal_attack', 'hate_speech', 'personal_info', 'undisclosed_connection', 'fake', 'off_topic', 'wrong_business' );
 
-	public const REVIEW_QUEUE_TYPES = array( 'new_place', 'match_conflict', 'village_unresolved', 'mall_unresolved', 'closure_signal', 'owner_submission', 'duplicate' );
+	public const REVIEW_QUEUE_TYPES = array( 'new_place', 'match_conflict', 'village_unresolved', 'mall_unresolved', 'closure_signal', 'owner_submission', 'duplicate', 'correction', 'listing_request' );
 
 	public const REVIEW_QUEUE_STATUSES = array( 'pending', 'approved', 'rejected', 'merged' );
 

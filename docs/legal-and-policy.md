@@ -211,7 +211,7 @@ Guam has no comprehensive consumer privacy law comparable to California's or the
 
 | Request | Response |
 |---|---|
-| Wrong facts (hours, phone, address, menu link, closed or moved) | Verify and correct, usually within 2 business days. Log the change with date and source, since the site plans change tracking. |
+| Wrong facts (hours, phone, address, menu link, closed or moved) | Verify and correct; reply within 7 days (14 days for owner change or removal requests; editorial-policy.md). Log the change with date and source, since the site plans change tracking. |
 | Restaurant closed permanently | Mark "Closed" with the date, rather than deleting, so award history stays accurate. |
 | Remove the whole listing | Explain the site lists public facts about operating restaurants. Offer to correct or limit details. Remove personal information about individuals, such as a home-based caterer's home address or a personal phone number. |
 | Remove or change a third-party review (Google, Yelp, and others) | Decline. The site shows API content unaltered. Point the owner to that platform's reporting process. |

@@ -1,0 +1,29 @@
+/* Correction form: additions to the advertiser form styles it reuses. */
+
+.gr-correction-form__requests {
+	margin: 0 0 1rem;
+	padding: 0;
+	border: 0;
+}
+
+.gr-correction-form__requests legend {
+	margin-bottom: 0.25rem;
+	padding: 0;
+}
+
+.gr-correction-form__requests p {
+	display: flex;
+	gap: 0.5rem;
+	align-items: baseline;
+	margin: 0.25rem 0;
+}
+
+.gr-lead-form__field.gr-correction-form__requests input[type="radio"] {
+	width: auto;
+	min-height: 0;
+	margin: 0;
+}
+
+.gr-correction-form__requests label {
+	display: inline;
+}
