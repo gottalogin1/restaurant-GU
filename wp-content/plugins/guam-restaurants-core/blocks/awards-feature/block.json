@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/awards-feature",
+	"version": "0.1.0",
+	"title": "Award winners",
+	"category": "widgets",
+	"icon": "awards",
+	"description": "Winners from the most recent awards year recorded on this site, each with its citation and source.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"limit": {
+			"type": "integer",
+			"default": 6
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

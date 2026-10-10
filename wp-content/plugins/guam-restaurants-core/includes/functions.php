@@ -49,6 +49,17 @@ function get_recent_closures( int $days ): array {
 }
 
 /**
+ * Restaurants that reopened (status back to open after a closure) in the
+ * last `$days` days, newest first.
+ *
+ * @param int $days Days back from now.
+ * @return array<int, array<string, mixed>> See Monitoring\Queries::recent_reopenings().
+ */
+function get_recent_reopenings( int $days ): array {
+	return Monitoring\Queries::recent_reopenings( $days );
+}
+
+/**
  * Every change recorded for a restaurant, newest first.
  *
  * @param int $restaurant_id Restaurant post ID.

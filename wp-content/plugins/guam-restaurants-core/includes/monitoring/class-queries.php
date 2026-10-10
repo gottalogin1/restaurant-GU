@@ -27,10 +27,11 @@ final class Queries {
 	 * not openings, and are left out; so are trashed and permanently
 	 * closed restaurants.
 	 *
-	 * @param int $days Days back from now.
+	 * @param int $days  Days back from now.
+	 * @param int $limit Most rows to return; 0 for all.
 	 * @return array<int, array{restaurant_id: int, name: string, first_seen: string, source: string, status: string, village: string[], mall: string[], url: string}>
 	 */
-	public static function recent_openings( int $days ): array {
+	public static function recent_openings( int $days, int $limit = 0 ): array {
 		global $wpdb;
 
 		$table = Schema::table( Schema::CHANGE_LOG );
@@ -43,31 +44,31 @@ final class Queries {
 			ARRAY_A
 		);
 
-		$out  = array();
-		$seen = array();
-		foreach ( $rows ? $rows : array() as $row ) {
-			$id    = (int) $row['restaurant_id'];
-			$value = json_decode( (string) $row['new_value'], true );
-			if ( isset( $seen[ $id ] ) || ! empty( $value['baseline'] ) || ! self::is_listed( $id ) || 'permanently_closed' === get_post_meta( $id, Restaurant_Meta::STATUS, true ) ) {
-				continue;
+		return self::collect(
+			$rows ? $rows : array(),
+			$limit,
+			static function ( int $id, array $row ): ?array {
+				$value = json_decode( (string) $row['new_value'], true );
+				if ( ! empty( $value['baseline'] ) || ! self::is_listed( $id ) || 'permanently_closed' === get_post_meta( $id, Restaurant_Meta::STATUS, true ) ) {
+					return null;
+				}
+				return self::summary( $id ) + array(
+					'first_seen' => (string) $row['detected_at'],
+					'source'     => (string) $row['source'],
+				);
 			}
-			$seen[ $id ] = true;
-			$out[]       = self::summary( $id ) + array(
-				'first_seen' => (string) $row['detected_at'],
-				'source'     => (string) $row['source'],
-			);
-		}
-		return $out;
+		);
 	}
 
 	/**
 	 * Restaurants marked permanently closed (by an administrator's approval
 	 * or an edit) in the last N days and still closed, newest first.
 	 *
-	 * @param int $days Days back from now.
+	 * @param int $days  Days back from now.
+	 * @param int $limit Most rows to return; 0 for all.
 	 * @return array<int, array{restaurant_id: int, name: string, closed_at: string, closed_on: string, source: string, status: string, village: string[], mall: string[], url: string}>
 	 */
-	public static function recent_closures( int $days ): array {
+	public static function recent_closures( int $days, int $limit = 0 ): array {
 		global $wpdb;
 
 		$table = Schema::table( Schema::CHANGE_LOG );
@@ -81,21 +82,60 @@ final class Queries {
 			ARRAY_A
 		);
 
-		$out  = array();
-		$seen = array();
-		foreach ( $rows ? $rows : array() as $row ) {
-			$id = (int) $row['restaurant_id'];
-			if ( isset( $seen[ $id ] ) || 'trash' === get_post_status( $id ) || 'permanently_closed' !== get_post_meta( $id, Restaurant_Meta::STATUS, true ) ) {
-				continue;
+		return self::collect(
+			$rows ? $rows : array(),
+			$limit,
+			static function ( int $id, array $row ): ?array {
+				if ( 'trash' === get_post_status( $id ) || 'permanently_closed' !== get_post_meta( $id, Restaurant_Meta::STATUS, true ) ) {
+					return null;
+				}
+				return self::summary( $id ) + array(
+					'closed_at' => (string) $row['detected_at'],
+					'closed_on' => (string) get_post_meta( $id, Restaurant_Meta::CLOSED_ON, true ),
+					'source'    => (string) $row['source'],
+				);
 			}
-			$seen[ $id ] = true;
-			$out[]       = self::summary( $id ) + array(
-				'closed_at' => (string) $row['detected_at'],
-				'closed_on' => (string) get_post_meta( $id, Restaurant_Meta::CLOSED_ON, true ),
-				'source'    => (string) $row['source'],
-			);
-		}
-		return $out;
+		);
+	}
+
+	/**
+	 * Restaurants whose status changed from closed (temporarily or
+	 * permanently) back to open in the last N days and are still open,
+	 * newest first.
+	 *
+	 * @param int $days  Days back from now.
+	 * @param int $limit Most rows to return; 0 for all.
+	 * @return array<int, array{restaurant_id: int, name: string, reopened_at: string, source: string, status: string, village: string[], mall: string[], url: string}>
+	 */
+	public static function recent_reopenings( int $days, int $limit = 0 ): array {
+		global $wpdb;
+
+		$table = Schema::table( Schema::CHANGE_LOG );
+		$rows  = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare(
+				"SELECT restaurant_id, source, detected_at FROM {$table} WHERE field = %s AND new_value = %s AND old_value IN (%s, %s) AND detected_at >= %s ORDER BY detected_at DESC, id DESC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				Restaurant_Meta::STATUS,
+				'open',
+				'temporarily_closed',
+				'permanently_closed',
+				self::since( $days )
+			),
+			ARRAY_A
+		);
+
+		return self::collect(
+			$rows ? $rows : array(),
+			$limit,
+			static function ( int $id, array $row ): ?array {
+				if ( ! self::is_listed( $id ) || 'open' !== get_post_meta( $id, Restaurant_Meta::STATUS, true ) ) {
+					return null;
+				}
+				return self::summary( $id ) + array(
+					'reopened_at' => (string) $row['detected_at'],
+					'source'      => (string) $row['source'],
+				);
+			}
+		);
 	}
 
 	/**
@@ -145,6 +185,41 @@ final class Queries {
 	private static function is_listed( int $id ): bool {
 		$status = get_post_status( $id );
 		return $status && 'trash' !== $status && Content_Types::POST_TYPE === get_post_type( $id );
+	}
+
+	/**
+	 * Builds one entry per restaurant from change-log rows (newest first),
+	 * stopping at $limit. Post, meta and term caches are primed a chunk at a
+	 * time so a long log costs a few queries, not several per row.
+	 *
+	 * @param array<int, array<string, mixed>>   $rows     Change-log rows.
+	 * @param int                                $limit    Most entries; 0 for all.
+	 * @param callable(int, array): (array|null) $callback Entry for a restaurant, or null to skip it.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function collect( array $rows, int $limit, callable $callback ): array {
+		$out   = array();
+		$seen  = array();
+		$chunk = max( 50, $limit );
+		foreach ( array_chunk( $rows, $chunk ) as $batch ) {
+			_prime_post_caches( array_unique( array_map( 'intval', wp_list_pluck( $batch, 'restaurant_id' ) ) ), true, true );
+			foreach ( $batch as $row ) {
+				$id = (int) $row['restaurant_id'];
+				if ( isset( $seen[ $id ] ) ) {
+					continue;
+				}
+				$seen[ $id ] = true;
+				$entry       = $callback( $id, $row );
+				if ( null === $entry ) {
+					continue;
+				}
+				$out[] = $entry;
+				if ( $limit > 0 && count( $out ) >= $limit ) {
+					return $out;
+				}
+			}
+		}
+		return $out;
 	}
 
 	/**

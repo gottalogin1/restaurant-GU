@@ -100,6 +100,7 @@ class Monitoring_Test extends Guam_Test_Case {
 
 		$hand = $this->restaurant( 'Kracked Egg Tumon' );
 		$this->assertSame( array( $hand, $meskla ), array_column( get_recent_openings( 30 ), 'restaurant_id' ) );
+		$this->assertSame( array( $hand ), array_column( \GuamRestaurants\Core\Monitoring\Queries::recent_openings( 30, 1 ), 'restaurant_id' ), 'The limit keeps the newest.' );
 
 		global $wpdb;
 		$wpdb->update( Schema::table( Schema::CHANGE_LOG ), array( 'detected_at' => gmdate( 'Y-m-d H:i:s', time() - 40 * DAY_IN_SECONDS ) ), array( 'restaurant_id' => $meskla ) ); // phpcs:ignore WordPress.DB

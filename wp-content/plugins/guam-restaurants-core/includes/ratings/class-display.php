@@ -107,6 +107,18 @@ final class Display {
 			return '';
 		}
 
+		// Skip the placeholder (and its request) when no listed source is set up with an ID for this restaurant.
+		$providers = Ratings::providers();
+		$usable    = array_filter(
+			$list,
+			static function ( string $source ) use ( $providers, $restaurant_id ): bool {
+				return isset( $providers[ $source ] ) && '' !== (string) get_post_meta( $restaurant_id, $providers[ $source ]->id_meta_key(), true );
+			}
+		);
+		if ( ! $usable ) {
+			return '';
+		}
+
 		wp_enqueue_script( self::SCRIPT );
 		wp_enqueue_style( self::STYLE );
 

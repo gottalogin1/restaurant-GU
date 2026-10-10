@@ -212,7 +212,7 @@ counts and (optionally) reviews on listing pages, within these rules:
 - On any page that shows Google content, the map must be a Google map. Use
   the **Maps Embed API** there: it is "free to use with unlimited requests"
   ✅ <https://developers.google.com/maps/documentation/embed/usage-and-billing>.
-  Browse and map pages that use MapTiler (§6a) show no Google content.
+  Browse and map pages that use OSM-based tiles (§6a) show no Google content.
 - Show the Google Maps attribution and the review rules listed above.
 - Budget: 1,000 free Enterprise calls a month, then $20 per 1,000 views.
 - Discovery (`wp guam-restaurants discover`, 2026-10-10): Text Search
@@ -421,18 +421,35 @@ DPHSS data is imported.
 
 **Recommendation: Use.**
 
-## 6a. Map tiles: MapTiler Cloud (chosen 2026-10-10)
+## 6a. Map tiles
 
-**Choice: MapTiler Cloud, Flex plan, with Leaflet or MapLibre GL JS.**
-Sanjay left the choice to Claude, asking for the most stable and most
-recommended option.
+**Built 2026-10-10: MapLibre GL JS 5.24.0 (self-hosted, BSD-3-Clause), with
+the vector style URL set by `GUAM_RESTAURANTS_MAP_STYLE_URL`.** Switching
+providers is a configuration change, not a code change.
 
-Why MapTiler:
-- It is an established commercial OSM-based provider, and the OSM tile
-  policy itself points production sites to commercial providers.
-- It serves vector and raster tiles, works with Leaflet and MapLibre, and
-  has well-documented styles.
-- Flex allows commercial use.
+**Default when the setting is empty: OpenFreeMap** (Positron style,
+`https://tiles.openfreemap.org/styles/positron`). Read 2026-10-10 at
+<https://openfreemap.org/> and <https://openfreemap.org/tos/>:
+- "Using our public instance is completely free." No registration, no API
+  keys, no cookies.
+- Commercial use: "Yes."
+- "There are no limits on the number of map views or requests."
+- "I don't offer SLA guarantees." The terms say the service is "as-is" and
+  "may [be] discontinue[d] at any time without notice". Requests go through
+  Cloudflare. Hungarian law governs.
+- Attribution is required. MapLibre shows it automatically
+  ("OpenFreeMap © OpenMapTiles Data from OpenStreetMap").
+- Prohibited: collecting data from the service in automated ways. We only
+  display tiles in visitors' browsers.
+
+So no paid tile plan is needed to launch. The risk is availability, since
+there is no SLA.
+
+**Paid option with an SLA, chosen earlier for stability: MapTiler Cloud
+Flex.** Sanjay had asked for the most stable, most recommended option, and
+MapTiler was picked on that basis. To use it, set
+`GUAM_RESTAURANTS_MAP_STYLE_URL` to a MapTiler style URL that includes the
+key.
 
 | | |
 |---|---|
@@ -440,7 +457,7 @@ Why MapTiler:
 | Overage | $2.50 per 1k sessions, $0.15 per 1k API requests; set a spending limit |
 | Free plan | Testing and non-commercial use only, so use it for development, not production |
 | Attribution | MapTiler logo optional on Flex; **OSM attribution is always required** (ODbL, §1), e.g. "© MapTiler © OpenStreetMap contributors" |
-| Key handling | API key in a `wp-config.php` constant, restricted to the site's domains (CLAUDE.md rule 8) |
+| Key handling | The key is part of the style URL in the environment variable, restricted to the site's domains (CLAUDE.md rule 8) |
 
 **Fallback: Stadia Maps Starter**, $20/month for 1M credits (1 credit per
 basemap tile); commercial use is allowed on paid plans only ✅
@@ -453,8 +470,9 @@ may be blocked without notice ✅
 <https://operations.osmfoundation.org/policies/tiles/>.
 
 **Google rule.** Pages showing Google ratings use the Google Maps Embed
-API for their map instead (§2), so MapTiler maps and Google content never
-share a page.
+API for their map instead (§2), with `GUAM_RESTAURANTS_GOOGLE_MAPS_EMBED_KEY`.
+Without that key they show no map, only a directions link. OSM-based maps
+and Google content therefore never share a page (`Site\Maps::restaurant_map_kind()`).
 
 ## 7. Answers to the five questions
 
@@ -544,7 +562,7 @@ permission email in `docs/awards-research.md` §8.
 | Monthly API call counts per billing unit and page-view spend (numbers only) | First-party | **Stored**, current month | Monthly |
 | Google rating, count, reviews, hours, summaries | Google | **Fetched live** per view, never stored | n/a |
 | Foursquare rating, hours, tips, photos | Foursquare API | **Fetched live** per view (pay-as-you-go) | n/a |
-| Map tiles | MapTiler Cloud (Flex); Google Maps Embed on pages with Google content | **Fetched live** | n/a |
+| Map tiles | OpenFreeMap by default, or MapTiler Cloud (Flex) via `GUAM_RESTAURANTS_MAP_STYLE_URL`; Google Maps Embed on pages with Google content | **Fetched live** in the visitor's browser | n/a |
 
 ## 10. Research-only references (not data sources)
 
@@ -594,6 +612,7 @@ data sources. No listing data from them may be imported (CLAUDE.md rules
 | https://catalog.data.gov/dataset/tiger-line-shapefile-2024-state-guam-gu-county-subdivision | Read |
 | https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/22/query (STATE='66') | Read 2026-10-10; 20 features (19 villages + undefined) |
 | https://www.maptiler.com/cloud/pricing/ | Read 2026-10-10 |
+| https://openfreemap.org/, https://openfreemap.org/tos/ | Read 2026-10-10 |
 | https://stadiamaps.com/pricing/ | Read 2026-10-10 |
 | https://operations.osmfoundation.org/policies/tiles/ | Read 2026-10-10 |
 | https://developers.google.com/maps/documentation/embed/usage-and-billing | Read 2026-10-10 |
@@ -609,4 +628,4 @@ data sources. No listing data from them may be imported (CLAUDE.md rules
 - [x] DPHSS records request: dropped with the DPHSS decision in §5.
 - [x] TIGER Guam villages: confirmed 19 villages (§6), 2026-10-10.
 - [x] Attorney review of Google ToS §3.2.3(d)(iii) and Yelp §5(d): cleared, 2026-10-10.
-- [x] Map tile provider: MapTiler Cloud Flex, Stadia Maps as fallback (§6a).
+- [x] Map tile provider: OpenFreeMap by default (free, no SLA); MapTiler Cloud Flex or Stadia Maps by setting the style URL (§6a). Sanjay to confirm which one to use at launch.

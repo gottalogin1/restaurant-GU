@@ -20,7 +20,7 @@ final class Schema {
 	/**
 	 * Bump when a table definition changes so upgrades run dbDelta() again.
 	 */
-	public const VERSION = '4';
+	public const VERSION = '5';
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
@@ -30,6 +30,7 @@ final class Schema {
 	public const REVIEW_QUEUE   = 'gr_review_queue';
 	public const HIGHLIGHTS     = 'gr_highlights';
 	public const AD_DAILY_STATS = 'gr_ad_daily_stats';
+	public const OPEN_HOURS     = 'gr_open_hours';
 
 	/**
 	 * Tables with a restaurant_id column, cleaned up when a restaurant is deleted.
@@ -39,6 +40,7 @@ final class Schema {
 		self::CHANGE_LOG,
 		self::REVIEW_QUEUE,
 		self::HIGHLIGHTS,
+		self::OPEN_HOURS,
 	);
 
 	/**
@@ -112,6 +114,7 @@ final class Schema {
 		$review_queue   = self::table( self::REVIEW_QUEUE );
 		$highlights     = self::table( self::HIGHLIGHTS );
 		$ad_daily_stats = self::table( self::AD_DAILY_STATS );
+		$open_hours     = self::table( self::OPEN_HOURS );
 
 		return array(
 			self::AWARDS         => "CREATE TABLE $awards (
@@ -129,7 +132,8 @@ final class Schema {
   PRIMARY KEY  (id),
   UNIQUE KEY uniq_award (restaurant_id,program,year,category),
   KEY restaurant_year (restaurant_id,year),
-  KEY program_year (program,year)
+  KEY program_year (program,year),
+  KEY placement_restaurant (placement,restaurant_id)
 ) $charset;",
 
 			self::CHANGE_LOG     => "CREATE TABLE $change_log (
@@ -211,6 +215,16 @@ final class Schema {
   clicks int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY  (ad_id,stat_date,page_type),
   KEY stat_date (stat_date)
+) $charset;",
+
+			// Derived from gr_hours (Site\Open_Hours) so "open now" is an indexed lookup.
+			// Minutes from Monday 00:00 Guam time; intervals over Sunday midnight are split.
+			self::OPEN_HOURS     => "CREATE TABLE $open_hours (
+  restaurant_id bigint(20) unsigned NOT NULL,
+  opens_at smallint(5) unsigned NOT NULL,
+  closes_at smallint(5) unsigned NOT NULL,
+  PRIMARY KEY  (restaurant_id,opens_at),
+  KEY opens_closes (opens_at,closes_at)
 ) $charset;",
 		);
 	}

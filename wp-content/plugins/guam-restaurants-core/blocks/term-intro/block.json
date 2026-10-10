@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/term-intro",
+	"version": "0.1.0",
+	"title": "Village, mall or cuisine introduction",
+	"category": "widgets",
+	"icon": "text",
+	"description": "The introduction written in the term’s Description, or a short line built from its listings until one is written.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

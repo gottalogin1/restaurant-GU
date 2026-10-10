@@ -1,0 +1,645 @@
+<?php
+/**
+ * Server-rendered blocks for the public site.
+ *
+ * @package GuamRestaurants\Core
+ */
+
+namespace GuamRestaurants\Core\Site;
+
+use GuamRestaurants\Core\Awards\Display as Awards_Display;
+use GuamRestaurants\Core\Awards\Pages as Awards_Pages;
+use GuamRestaurants\Core\Awards\Policy as Awards_Policy;
+use GuamRestaurants\Core\Awards\Repository as Awards;
+use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Highlights\Policy_Page;
+use GuamRestaurants\Core\Monitoring\Queries;
+use GuamRestaurants\Core\Restaurant_Meta;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Registers the blocks in blocks/ and renders them. The theme only places
+ * them in templates (CLAUDE.md rule 6). All output is server-rendered HTML;
+ * scripts only enhance it.
+ */
+final class Blocks {
+
+	public const EDITOR_SCRIPT = 'guam-restaurants-site-blocks-editor';
+
+	/**
+	 * Block folder => render method.
+	 */
+	public const BLOCKS = array(
+		'directory'          => 'directory',
+		'search-form'        => 'search_form',
+		'term-links'         => 'term_links',
+		'recent-changes'     => 'recent_changes',
+		'awards-feature'     => 'awards_feature',
+		'sponsored-slot'     => 'sponsored_slot',
+		'term-intro'         => 'term_intro',
+		'restaurant-details' => 'restaurant_details',
+		'restaurant-map'     => 'restaurant_map',
+		'change-history'     => 'change_history',
+		'listing-actions'    => 'listing_actions',
+		'listing-context'    => 'listing_context',
+		'map-explorer'       => 'map_explorer',
+		'data-attributions'  => 'data_attributions',
+		'policy-links'       => 'policy_links',
+	);
+
+	/**
+	 * Hooks registration.
+	 *
+	 * @return void
+	 */
+	public static function register(): void {
+		add_action( 'init', array( self::class, 'register_blocks' ) );
+	}
+
+	/**
+	 * Registers the editor script and every block.
+	 *
+	 * @return void
+	 */
+	public static function register_blocks(): void {
+		$asset = require GUAM_RESTAURANTS_CORE_DIR . 'blocks/site-editor/editor.asset.php';
+		wp_register_script( self::EDITOR_SCRIPT, plugins_url( 'blocks/site-editor/editor.js', GUAM_RESTAURANTS_CORE_FILE ), $asset['dependencies'], $asset['version'], true );
+		wp_set_script_translations( self::EDITOR_SCRIPT, 'guam-restaurants-core' );
+
+		foreach ( self::BLOCKS as $folder => $method ) {
+			register_block_type(
+				GUAM_RESTAURANTS_CORE_DIR . 'blocks/' . $folder,
+				array( 'render_callback' => array( self::class, $method ) )
+			);
+		}
+	}
+
+	/**
+	 * The restaurant a block is about: its context post, else the queried one.
+	 *
+	 * @param \WP_Block|null $block Block.
+	 * @return int 0 when not a restaurant.
+	 */
+	private static function restaurant_id( $block ): int {
+		$id = $block instanceof \WP_Block && ! empty( $block->context['postId'] ) ? (int) $block->context['postId'] : (int) get_queried_object_id();
+		return Content_Types::POST_TYPE === get_post_type( $id ) ? $id : 0;
+	}
+
+	/**
+	 * Wraps output in the block wrapper attributes.
+	 *
+	 * @param string               $tag     Tag.
+	 * @param string               $inner   Inner HTML.
+	 * @param array<string, mixed> $extra   Extra wrapper attributes.
+	 * @return string
+	 */
+	private static function wrap( string $tag, string $inner, array $extra = array() ): string {
+		return sprintf( '<%1$s %2$s>%3$s</%1$s>', $tag, get_block_wrapper_attributes( $extra ), $inner );
+	}
+
+	/**
+	 * Directory: the main query on directory pages, else a query from the URL.
+	 *
+	 * @return string
+	 */
+	public static function directory(): string {
+		global $wp_query;
+		if ( $wp_query instanceof \WP_Query && Directory_Query::is_directory( $wp_query ) ) {
+			$locked  = Directory_Query::locked( $wp_query );
+			$filters = Directory_Query::current_filters( $wp_query );
+			$query   = $wp_query;
+		} else {
+			$locked  = array();
+			$filters = Directory_Query::current_filters( null );
+			$query   = Directory_Query::query( $filters );
+		}
+		return self::wrap( 'div', Directory_View::render( $query, $filters, $locked ) );
+	}
+
+	/**
+	 * Search box.
+	 *
+	 * @return string
+	 */
+	public static function search_form(): string {
+		Assets::enqueue();
+		$id = wp_unique_id( 'gr-search-' );
+		return self::wrap(
+			'form',
+			sprintf(
+				'<label for="%1$s">%2$s</label><span class="gr-search__row"><input type="search" id="%1$s" name="%3$s" maxlength="%4$d" placeholder="%5$s"><button type="submit" class="wp-element-button">%6$s</button></span>',
+				esc_attr( $id ),
+				esc_html__( 'Find a restaurant', 'guam-restaurants-core' ),
+				esc_attr( Filters::SEARCH ),
+				Filters::MAX_SEARCH_LENGTH,
+				esc_attr__( 'Name, dish or village', 'guam-restaurants-core' ),
+				esc_html__( 'Search', 'guam-restaurants-core' )
+			),
+			array(
+				'class'  => 'gr-search',
+				'role'   => 'search',
+				'method' => 'get',
+				'action' => esc_url( (string) get_post_type_archive_link( Content_Types::POST_TYPE ) ),
+			)
+		);
+	}
+
+	/**
+	 * Term chips.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @return string
+	 */
+	public static function term_links( $attributes ): string {
+		$taxonomy = (string) ( $attributes['taxonomy'] ?? Content_Types::TAX_VILLAGE );
+		if ( ! in_array( $taxonomy, Filters::FACETS, true ) ) {
+			return '';
+		}
+		$terms = Directory_View::facet_terms( $taxonomy );
+		$limit = (int) ( $attributes['limit'] ?? 0 );
+		if ( $limit > 0 ) {
+			usort(
+				$terms,
+				static function ( \WP_Term $a, \WP_Term $b ): int {
+					return $b->count === $a->count ? strcmp( $a->name, $b->name ) : $b->count <=> $a->count;
+				}
+			);
+			$terms = array_slice( $terms, 0, $limit );
+			usort(
+				$terms,
+				static function ( \WP_Term $a, \WP_Term $b ): int {
+					return strcmp( $a->name, $b->name );
+				}
+			);
+		}
+		if ( ! $terms ) {
+			return '';
+		}
+		Assets::enqueue();
+		$counts = ! empty( $attributes['showCounts'] );
+		$items  = '';
+		foreach ( $terms as $term ) {
+			$link = get_term_link( $term );
+			if ( is_wp_error( $link ) ) {
+				continue;
+			}
+			$items .= sprintf(
+				'<li><a class="gr-chip" href="%1$s">%2$s%3$s</a></li>',
+				esc_url( $link ),
+				esc_html( $term->name ),
+				/* translators: %s: number of restaurants. */
+				$counts ? ' <span class="gr-chip__count"><span class="screen-reader-text">' . esc_html( sprintf( _n( '%s restaurant', '%s restaurants', (int) $term->count, 'guam-restaurants-core' ), number_format_i18n( (int) $term->count ) ) ) . '</span><span aria-hidden="true">' . esc_html( number_format_i18n( (int) $term->count ) ) . '</span></span>' : ''
+			);
+		}
+		$heading = trim( (string) ( $attributes['heading'] ?? '' ) );
+		if ( '' === $heading ) {
+			return self::wrap( 'ul', $items, array( 'class' => 'gr-chips' ) );
+		}
+		// The heading lives in the block so a taxonomy with no listed terms
+		// (for example, before any mall is verified) leaves no empty section.
+		return self::wrap( 'section', '<h2 class="wp-block-heading">' . esc_html( $heading ) . '</h2><ul class="gr-chips">' . $items . '</ul>', array( 'class' => 'gr-term-links' ) );
+	}
+
+	/**
+	 * Recent openings, reopenings or closures.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @return string
+	 */
+	public static function recent_changes( $attributes ): string {
+		$kind   = (string) ( $attributes['kind'] ?? 'openings' );
+		$days   = max( 1, min( 3650, (int) ( $attributes['days'] ?? 90 ) ) );
+		$limit  = max( 1, min( 200, (int) ( $attributes['limit'] ?? 8 ) ) );
+		$layout = 'list' === ( $attributes['layout'] ?? 'strip' ) ? 'list' : 'strip';
+
+		$rows = Cache::remember(
+			'recent',
+			array( $kind, $days, $limit ),
+			static function () use ( $kind, $days, $limit ) {
+				switch ( $kind ) {
+					case 'closures':
+						return Queries::recent_closures( $days, $limit );
+					case 'reopenings':
+						return Queries::recent_reopenings( $days, $limit );
+					default:
+						return Queries::recent_openings( $days, $limit );
+				}
+			},
+			600
+		);
+		$rows = (array) $rows;
+
+		Assets::enqueue( 'hours' );
+		if ( ! $rows ) {
+			$empty = array(
+				/* translators: %d: number of days. */
+				'openings'   => _n( 'No new restaurants recorded in the last %d day.', 'No new restaurants recorded in the last %d days.', $days, 'guam-restaurants-core' ),
+				/* translators: %d: number of days. */
+				'reopenings' => _n( 'No reopenings recorded in the last %d day.', 'No reopenings recorded in the last %d days.', $days, 'guam-restaurants-core' ),
+				/* translators: %d: number of days. */
+				'closures'   => _n( 'No closures recorded in the last %d day.', 'No closures recorded in the last %d days.', $days, 'guam-restaurants-core' ),
+			);
+			return self::wrap( 'div', '<p class="gr-empty">' . esc_html( sprintf( $empty[ $kind ] ?? $empty['openings'], $days ) ) . '</p>', array( 'class' => 'gr-recent gr-recent--empty' ) );
+		}
+
+		$date_key = array(
+			'closures'   => 'closed_at',
+			'reopenings' => 'reopened_at',
+		)[ $kind ] ?? 'first_seen';
+		$items    = '';
+		foreach ( $rows as $row ) {
+			$id     = (int) $row['restaurant_id'];
+			$name   = '' !== $row['url'] ? sprintf( '<a href="%1$s">%2$s</a>', esc_url( $row['url'] ), esc_html( $row['name'] ) ) : esc_html( $row['name'] );
+			$date   = 'closures' === $kind && '' !== (string) ( $row['closed_on'] ?? '' ) ? Restaurant_View::partial_date( (string) $row['closed_on'] ) : Clock::local_date( (string) $row[ $date_key ] );
+			$meta   = array_filter(
+				array(
+					Restaurant_View::term_names( $id, Content_Types::TAX_CUISINE ),
+					implode( ', ', array_filter( array( Restaurant_View::term_names( $id, Content_Types::TAX_VILLAGE ), Restaurant_View::term_names( $id, Content_Types::TAX_MALL ) ) ) ),
+				)
+			);
+			$items .= sprintf(
+				'<li class="gr-recent__item"><h3 class="gr-recent__name">%1$s</h3>%2$s<p class="gr-recent__date"><time>%3$s</time></p></li>',
+				$name,
+				$meta ? '<p class="gr-recent__meta">' . esc_html( implode( ' · ', $meta ) ) . '</p>' : '',
+				esc_html( $date )
+			);
+		}
+		return self::wrap( 'ul', $items, array( 'class' => 'gr-recent gr-recent--' . $layout ) );
+	}
+
+	/**
+	 * Latest recorded award winners.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @return string
+	 */
+	public static function awards_feature( $attributes ): string {
+		$limit = max( 1, min( 24, (int) ( $attributes['limit'] ?? 6 ) ) );
+		Assets::enqueue();
+
+		$rows = Cache::remember(
+			'awards-feature',
+			array( $limit ),
+			static function () use ( $limit ) {
+				$years = Awards::years();
+				if ( ! $years ) {
+					return array();
+				}
+				$winners = array_filter(
+					Awards::query( array( 'year' => $years[0] ) ),
+					static function ( array $row ): bool {
+						return 'winner' === $row['placement'] && 'publish' === $row['restaurant_status'];
+					}
+				);
+				return array_slice( array_values( $winners ), 0, $limit );
+			}
+		);
+
+		$more = sprintf( '<p class="gr-awards-feature__more"><a href="%1$s">%2$s</a></p>', esc_url( Awards_Pages::url( 'archive' ) ), esc_html__( 'All award results', 'guam-restaurants-core' ) );
+		if ( ! $rows ) {
+			return self::wrap( 'div', '<p class="gr-empty">' . esc_html__( 'Award results have not been added yet. When they are, winners appear here with a link to where each result was published.', 'guam-restaurants-core' ) . '</p>' . $more, array( 'class' => 'gr-awards-feature gr-awards-feature--empty' ) );
+		}
+		$items = '';
+		foreach ( $rows as $row ) {
+			$items .= sprintf(
+				'<li><h3 class="gr-awards-feature__name">%1$s</h3><p>%2$s</p></li>',
+				Awards_Display::restaurant_link( (int) $row['restaurant_id'], (string) $row['restaurant_name'], (string) $row['restaurant_status'] ),
+				Awards_Display::line( $row )
+			);
+		}
+		return self::wrap( 'div', '<ul class="gr-awards-feature__list" role="list">' . $items . '</ul>' . $more . Awards_Display::notice(), array( 'class' => 'gr-awards-feature' ) );
+	}
+
+	/**
+	 * Sponsored slot.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @return string
+	 */
+	public static function sponsored_slot( $attributes ): string {
+		return Sponsored::render( (string) ( $attributes['placement'] ?? 'home' ) );
+	}
+
+	/**
+	 * Term introduction.
+	 *
+	 * @return string
+	 */
+	public static function term_intro(): string {
+		$term = get_queried_object();
+		if ( ! $term instanceof \WP_Term || ! in_array( $term->taxonomy, Filters::FACETS, true ) ) {
+			return '';
+		}
+		Assets::enqueue();
+		return self::wrap( 'div', Intro::render( $term ) );
+	}
+
+	/**
+	 * Address, contact, price and hours.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @param string               $content    Inner content (unused).
+	 * @param \WP_Block|null       $block      Block.
+	 * @return string
+	 */
+	public static function restaurant_details( $attributes, $content = '', $block = null ): string {
+		$id = self::restaurant_id( $block );
+		if ( ! $id ) {
+			return '';
+		}
+		Assets::enqueue( 'hours' );
+
+		$rows   = array();
+		$place  = array_filter( array( Restaurant_View::term_links( $id, Content_Types::TAX_MALL ), Restaurant_View::term_links( $id, Content_Types::TAX_VILLAGE ) ) );
+		$street = Restaurant_View::address( $id );
+		if ( '' !== $street || $place ) {
+			$rows[ __( 'Address', 'guam-restaurants-core' ) ] = implode( '<br>', array_filter( array( esc_html( $street ), implode( ', ', $place ) ) ) );
+		}
+		$cuisine = Restaurant_View::term_links( $id, Content_Types::TAX_CUISINE );
+		if ( '' !== $cuisine ) {
+			$rows[ __( 'Cuisine', 'guam-restaurants-core' ) ] = $cuisine;
+		}
+		$price = Restaurant_View::price( $id );
+		if ( null !== $price ) {
+			$link = get_term_link( $price );
+			$rows[ __( 'Price', 'guam-restaurants-core' ) ] = ( is_wp_error( $link ) ? '' : '<a href="' . esc_url( $link ) . '">' ) . Restaurant_View::price_html( $id ) . ( is_wp_error( $link ) ? '' : '</a>' ) . ( '' !== $price->description ? ' <span class="gr-details__hint">' . esc_html( $price->description ) . '</span>' : '' );
+		}
+		$phone = (string) get_post_meta( $id, Restaurant_Meta::PHONE, true );
+		if ( '' !== $phone ) {
+			$rows[ __( 'Phone', 'guam-restaurants-core' ) ] = sprintf( '<a href="tel:%1$s">%2$s</a>', esc_attr( $phone ), esc_html( Restaurant_View::format_phone( $phone ) ) );
+		}
+		$website = (string) get_post_meta( $id, Restaurant_Meta::WEBSITE, true );
+		if ( '' !== $website ) {
+			$rows[ __( 'Website', 'guam-restaurants-core' ) ] = sprintf( '<a href="%1$s" rel="noopener">%2$s</a>', esc_url( $website ), esc_html( Restaurant_View::website_label( $website ) ) );
+		}
+		$directions = Maps::directions_url( $id );
+		if ( '' !== $directions ) {
+			/* translators: %s: restaurant name. */
+			$rows[ __( 'Directions', 'guam-restaurants-core' ) ] = sprintf( '<a href="%1$s" rel="noopener">%2$s</a>', esc_url( $directions ), esc_html__( 'Get directions in Google Maps', 'guam-restaurants-core' ) );
+		}
+
+		$list = '';
+		foreach ( $rows as $label => $value ) {
+			$list .= '<div class="gr-details__row"><dt>' . esc_html( $label ) . '</dt><dd>' . $value . '</dd></div>';
+		}
+
+		$status = Restaurant_View::status_label( $id );
+		$out    = '' !== $status ? '<p class="gr-details__status">' . esc_html( $status ) . '</p>' : '';
+		$out   .= '' !== $list ? '<dl class="gr-details__list">' . $list . '</dl>' : '';
+		$out   .= self::hours_table( $id, '' === $status );
+
+		return self::wrap( 'section', '<h2 class="gr-section-title">' . esc_html__( 'Details', 'guam-restaurants-core' ) . '</h2>' . $out, array( 'class' => 'gr-details' ) );
+	}
+
+	/**
+	 * Opening hours table.
+	 *
+	 * @param int  $id        Restaurant.
+	 * @param bool $open_info Whether to show the live open-now label.
+	 * @return string
+	 */
+	private static function hours_table( int $id, bool $open_info ): string {
+		$hours = Restaurant_View::hours_by_day( $id );
+		if ( null === $hours ) {
+			return '<p class="gr-details__hours-none">' . esc_html__( 'Opening hours are not listed yet. Please check with the restaurant.', 'guam-restaurants-core' ) . '</p>';
+		}
+		$body = '';
+		foreach ( Restaurant_View::day_names() as $day => $name ) {
+			$ranges = $hours['always_open'] ? array( __( 'Open 24 hours', 'guam-restaurants-core' ) ) : $hours['days'][ $day ];
+			$body  .= sprintf( '<tr data-gr-day="%1$s"><th scope="row">%2$s</th><td>%3$s</td></tr>', esc_attr( $day ), esc_html( $name ), $ranges ? esc_html( implode( ', ', $ranges ) ) : esc_html__( 'Closed', 'guam-restaurants-core' ) );
+		}
+		$compact = Open_Hours::compact( $id );
+		return sprintf(
+			'<div class="gr-hours"%1$s><h3 class="gr-hours__title">%2$s</h3>%3$s<table class="gr-hours__table"><caption class="screen-reader-text">%4$s</caption><tbody>%5$s</tbody></table>%6$s</div>',
+			$open_info && '' !== $compact ? ' data-gr-hours="' . esc_attr( $compact ) . '"' : '',
+			esc_html__( 'Opening hours', 'guam-restaurants-core' ),
+			$open_info && '' !== $compact ? '<p class="gr-card__open gr-hours__now" aria-live="polite"></p>' : '',
+			esc_html__( 'Opening hours, Guam time', 'guam-restaurants-core' ),
+			$body,
+			'' !== $hours['note'] ? '<p class="gr-hours__note">' . esc_html( $hours['note'] ) . '</p>' : ''
+		);
+	}
+
+	/**
+	 * Restaurant map.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @param string               $content    Inner content (unused).
+	 * @param \WP_Block|null       $block      Block.
+	 * @return string
+	 */
+	public static function restaurant_map( $attributes, $content = '', $block = null ): string {
+		$id = self::restaurant_id( $block );
+		if ( ! $id ) {
+			return '';
+		}
+		$kind = Maps::restaurant_map_kind( $id );
+		if ( 'none' === $kind ) {
+			return '';
+		}
+		/* translators: %s: restaurant name. */
+		$label = sprintf( __( 'Map showing %s', 'guam-restaurants-core' ), wp_strip_all_tags( get_the_title( $id ) ) );
+		if ( 'google' === $kind ) {
+			Assets::enqueue();
+			return self::wrap(
+				'div',
+				sprintf( '<iframe class="gr-map__frame" src="%1$s" title="%2$s" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>', esc_url( Maps::google_embed_url( $id ) ), esc_attr( $label ) ),
+				array( 'class' => 'gr-map gr-map--google' )
+			);
+		}
+		Assets::enqueue( 'map' );
+		$point = Restaurant_View::coordinates( $id );
+		return self::wrap(
+			'div',
+			sprintf(
+				'<div class="gr-map__canvas" role="region" aria-label="%1$s" data-gr-map-point="%2$s,%3$s" data-gr-map-name="%4$s"></div><noscript><p>%5$s</p></noscript>',
+				esc_attr( $label ),
+				esc_attr( (string) $point['lng'] ),
+				esc_attr( (string) $point['lat'] ),
+				esc_attr( wp_strip_all_tags( get_the_title( $id ) ) ),
+				esc_html__( 'The map needs JavaScript. Use the directions link above instead.', 'guam-restaurants-core' )
+			),
+			array( 'class' => 'gr-map' )
+		);
+	}
+
+	/**
+	 * Opened, first listed and reopened dates.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @param string               $content    Inner content (unused).
+	 * @param \WP_Block|null       $block      Block.
+	 * @return string
+	 */
+	public static function change_history( $attributes, $content = '', $block = null ): string {
+		$id = self::restaurant_id( $block );
+		if ( ! $id ) {
+			return '';
+		}
+		$events = History::events( $id );
+		if ( ! $events ) {
+			return '';
+		}
+		Assets::enqueue();
+		$items = '';
+		foreach ( $events as $event ) {
+			$items .= sprintf( '<li><span class="gr-history__label">%1$s</span> <time>%2$s</time></li>', esc_html( $event['label'] ), esc_html( $event['date'] ) );
+		}
+		return self::wrap( 'section', '<h2 class="gr-section-title">' . esc_html__( 'History', 'guam-restaurants-core' ) . '</h2><ul class="gr-history">' . $items . '</ul>', array( 'class' => 'gr-history-section' ) );
+	}
+
+	/**
+	 * Claim, correction and contact links.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @param string               $content    Inner content (unused).
+	 * @param \WP_Block|null       $block      Block.
+	 * @return string
+	 */
+	public static function listing_actions( $attributes, $content = '', $block = null ): string {
+		$id = self::restaurant_id( $block );
+		if ( ! $id ) {
+			return '';
+		}
+		$claimed = (int) get_post_meta( $id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0;
+		$links   = array();
+		foreach ( array(
+			'claim'      => $claimed ? '' : __( 'Own this restaurant? Claim this listing', 'guam-restaurants-core' ),
+			'correction' => __( 'Suggest a correction', 'guam-restaurants-core' ),
+			'contact'    => $claimed ? __( 'Contact the owner', 'guam-restaurants-core' ) : '',
+		) as $role => $text ) {
+			$url = '' === $text ? '' : Pages::url( $role );
+			if ( '' !== $url ) {
+				$links[] = sprintf( '<li><a href="%1$s">%2$s</a></li>', esc_url( add_query_arg( 'restaurant', $id, $url ) ), esc_html( $text ) );
+			}
+		}
+		if ( ! $links ) {
+			return '';
+		}
+		Assets::enqueue();
+		return self::wrap(
+			'nav',
+			'<ul>' . implode( '', $links ) . '</ul>',
+			array(
+				'class'      => 'gr-actions',
+				'aria-label' => esc_attr__( 'About this listing', 'guam-restaurants-core' ),
+			)
+		);
+	}
+
+	/**
+	 * Which restaurant a claim, correction or contact page is about.
+	 *
+	 * @return string
+	 */
+	public static function listing_context(): string {
+		$id = isset( $_GET['restaurant'] ) ? absint( $_GET['restaurant'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only.
+		if ( ! $id || Content_Types::POST_TYPE !== get_post_type( $id ) || 'publish' !== get_post_status( $id ) ) {
+			return '';
+		}
+		Assets::enqueue();
+		$place = Restaurant_View::term_names( $id, Content_Types::TAX_VILLAGE );
+		return self::wrap(
+			'p',
+			sprintf(
+				/* translators: %s: restaurant name, linked. */
+				esc_html__( 'Listing: %s', 'guam-restaurants-core' ),
+				sprintf( '<a href="%1$s">%2$s</a>%3$s', esc_url( (string) get_permalink( $id ) ), esc_html( get_the_title( $id ) ), '' !== $place ? ' (' . esc_html( $place ) . ')' : '' )
+			),
+			array( 'class' => 'gr-listing-context' )
+		);
+	}
+
+	/**
+	 * Map with filters.
+	 *
+	 * @return string
+	 */
+	public static function map_explorer(): string {
+		Assets::enqueue( 'map' );
+		wp_enqueue_script( Assets::SCRIPTS['directory'] );
+		$filters = Directory_Query::current_filters( null );
+		$action  = (string) get_permalink();
+		$list    = Directory_View::page_url( $filters, array() );
+		return self::wrap(
+			'div',
+			Directory_View::form( $filters, array(), 'map', $action )
+			. sprintf(
+				'<p class="gr-map-explorer__status" role="status" data-gr-map-status>%1$s</p><div class="gr-map-explorer__canvas" role="region" aria-label="%2$s" data-gr-map-explorer></div><noscript><p>%3$s</p></noscript><p class="gr-map-explorer__list"><a href="%4$s" data-gr-map-list>%5$s</a></p>',
+				esc_html__( 'Loading the map…', 'guam-restaurants-core' ),
+				esc_attr__( 'Map of restaurants', 'guam-restaurants-core' ),
+				esc_html__( 'The map needs JavaScript. The list view shows the same restaurants.', 'guam-restaurants-core' ),
+				esc_url( $list ),
+				esc_html__( 'Show these restaurants as a list', 'guam-restaurants-core' )
+			),
+			array( 'class' => 'gr-map-explorer' )
+		);
+	}
+
+	/**
+	 * Required data credits.
+	 *
+	 * @return string
+	 */
+	public static function data_attributions(): string {
+		$items = array(
+			sprintf(
+				/* translators: 1: "© OpenStreetMap contributors" link, 2: licence link. */
+				__( 'Restaurant details include data %1$s, available under the %2$s.', 'guam-restaurants-core' ),
+				'<a href="https://www.openstreetmap.org/copyright">' . esc_html__( '© OpenStreetMap contributors', 'guam-restaurants-core' ) . '</a>',
+				'<a href="https://opendatacommons.org/licenses/odbl/">' . esc_html__( 'Open Database License', 'guam-restaurants-core' ) . '</a>'
+			),
+			Maps::DEFAULT_STYLE_URL === Maps::style_url()
+				? sprintf(
+					/* translators: 1: OpenFreeMap link, 2: OpenMapTiles link. */
+					__( 'Maps: %1$s, %2$s, with OpenStreetMap data.', 'guam-restaurants-core' ),
+					'<a href="https://openfreemap.org/">OpenFreeMap</a>',
+					'<a href="https://www.openmaptiles.org/">© OpenMapTiles</a>'
+				)
+				: '',
+			sprintf(
+				/* translators: %s: Census link. */
+				__( 'Village boundaries: %s.', 'guam-restaurants-core' ),
+				'<a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html">' . esc_html__( 'U.S. Census Bureau TIGER/Line', 'guam-restaurants-core' ) . '</a>'
+			),
+			esc_html__( 'Ratings from other sites are shown as each site provides them, with its own credit.', 'guam-restaurants-core' ),
+		);
+		/**
+		 * Filters the data credits in the footer (HTML, one item each).
+		 *
+		 * @param string[] $items Credits.
+		 */
+		$items = array_filter( (array) apply_filters( 'guam_restaurants_data_attributions', $items ) );
+		if ( ! $items ) {
+			return '';
+		}
+		Assets::enqueue();
+		return self::wrap( 'ul', '<li>' . implode( '</li><li>', array_map( 'wp_kses_post', $items ) ) . '</li>', array( 'class' => 'gr-attributions' ) );
+	}
+
+	/**
+	 * Policy links.
+	 *
+	 * @return string
+	 */
+	public static function policy_links(): string {
+		$policy = get_page_by_path( Policy_Page::SLUG, OBJECT, 'page' );
+		$links  = array(
+			__( 'Editorial policy', 'guam-restaurants-core' ) => $policy instanceof \WP_Post && 'publish' === $policy->post_status ? (string) get_permalink( $policy ) : '',
+			__( 'Privacy policy', 'guam-restaurants-core' ) => (string) get_privacy_policy_url(),
+			__( 'Terms of use', 'guam-restaurants-core' ) => Pages::url( 'terms' ),
+		);
+		$items  = '';
+		foreach ( $links as $text => $url ) {
+			if ( '' !== $url ) {
+				$items .= sprintf( '<li><a href="%1$s">%2$s</a></li>', esc_url( $url ), esc_html( $text ) );
+			}
+		}
+		if ( '' === $items ) {
+			return '';
+		}
+		Assets::enqueue();
+		return self::wrap( 'ul', $items, array( 'class' => 'gr-policy-links' ) );
+	}
+}

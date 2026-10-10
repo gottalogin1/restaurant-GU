@@ -1,0 +1,47 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/term-links",
+	"version": "0.1.0",
+	"title": "Village, mall or cuisine links",
+	"category": "widgets",
+	"icon": "tag",
+	"description": "Links to every village, verified mall or cuisine that has restaurants, with an optional heading. Prints nothing when there are none.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"taxonomy": {
+			"type": "string",
+			"default": "gr_village",
+			"enum": [
+				"gr_village",
+				"gr_mall",
+				"gr_cuisine",
+				"gr_price_level"
+			]
+		},
+		"showCounts": {
+			"type": "boolean",
+			"default": true
+		},
+		"limit": {
+			"type": "integer",
+			"default": 0
+		},
+		"heading": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

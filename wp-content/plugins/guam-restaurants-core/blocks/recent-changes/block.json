@@ -1,0 +1,50 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/recent-changes",
+	"version": "0.1.0",
+	"title": "Recently opened or closed",
+	"category": "widgets",
+	"icon": "update",
+	"description": "Restaurants recorded as opened, reopened or closed in the last days.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"kind": {
+			"type": "string",
+			"default": "openings",
+			"enum": [
+				"openings",
+				"reopenings",
+				"closures"
+			]
+		},
+		"days": {
+			"type": "integer",
+			"default": 90
+		},
+		"limit": {
+			"type": "integer",
+			"default": 8
+		},
+		"layout": {
+			"type": "string",
+			"default": "strip",
+			"enum": [
+				"strip",
+				"list"
+			]
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

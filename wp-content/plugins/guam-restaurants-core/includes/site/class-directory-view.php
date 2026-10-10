@@ -1,0 +1,339 @@
+<?php
+/**
+ * Filter form, results and pagination for the directory and the map.
+ *
+ * @package GuamRestaurants\Core
+ */
+
+namespace GuamRestaurants\Core\Site;
+
+use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Term_Meta;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Server-rendered markup. The form is a plain GET form, so filtering works
+ * without JavaScript; assets/site/directory.js submits it to the REST
+ * endpoint instead and swaps in the results, keeping the URL shareable.
+ */
+final class Directory_View {
+
+	public const RESULTS_ID = 'gr-directory-results';
+
+	/**
+	 * Context string for a locked facet, for example "village:dededo".
+	 *
+	 * @param array<string, string> $locked Facet => slug.
+	 * @return string
+	 */
+	public static function context_string( array $locked ): string {
+		foreach ( $locked as $facet => $slug ) {
+			return $facet . ':' . $slug;
+		}
+		return '';
+	}
+
+	/**
+	 * Locked facet from a context string; unknown facets and terms give array().
+	 *
+	 * @param string $context Context string.
+	 * @return array<string, string>
+	 */
+	public static function parse_context( string $context ): array {
+		if ( 1 !== preg_match( '/^([a-z]+):([a-z0-9\-%]+)$/', $context, $m ) || ! isset( Filters::FACETS[ $m[1] ] ) ) {
+			return array();
+		}
+		$term = get_term_by( 'slug', sanitize_title( $m[2] ), Filters::FACETS[ $m[1] ] );
+		return $term instanceof \WP_Term ? array( $m[1] => $term->slug ) : array();
+	}
+
+	/**
+	 * Base URL for a listing: the archive, or the locked term's page.
+	 *
+	 * @param array<string, string> $locked Facet => slug.
+	 * @return string
+	 */
+	public static function base_url( array $locked ): string {
+		foreach ( $locked as $facet => $slug ) {
+			$link = get_term_link( $slug, Filters::FACETS[ $facet ] );
+			if ( ! is_wp_error( $link ) ) {
+				return (string) $link;
+			}
+		}
+		return (string) get_post_type_archive_link( Content_Types::POST_TYPE );
+	}
+
+	/**
+	 * URL of a results page with these filters.
+	 *
+	 * @param array<string, mixed>  $filters Filters.
+	 * @param array<string, string> $locked  Facet => slug.
+	 * @param int                   $page    Page.
+	 * @return string
+	 */
+	public static function page_url( array $filters, array $locked, int $page = 1 ): string {
+		$base = self::base_url( $locked );
+		if ( $page > 1 ) {
+			$base = get_option( 'permalink_structure' )
+				? trailingslashit( $base ) . user_trailingslashit( 'page/' . $page, 'paged' )
+				: add_query_arg( 'paged', $page, $base );
+		}
+		$params = Filters::to_params( $filters, $locked );
+		return $params ? add_query_arg( array_map( array( self::class, 'encode' ), $params ), $base ) : $base;
+	}
+
+	/**
+	 * URL-encodes a parameter value, keeping commas readable.
+	 *
+	 * @param string $value Value.
+	 * @return string
+	 */
+	public static function encode( string $value ): string {
+		return str_replace( '%2C', ',', rawurlencode( $value ) );
+	}
+
+	/**
+	 * The whole directory: form plus results.
+	 *
+	 * @param \WP_Query             $query   Results.
+	 * @param array<string, mixed>  $filters Filters.
+	 * @param array<string, string> $locked  Facet => slug.
+	 * @return string
+	 */
+	public static function render( \WP_Query $query, array $filters, array $locked ): string {
+		Assets::enqueue( 'directory' );
+		return sprintf(
+			'<div class="gr-directory">%1$s<div class="gr-directory__results" id="%2$s" tabindex="-1">%3$s</div></div>',
+			self::form( $filters, $locked, 'list' ),
+			esc_attr( self::RESULTS_ID ),
+			self::results( $query, $filters, $locked )
+		);
+	}
+
+	/**
+	 * Result count, cards and pagination.
+	 *
+	 * @param \WP_Query             $query   Results.
+	 * @param array<string, mixed>  $filters Filters.
+	 * @param array<string, string> $locked  Facet => slug.
+	 * @return string
+	 */
+	public static function results( \WP_Query $query, array $filters, array $locked ): string {
+		$total = (int) $query->found_posts;
+		$page  = max( 1, (int) $query->get( 'paged' ) );
+		$pages = (int) $query->max_num_pages;
+
+		if ( 0 === $total ) {
+			$summary = esc_html__( 'No restaurants match these filters.', 'guam-restaurants-core' );
+		} elseif ( $pages > 1 ) {
+			$first   = ( $page - 1 ) * (int) $query->get( 'posts_per_page' ) + 1;
+			$last    = min( $total, $first + count( $query->posts ) - 1 );
+			$summary = esc_html(
+				sprintf(
+					/* translators: 1: first result number, 2: last result number, 3: total. */
+					_n( 'Showing %1$s–%2$s of %3$s restaurant', 'Showing %1$s–%2$s of %3$s restaurants', $total, 'guam-restaurants-core' ),
+					number_format_i18n( $first ),
+					number_format_i18n( $last ),
+					number_format_i18n( $total )
+				)
+			);
+		} else {
+			/* translators: %s: number of restaurants. */
+			$summary = esc_html( sprintf( _n( '%s restaurant', '%s restaurants', $total, 'guam-restaurants-core' ), number_format_i18n( $total ) ) );
+		}
+
+		$cards = '';
+		foreach ( $query->posts as $post ) {
+			$cards .= '<li>' . Restaurant_View::card( (int) ( is_object( $post ) ? $post->ID : $post ), 2 ) . '</li>';
+		}
+
+		$out = '<p class="gr-directory__summary" role="status">' . $summary . '</p>';
+		if ( ! empty( $filters['open'] ) ) {
+			$out .= '<p class="gr-directory__note">' . esc_html__( 'Open now uses Guam time and lists only restaurants whose hours we have.', 'guam-restaurants-core' ) . '</p>';
+		}
+		if ( '' !== $cards ) {
+			$out .= '<ul class="gr-cards" role="list">' . $cards . '</ul>';
+		} elseif ( Filters::is_filtered( $filters, $locked ) ) {
+			$out .= sprintf( '<p><a href="%1$s">%2$s</a></p>', esc_url( self::page_url( Filters::defaults(), $locked ) ), esc_html__( 'Clear all filters', 'guam-restaurants-core' ) );
+		}
+		return $out . self::pagination( $page, $pages, $filters, $locked );
+	}
+
+	/**
+	 * Previous, numbered and next links.
+	 *
+	 * @param int                   $page    Current page.
+	 * @param int                   $pages   Page count.
+	 * @param array<string, mixed>  $filters Filters.
+	 * @param array<string, string> $locked  Facet => slug.
+	 * @return string
+	 */
+	public static function pagination( int $page, int $pages, array $filters, array $locked ): string {
+		if ( $pages <= 1 ) {
+			return '';
+		}
+		$items = array();
+		if ( $page > 1 ) {
+			$items[] = sprintf( '<a class="gr-pagination__prev" rel="prev" href="%1$s">%2$s</a>', esc_url( self::page_url( $filters, $locked, $page - 1 ) ), esc_html__( 'Previous', 'guam-restaurants-core' ) );
+		}
+		$shown = array_unique( array_filter( array( 1, $page - 1, $page, $page + 1, $pages ), static fn( $n ) => $n >= 1 && $n <= $pages ) );
+		sort( $shown );
+		$previous = 0;
+		foreach ( $shown as $number ) {
+			if ( $number - $previous > 1 ) {
+				$items[] = '<span class="gr-pagination__gap" aria-hidden="true">…</span>';
+			}
+			$items[] = $number === $page
+				? sprintf( '<a aria-current="page" href="%1$s">%2$s</a>', esc_url( self::page_url( $filters, $locked, $number ) ), esc_html( number_format_i18n( $number ) ) )
+				/* translators: %s: page number. */
+				: sprintf( '<a href="%1$s" aria-label="%3$s">%2$s</a>', esc_url( self::page_url( $filters, $locked, $number ) ), esc_html( number_format_i18n( $number ) ), esc_attr( sprintf( __( 'Page %s', 'guam-restaurants-core' ), number_format_i18n( $number ) ) ) );
+			$previous = $number;
+		}
+		if ( $page < $pages ) {
+			$items[] = sprintf( '<a class="gr-pagination__next" rel="next" href="%1$s">%2$s</a>', esc_url( self::page_url( $filters, $locked, $page + 1 ) ), esc_html__( 'Next', 'guam-restaurants-core' ) );
+		}
+		return sprintf( '<nav class="gr-pagination" aria-label="%1$s">%2$s</nav>', esc_attr__( 'Results pages', 'guam-restaurants-core' ), implode( '', $items ) );
+	}
+
+	/**
+	 * The filter form.
+	 *
+	 * @param array<string, mixed>  $filters Filters.
+	 * @param array<string, string> $locked  Facet => slug fixed by the page.
+	 * @param string                $mode    list (directory) or map.
+	 * @param string                $action  Form action; defaults to the listing's URL.
+	 * @return string
+	 */
+	public static function form( array $filters, array $locked, string $mode = 'list', string $action = '' ): string {
+		$action = '' === $action ? self::base_url( $locked ) : $action;
+		$labels = array(
+			'village' => __( 'Village', 'guam-restaurants-core' ),
+			'mall'    => __( 'Mall', 'guam-restaurants-core' ),
+			'cuisine' => __( 'Cuisine', 'guam-restaurants-core' ),
+			'price'   => __( 'Price', 'guam-restaurants-core' ),
+		);
+
+		$facets = '';
+		foreach ( Filters::FACETS as $param => $taxonomy ) {
+			if ( isset( $locked[ $param ] ) ) {
+				continue;
+			}
+			$facets .= self::facet( $param, $taxonomy, $labels[ $param ], (array) $filters['facets'][ $param ] );
+		}
+
+		$sort = '';
+		if ( 'list' === $mode ) {
+			$sorts = array(
+				'name'       => __( 'Name (A to Z)', 'guam-restaurants-core' ),
+				'newest'     => __( 'Newest listings', 'guam-restaurants-core' ),
+				'price_asc'  => __( 'Price (low to high)', 'guam-restaurants-core' ),
+				'price_desc' => __( 'Price (high to low)', 'guam-restaurants-core' ),
+			);
+			if ( '' !== (string) $filters['q'] ) {
+				$sorts = array( 'relevance' => __( 'Best match', 'guam-restaurants-core' ) ) + $sorts;
+			}
+			$current = Filters::effective_sort( $filters );
+			$options = '';
+			foreach ( $sorts as $value => $label ) {
+				$options .= sprintf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $value ), selected( $value, $current, false ), esc_html( $label ) );
+			}
+			$sort = sprintf(
+				'<div class="gr-filters__sort"><label for="gr-sort">%1$s</label> <select id="gr-sort" name="%2$s">%3$s</select></div>',
+				esc_html__( 'Sort by', 'guam-restaurants-core' ),
+				esc_attr( Filters::SORT ),
+				$options
+			);
+		}
+
+		return sprintf(
+			'<form class="gr-filters" role="search" method="get" action="%1$s" data-gr-filters="%2$s" data-gr-context="%3$s" aria-label="%4$s">
+				<div class="gr-filters__search"><label for="gr-q">%5$s</label><input type="search" id="gr-q" name="%6$s" value="%7$s" maxlength="%8$d" autocomplete="off"></div>
+				<div class="gr-filters__facets">%9$s</div>
+				<div class="gr-filters__toggles">
+					<label class="gr-toggle"><input type="checkbox" name="%10$s" value="%11$s"%12$s> %13$s</label>
+					<label class="gr-toggle"><input type="checkbox" name="%14$s" value="%15$s"%16$s> %17$s</label>
+				</div>
+				%18$s
+				<div class="gr-filters__actions"><button type="submit" class="wp-element-button">%19$s</button> <a class="gr-filters__clear" href="%20$s">%21$s</a></div>
+			</form>',
+			esc_url( $action ),
+			esc_attr( $mode ),
+			esc_attr( self::context_string( $locked ) ),
+			esc_attr__( 'Filter restaurants', 'guam-restaurants-core' ),
+			esc_html__( 'Search by name or dish', 'guam-restaurants-core' ),
+			esc_attr( Filters::SEARCH ),
+			esc_attr( (string) $filters['q'] ),
+			Filters::MAX_SEARCH_LENGTH,
+			$facets,
+			esc_attr( Filters::AWARD ),
+			esc_attr( Filters::AWARD_WINNER ),
+			checked( ! empty( $filters['award'] ), true, false ),
+			esc_html__( 'Award winners', 'guam-restaurants-core' ),
+			esc_attr( Filters::OPEN ),
+			esc_attr( Filters::OPEN_NOW ),
+			checked( ! empty( $filters['open'] ), true, false ),
+			esc_html__( 'Open now', 'guam-restaurants-core' ),
+			$sort,
+			esc_html__( 'Show results', 'guam-restaurants-core' ),
+			esc_url( $action ),
+			esc_html__( 'Clear filters', 'guam-restaurants-core' )
+		);
+	}
+
+	/**
+	 * One facet: a disclosure with a checkbox per term.
+	 *
+	 * @param string   $param    URL parameter.
+	 * @param string   $taxonomy Taxonomy.
+	 * @param string   $label    Label.
+	 * @param string[] $selected Selected slugs.
+	 * @return string
+	 */
+	private static function facet( string $param, string $taxonomy, string $label, array $selected ): string {
+		$terms = self::facet_terms( $taxonomy );
+		if ( ! $terms ) {
+			return '';
+		}
+		$boxes = '';
+		foreach ( $terms as $term ) {
+			$boxes .= sprintf(
+				'<label><input type="checkbox" name="%1$s[]" value="%2$s"%3$s> %4$s</label>',
+				esc_attr( $param ),
+				esc_attr( $term->slug ),
+				checked( in_array( $term->slug, $selected, true ), true, false ),
+				esc_html( $term->name )
+			);
+		}
+		$count = count( $selected );
+		return sprintf(
+			'<details class="gr-facet" data-gr-facet="%1$s"%2$s><summary>%3$s<span class="gr-facet__count">%4$s</span></summary><fieldset><legend class="screen-reader-text">%3$s</legend><div class="gr-facet__options">%5$s</div></fieldset></details>',
+			esc_attr( $param ),
+			$count ? ' open' : '',
+			esc_html( $label ),
+			/* translators: %d: number of selected options. */
+			$count ? esc_html( sprintf( _n( ' (%d selected)', ' (%d selected)', $count, 'guam-restaurants-core' ), $count ) ) : '',
+			$boxes
+		);
+	}
+
+	/**
+	 * Terms offered in a facet: those with listings, prices by rank, others by name.
+	 *
+	 * @param string $taxonomy Taxonomy.
+	 * @return \WP_Term[]
+	 */
+	public static function facet_terms( string $taxonomy ): array {
+		$args = array(
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => true,
+			'orderby'    => 'name',
+		);
+		if ( Content_Types::TAX_PRICE === $taxonomy ) {
+			$args['meta_key'] = Term_Meta::RANK; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- four terms.
+			$args['orderby']  = 'meta_value_num';
+		}
+		$terms = get_terms( $args );
+		return is_array( $terms ) ? $terms : array();
+	}
+}
