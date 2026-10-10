@@ -33,7 +33,12 @@ Guam-licensed attorney ([legal-and-policy.md](legal-and-policy.md) §7 to §9).
 - [ ] Privacy policy: write it with counsel, include a line about review data,
       and publish it from Settings > Privacy.
 - [ ] Terms of use: write with counsel and publish the "Terms of use" draft page.
-- [ ] Editorial policy: have counsel review the wording at /editorial-policy/.
+- [ ] Editorial policy: have counsel review the wording at /editorial-policy/
+      ([editorial-policy.md](editorial-policy.md)), add the statement,
+      corrections and sponsored-feature sections to the page, and link it from
+      the footer and the advertise page.
+- [ ] Request rate cards from the Guam outlets in [market-rates.md](market-rates.md)
+      and compare them with the launch prices in [monetization.md](monetization.md).
 - [ ] Advertiser contract: advertising never buys ratings, reviews, awards or
       rank; payment and cancellation terms.
 - [ ] Guam business license and gross receipts tax on advertising revenue.
