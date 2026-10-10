@@ -129,6 +129,13 @@ citizenship, and fixes stay open).
 
 A request is billed at the highest tier of any field requested.
 
+**Monthly status check** (2026-10-10): `wp guam-restaurants run-job
+google-status` asks Place Details for `businessStatus` only (Pro SKU, 5,000
+free a month; we stop at 4,500). A `CLOSED_PERMANENTLY` answer counts as one
+closed check; nothing from the response is stored except our own count and
+date, and the review item keeps only the place ID. `CLOSED_TEMPORARILY`
+counts as open.
+
 **Guam coverage.** **Not tested**: no Google API key is available in this
 environment. Inferred: Google Maps is the most complete commercial dataset
 for Guam, but that cannot be measured without a key.

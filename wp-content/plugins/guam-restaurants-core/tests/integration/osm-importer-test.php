@@ -217,7 +217,8 @@ class Osm_Importer_Test extends Test_Case {
 			$result['counts']
 		);
 		$this->assertSame( $posts, $this->count_restaurants() );
-		$this->assertSame( 0, $this->count_rows( Schema::CHANGE_LOG ) );
+		$this->assertSame( 6, $this->count_rows( Schema::CHANGE_LOG, "field = 'first_seen'" ), 'One first_seen per restaurant, from the first run.' );
+		$this->assertSame( 0, $this->count_rows( Schema::CHANGE_LOG, "field <> 'first_seen'" ) );
 	}
 
 	/**
@@ -247,7 +248,10 @@ class Osm_Importer_Test extends Test_Case {
 		$log      = $wpdb->get_results( $wpdb->prepare( 'SELECT field, old_value, new_value, source, run_id FROM ' . Schema::table( Schema::CHANGE_LOG ) . ' WHERE restaurant_id = %d ORDER BY id', $kusina ), ARRAY_A ); // phpcs:ignore WordPress.DB
 		$by_field = array_column( $log, null, 'field' );
 
-		$this->assertEqualsCanonicalizing( array( 'title', 'gr_latitude', 'gr_longitude', 'gr_phone', 'gr_hours', 'tax:gr_village' ), array_keys( $by_field ) );
+		// Moving to Tumon also takes it out of Micronesia Mall's outline.
+		$this->assertEqualsCanonicalizing( array( 'first_seen', 'title', 'gr_latitude', 'gr_longitude', 'gr_phone', 'gr_hours', 'tax:gr_village', 'tax:gr_mall' ), array_keys( $by_field ) );
+		$this->assertSame( 'micronesia-mall', $by_field['tax:gr_mall']['old_value'] );
+		$this->assertSame( '', (string) $by_field['tax:gr_mall']['new_value'] );
 		$this->assertSame( '+16715550101', $by_field['gr_phone']['old_value'] );
 		$this->assertSame( '+16715550199', $by_field['gr_phone']['new_value'] );
 		$this->assertSame( 'dededo', $by_field['tax:gr_village']['old_value'] );

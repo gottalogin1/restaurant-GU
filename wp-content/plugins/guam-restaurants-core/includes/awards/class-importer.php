@@ -11,6 +11,7 @@ use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
 use GuamRestaurants\Core\Database\Review_Queue;
 use GuamRestaurants\Core\Database\Schema;
+use GuamRestaurants\Core\Monitoring\Change_Tracker;
 use GuamRestaurants\Core\Names;
 use GuamRestaurants\Core\Restaurant_Meta;
 
@@ -214,14 +215,20 @@ final class Importer {
 	 * @return int Post ID, or 0.
 	 */
 	private function create_restaurant( string $name ): int {
-		$id = wp_insert_post(
-			array(
-				'post_type'   => Content_Types::POST_TYPE,
-				'post_status' => 'draft',
-				'post_title'  => $name,
-				'meta_input'  => array( Restaurant_Meta::STATUS => $this->unmatched_status ),
-			),
-			true
+		// A past winner is history, not an opening or a closure, so it is kept out of the change log.
+		$status = $this->unmatched_status;
+		$id     = Change_Tracker::suppress(
+			static function () use ( $name, $status ) {
+				return wp_insert_post(
+					array(
+						'post_type'   => Content_Types::POST_TYPE,
+						'post_status' => 'draft',
+						'post_title'  => $name,
+						'meta_input'  => array( Restaurant_Meta::STATUS => $status ),
+					),
+					true
+				);
+			}
 		);
 		return is_wp_error( $id ) ? 0 : (int) $id;
 	}

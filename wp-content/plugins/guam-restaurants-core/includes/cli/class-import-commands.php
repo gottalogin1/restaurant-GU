@@ -9,6 +9,7 @@ namespace GuamRestaurants\Core\Cli;
 
 use GuamRestaurants\Core\Discovery\Discoverer;
 use GuamRestaurants\Core\Discovery\Places_Client;
+use GuamRestaurants\Core\Monitoring\Alerts;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
 use GuamRestaurants\Core\Osm\Element_Mapper;
 use GuamRestaurants\Core\Osm\Importer;
@@ -69,6 +70,10 @@ final class Import_Commands {
 	 * default: 150
 	 * ---
 	 *
+	 * [--no-closure-check]
+	 * : Do not count restaurants missing from this data as possibly closed
+	 * (use with a partial --input file).
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp guam-restaurants import-osm --dry-run
@@ -85,6 +90,7 @@ final class Import_Commands {
 		$save    = (string) WP_CLI\Utils\get_flag_value( $assoc_args, 'save-response', '' );
 		$status  = (string) WP_CLI\Utils\get_flag_value( $assoc_args, 'post-status', 'publish' );
 		$radius  = (float) WP_CLI\Utils\get_flag_value( $assoc_args, 'mall-radius', 150 );
+		$closure = (bool) WP_CLI\Utils\get_flag_value( $assoc_args, 'closure-check', true );
 
 		try {
 			if ( '' !== $input ) {
@@ -108,7 +114,7 @@ final class Import_Commands {
 				WP_CLI::log( sprintf( 'Overpass returned %d elements.', count( $elements ) ) );
 			}
 
-			$importer = new Importer( new Element_Mapper( Cuisine_Map::from_file() ), null, $radius, $status );
+			$importer = ( new Importer( new Element_Mapper( Cuisine_Map::from_file() ), null, $radius, $status ) )->with_closure_checks( $closure );
 			$result   = $importer->run( $elements, $dry_run );
 		} catch ( \Throwable $e ) {
 			WP_CLI::error( $e->getMessage() );
@@ -140,6 +146,15 @@ final class Import_Commands {
 				);
 			}
 			WP_CLI\Utils\format_items( 'table', $rows, array( 'cuisine', 'restaurants' ) );
+		}
+
+		if ( $result['closures']['checked'] ) {
+			WP_CLI::log( sprintf( '%d restaurant(s) missing from OSM this run; %d now await closure approval in the review queue.', count( $result['closures']['closed'] ), count( $result['closures']['queued'] ) ) );
+			if ( Alerts::closures_in_run( 'OpenStreetMap import', $result['closures']['closed'], $result['closures']['queued'], $result['run_id'] ) ) {
+				WP_CLI::warning( 'More restaurants than the alert threshold look closed; an alert email was sent.' );
+			}
+		} elseif ( '' !== $result['closures']['note'] ) {
+			WP_CLI::warning( ucfirst( $result['closures']['note'] ) . '.' );
 		}
 
 		self::log_counts( $dry_run, $result['counts'], $result['run_id'] );

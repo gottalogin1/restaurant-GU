@@ -87,17 +87,58 @@ final class Mall_Locator {
 	}
 
 	/**
-	 * Mall slug for a point, or null.
+	 * Locator from geometries saved by an earlier import (geometries()), for
+	 * re-tagging without calling Overpass.
+	 *
+	 * @param array<string, array{osm_id: string, center: float[]|null, polygons: array}> $geometries Slug => geometry.
+	 * @param float                                                                       $radius     Metres.
+	 * @return Mall_Locator
+	 */
+	public static function from_geometries( array $geometries, float $radius = 150.0 ): Mall_Locator {
+		$locator = new self( array(), array(), $radius );
+		foreach ( $geometries as $slug => $geometry ) {
+			$locator->malls[] = array(
+				'slug'     => (string) $slug,
+				'osm_id'   => (string) ( $geometry['osm_id'] ?? '' ),
+				'center'   => isset( $geometry['center'][0], $geometry['center'][1] ) ? array( (float) $geometry['center'][0], (float) $geometry['center'][1] ) : null,
+				'polygons' => is_array( $geometry['polygons'] ?? null ) ? $geometry['polygons'] : array(),
+			);
+		}
+		return $locator;
+	}
+
+	/**
+	 * Matched malls' geometries: slug => {osm_id, center, polygons}.
+	 *
+	 * @return array<string, array{osm_id: string, center: float[]|null, polygons: array}>
+	 */
+	public function geometries(): array {
+		$out = array();
+		foreach ( $this->malls as $mall ) {
+			$out[ $mall['slug'] ] = array(
+				'osm_id'   => $mall['osm_id'],
+				'center'   => $mall['center'],
+				'polygons' => $mall['polygons'],
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Mall slug and how it was found for a point, or null.
 	 *
 	 * @param float $lat Latitude.
 	 * @param float $lng Longitude.
-	 * @return string|null
+	 * @return array{slug: string, detail: string}|null Detail is `osm:{id}` (outline) or `osm:{id}:radius`.
 	 */
-	public function slug_for( float $lat, float $lng ): ?string {
+	public function match_for( float $lat, float $lng ): ?array {
 		foreach ( $this->malls as $mall ) {
 			foreach ( $mall['polygons'] as $rings ) {
 				if ( Village_Locator::in_polygon( $lng, $lat, $rings ) ) {
-					return $mall['slug'];
+					return array(
+						'slug'   => $mall['slug'],
+						'detail' => 'osm:' . $mall['osm_id'],
+					);
 				}
 			}
 		}
@@ -110,11 +151,26 @@ final class Mall_Locator {
 			}
 			$dist = self::distance( $lat, $lng, $mall['center'][0], $mall['center'][1] );
 			if ( $dist <= $this->radius && $dist < $best_dist ) {
-				$best      = $mall['slug'];
+				$best      = array(
+					'slug'   => $mall['slug'],
+					'detail' => 'osm:' . $mall['osm_id'] . ':radius',
+				);
 				$best_dist = $dist;
 			}
 		}
 		return $best;
+	}
+
+	/**
+	 * Mall slug for a point, or null.
+	 *
+	 * @param float $lat Latitude.
+	 * @param float $lng Longitude.
+	 * @return string|null
+	 */
+	public function slug_for( float $lat, float $lng ): ?string {
+		$match = $this->match_for( $lat, $lng );
+		return $match ? $match['slug'] : null;
 	}
 
 	/**

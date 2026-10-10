@@ -1,0 +1,89 @@
+{
+	"_about": "Editable cuisine rules, applied after each source's own categories (OSM: osm-cuisine-map.json). Each rule matches the restaurant's name, lowercased with accents, apostrophes and punctuation removed (\"Fina'denne\" becomes \"finadenne\"). `when` is `always`, or `no_source_cuisine` to apply only when no source gave a cuisine. Every slug must exist in Seed_Data::cuisines(). After editing, run `wp guam-restaurants retag` (no API calls). Tags an editor adds or removes by hand are never changed by rules or imports.",
+	"name_rules": [
+		{
+			"id": "chamorro-dishes",
+			"pattern": "\\b(chamorro|chamoru|chamoro|kelaguen|kadon|finadenne|tinaktak|kelaguin)\\b",
+			"cuisines": ["chamorro"],
+			"when": "always"
+		},
+		{
+			"id": "filipino-dishes",
+			"pattern": "\\b(lumpia|adobo|lechon|pancit|silog|turo turo|kusina|inasal)\\b",
+			"cuisines": ["filipino"],
+			"when": "always"
+		},
+		{
+			"id": "japanese-dishes",
+			"pattern": "\\b(sushi|ramen|izakaya|udon|soba|tonkatsu|teppanyaki|yakitori|yakiniku|shabu)\\b",
+			"cuisines": ["japanese"],
+			"when": "always"
+		},
+		{
+			"id": "korean-dishes",
+			"pattern": "\\b(bulgogi|bibimbap|kimchi|galbi|tofu house)\\b",
+			"cuisines": ["korean"],
+			"when": "always"
+		},
+		{
+			"id": "chinese-dishes",
+			"pattern": "\\b(dim sum|dumplings?|szechuan|sichuan|cantonese)\\b",
+			"cuisines": ["chinese"],
+			"when": "always"
+		},
+		{
+			"id": "vietnamese-dishes",
+			"pattern": "\\b(pho|banh mi)\\b",
+			"cuisines": ["vietnamese"],
+			"when": "always"
+		},
+		{
+			"id": "thai",
+			"pattern": "\\bthai\\b",
+			"cuisines": ["thai"],
+			"when": "always"
+		},
+		{
+			"id": "mexican-dishes",
+			"pattern": "\\b(taqueria|tacos?|burritos?|cantina)\\b",
+			"cuisines": ["mexican"],
+			"when": "always"
+		},
+		{
+			"id": "pizza",
+			"pattern": "\\bpizz(a|as|eria)\\b",
+			"cuisines": ["pizza"],
+			"when": "always"
+		},
+		{
+			"id": "steakhouse",
+			"pattern": "\\bsteak ?house\\b",
+			"cuisines": ["steakhouse"],
+			"when": "always"
+		},
+		{
+			"id": "seafood",
+			"pattern": "\\b(seafood|crab shack|oyster bar|poke)\\b",
+			"cuisines": ["seafood"],
+			"when": "always"
+		},
+		{
+			"id": "bbq",
+			"pattern": "\\b(bbq|barbecue|barbeque)\\b",
+			"cuisines": ["bbq-and-grill"],
+			"when": "always"
+		},
+		{
+			"id": "bakery",
+			"pattern": "\\b(bakery|bakeshop|donuts?|panaderia)\\b",
+			"cuisines": ["bakery-and-dessert"],
+			"when": "always"
+		},
+		{
+			"id": "coffee",
+			"pattern": "\\b(coffee|espresso|cafe)\\b",
+			"cuisines": ["coffee-and-cafe"],
+			"when": "no_source_cuisine"
+		}
+	]
+}

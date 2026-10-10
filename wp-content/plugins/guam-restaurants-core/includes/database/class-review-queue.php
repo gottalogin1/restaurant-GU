@@ -60,4 +60,89 @@ final class Review_Queue {
 
 		return $inserted ? (int) $wpdb->insert_id : 0;
 	}
+
+	/**
+	 * One item, with its payload decoded.
+	 *
+	 * @param int $item_id Item.
+	 * @return array<string, mixed>|null
+	 */
+	public static function get( int $item_id ): ?array {
+		global $wpdb;
+		$table = Schema::table( Schema::REVIEW_QUEUE );
+		$row   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $item_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return $row ? self::decode( $row ) : null;
+	}
+
+	/**
+	 * Pending items, oldest first.
+	 *
+	 * @param string $type   Only this type; '' for all.
+	 * @param int    $limit  Rows.
+	 * @param int    $offset Offset.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function pending( string $type = '', int $limit = 50, int $offset = 0 ): array {
+		global $wpdb;
+		$table = Schema::table( Schema::REVIEW_QUEUE );
+		if ( '' === $type ) {
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE status = 'pending' ORDER BY id ASC LIMIT %d OFFSET %d", $limit, $offset ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		} else {
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE status = 'pending' AND type = %s ORDER BY id ASC LIMIT %d OFFSET %d", $type, $limit, $offset ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		}
+		return array_map( array( self::class, 'decode' ), $rows ? $rows : array() );
+	}
+
+	/**
+	 * Pending item counts by type.
+	 *
+	 * @return array<string, int>
+	 */
+	public static function pending_counts(): array {
+		global $wpdb;
+		$table = Schema::table( Schema::REVIEW_QUEUE );
+		$rows  = $wpdb->get_results( "SELECT type, COUNT(*) AS n FROM {$table} WHERE status = 'pending' GROUP BY type", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$out   = array();
+		foreach ( $rows ? $rows : array() as $row ) {
+			$out[ (string) $row['type'] ] = (int) $row['n'];
+		}
+		return $out;
+	}
+
+	/**
+	 * Marks an item resolved.
+	 *
+	 * @param int    $item_id Item.
+	 * @param string $status  One of Vocabulary::REVIEW_QUEUE_STATUSES other than pending.
+	 * @param int    $user_id User who decided; 0 for an automatic decision.
+	 * @return bool
+	 */
+	public static function resolve( int $item_id, string $status, int $user_id ): bool {
+		global $wpdb;
+		if ( 'pending' === $status || ! in_array( $status, Vocabulary::REVIEW_QUEUE_STATUSES, true ) ) {
+			return false;
+		}
+		$row     = array(
+			'status'      => $status,
+			'resolved_at' => current_time( 'mysql', true ),
+		);
+		$formats = array( '%s', '%s' );
+		if ( $user_id > 0 ) {
+			$row['resolved_by'] = $user_id;
+			$formats[]          = '%d';
+		}
+		return (bool) $wpdb->update( Schema::table( Schema::REVIEW_QUEUE ), $row, array( 'id' => $item_id ), $formats, array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	}
+
+	/**
+	 * Decodes a row's payload.
+	 *
+	 * @param array<string, mixed> $row Row.
+	 * @return array<string, mixed>
+	 */
+	private static function decode( array $row ): array {
+		$payload        = json_decode( (string) $row['payload'], true );
+		$row['payload'] = is_array( $payload ) ? $payload : array();
+		return $row;
+	}
 }

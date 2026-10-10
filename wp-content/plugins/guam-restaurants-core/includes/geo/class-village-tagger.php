@@ -10,6 +10,7 @@ namespace GuamRestaurants\Core\Geo;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Change_Log;
 use GuamRestaurants\Core\Database\Review_Queue;
+use GuamRestaurants\Core\Monitoring\Change_Tracker;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Vocabulary;
 
@@ -94,7 +95,11 @@ final class Village_Tagger {
 		}
 
 		if ( ! $dry_run ) {
-			$result = wp_set_object_terms( $post_id, array( (int) $term->term_id ), Content_Types::TAX_VILLAGE );
+			$result = Change_Tracker::suppress(
+				static function () use ( $post_id, $term ) {
+					return wp_set_object_terms( $post_id, array( (int) $term->term_id ), Content_Types::TAX_VILLAGE );
+				}
+			);
 			if ( is_wp_error( $result ) ) {
 				return self::FAILED;
 			}

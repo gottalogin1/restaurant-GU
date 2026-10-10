@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
 final class Pricing {
 
 	public const GOOGLE_TEXT_SEARCH_PRO    = 'google_text_search_pro';
+	public const GOOGLE_DETAILS_PRO        = 'google_details_pro';
 	public const GOOGLE_DETAILS_ENTERPRISE = 'google_details_enterprise';
 	public const GOOGLE_DETAILS_ATMOSPHERE = 'google_details_atmosphere';
 	public const YELP_CALL                 = 'yelp_call';
@@ -31,6 +32,7 @@ final class Pricing {
 	 */
 	public const PRICES = array(
 		self::GOOGLE_TEXT_SEARCH_PRO    => 0.032,   // $32 per 1,000.
+		self::GOOGLE_DETAILS_PRO        => 0.017,   // $17 per 1,000 (business status).
 		self::GOOGLE_DETAILS_ENTERPRISE => 0.020,   // $20 per 1,000 (rating, count).
 		self::GOOGLE_DETAILS_ATMOSPHERE => 0.025,   // $25 per 1,000 (adds reviews).
 		self::YELP_CALL                 => 0.00657, // Enhanced plan overage; plans start at $229/month.
@@ -44,6 +46,7 @@ final class Pricing {
 	 */
 	public const FREE_PER_MONTH = array(
 		self::GOOGLE_TEXT_SEARCH_PRO    => 4500, // Google: 5,000 free.
+		self::GOOGLE_DETAILS_PRO        => 4500, // Google: 5,000 free.
 		self::GOOGLE_DETAILS_ENTERPRISE => 900,  // Google: 1,000 free.
 		self::GOOGLE_DETAILS_ATMOSPHERE => 900,  // Google: 1,000 free.
 		self::YELP_CALL                 => 0,
