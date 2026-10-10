@@ -36,7 +36,6 @@ final class Display {
 		add_action( 'init', array( self::class, 'register_assets' ) );
 		add_shortcode( self::SHORTCODE, array( self::class, 'shortcode' ) );
 		add_filter( 'the_content', array( self::class, 'append_section' ), 20 );
-		add_action( 'wp_head', array( self::class, 'print_structured_data' ) );
 	}
 
 	/**
@@ -177,7 +176,8 @@ final class Display {
 	 * The schema.org `award` property (Text) applies to Organization, and
 	 * Restaurant is an Organization through LocalBusiness, so each result is
 	 * given as our own citation text. Nothing else about the program is
-	 * described. Returns null when there is nothing to print.
+	 * described. Returns null when there is nothing to print. Printed by
+	 * Structured_Data, together with any user reviews.
 	 *
 	 * @param int $restaurant_id Restaurant.
 	 * @return array<string, mixed>|null
@@ -198,28 +198,5 @@ final class Display {
 			'url'      => get_permalink( $restaurant_id ),
 			'award'    => array_values( array_unique( array_map( array( Policy::class, 'citation' ), $awards ) ) ),
 		);
-	}
-
-	/**
-	 * Prints the structured data on single restaurant pages.
-	 *
-	 * @return void
-	 */
-	public static function print_structured_data(): void {
-		if ( ! is_singular( Content_Types::POST_TYPE ) ) {
-			return;
-		}
-		/**
-		 * Filters whether award structured data is printed (turn off if an SEO plugin adds it).
-		 *
-		 * @param bool $print Whether to print.
-		 */
-		if ( ! apply_filters( 'guam_restaurants_awards_structured_data', true ) ) {
-			return;
-		}
-		$data = self::structured_data( (int) get_queried_object_id() );
-		if ( null !== $data ) {
-			wp_print_inline_script_tag( (string) wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG ), array( 'type' => 'application/ld+json' ) );
-		}
 	}
 }

@@ -1,0 +1,70 @@
+/* Highlights: owner and editor boxes, set apart from user reviews and labeled by who wrote them. */
+.gr-highlights {
+	--gr-hl-border: color-mix(in srgb, currentColor 18%, transparent);
+	--gr-hl-tint: color-mix(in srgb, currentColor 4%, transparent);
+	--gr-hl-text-secondary: color-mix(in srgb, currentColor 72%, transparent);
+	margin: 2rem 0;
+}
+
+.gr-highlights__first-party {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+	gap: 1rem;
+	margin-bottom: 2rem;
+}
+
+.gr-highlight {
+	border: 1px solid var(--gr-hl-border);
+	border-radius: 8px;
+	background: var(--gr-hl-tint);
+	padding: 1rem 1.25rem;
+}
+
+.gr-highlight__label {
+	margin: 0 0 0.5rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.gr-highlight__text {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-style: normal;
+}
+
+.gr-highlight__text p {
+	margin: 0;
+}
+
+.gr-highlight__subtitle {
+	margin: 1rem 0 0.25rem;
+	font-size: 0.9rem;
+}
+
+.gr-highlight__dishes {
+	margin: 0;
+	padding-left: 1.25em;
+}
+
+.gr-highlight__byline,
+.gr-highlight__disclosure,
+.gr-highlights__policy {
+	color: var(--gr-hl-text-secondary);
+	font-size: 0.875em;
+}
+
+.gr-highlight__byline {
+	margin: 0.75rem 0 0;
+}
+
+.gr-highlight__disclosure {
+	margin: 0.5rem 0 0;
+	font-style: italic;
+}
+
+.gr-highlights__policy {
+	margin-top: 1.5rem;
+}

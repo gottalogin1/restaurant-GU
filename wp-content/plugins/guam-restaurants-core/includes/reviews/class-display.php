@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Reviews;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Highlights\Policy_Page;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,6 +18,9 @@ defined( 'ABSPATH' ) || exit;
  * assets/reviews/reviews.js fills from the REST endpoint: the visitor
  * average (with how it is calculated), the monthly trend chart, approved
  * reviews and the review form.
+ *
+ * The Highlights block (Highlights\Display) includes this section on
+ * restaurant pages, so it is rarely placed on its own.
  *
  * Yelp ratings may not appear alongside user content (Yelp API Terms
  * §5(c)), so keep this block out of any page section that shows Yelp.
@@ -93,12 +97,17 @@ final class Display {
 	/**
 	 * Placeholder markup; the restaurant defaults to the current post.
 	 *
+	 * Logged-in visitors (whose pages are not served from the page cache)
+	 * get a REST nonce so their review is linked to their account; everyone
+	 * else confirms an email address instead.
+	 *
 	 * @param int  $restaurant_id Restaurant, or 0 for the current post.
 	 * @param bool $form          Show the review form.
 	 * @param bool $trend         Show the trend chart.
+	 * @param int  $level         Heading level, 2 to 4.
 	 * @return string
 	 */
-	public static function render( int $restaurant_id, bool $form, bool $trend ): string {
+	public static function render( int $restaurant_id, bool $form, bool $trend, int $level = 2 ): string {
 		if ( $restaurant_id <= 0 ) {
 			$restaurant_id = (int) get_the_ID();
 		}
@@ -109,13 +118,23 @@ final class Display {
 		wp_enqueue_script( self::SCRIPT );
 		wp_enqueue_style( self::STYLE );
 
+		$level = min( 4, max( 2, $level ) );
+		$user  = '';
+		if ( is_user_logged_in() ) {
+			$user = sprintf( ' data-nonce="%1$s" data-user="%2$s"', esc_attr( wp_create_nonce( 'wp_rest' ) ), esc_attr( wp_get_current_user()->display_name ) );
+		}
+
 		return sprintf(
-			'<section class="gr-visitor-reviews" data-gr-visitor-reviews="%1$s" data-form="%2$s" data-trend="%3$s" aria-live="polite"><h2 class="gr-visitor-reviews__title">%4$s</h2><p class="gr-visitor-reviews__status">%5$s</p></section>',
+			'<section class="gr-visitor-reviews" id="gr-visitor-reviews" data-gr-visitor-reviews="%1$s" data-form="%2$s" data-trend="%3$s" data-policy="%7$s"%8$s aria-live="polite"><h%6$d class="gr-visitor-reviews__title">%4$s</h%6$d><p class="gr-visitor-reviews__intro">%9$s</p><p class="gr-visitor-reviews__status">%5$s</p></section>',
 			esc_url( Rest_Controller::url( $restaurant_id ) ),
 			$form ? '1' : '0',
 			$trend ? '1' : '0',
-			esc_html__( 'Visitor reviews', 'guam-restaurants-core' ),
-			esc_html__( 'Loading reviews…', 'guam-restaurants-core' )
+			esc_html__( 'User reviews', 'guam-restaurants-core' ),
+			esc_html__( 'Loading reviews…', 'guam-restaurants-core' ),
+			$level,
+			esc_url( Policy_Page::url() ),
+			$user, // Escaped above.
+			esc_html__( 'Written by visitors to this site and checked by a moderator before they appear.', 'guam-restaurants-core' )
 		);
 	}
 }

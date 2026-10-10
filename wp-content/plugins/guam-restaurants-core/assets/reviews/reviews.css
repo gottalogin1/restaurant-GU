@@ -154,7 +154,8 @@
 }
 
 .gr-vr-form__field textarea,
-.gr-vr-form__field input[type="text"] {
+.gr-vr-form__field input[type="text"],
+.gr-vr-form__field input[type="email"] {
 	width: 100%;
 	max-width: 36rem;
 	box-sizing: border-box;
@@ -177,4 +178,42 @@
 	width: 1px;
 	height: 1px;
 	overflow: hidden;
+}
+
+/* "Verified email" badge: says only that an address was confirmed. */
+.gr-vr-badge {
+	border: 1px solid var(--gr-vr-grid);
+	border-radius: 999px;
+	padding: 0 0.5em;
+	font-size: 0.8em;
+	color: var(--gr-vr-text-secondary);
+}
+
+/* Owner response, indented under the review it answers. */
+.gr-vr-response {
+	margin: 0.5rem 0 0 1rem;
+	padding-left: 0.75rem;
+	border-left: 3px solid var(--gr-vr-grid);
+}
+
+.gr-vr-response__label {
+	margin: 0;
+	font-size: 0.9em;
+}
+
+.gr-vr-response__label span,
+.gr-vr-response__label time,
+.gr-visitor-reviews__intro {
+	color: var(--gr-vr-text-secondary);
+}
+
+.gr-vr-response__text {
+	margin: 0.25rem 0 0;
+	white-space: pre-line;
+}
+
+.gr-vr-notice {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--gr-vr-grid);
+	border-radius: 6px;
 }

@@ -33,6 +33,7 @@ require $guam_tests_dir . '/includes/bootstrap.php';
 
 // Real tables, created once before any test transaction starts.
 \GuamRestaurants\Core\Database\Schema::install();
+\GuamRestaurants\Core\Highlights\Roles::install();
 
 require __DIR__ . '/class-test-case.php';
 require __DIR__ . '/class-fake-api.php';

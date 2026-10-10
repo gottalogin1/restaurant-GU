@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Reviews;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Highlights\Policy;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -17,7 +18,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * GET  /guam-restaurants/v1/restaurants/{id}/visitor-reviews: approved reviews, summary, monthly trend, rules.
- * POST /guam-restaurants/v1/restaurants/{id}/visitor-reviews: submits a review for moderation.
+ * POST /guam-restaurants/v1/restaurants/{id}/visitor-reviews: submits a review (logged in) or sends a confirmation link (email).
+ * GET  /guam-restaurants/v1/visitor-reviews/confirm?token=: opens a confirmation link and returns to the restaurant page.
  *
  * The block loads everything through these, so a full-page cache never
  * shows a stale review list.
@@ -64,31 +66,39 @@ final class Rest_Controller {
 					// Anyone may submit; every review waits for a moderator.
 					'permission_callback' => array( self::class, 'is_published_restaurant' ),
 					'args'                => array(
-						'rating'      => array(
+						'rating'       => array(
 							'type'     => 'integer',
 							'required' => true,
 						),
-						'body'        => array(
+						'body'         => array(
 							'type'     => 'string',
 							'required' => true,
 						),
-						'author_name' => array(
+						'author_name'  => array(
 							'type'     => 'string',
 							'required' => true,
 						),
-						'connected'   => array(
+						'email'        => array(
+							'type'    => 'string',
+							'default' => '',
+						),
+						'verify_email' => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
-						'connection'  => array(
+						'connected'    => array(
+							'type'    => 'boolean',
+							'default' => false,
+						),
+						'connection'   => array(
 							'type'    => 'string',
 							'default' => '',
 						),
-						'website'     => array(
+						'website'      => array(
 							'type'    => 'string',
 							'default' => '',
 						),
-						'elapsed_ms'  => array(
+						'elapsed_ms'   => array(
 							'type'    => 'integer',
 							'default' => 0,
 						),
@@ -96,6 +106,52 @@ final class Rest_Controller {
 				),
 			)
 		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/visitor-reviews/confirm',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( self::class, 'confirm' ),
+				// The token is the credential.
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'token' => array(
+						'type'     => 'string',
+						'required' => true,
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Confirmation link for a token.
+	 *
+	 * @param string $token Token.
+	 * @return string
+	 */
+	public static function confirm_url( string $token ): string {
+		return add_query_arg( 'token', rawurlencode( $token ), rest_url( self::NAMESPACE . '/visitor-reviews/confirm' ) );
+	}
+
+	/**
+	 * Opens a confirmation link, then sends the visitor back to the restaurant
+	 * page with `gr_review=confirmed` (or `expired`) for the block to explain.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response
+	 */
+	public static function confirm( WP_REST_Request $request ): WP_REST_Response {
+		$result   = Visitor_Reviews::confirm( (string) $request['token'] );
+		$target   = is_wp_error( $result ) ? home_url( '/' ) : (string) get_permalink( $result['restaurant_id'] );
+		$response = new WP_REST_Response(
+			array( 'status' => is_wp_error( $result ) ? 'expired' : 'confirmed' ),
+			302
+		);
+		$response->header( 'Location', add_query_arg( 'gr_review', is_wp_error( $result ) ? 'expired' : 'confirmed', $target ) . '#gr-visitor-reviews' );
+		$response->header( 'Cache-Control', 'no-store' );
+		return $response;
 	}
 
 	/**
@@ -150,6 +206,13 @@ final class Rest_Controller {
 				'page'          => $page,
 				'pages'         => (int) max( 1, ceil( $summary['count'] / self::PER_PAGE ) ),
 				'rules'         => $rules,
+				'badge'         => array(
+					'label'       => Policy::badge_label(),
+					'explanation' => Policy::badge_explanation(),
+				),
+				'labels'        => array(
+					'owner_response' => Policy::type_label( Policy::OWNER_RESPONSE ),
+				),
 			)
 		);
 		$response->header( 'Cache-Control', 'public, max-age=60' );
@@ -166,13 +229,15 @@ final class Rest_Controller {
 		$result = Visitor_Reviews::submit(
 			(int) $request['id'],
 			array(
-				'rating'      => $request['rating'],
-				'body'        => $request['body'],
-				'author_name' => $request['author_name'],
-				'connected'   => $request['connected'],
-				'connection'  => $request['connection'],
-				'website'     => $request['website'],
-				'elapsed_ms'  => $request['elapsed_ms'],
+				'rating'       => $request['rating'],
+				'body'         => $request['body'],
+				'author_name'  => $request['author_name'],
+				'email'        => $request['email'],
+				'verify_email' => $request['verify_email'],
+				'connected'    => $request['connected'],
+				'connection'   => $request['connection'],
+				'website'      => $request['website'],
+				'elapsed_ms'   => $request['elapsed_ms'],
 			),
 			Visitor_Reviews::client_key()
 		);
@@ -182,10 +247,12 @@ final class Rest_Controller {
 
 		$response = new WP_REST_Response(
 			array(
-				'status'  => 'pending',
-				'message' => __( 'Thanks! Your review will appear after a moderator checks it against our review rules.', 'guam-restaurants-core' ),
+				'status'  => $result['status'],
+				'message' => 'awaiting_email' === $result['status']
+					? __( 'Almost done: we sent you an email. Open the link in it to confirm your address, and your review will go to a moderator.', 'guam-restaurants-core' )
+					: __( 'Thanks! Your review will appear after a moderator checks it against our review rules.', 'guam-restaurants-core' ),
 			),
-			201
+			'awaiting_email' === $result['status'] ? 202 : 201
 		);
 		$response->header( 'Cache-Control', 'no-store' );
 		return $response;

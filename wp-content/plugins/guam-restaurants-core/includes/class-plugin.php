@@ -48,6 +48,7 @@ final class Plugin {
 
 		// Boot runs on plugins_loaded, so tables are upgraded before anything uses them.
 		Database\Schema::maybe_upgrade();
+		Highlights\Roles::maybe_install();
 
 		Village_Aliases::register();
 		Mall_Verification::register();
@@ -56,9 +57,14 @@ final class Plugin {
 		Ratings\Display::register();
 		Reviews\Rest_Controller::register();
 		Reviews\Display::register();
-		Reviews\Moderation_Screen::register();
+		Highlights\Roles::register();
+		Highlights\Moderation_Screen::register();
+		Highlights\Submit_Screen::register();
+		Highlights\Display::register();
+		Highlights\Policy_Page::register();
 		Awards\Display::register();
 		Awards\Pages::register();
+		Structured_Data::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			Cli\Commands::register();
