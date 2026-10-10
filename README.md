@@ -108,3 +108,7 @@ make test    # PHPUnit: should end with "OK"
 - [docs/plugins.md](docs/plugins.md): third-party plugins to install and why.
 - [docs/data-sources.md](docs/data-sources.md): where restaurant data may come from.
 - [docs/legal-and-policy.md](docs/legal-and-policy.md): disclosures, reviews and privacy.
+- [docs/monetization.md](docs/monetization.md): ad products, launch rate card and launch order.
+- [docs/market-rates.md](docs/market-rates.md): rate benchmarks, Guam quotes and the repricing rule.
+- [docs/editorial-policy.md](docs/editorial-policy.md): editorial statement, moderation, corrections and sponsored features.
+- [docs/media-kit-outline.md](docs/media-kit-outline.md): media kit outline for advertisers.

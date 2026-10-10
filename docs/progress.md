@@ -125,3 +125,9 @@
 - Not checked: map tiles. The development container cannot reach tiles.openfreemap.org, so the map rendered without a basemap and the console showed a tile error.
 - Remaining (all launch items are collected in docs/launch-checklist.md): tiles decided, OpenFreeMap (Sanjay, 2026-10-10); publish the privacy and terms pages (with counsel); add Happyforms forms to the claim, correction and contact drafts; verify malls so they appear on the home page and in filters; install Yoast SEO, Advanced Ads and a persistent object cache; write village, mall and cuisine intros in wp-admin (term description).
 
+
+## Monetization, market rates and editorial policy, 2026-10-10
+- Requested by Sanjay (2026-10-10): a launch rate card with 11 products, a 30% founding discount, and a launch order; a market rates log with benchmarks and empty tables for Guam quotes; an editorial policy opening with his statement, plus moderation rules, corrections, sponsored-feature labeling, and a media kit outline.
+- Done: docs/monetization.md, docs/market-rates.md, docs/editorial-policy.md, docs/media-kit-outline.md. Launch order: free claimed listings, then featured listings and premium profiles.
+- Checked: benchmark sources on 2026-10-10. Florida Foodie $39.99, Locable $15-20 CPM, newsletter $50-250 under 5,000 and SagaPixel's $0.30 Yelp CPC are stated by their sources. The $15-35/$25 CPM is stated for streaming TV, not local display, and the $150 lower bound for 5,000-20,000 newsletters has no source found; both are marked in market-rates.md.
+- Remaining: request Guam rate cards and fill in market-rates.md; build premium profile fields, sponsored slots on village/mall/cuisine templates with 3-slot rotation, and deal posts; add the editorial statement, corrections and sponsored-feature sections to the /editorial-policy/ page; reprice 90 days after launch.
