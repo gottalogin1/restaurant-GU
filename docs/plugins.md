@@ -20,6 +20,7 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
 | Email newsletter | SendFox (hosted service, not a plugin) | No | n/a | n/a | n/a | n/a |
 | Analytics | [Matomo for WordPress](https://wordpress.org/plugins/matomo/) | No | GPLv3 or later | not recorded | checked 2026-10-10 (tested up to WP 7.1) | 100,000+ |
 | Ad management | Built into `guam-restaurants-core` (Advanced Ads not needed) | | | | | |
+| Checkout (premium profiles) | [WooCommerce](https://github.com/woocommerce/woocommerce/releases/tag/11.2.1) + [WooCommerce PayPal Payments](https://wordpress.org/plugins/woocommerce-paypal-payments/) | No (free) | GPLv3 / GPLv2 | 11.2.1 / 4.1.3 | 2026-10-10 checked | |
 | Form spam (supports Forms) | [Akismet](https://wordpress.org/plugins/akismet/) | Yes | GPLv2 or later | 5.7.2 | about 2026-08 | 5+ million |
 
 ## SEO: Yoast SEO (free)
@@ -103,6 +104,16 @@ CSV report. Do not install Advanced Ads. If it was installed on staging for the 
 placement, its "home" placement is no longer printed by the theme and can be deleted with
 the plugin.
 
+## WPXPO suite (owned, Pro, unlimited sites), 2026-10-10
+
+Checked plugin by plugin in [billing.md](billing.md) §1. Every WPXPO plugin
+except PostX needs WooCommerce, which the site does not run, so none of them
+can do manual invoicing, claims or the owner dashboard. WowStore, WowInvoice
+and WowRevenue come into use if WooCommerce checkout for premium profiles is
+approved ([billing.md](billing.md) §4). WholesaleX does not fit listing claims.
+PostX is not needed for the directory blocks. Pro licenses are activated in
+wp-admin on the host and never committed.
+
 ## Other owned plugins worth using
 
 Not part of this request, listed so they are not forgotten: ShortPixel Image Optimizer
@@ -118,3 +129,14 @@ should stay inactive.
 2. Open `https://plugins.svn.wordpress.org/<slug>/trunk/readme.txt` for the license and
    changelog dates.
 3. Update the table above and the date at the top.
+
+## Checkout: WooCommerce and WooCommerce PayPal Payments (added 2026-10-10)
+
+- **Why:** Sanjay approved WooCommerce checkout for premium profiles so the owned WPXPO
+  plugins (WowInvoice, WowStore, WowRevenue) can be used, with PayPal as the gateway because
+  Stripe does not accept Guam-based businesses. Details, setup steps and what the plugin adds
+  are in `docs/billing.md` §4.
+- **Versions checked:** WooCommerce 11.2.1 (GitHub release; requires WordPress 7.0 and PHP
+  7.4), pinned for local development in the `Makefile`. PayPal Payments 4.1.3 (readme on
+  plugins.svn.wordpress.org; requires WooCommerce 9.6, tested up to WordPress 7.1).
+- **Automatic renewal:** WPXPO WowSubscriptions (owned suite) once WPXPO releases it; WooCommerce Subscriptions ($279/year) is not needed.

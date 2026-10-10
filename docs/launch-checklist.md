@@ -70,9 +70,9 @@ Install on staging first and check each against the current WordPress version
       but neither the lead email (to Settings > General > Administration
       Email Address) nor the sender's confirmation goes out.
 - [ ] Akismet on a paid plan, checking reviews and form submissions.
-- [ ] Happyforms: build the claim and contact forms, add each to its draft
-      page, then publish both pages. The correction form is built into the
-      plugin and its page is published automatically.
+- [ ] Happyforms: build the contact form, add it to its draft page, then
+      publish it. The claim and correction forms are built into the plugin
+      and their pages are published automatically (docs/billing.md §5).
 - [ ] Matomo for WordPress: install, tick "Disable cookies", set its own
       tracking code to Disabled, and set the four `GUAM_RESTAURANTS_ANALYTICS*`
       constants ([seo-and-analytics.md](seo-and-analytics.md) §1).
@@ -87,6 +87,14 @@ Install on staging first and check each against the current WordPress version
       if on a paid plan.
 - [ ] Review the first newsletter draft on the Monday after launch; drafts are
       never sent automatically.
+- [ ] Settings > General: turn on "Anyone can register" (default role
+      Subscriber) so owners can create an account to claim a listing.
+- [ ] Before the first invoice: answer the DRT and accountant questions in
+      docs/billing.md §3.
+- [ ] Premium profile checkout: WooCommerce with Site visibility set to Live,
+      WooCommerce PayPal Payments connected, taxes off until §3 is answered,
+      WowInvoice prefix `GRW-`, `wp guam-restaurants premium-products`, then
+      one test purchase and refund (docs/billing.md §4).
 
 ## Hosting, keys and settings
 

@@ -521,22 +521,24 @@ class Site_Test extends Guam_Test_Case {
 
 	/**
 	 * Listing links appear only for published pages; contact only for claimed
-	 * listings. The advertise and correction pages are published from the
-	 * start, and their links pre-fill the restaurant.
+	 * listings. The advertise, claim and correction pages are published
+	 * from the start, and their links pre-fill the restaurant.
 	 */
 	public function test_listing_actions() {
 		$pages = Pages::ensure();
 		$this->go_to( get_permalink( $this->r['proa'] ) );
 		$html = Blocks::listing_actions( array() );
-		$this->assertStringNotContainsString( 'Claim this listing', $html, 'Draft pages are not linked' );
+		$this->assertStringContainsString( 'Claim this listing', $html );
 		$this->assertStringContainsString( esc_url( add_query_arg( 'restaurant', $this->r['proa'], get_permalink( $pages['correction'] ) ) ), $html );
 		$this->assertStringContainsString( 'Advertise on this page', $html );
 		$this->assertStringContainsString( esc_url( add_query_arg( 'restaurant', $this->r['proa'], get_permalink( $pages['advertise'] ) ) ), $html );
 
 		wp_trash_post( $pages['advertise'] );
+		wp_trash_post( $pages['claim'] );
 		wp_trash_post( $pages['correction'] );
 		$this->assertSame( '', Blocks::listing_actions( array() ), 'No links when no page is published' );
 
+		wp_untrash_post( $pages['claim'] );
 		wp_publish_post( $pages['claim'] );
 		wp_publish_post( $pages['correction'] );
 		wp_publish_post( $pages['contact'] );

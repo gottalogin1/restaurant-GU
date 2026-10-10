@@ -21,7 +21,9 @@ defined( 'ABSPATH' ) || exit;
  *    an ad with villages, malls or cuisines set shows only where the page
  *    has at least one of them (a term page, or a restaurant page through
  *    the restaurant's terms). Different target kinds must all match. An
- *    ad with no targets shows anywhere its slot is.
+ *    ad with no targets shows anywhere its slot is. On the page of a
+ *    restaurant with a premium profile, ads linked to a different
+ *    restaurant never match (Premium\Premium).
  * 3. Rotation (order): highest priority first; within a priority, the ad
  *    with the fewest impressions today first; ties by lowest ad ID. The
  *    order is deterministic, and because the beacon counts every shown
@@ -96,6 +98,10 @@ final class Server {
 	 * @return bool
 	 */
 	public static function matches( array $ad, array $context ): bool {
+		$host = (int) ( $context['premium_restaurant'] ?? 0 );
+		if ( $host > 0 && (int) ( $ad['restaurant_id'] ?? 0 ) > 0 && (int) $ad['restaurant_id'] !== $host ) {
+			return false;
+		}
 		$page_types = (array) ( $ad['page_types'] ?? array() );
 		if ( $page_types && ! in_array( (string) ( $context['page_type'] ?? '' ), $page_types, true ) ) {
 			return false;

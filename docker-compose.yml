@@ -23,6 +23,7 @@ x-wp-env: &wp-env
   GUAM_RESTAURANTS_YELP_STATUS_CHECKS: ${GUAM_RESTAURANTS_YELP_STATUS_CHECKS:-}
   GUAM_RESTAURANTS_MAP_STYLE_URL: ${GUAM_RESTAURANTS_MAP_STYLE_URL:-}
   GUAM_RESTAURANTS_GOOGLE_MAPS_EMBED_KEY: ${GUAM_RESTAURANTS_GOOGLE_MAPS_EMBED_KEY:-}
+  GUAM_RESTAURANTS_CLAIM_PHONE_CODES: ${GUAM_RESTAURANTS_CLAIM_PHONE_CODES:-}
   GUAM_RESTAURANTS_ANALYTICS: ${GUAM_RESTAURANTS_ANALYTICS:-}
   GUAM_RESTAURANTS_ANALYTICS_SCRIPT_URL: ${GUAM_RESTAURANTS_ANALYTICS_SCRIPT_URL:-}
   GUAM_RESTAURANTS_ANALYTICS_ENDPOINT: ${GUAM_RESTAURANTS_ANALYTICS_ENDPOINT:-}
@@ -67,6 +68,8 @@ services:
       - wordpress:/var/www/html
       - ./wp-content/plugins/guam-restaurants-core:/var/www/html/wp-content/plugins/guam-restaurants-core
       - ./wp-content/themes/guam-restaurants-theme:/var/www/html/wp-content/themes/guam-restaurants-theme
+      # WooCommerce (premium profile checkout), downloaded by `make woocommerce`.
+      - ./.cache/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce
       - ./docker/apache/compression.conf:/etc/apache2/conf-enabled/zz-guam-restaurants-compression.conf:ro
 
   # WP-CLI and PHPUnit run here: `docker compose run --rm cli wp <command>`.
@@ -88,6 +91,8 @@ services:
       - wordpress:/var/www/html
       - ./wp-content/plugins/guam-restaurants-core:/var/www/html/wp-content/plugins/guam-restaurants-core
       - ./wp-content/themes/guam-restaurants-theme:/var/www/html/wp-content/themes/guam-restaurants-theme
+      # WooCommerce (premium profile checkout), downloaded by `make woocommerce`.
+      - ./.cache/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce
       - .:/project
 
   # Composer without installing PHP on your machine: `docker compose run --rm composer install`.

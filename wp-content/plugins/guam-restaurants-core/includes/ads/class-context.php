@@ -8,13 +8,16 @@
 namespace GuamRestaurants\Core\Ads;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Premium\Premium;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * The page type and the village, mall and cuisine term IDs of the current
  * page: the term itself on a term page, or the restaurant's terms on a
- * restaurant page.
+ * restaurant page. On a restaurant page with a running premium profile,
+ * `premium_restaurant` is that restaurant, so other restaurants' ads are
+ * left out (Server::matches); otherwise it is 0.
  */
 final class Context {
 
@@ -30,7 +33,7 @@ final class Context {
 	/**
 	 * Context for the current request.
 	 *
-	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[]}
+	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[], premium_restaurant: int}
 	 */
 	public static function current(): array {
 		if ( is_front_page() ) {
@@ -53,7 +56,7 @@ final class Context {
 	 * Context of a village, mall or cuisine page.
 	 *
 	 * @param \WP_Term $term Term.
-	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[]}
+	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[], premium_restaurant: int}
 	 */
 	public static function for_term( \WP_Term $term ): array {
 		$context = self::make( self::TERM_PAGES[ $term->taxonomy ] ?? 'other' );
@@ -68,10 +71,13 @@ final class Context {
 	 * Context of a restaurant page.
 	 *
 	 * @param int $restaurant_id Restaurant.
-	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[]}
+	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[], premium_restaurant: int}
 	 */
 	public static function for_restaurant( int $restaurant_id ): array {
 		$context = self::make( 'restaurant' );
+		if ( Premium::is_active( $restaurant_id ) ) {
+			$context['premium_restaurant'] = $restaurant_id;
+		}
 		foreach ( Ads::TARGET_TAXONOMIES as $key => $taxonomy ) {
 			$ids             = wp_get_object_terms( $restaurant_id, $taxonomy, array( 'fields' => 'ids' ) );
 			$context[ $key ] = is_array( $ids ) ? array_map( 'intval', $ids ) : array();
@@ -83,14 +89,15 @@ final class Context {
 	 * Empty context of a page type.
 	 *
 	 * @param string $page_type Page type.
-	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[]}
+	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[], premium_restaurant: int}
 	 */
 	public static function make( string $page_type ): array {
 		return array(
-			'page_type' => $page_type,
-			'villages'  => array(),
-			'malls'     => array(),
-			'cuisines'  => array(),
+			'page_type'          => $page_type,
+			'villages'           => array(),
+			'malls'              => array(),
+			'cuisines'           => array(),
+			'premium_restaurant' => 0,
 		);
 	}
 }

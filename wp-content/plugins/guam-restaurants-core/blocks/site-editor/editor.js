@@ -18,6 +18,8 @@
 		'map-explorer',
 		'sponsored-slot',
 		'advertiser-inquiry',
+		'claim-form',
+		'owner-content',
 		'correction-form',
 		'related-links',
 	];
@@ -124,6 +126,8 @@
 		'data-attributions',
 		'policy-links',
 		'advertiser-inquiry',
+		'claim-form',
+		'owner-content',
 		'correction-form',
 		'related-links',
 	];

@@ -89,6 +89,14 @@ final class Config {
 	public const GOOGLE_MAPS_EMBED_KEY = 'GUAM_RESTAURANTS_GOOGLE_MAPS_EMBED_KEY';
 
 	/**
+	 * Set to 1 to let owners verify a listing claim with a code sent by text
+	 * message to the restaurant's listed phone. Off by default: texts cost
+	 * money, and a sender must be hooked to `guam_restaurants_send_claim_sms`
+	 * (Claims\Claims). Email verification needs no setting.
+	 */
+	public const CLAIM_PHONE_CODES = 'GUAM_RESTAURANTS_CLAIM_PHONE_CODES';
+
+	/**
 	 * Privacy-respecting analytics (docs/seo-and-analytics.md): `matomo` or
 	 * `umami`; empty (the default) prints no tracker. Both run without
 	 * cookies. SCRIPT_URL is the tracker script (matomo.js or Umami's
@@ -153,6 +161,16 @@ final class Config {
 	public static function money( string $name, float $fallback ): float {
 		$value = self::get( $name );
 		return is_numeric( $value ) && (float) $value >= 0 ? (float) $value : $fallback;
+	}
+
+	/**
+	 * Whether an on/off setting is on (1, true, yes or on).
+	 *
+	 * @param string $name Constant / environment variable name.
+	 * @return bool
+	 */
+	public static function flag( string $name ): bool {
+		return in_array( strtolower( self::get( $name ) ), array( '1', 'true', 'yes', 'on' ), true );
 	}
 
 	/**
