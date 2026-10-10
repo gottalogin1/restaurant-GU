@@ -56,6 +56,8 @@ advertising.
    | Yoast Duplicate Post | |
    | Your Gallery | |
    | Your Gallery - PRO | Pro |
+   | WooCommerce (premium profile checkout; `docs/billing.md` §4) | |
+   | WooCommerce PayPal Payments | |
    | WPXPO suite: PostX, WowStore, WowRevenue, WowInvoice, WowAddons, WowOptin, WholesaleX, WowShipping, WowRecommend (fit notes in `docs/billing.md` §1) | Pro |
 
 7. **Coding standards.** Follow WordPress coding standards. Sanitize input,

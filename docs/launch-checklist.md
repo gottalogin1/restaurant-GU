@@ -72,6 +72,10 @@ Install on staging first and check each against the current WordPress version
       Subscriber) so owners can create an account to claim a listing.
 - [ ] Before the first invoice: answer the DRT and accountant questions in
       docs/billing.md §3.
+- [ ] Premium profile checkout: WooCommerce with Site visibility set to Live,
+      WooCommerce PayPal Payments connected, taxes off until §3 is answered,
+      WowInvoice prefix `GRW-`, `wp guam-restaurants premium-products`, then
+      one test purchase and refund (docs/billing.md §4).
 
 ## Hosting, keys and settings
 

@@ -2,20 +2,21 @@
 
 **Status:** 2026-10-10. Built: manual invoicing on each ad, the billing report,
 renewal reminder emails, the listing claim flow and the owner dashboard.
-**Not built, waiting for Sanjay's decision:** self-serve checkout (section 4).
+Self-serve checkout for premium profiles (WooCommerce + PayPal, approved by
+Sanjay on 2026-10-10) is built; section 4 lists the setup steps in wp-admin.
 Section 3 lists questions to confirm, not tax or legal advice.
 
 ## 1. WPXPO plugins: what fits
 
 Sanjay owns the WPXPO suite (Pro, unlimited sites). Checked on 2026-10-10
 against wpxpo.com and each plugin's `readme.txt` on plugins.svn.wordpress.org.
-Every WPXPO plugin except PostX extends WooCommerce, which the site does not
-run yet, so most of them only become useful if WooCommerce checkout is
-approved (section 4).
+Every WPXPO plugin except PostX extends WooCommerce. WooCommerce checkout was
+approved on 2026-10-10 (section 4), so WowInvoice, WowStore and WowRevenue are
+now in use for premium profiles.
 
 | Plugin | What it does (from its docs) | Use here |
 |---|---|---|
-| WowInvoice (`wow-pdf-invoices-packing-slips` 1.1.6) | PDF invoices and packing slips for WooCommerce orders; number format with prefix, suffix and minimum length; invoices attached to order emails and downloadable from My Account. | **Only with WooCommerce.** It invoices WooCommerce orders. Its docs mention no invoices without an order and no paid/unpaid tracking, due dates or payment reminders. If WooCommerce is approved, use it for premium profile invoices with prefix `GR-` so numbers look like the manual ones. Until then it cannot do the manual invoicing asked for. |
+| WowInvoice (`wow-pdf-invoices-packing-slips` 1.1.6) | PDF invoices and packing slips for WooCommerce orders; number format with prefix, suffix and minimum length; invoices attached to order emails and downloadable from My Account. | **Only with WooCommerce.** It invoices WooCommerce orders. Its docs mention no invoices without an order and no paid/unpaid tracking, due dates or payment reminders. Used for premium profile invoices with prefix `GRW-` (section 4), so online numbers never collide with the manual `GR-YYYY-NNNN` series. Until then it cannot do the manual invoicing asked for. |
 | WowStore (`product-blocks` 4.5.5) | WooCommerce store builder: product blocks, checkout and My Account page templates. No subscriptions or recurring payments in its docs. | **Only with WooCommerce:** build the checkout and My Account pages for premium profiles. |
 | WowRevenue (`revenue` 2.3.2) | Product bundles and discount campaigns for WooCommerce. No subscriptions. | **Only with WooCommerce:** the 30% founding-advertiser discount and the annual premium profile price could be campaigns. |
 | WowAddons | Extra product options for WooCommerce. | Only with WooCommerce, and only if premium profiles get paid add-ons. Not needed now. |
@@ -130,39 +131,99 @@ Also see [legal-and-policy.md](legal-and-policy.md) §7 (business structure and
 licensing) and the advertiser contract item in
 [monetization.md](monetization.md) "Open items".
 
-## 4. Self-serve checkout for premium profiles: decision needed
+## 4. Self-serve checkout for premium profiles (built: WooCommerce + PayPal)
 
-Premium profiles are $39/month or $390/year
-([monetization.md](monetization.md) §2). Two ways to let owners pay online:
+**Decision (Sanjay, 2026-10-10):** build checkout on WooCommerce so the WPXPO
+plugins can be used, and take payments through PayPal on Sanjay's PayPal
+account. Stripe stays out: Stripe says Guam-based businesses cannot open an
+account ([Stripe support](https://support.stripe.com/questions/stripe-availability-for-outlying-territories-of-supported-countries),
+checked 2026-10-10), and WooPayments runs on Stripe.
 
-**Important finding (checked 2026-10-10).** Stripe's own support article says a
-US business "must be located in the 50 states, Washington, D.C., or Puerto
-Rico", and other US territories are not supported
-([Stripe support](https://support.stripe.com/questions/stripe-availability-for-outlying-territories-of-supported-countries)).
-A Guam-based business therefore cannot open a Stripe account on its own. The
-article does not cover a business registered in a US state that operates in
-Guam; ask the accountant (section 3, question 1) and Stripe. This blocks
-option B, and blocks option A with the Stripe or WooPayments gateway (WooPayments
-runs on Stripe).
+### What was built
 
-| | A. WooCommerce + subscription extension | B. Stripe Payment Links |
-|---|---|---|
-| What it is | WooCommerce on this site; a "Premium profile" subscription product; the WooCommerce Subscriptions extension renews it automatically. | Links to a Stripe-hosted checkout page for a monthly or yearly price; Stripe Billing renews it. |
-| Works for a Guam-based business | Only with a gateway that accepts Guam-based merchants and supports saved cards for renewals. PayPal is the likely candidate but its Guam merchant support was **not verified**. Stripe/WooPayments: no (above). | **No**, unless the business is located in a US state or Puerto Rico. |
-| Cost | WooCommerce free; WooCommerce Subscriptions **$279/year** ([woocommerce.com](https://woocommerce.com/products/woocommerce-subscriptions/), checked 2026-10-10); gateway card fees. Not zero-spend. | No monthly fee; card fees 2.9% + 30¢ per US card; Stripe Billing 0.7% of subscription volume ([stripe.com/pricing](https://stripe.com/pricing), checked 2026-10-10). |
-| WPXPO plugins it uses | WowStore (checkout and My Account pages), WowInvoice (PDF invoices with a `GR-` prefix), WowRevenue (founding discount, annual plan). | None. |
-| Link to the owner's account | Built in: the order belongs to the logged-in owner, so a paid or lapsed subscription can switch the premium profile on or off automatically (small custom code). | Needs a webhook endpoint and signing secret, or an admin flipping it by hand from Stripe's emails. |
-| Invoices and receipts | WooCommerce orders + WowInvoice PDFs; renewal reminders from Subscriptions. | Stripe receipts and invoices (post-payment invoices 0.4%, capped at $2). Numbering is Stripe's, separate from `GR-`. |
-| Site weight and upkeep | Adds WooCommerce (large plugin, its own tables, updates, security patches) to a site that sells one product. | Nothing on the site; a link per plan. |
-| Card data | Hosted or tokenized by the gateway either way; the site never stores card numbers ([legal-and-policy.md](legal-and-policy.md) data-breach row). | Same. |
+Premium profiles are **prepaid time** on one listing: 1 month ($39, 30 days) or
+12 months ($390, 365 days), from [monetization.md](monetization.md) §2. There
+is **no automatic renewal**, because that needs the WooCommerce Subscriptions
+extension ($279/year, not zero-spend). Instead the owner gets reminder emails
+14 and 3 days before the end (the same daily `renewal-reminders` job as ads)
+with a link to buy more time; new time starts the day after the current end
+date, so nothing paid for is lost. Auto-renewal can be added later with
+Subscriptions; PayPal Payments' readme says it works with it.
 
-**Recommendation:** keep manual invoicing (built) until there are paying
-premium profiles to justify the $279/year, and confirm a gateway first. When a
-gateway is confirmed, choose A (WooCommerce + Subscriptions with that gateway),
-because it is the only option that works from Guam today if PayPal or another
-gateway confirms support, and it puts WowStore, WowInvoice and WowRevenue to
-use. Choose B only if the business ends up located in a US state.
-**Nothing in section 4 is built until Sanjay approves an option.**
+1. **Products.** `wp guam-restaurants premium-products` creates the two
+   products (virtual, one per order, hidden from the shop and search). It is
+   safe to run again and never overwrites a price changed in wp-admin. Any
+   product with **Premium profile days** set (Product data > General) counts.
+2. **Buying.** Only from **My restaurant**: the buttons link to the cart with
+   the restaurant and a security token. The plugin refuses the product in the
+   cart unless the buyer is the restaurant's verified owner, and checks again
+   before checkout. The order line shows the restaurant.
+3. **Payment.** WooCommerce checkout with PayPal (below). When the order is
+   paid (status processing or completed), the days are added to the
+   restaurant once, with an order note. Refunded or cancelled orders take the
+   days off once.
+4. **What premium adds** on the restaurant's own page, while it runs:
+   - a call-to-action button with a fixed label (Order online, Reserve a table,
+     See the full menu, Ask about catering, Book an event) and the owner's link;
+   - up to 20 owner photos instead of 8;
+   - no other restaurant's Sponsored placements on that page (ads linked to the
+     same restaurant, or to no restaurant, still show).
+   The "From the owner" section then says the restaurant pays for a premium
+   profile. Premium never changes ratings, awards, reviews or position in any
+   list, search or map (CLAUDE.md rule 5); `tests/integration/premium-test.php`
+   checks that it only writes its own fields.
+5. **Admin.** Each restaurant's edit screen has a **Premium profile** box
+   (ad managers): the end date, a field to set it by hand (for a premium
+   profile sold on a manual invoice) and the last 10 changes.
+6. **Owners keep wp-admin.** WooCommerce normally sends accounts without
+   editing rights to My Account; the plugin lets linked owners stay in
+   wp-admin so they can reach My restaurant.
+
+### Setup on the live site (Sanjay, in wp-admin)
+
+Nothing here goes in the repository; no keys or account details are committed.
+
+1. Install and activate **WooCommerce** (Plugins > Add New). Finish or skip the
+   setup wizard. Set **WooCommerce > Settings > Site visibility** to **Live**;
+   a new store starts in "Coming soon" mode, which hides the whole site from
+   visitors.
+2. Store address: Guam; currency USD. Leave **taxes off** until the accountant
+   answers section 3 (Guam gross receipts tax is normally the seller's tax, not
+   a sales tax added at checkout; confirm before showing any tax line).
+3. Install **WooCommerce PayPal Payments** (free, by WooCommerce; 4.1.3 on
+   2026-10-10, GPLv2). Go to WooCommerce > Settings > Payments > PayPal and
+   connect Sanjay's PayPal account (log in to PayPal when the plugin asks).
+   Its readme says a business or personal account works, with no monthly or
+   setup fee; PayPal's per-payment fees apply. Its readme does not list Guam;
+   connecting the account is the test. If PayPal refuses, keep manual invoicing
+   (section 2) and tell Claude.
+   The WPXPO docs checked for section 1 did not show a payment gateway of
+   their own; if a WPXPO plugin offers a PayPal setting, the PayPal Payments
+   connection is still the one WooCommerce checkout uses.
+4. Run `wp guam-restaurants premium-products` (or create the products by hand
+   with Premium profile days 30 and 365).
+5. Activate the WPXPO plugins that fit (section 1) and add their license keys
+   in wp-admin:
+   - **WowInvoice:** invoices on order emails and in My Account. Use prefix
+     **`GRW-`** so online invoice numbers never collide with the manual
+     `GR-YYYY-NNNN` series.
+   - **WowStore:** style the cart, checkout and My Account pages.
+   - **WowRevenue:** the founding-advertiser discount
+     ([monetization.md](monetization.md)) as a campaign on the two products.
+6. Caching: cart, checkout and My Account must not be page-cached. W3 Total
+   Cache and managed hosts skip them when WooCommerce is detected; check once
+   with a logged-out test purchase.
+7. Do one real purchase with a small test price, check that the listing shows
+   the premium end date and the order note, then refund it and check the days
+   come off.
+
+### Local development
+
+`make up` downloads WooCommerce 11.2.1 from its GitHub release (checksum
+pinned in the `Makefile`) into `.cache/plugins/`, mounts it, and `make install`
+activates it, turns off "coming soon" and creates the products. The PHPUnit
+suite loads it, so the checkout tests run in CI. PayPal is not installed
+locally.
 
 ## 5. Listing claims (built)
 
@@ -241,13 +302,14 @@ planned for `/ads/events` to `/listing/events` too.
 
 ## 7. Open items
 
-- Sanjay: choose a checkout option (section 4), or keep manual invoicing.
+- Sanjay: the wp-admin setup in section 4 (WooCommerce, PayPal Payments,
+  WowInvoice prefix `GRW-`, Site visibility Live), then one test purchase and
+  refund.
+- Automatic renewal: needs WooCommerce Subscriptions ($279/year). Not bought.
 - Sanjay with DRT and an accountant: section 3, before the first invoice.
-- [monetization.md](monetization.md) lists extra photos and menu links as
-  premium profile features; this build gives them to every claimed owner, as
-  asked in task 10d. Decide what premium profiles add instead (for example
-  more photos, a call-to-action button, no rival ads on the page) when they are
-  built.
+- Premium profile contents are now: call-to-action button, 20 photos instead
+  of 8, no rival restaurants' ads on the page (section 4). Menu links stay free
+  for every claimed owner.
 - Turn on "Anyone can register" and working site email (SMTP) before
   announcing claims.
 - Host rate limit for `/listing/events` and `/ads/events`.

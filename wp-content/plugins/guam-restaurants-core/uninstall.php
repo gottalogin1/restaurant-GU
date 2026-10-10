@@ -24,7 +24,8 @@ delete_option( 'guam_restaurants_policy_page' );
 
 // The owner role and highlight and lead capabilities. Owner links (the restaurants'
 // gr_claimed_by_user_id meta), advertiser leads, ads (with their invoice numbers and the invoice
-// sequence option), claims and the editorial policy page are content and are kept.
+// sequence option), claims, premium profile dates and history, and the editorial policy page
+// are content and are kept. WooCommerce keeps its own products and orders.
 remove_role( 'gr_restaurant_owner' );
 foreach ( array( 'administrator', 'editor' ) as $guam_role_name ) {
 	$guam_role = get_role( $guam_role_name );

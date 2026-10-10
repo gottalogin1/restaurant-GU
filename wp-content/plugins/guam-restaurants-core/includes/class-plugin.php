@@ -77,6 +77,8 @@ final class Plugin {
 		Owners\Owner_Content::register();
 		Owners\Listing_Stats::register();
 		Owners\Dashboard::register();
+		Premium\Admin::register();
+		Commerce\Woo_Checkout::register();
 		Awards\Display::register();
 		Awards\Pages::register();
 		Structured_Data::register();
@@ -101,6 +103,7 @@ final class Plugin {
 			Cli\Awards_Commands::register();
 			Cli\Monitoring_Commands::register();
 			Cli\Site_Commands::register();
+			Cli\Premium_Commands::register();
 		}
 	}
 

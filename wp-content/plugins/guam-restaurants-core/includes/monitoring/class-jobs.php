@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  *   stays inside the free allowance with the default $0 cap).
  * - `yelp-status`: monthly Yelp check, off unless enabled (Yelp has no free tier).
  * - `renewal-reminders`: daily; emails advertisers 14 and 3 days before an
- *   ad ends (Billing\Reminders).
+ *   ad ends, and owners before a premium profile ends (Billing\Reminders).
  * - `health-check`: daily; emails the owner when a job missed its window.
  *
  * Preferred: a real server cron runs `wp guam-restaurants run-job <job>`
@@ -323,11 +323,18 @@ final class Jobs {
 	 * @return array<string, mixed>
 	 */
 	private static function run_renewals( array $options ): array {
-		$counts = Reminders::run( isset( $options['today'] ) ? (string) $options['today'] : null );
+		$today   = isset( $options['today'] ) ? (string) $options['today'] : null;
+		$ads     = Reminders::run( $today );
+		$premium = Reminders::run_premium( $today );
+		$counts  = array();
+		foreach ( $ads as $key => $value ) {
+			$counts[ $key ] = $value + (int) ( $premium[ $key ] ?? 0 );
+		}
+		$counts['premium'] = $premium;
 		return self::outcome(
 			0 === $counts['failed'],
 			null,
-			sprintf( 'sent %d, skipped (no billing email) %d, failed %d', $counts['sent'], $counts['skipped_no_email'], $counts['failed'] ),
+			sprintf( 'sent %d (premium profiles %d), skipped (no email) %d, failed %d', $counts['sent'], $premium['sent'], $counts['skipped_no_email'], $counts['failed'] ),
 			$counts['failed'] > 0 ? sprintf( '%d reminder emails could not be sent; check the site email setup.', $counts['failed'] ) : '',
 			$counts
 		);

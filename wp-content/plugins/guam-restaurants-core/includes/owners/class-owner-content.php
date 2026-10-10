@@ -13,6 +13,7 @@ use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Change_Log;
 use GuamRestaurants\Core\Highlights\Roles;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
+use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Assets;
 use GuamRestaurants\Core\Vocabulary;
@@ -27,7 +28,10 @@ defined( 'ABSPATH' ) || exit;
  *   overwrite them; Osm\Importer).
  * - `menu_links`: up to five labeled links (gr_menu_links).
  * - `specials`: up to five specials with an optional end date (gr_specials).
- * - `photos`: up to eight images they uploaded (gr_owner_photos).
+ * - `photos`: up to eight images they uploaded (gr_owner_photos), or
+ *   Premium::MAX_PHOTOS while a premium profile runs.
+ * - `cta`: a call-to-action button, only while a premium profile runs
+ *   (Premium::CTA).
  *
  * Owners never get `edit_post` on a restaurant, so the post editor, REST
  * API and meta APIs stay closed to them. apply() is the only way in and
@@ -45,7 +49,7 @@ final class Owner_Content {
 	public const SPECIALS   = 'gr_specials';
 	public const PHOTOS     = 'gr_owner_photos';
 
-	public const FIELDS = array( 'hours', 'menu_links', 'specials', 'photos' );
+	public const FIELDS = array( 'hours', 'menu_links', 'specials', 'photos', 'cta' );
 
 	public const MAX_LINKS    = 5;
 	public const MAX_SPECIALS = 5;
@@ -116,6 +120,14 @@ final class Owner_Content {
 		}
 		if ( array_key_exists( 'photos', $input ) ) {
 			$values[ self::PHOTOS ] = self::photos_from_input( (array) $input['photos'], $restaurant_id, $user_id );
+		}
+		if ( array_key_exists( 'cta', $input ) ) {
+			$cta = self::cta_from_input( (array) $input['cta'], $restaurant_id );
+			if ( is_wp_error( $cta ) ) {
+				$errors->merge_from( $cta );
+			} else {
+				$values[ Premium::CTA ] = $cta;
+			}
 		}
 		if ( $errors->has_errors() ) {
 			$errors->add_data( array( 'status' => 400 ) );
@@ -261,8 +273,34 @@ final class Owner_Content {
 	}
 
 	/**
+	 * The call-to-action from a form: `action` (Premium::cta_actions) and
+	 * `url`. Both empty removes it. Only while a premium profile runs.
+	 *
+	 * @param array<string, mixed> $input         Input.
+	 * @param int                  $restaurant_id Restaurant.
+	 * @return array{action: string, url: string}|string|WP_Error '' removes it.
+	 */
+	public static function cta_from_input( array $input, int $restaurant_id ) {
+		if ( ! Premium::is_active( $restaurant_id ) ) {
+			return new WP_Error( 'gr_owner_cta_premium', __( 'The call-to-action button is part of a premium profile.', 'guam-restaurants-core' ) );
+		}
+		$action = sanitize_key( (string) ( $input['action'] ?? '' ) );
+		$url    = esc_url_raw( trim( (string) ( $input['url'] ?? '' ) ), array( 'http', 'https' ) );
+		if ( '' === $action && '' === $url ) {
+			return '';
+		}
+		if ( ! isset( Premium::cta_actions()[ $action ] ) || '' === $url ) {
+			return new WP_Error( 'gr_owner_cta', __( 'Choose a button label and enter a web address starting with https://.', 'guam-restaurants-core' ) );
+		}
+		return array(
+			'action' => $action,
+			'url'    => $url,
+		);
+	}
+
+	/**
 	 * Photo IDs to keep: images attached to this restaurant and uploaded by
-	 * this owner, at most MAX_PHOTOS. Anything else is dropped.
+	 * this owner, at most Premium::max_photos(). Anything else is dropped.
 	 *
 	 * @param array<int, mixed> $ids           Attachment IDs.
 	 * @param int               $restaurant_id Restaurant.
@@ -277,7 +315,7 @@ final class Owner_Content {
 				$out[] = $id;
 			}
 		}
-		return array_slice( $out, 0, self::MAX_PHOTOS );
+		return array_slice( $out, 0, Premium::max_photos( $restaurant_id ) );
 	}
 
 	/**
@@ -331,12 +369,17 @@ final class Owner_Content {
 		}
 		$fields   = self::get( $id );
 		$specials = self::current_specials( $id );
-		$photos   = array_values( array_filter( $fields['photos'], 'wp_attachment_is_image' ) );
-		if ( ! $fields['menu_links'] && ! $specials && ! $photos ) {
+		$premium  = Premium::is_active( $id );
+		$cta      = $premium ? Premium::cta( $id ) : null;
+		$photos   = array_slice( array_values( array_filter( $fields['photos'], 'wp_attachment_is_image' ) ), 0, Premium::max_photos( $id ) );
+		if ( ! $fields['menu_links'] && ! $specials && ! $photos && ! $cta ) {
 			return '';
 		}
 		Assets::enqueue();
 		$html = '<h2 class="gr-section-title">' . esc_html__( 'From the owner', 'guam-restaurants-core' ) . '</h2>';
+		if ( $cta ) {
+			$html .= sprintf( '<p class="gr-owner__cta"><a class="wp-element-button" href="%1$s" rel="noopener nofollow">%2$s</a></p>', esc_url( $cta['url'] ), esc_html( Premium::cta_actions()[ $cta['action'] ] ) );
+		}
 		if ( $fields['menu_links'] ) {
 			$html .= '<ul class="gr-owner__menus">';
 			foreach ( $fields['menu_links'] as $link ) {
@@ -362,7 +405,11 @@ final class Owner_Content {
 			}
 			$html .= '</div>';
 		}
-		$html .= '<p class="gr-owner__note">' . esc_html__( 'Added by the restaurant\'s verified owner. It does not change ratings, awards or where the restaurant appears in lists.', 'guam-restaurants-core' ) . '</p>';
+		$html .= '<p class="gr-owner__note">' . esc_html(
+			$premium
+				? __( 'Added by the restaurant\'s verified owner. This restaurant pays for a premium profile, which adds this section\'s button and extra photos. It does not change ratings, awards or where the restaurant appears in lists.', 'guam-restaurants-core' )
+				: __( 'Added by the restaurant\'s verified owner. It does not change ratings, awards or where the restaurant appears in lists.', 'guam-restaurants-core' )
+		) . '</p>';
 		return sprintf( '<section %1$s>%2$s</section>', get_block_wrapper_attributes( array( 'class' => 'gr-owner' ) ), $html );
 	}
 }

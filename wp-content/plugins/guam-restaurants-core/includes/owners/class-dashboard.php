@@ -11,8 +11,10 @@ use GuamRestaurants\Core\Ads\Ads;
 use GuamRestaurants\Core\Ads\Report;
 use GuamRestaurants\Core\Ads\Server;
 use GuamRestaurants\Core\Ads\Stats;
+use GuamRestaurants\Core\Commerce\Woo_Checkout;
 use GuamRestaurants\Core\Highlights\Roles;
 use GuamRestaurants\Core\Highlights\Submit_Screen;
+use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Restaurant_View;
 use GuamRestaurants\Core\Vocabulary;
@@ -27,6 +29,9 @@ defined( 'ABSPATH' ) || exit;
  *   the 30 days before (Listing_Stats).
  * - Each ad linked to the restaurant: impressions, clicks and
  *   click-through rate for the last 30 days (Ads\Stats).
+ * - The premium profile: when it ends, links to buy more time through
+ *   WooCommerce (Commerce\Woo_Checkout) and, while it runs, the
+ *   call-to-action form.
  * - Forms for the owner fields (Owner_Content): hours, menu links,
  *   specials and photos.
  * - A link to reply to reviews (Highlights > Write).
@@ -145,6 +150,12 @@ final class Dashboard {
 			case 'specials':
 				$input['specials'] = isset( $_POST['specials'] ) && is_array( $_POST['specials'] ) ? wp_unslash( $_POST['specials'] ) : array();
 				break;
+			case 'cta':
+				$input['cta'] = array(
+					'action' => isset( $_POST['cta_action'] ) ? sanitize_key( wp_unslash( $_POST['cta_action'] ) ) : '',
+					'url'    => isset( $_POST['cta_url'] ) ? sanitize_text_field( wp_unslash( $_POST['cta_url'] ) ) : '',
+				);
+				break;
 			case 'photos':
 				$keep = isset( $_POST['keep'] ) && is_array( $_POST['keep'] ) ? array_map( 'absint', $_POST['keep'] ) : array();
 				$new  = self::upload( $restaurant, $user_id, isset( $_POST['alt'] ) ? sanitize_text_field( wp_unslash( $_POST['alt'] ) ) : '' );
@@ -177,9 +188,9 @@ final class Dashboard {
 		if ( empty( $_FILES['photo']['name'] ) || ! isset( $_FILES['photo']['size'], $_FILES['photo']['tmp_name'] ) ) {
 			return null;
 		}
-		if ( count( Owner_Content::get( $restaurant )['photos'] ) >= Owner_Content::MAX_PHOTOS ) {
+		if ( count( Owner_Content::get( $restaurant )['photos'] ) >= Premium::max_photos( $restaurant ) ) {
 			/* translators: %d: maximum. */
-			return new \WP_Error( 'gr_owner_photos', sprintf( __( 'You can have up to %d photos. Remove one first.', 'guam-restaurants-core' ), Owner_Content::MAX_PHOTOS ) );
+			return new \WP_Error( 'gr_owner_photos', sprintf( __( 'You can have up to %d photos. Remove one first.', 'guam-restaurants-core' ), Premium::max_photos( $restaurant ) ) );
 		}
 		if ( (int) $_FILES['photo']['size'] > self::MAX_UPLOAD ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return new \WP_Error( 'gr_owner_photo_size', __( 'Photos must be 5 MB or smaller.', 'guam-restaurants-core' ) );
@@ -242,6 +253,7 @@ final class Dashboard {
 		printf( '<p><a href="%1$s">%2$s</a> · <a href="%3$s">%4$s</a></p>', esc_url( (string) get_permalink( $restaurant ) ), esc_html__( 'View your listing', 'guam-restaurants-core' ), esc_url( admin_url( 'admin.php?page=' . Submit_Screen::PAGE ) ), esc_html__( 'Reply to reviews or add an owner quote', 'guam-restaurants-core' ) );
 
 		self::render_stats( $restaurant );
+		self::render_premium( $restaurant );
 		self::render_hours_form( $restaurant );
 		self::render_links_form( $restaurant );
 		self::render_specials_form( $restaurant );
@@ -289,6 +301,55 @@ final class Dashboard {
 			);
 		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * Premium profile status, plans and the call-to-action form.
+	 *
+	 * @param int $restaurant Restaurant.
+	 * @return void
+	 */
+	private static function render_premium( int $restaurant ): void {
+		echo '<h2>' . esc_html__( 'Premium profile', 'guam-restaurants-core' ) . '</h2>';
+		$until = Premium::until( $restaurant );
+		if ( Premium::is_active( $restaurant ) ) {
+			/* translators: %s: date. */
+			echo '<p><strong>' . esc_html( sprintf( __( 'Active until %s.', 'guam-restaurants-core' ), wp_date( get_option( 'date_format' ), (int) strtotime( $until . ' 12:00:00' ) ) ) ) . '</strong> ' . esc_html__( 'It does not renew by itself; we email you 14 and 3 days before it ends.', 'guam-restaurants-core' ) . '</p>';
+		} else {
+			/* translators: %d: number of photos. */
+			echo '<p>' . esc_html( sprintf( __( 'A premium profile adds a call-to-action button (such as "Order online" or "Reserve a table"), up to %d photos, and keeps other restaurants\' Sponsored placements off your page. It does not change ratings, awards or where your restaurant appears in lists.', 'guam-restaurants-core' ), Premium::MAX_PHOTOS ) ) . '</p>';
+		}
+		$products = Woo_Checkout::products();
+		if ( $products ) {
+			echo '<p>';
+			foreach ( $products as $product ) {
+				printf(
+					'<a class="button button-primary" href="%1$s">%2$s</a> <span>%3$s</span> &nbsp; ',
+					esc_url( Woo_Checkout::buy_url( $product, $restaurant ) ),
+					/* translators: %s: product name. */
+					esc_html( sprintf( Premium::is_active( $restaurant ) ? __( 'Add time: %s', 'guam-restaurants-core' ) : __( 'Buy: %s', 'guam-restaurants-core' ), $product->get_name() ) ),
+					wp_kses_post( $product->get_price_html() )
+				);
+			}
+			echo '</p><p class="description">' . esc_html__( 'You pay on the checkout page. New time starts the day after your current end date.', 'guam-restaurants-core' );
+			if ( function_exists( 'wc_get_account_endpoint_url' ) ) {
+				printf( ' <a href="%1$s">%2$s</a>', esc_url( wc_get_account_endpoint_url( 'orders' ) ), esc_html__( 'Your orders and receipts', 'guam-restaurants-core' ) );
+			}
+			echo '</p>';
+		} else {
+			echo '<p class="description">' . esc_html__( 'Premium profiles are not on sale online yet. Reply to any email from us to ask about one.', 'guam-restaurants-core' ) . '</p>';
+		}
+		if ( ! Premium::is_active( $restaurant ) ) {
+			return;
+		}
+		$cta = Premium::cta( $restaurant );
+		self::form_open( $restaurant, 'cta', __( 'Call-to-action button', 'guam-restaurants-core' ) );
+		echo '<table class="form-table" role="presentation"><tbody><tr><th scope="row"><label for="gr-cta-action">' . esc_html__( 'Button', 'guam-restaurants-core' ) . '</label></th><td><select id="gr-cta-action" name="cta_action"><option value="">' . esc_html__( 'No button', 'guam-restaurants-core' ) . '</option>';
+		foreach ( Premium::cta_actions() as $key => $label ) {
+			printf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $key ), selected( $key, $cta['action'] ?? '', false ), esc_html( $label ) );
+		}
+		printf( '</select></td></tr><tr><th scope="row"><label for="gr-cta-url">%1$s</label></th><td><input type="url" class="regular-text" id="gr-cta-url" name="cta_url" placeholder="https://" value="%2$s"></td></tr></tbody></table>', esc_html__( 'Link', 'guam-restaurants-core' ), esc_attr( (string) ( $cta['url'] ?? '' ) ) );
+		self::form_close( __( 'Save button', 'guam-restaurants-core' ) );
 	}
 
 	/**
@@ -387,11 +448,11 @@ final class Dashboard {
 			printf( '<label style="text-align:center">%1$s<br><input type="checkbox" name="keep[]" value="%2$d" checked> %3$s</label>', wp_get_attachment_image( $photo, 'thumbnail' ), (int) $photo, esc_html__( 'Keep', 'guam-restaurants-core' ) );
 		}
 		echo '</div>';
-		if ( count( $photos ) < Owner_Content::MAX_PHOTOS ) {
+		if ( count( $photos ) < Premium::max_photos( $restaurant ) ) {
 			printf(
 				'<p><label for="gr-owner-photo">%1$s</label><br><input type="file" id="gr-owner-photo" name="photo" accept="image/jpeg,image/png,image/webp"></p><p><label for="gr-owner-alt">%2$s</label><br><input type="text" class="regular-text" id="gr-owner-alt" name="alt" maxlength="150"></p>',
 				/* translators: %d: maximum photos. */
-				esc_html( sprintf( __( 'Add a photo (JPEG, PNG or WebP, up to 5 MB; %d photos at most). Use only photos you took or have the right to use.', 'guam-restaurants-core' ), Owner_Content::MAX_PHOTOS ) ),
+				esc_html( sprintf( __( 'Add a photo (JPEG, PNG or WebP, up to 5 MB; %d photos at most). Use only photos you took or have the right to use.', 'guam-restaurants-core' ), Premium::max_photos( $restaurant ) ) ),
 				esc_html__( 'Describe the photo (alt text)', 'guam-restaurants-core' )
 			);
 		}

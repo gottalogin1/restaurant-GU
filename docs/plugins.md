@@ -19,6 +19,7 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
 | Caching | [W3 Total Cache](https://wordpress.org/plugins/w3-total-cache/) | Yes | GPLv2 or later | 2.10.7 | about 2026-10-02 | 900,000+ |
 | Email newsletter | [MailPoet](https://wordpress.org/plugins/mailpoet/) | No | GPLv3 | 5.41.0 | about 2026-10-06 | 500,000+ |
 | Ad management | Built into `guam-restaurants-core` (Advanced Ads not needed) | | | | | |
+| Checkout (premium profiles) | [WooCommerce](https://github.com/woocommerce/woocommerce/releases/tag/11.2.1) + [WooCommerce PayPal Payments](https://wordpress.org/plugins/woocommerce-paypal-payments/) | No (free) | GPLv3 / GPLv2 | 11.2.1 / 4.1.3 | 2026-10-10 checked | |
 | Form spam (supports Forms) | [Akismet](https://wordpress.org/plugins/akismet/) | Yes | GPLv2 or later | 5.7.2 | about 2026-08 | 5+ million |
 
 ## SEO: Yoast SEO (free)
@@ -124,3 +125,14 @@ should stay inactive.
 2. Open `https://plugins.svn.wordpress.org/<slug>/trunk/readme.txt` for the license and
    changelog dates.
 3. Update the table above and the date at the top.
+
+## Checkout: WooCommerce and WooCommerce PayPal Payments (added 2026-10-10)
+
+- **Why:** Sanjay approved WooCommerce checkout for premium profiles so the owned WPXPO
+  plugins (WowInvoice, WowStore, WowRevenue) can be used, with PayPal as the gateway because
+  Stripe does not accept Guam-based businesses. Details, setup steps and what the plugin adds
+  are in `docs/billing.md` §4.
+- **Versions checked:** WooCommerce 11.2.1 (GitHub release; requires WordPress 7.0 and PHP
+  7.4), pinned for local development in the `Makefile`. PayPal Payments 4.1.3 (readme on
+  plugins.svn.wordpress.org; requires WooCommerce 9.6, tested up to WordPress 7.1).
+- **Not used:** WooCommerce Subscriptions ($279/year) until automatic renewal is worth paying for.

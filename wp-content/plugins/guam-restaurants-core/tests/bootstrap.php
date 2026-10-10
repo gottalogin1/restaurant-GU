@@ -25,7 +25,24 @@ require_once $guam_tests_dir . '/includes/functions.php';
 tests_add_filter(
 	'muplugins_loaded',
 	static function () {
+		// WooCommerce, when `make woocommerce` has put it in place, for the checkout tests.
+		$woocommerce = WP_PLUGIN_DIR . '/woocommerce/woocommerce.php';
+		if ( file_exists( $woocommerce ) ) {
+			require $woocommerce;
+		}
 		require dirname( __DIR__ ) . '/guam-restaurants-core.php';
+	}
+);
+
+// WooCommerce's tables, before its init hooks query them (the test database starts empty).
+tests_add_filter(
+	'setup_theme',
+	static function () {
+		if ( class_exists( 'WC_Install' ) ) {
+			WC_Install::install();
+			$GLOBALS['wp_roles'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			wp_roles();
+		}
 	}
 );
 

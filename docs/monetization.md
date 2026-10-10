@@ -72,15 +72,19 @@ owners are the people the paid products are sold to.
 
 ### 2. Premium profile ($39/month or $390/year)
 
-Richer presentation on the restaurant's own page. Suggested contents, to be
-confirmed when the feature is built:
+Richer presentation on the restaurant's own page. Built 2026-10-10 and sold
+online through WooCommerce with PayPal ([billing.md](billing.md) §4), as
+prepaid 1-month or 12-month time with reminders, not automatic renewal.
+While it runs, the page gets:
 
-- extra photos supplied by the restaurant, labeled "Provided by the
-  restaurant";
-- menu, online ordering, reservation, and social links, and a call-to-action
-  button;
-- no other restaurant's paid placements on that restaurant's own page;
-- the monthly impressions and clicks report for the page.
+- a call-to-action button (Order online, Reserve a table, See the full menu,
+  Ask about catering or Book an event) with the owner's link;
+- up to 20 photos supplied by the restaurant instead of 8;
+- no other restaurant's paid placements on that restaurant's own page.
+
+Menu links and the views and clicks report are free for every claimed owner
+(§1). The "From the owner" section says the restaurant pays for a premium
+profile.
 
 A premium profile never changes the restaurant's position in any list,
 search, or map, and never changes its ratings, awards, or reviews. The annual
