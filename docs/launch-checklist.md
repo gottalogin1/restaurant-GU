@@ -19,9 +19,9 @@ Each of these changes what gets installed or paid for, so they come first.
 - [ ] Host: Kinsta single-site, Tokyo data center, about $35/month
       ([hosting.md](hosting.md)). Confirm Tokyo is offered when creating the site.
 - [ ] SEO plugin: Yoast SEO (recommended) or the owned Squirrly GEO plugin. Run only one.
-- [ ] Newsletter: SendFox (decided in the brief, 2026-10-10). Its API needs a
-      paid SendFox plan; on the free plan, copy the weekly HTML from
-      Restaurants > Newsletter into a new SendFox campaign instead
+- [x] Newsletter: SendFox on a paid plan (Sanjay, 2026-10-10), so the API
+      creates each weekly draft. Set `GUAM_RESTAURANTS_SENDFOX_TOKEN` on the
+      host; without it, copy the HTML from Restaurants > Newsletter
       ([seo-and-analytics.md](seo-and-analytics.md), [monetization.md](monetization.md) §8).
 - [ ] Google Business Profile for the site: check eligibility first (a
       website-only business may not qualify; [seo-and-analytics.md](seo-and-analytics.md) §3).

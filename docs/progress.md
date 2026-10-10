@@ -157,4 +157,5 @@
 - Done: **SEO**. Term titles and descriptions (also through Yoast filters unless set in Yoast), related-links block in taxonomy and restaurant templates, ItemList on directory pages, Organization + WebSite on the home page without an SEO plugin. Setup steps in docs/seo-and-analytics.md.
 - Checked: PHPUnit 305 tests pass; PHPCS clean. Local stack: a removal request submitted in Chromium showed "We will reply within 14 days"; `run-job newsletter` saved the HTML draft. SendFox API not called (no paid account); Umami and Plausible terms and pricing checked.
 - Found: Google Business Profile requires a place customers visit or a service area; a website-only directory may not qualify (docs/seo-and-analytics.md §3).
-- Remaining: choose SendFox paid plan or paste HTML; install Matomo; Search Console; decide on GBP eligibility; privacy policy lines for analytics and the form.
+- Decided (Sanjay, 2026-10-10): SendFox paid plan, so drafts go through the API once the token is set on the host. Sanjay will install Matomo on the live site (it can't be installed from the build environment).
+- Remaining: set the SendFox token and from address on the host; install Matomo and set its constants; Search Console; decide on GBP eligibility; privacy policy lines for analytics and the form.
