@@ -1,0 +1,5 @@
+{"type":"FeatureCollection","features":[
+{"type":"Feature","properties":{"slug":"donut"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[10,0],[10,10],[0,10],[0,0]],[[4,4],[6,4],[6,6],[4,6],[4,4]]]}},
+{"type":"Feature","properties":{"slug":"islands"},"geometry":{"type":"MultiPolygon","coordinates":[[[[20,0],[22,0],[22,2],[20,2],[20,0]]],[[[30,0],[32,0],[32,2],[30,2],[30,0]]]]}},
+{"type":"Feature","properties":{"slug":"neighbor"},"geometry":{"type":"Polygon","coordinates":[[[10,0],[15,0],[15,10],[10,10],[10,0]]]}}
+]}

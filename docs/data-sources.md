@@ -372,17 +372,26 @@ Require a human check before a B-or-worse grade or a closure appears.
 - Dataset: TIGER/Line 2024 County Subdivisions, Guam (state FIPS 66).
   Download: <https://www2.census.gov/geo/tiger/TIGER2024/COUSUB/tl_2024_66_cousub.zip>
   (check for a 2025 edition under `TIGER2025/` first).
-- Fields (standard TIGER county-subdivision layout ⚠️ confirm in the file):
-  `STATEFP`, `COUNTYFP`, `COUSUBFP`, `GEOID`, `NAME`, `NAMELSAD`, `ALAND`,
-  `AWATER`, internal point lat/lon, polygon geometry.
-- Coverage: Guam's 19 villages (municipalities) are tabulated by the Census
-  as county subdivisions ⚠️ (confirm 19 features after download). Bounding
-  box listed as roughly 144.56–145.01°E, 13.18–13.71°N.
+- Fields ✅ (checked in the file, 2026-10-10): `STATEFP`, `COUNTYFP`,
+  `COUSUBFP`, `COUSUBNS`, `GEOID`, `GEOIDFQ`, `NAME`, `NAMELSAD`, `LSAD`,
+  `CLASSFP`, `MTFCC`, `FUNCSTAT`, `ALAND`, `AWATER`, `INTPTLAT`, `INTPTLON`,
+  polygon geometry. Datum NAD83 (EPSG:4269), within about a metre of WGS84
+  on Guam.
+- Coverage ✅: 20 features, the 19 villages plus one "County subdivision not
+  defined" feature (GEOID 6601000000, open water, dropped). The Census uses
+  official Chamorro names for several villages (Hågat, Inalåhan, Malesso',
+  Humåtak, Talo'fo'fo, Sånta Rita-Sumai, Asan); our slugs use the common
+  English names and map by GEOID.
+- Stored as `wp-content/plugins/guam-restaurants-core/data/guam-villages.geojson`,
+  built by `bin/build-village-geojson.py` from the 2024 edition (zip SHA-256
+  `f90487aa2f5cce7ad712c0c2ad8cf6478c1e46d31e6103e9b8af9f78cccd8cdd`).
+  census.gov is blocked from the cloud environment, so the zip was
+  downloaded by hand.
 - Licence: CC0 1.0 per data.gov. Store permanently. Attribution not
   required; credit "US Census Bureau TIGER/Line" anyway. Free, no limits.
 - Use: point-in-polygon on **OSM** (not Google) coordinates to tag each
-  restaurant's village. Overlay names for informal areas (Tumon, Upper
-  Tumon, Harmon) as our own "area" tags inside the official village.
+  restaurant's village. Informal areas (Tumon, Upper Tumon, Harmon) are
+  search aliases of Tamuning, not separate terms (decision 2026-10-10).
 
 **Recommendation: Use.**
 
@@ -526,7 +535,8 @@ data sources. No listing data from them may be imported (CLAUDE.md rules
 ## 12. To do before the first import
 
 1. Run the three Overpass queries in §1 by hand and log counts.
-2. Download the TIGER Guam county-subdivision file; confirm 19 villages.
+2. ~~Download the TIGER Guam county-subdivision file; confirm 19 villages.~~
+   Done 2026-10-10 (see §6).
 3. Read Yelp's display requirements by hand only if Yelp is reconsidered.
 4. Ask the Guam attorney about Google ToS §3.2.3(d)(iii), Yelp §5(d), and
    reuse of Government of Guam inspection PDFs.

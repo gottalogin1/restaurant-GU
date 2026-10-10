@@ -39,8 +39,12 @@ final class Activator {
 			);
 		}
 
-		// Register rewrite rules for the post type and taxonomies before flushing.
+		Database\Schema::install();
+
+		// Register the content model before seeding and flushing rewrite rules.
 		Content_Types::register();
+		Term_Meta::register();
+		Seeder::seed_all();
 		flush_rewrite_rules();
 
 		update_option( 'guam_restaurants_core_version', GUAM_RESTAURANTS_CORE_VERSION );
