@@ -90,13 +90,13 @@
 				return [ number( props, 'limit', __( 'Most shown', 'guam-restaurants-core' ) ) ];
 			case 'sponsored-slot':
 				return [
-					el( components.TextControl, {
-						label: __( 'Ad placement (Advanced Ads slug)', 'guam-restaurants-core' ),
-						value: props.attributes.placement,
-						onChange: function ( value ) {
-							props.setAttributes( { placement: value } );
-						},
-					} ),
+					select( props, 'product', __( 'Ad product', 'guam-restaurants-core' ), [
+						{ label: __( 'Banner (rotating)', 'guam-restaurants-core' ), value: 'banner' },
+						{ label: __( 'Sponsored listings (rotating)', 'guam-restaurants-core' ), value: 'featured_listing' },
+						{ label: __( 'Category sponsor (one per page)', 'guam-restaurants-core' ), value: 'category_sponsor' },
+						{ label: __( 'Homepage leaderboard (one per page)', 'guam-restaurants-core' ), value: 'leaderboard' },
+					] ),
+					number( props, 'count', __( 'Most ads shown (exclusive products show one)', 'guam-restaurants-core' ) ),
 				];
 			default:
 				return null;

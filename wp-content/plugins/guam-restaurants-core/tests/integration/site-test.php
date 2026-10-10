@@ -8,6 +8,10 @@
 
 namespace GuamRestaurants\Core\Tests;
 
+use GuamRestaurants\Core\Ads\Ads;
+use GuamRestaurants\Core\Ads\Context;
+use GuamRestaurants\Core\Ads\Server;
+use GuamRestaurants\Core\Ads\Slot;
 use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Change_Log;
@@ -22,7 +26,6 @@ use GuamRestaurants\Core\Site\History;
 use GuamRestaurants\Core\Site\Maps;
 use GuamRestaurants\Core\Site\Open_Hours;
 use GuamRestaurants\Core\Site\Pages;
-use GuamRestaurants\Core\Site\Sponsored;
 use GuamRestaurants\Core\Structured_Data;
 use GuamRestaurants\Core\Term_Meta;
 use WP_REST_Request;
@@ -489,21 +492,31 @@ class Site_Test extends Guam_Test_Case {
 	 */
 
 	/**
-	 * The sponsored slot prints nothing without an ad and is always labeled with one.
+	 * The sponsored slot prints nothing without an ad and is labeled with one
+	 * (more in Ads_Test).
 	 */
 	public function test_sponsored_slot() {
-		$this->assertSame( '', Sponsored::render( 'home' ) );
-		$ad = static function () {
-			return '<a href="https://example.com/">Lunch special</a>';
-		};
-		add_filter( 'guam_restaurants_sponsored_slot', $ad );
-		$html = Sponsored::render( 'home' );
+		Server::reset();
+		$this->assertSame( '', Slot::render( 'banner', 1, Context::make( 'home' ) ) );
+		$ad = Ads::create(
+			'Lunch special',
+			array(
+				'advertiser' => 'Harbor Grill LLC',
+				'product'    => 'banner',
+				'headline'   => 'Lunch special',
+				'link'       => 'https://example.com/',
+				'start'      => '2026-10-01',
+				'status'     => Ads::STATUS_ACTIVE,
+			)
+		);
+		$this->assertIsInt( $ad );
+		$html = Slot::render( 'banner', 1, Context::make( 'home' ) );
 		$this->assertStringContainsString( '<p class="gr-sponsored__label">Sponsored</p>', $html );
 		$this->assertStringContainsString( 'Lunch special', $html );
+		Server::reset();
 
 		// Sponsorship never changes listing order.
 		$this->assertSame( array( 'Dededo Kimchi House', 'Meskla Chamoru Fusion', 'Proa', 'Tumon Sushi Bar' ), $this->titles( array() ) );
-		remove_filter( 'guam_restaurants_sponsored_slot', $ad );
 	}
 
 	/**

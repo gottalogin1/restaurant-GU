@@ -103,10 +103,10 @@ featured listing slots on the same page are sold separately.
 
 ### 5. Banner ($20 CPM, $100 monthly minimum)
 
-A display ad in an Advanced Ads placement, sold by impressions at $20 per
-1,000. The $100 minimum buys 5,000 impressions a month. Banners are labeled
-"Sponsored" by the site's own sponsored slot, with Advanced Ads' own label
-turned off.
+A display ad in a sponsored slot, sold by impressions at $20 per 1,000. The
+$100 minimum buys 5,000 impressions a month. Banners are served, labeled
+"Sponsored" and counted by the plugin's own ad system (see
+[Ad serving](#ad-serving) below); Advanced Ads is not used.
 
 ### 6. Homepage leaderboard, exclusive ($400/month)
 
@@ -205,10 +205,9 @@ free claimed listings as the way in.
    - Neither paid product needs traffic proof. A $75 or $39 monthly decision
      is small enough for a restaurant owner to make on the first call, before
      the site has analytics to show.
-   - Featured listings reuse the labeled `sponsored-slot` block and Advanced
-     Ads, which today sit only on the home page. Adding the block to the
-     village, mall, and cuisine templates and adding rotation is the build
-     work.
+   - Featured listings use the labeled `sponsored-slot` block, which is on
+     the village, mall, and cuisine template with three rotating slots (see
+     [Ad serving](#ad-serving)).
    - Both are sold to the same people: owners who have claimed their listing.
      Free claims build that list.
    - Two products keep the first sales conversations simple and keep build
@@ -230,5 +229,49 @@ free claimed listings as the way in.
 - [legal-and-policy.md](legal-and-policy.md) §9 drafted a line noting which
   restaurants advertise on award and ranking pages. It is not in the new
   editorial statement; decide with counsel (question 7 in §8).
-- Premium profile contents, the featured-listing rotation, and deal posts are
-  not built yet.
+- Premium profile contents and deal posts are not built yet.
+
+## Ad serving
+
+Built in the plugin (`includes/ads/`, 2026-10-10) instead of Advanced Ads, so
+counting works behind a page cache, labels and links follow the rules above,
+and nothing needs a paid add-on.
+
+- **Ads** are private `gr_ad` posts under **Ads** in wp-admin (administrators
+  only). Fields: advertiser, restaurant (optional; used as headline and link
+  when those are empty), product, creative (image and link, or text), start
+  and end dates (inclusive, Guam time), target page types, villages, malls and
+  cuisines, priority (0-10) and status (active or paused).
+- **Products in slots:** featured listing (shown as "Sponsored", up to 3 per
+  page), category sponsor (one per page), banner, homepage leaderboard (one
+  per page). The theme places a category sponsor slot and a 3-ad sponsored
+  listing slot on village, mall and cuisine pages, and a banner slot on the
+  home page.
+- **Rotation rule:** highest priority first; within a priority, the ad with
+  the fewest impressions today first; ties go to the lower ad ID. Exclusive
+  products show one ad per page, and an ad never shows twice on a page. Two
+  exclusive ads that could land on the same page and day are flagged on save.
+  With a full-page cache, the choice is refreshed whenever the cached page is
+  rebuilt, and counts stay exact because they come from the browser.
+- **Targeting:** an empty list matches every page; several values in one list
+  match any of them; different lists must all match. Restaurant pages match
+  through the restaurant's own villages, malls and cuisines.
+- **Labels and links:** every ad carries its own "Sponsored" label, sits in a
+  bordered box outside the results, and every link has
+  `rel="sponsored noopener"`. Creative that says "Featured", "Top pick",
+  "Recommended", "Editor's choice" or mentions awards cannot be activated.
+- **Counting:** `assets/ads/beacon.js` sends an impression when half of an ad
+  is on screen and a click when its link is followed, to
+  `POST /wp-json/guam-restaurants/v1/ads/events`. Bots (by User-Agent and
+  `navigator.webdriver`) are not counted; only ads serving today are counted;
+  each request counts an ad and event type once. Only daily totals per ad and
+  page type are stored in `gr_ad_daily_stats`: no IP, cookie, user or
+  User-Agent.
+- **Monthly report:** Ads > Reports shows impressions, clicks and
+  click-through rate for a month, for one advertiser or all, per ad and page
+  type with a total. Download CSV, or print the page to PDF from the browser.
+- **No influence:** ads are not public posts, so they are out of searches,
+  feeds, REST and sitemaps (and explicitly excluded from core and Yoast
+  sitemaps). The ad system never writes restaurant data, ratings, awards or
+  the change log, and adds nothing to the directory, recently opened or
+  structured data queries; tests check those are identical with ads running.

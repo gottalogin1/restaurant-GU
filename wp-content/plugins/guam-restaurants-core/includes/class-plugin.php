@@ -66,6 +66,11 @@ final class Plugin {
 		Advertising\Rest_Controller::register();
 		Advertising\Admin::register();
 		Advertising\Display::register();
+		Ads\Ads::register();
+		Ads\Guard::register();
+		Ads\Tracking::register();
+		Ads\Admin::register();
+		Ads\Report::register();
 		Awards\Display::register();
 		Awards\Pages::register();
 		Structured_Data::register();

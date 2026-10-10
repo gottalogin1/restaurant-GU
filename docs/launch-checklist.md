@@ -55,8 +55,9 @@ Install on staging first and check each against the current WordPress version
 ([plugins.md](plugins.md)).
 
 - [ ] Yoast SEO (or Squirrly). Sitemaps then come from it automatically.
-- [ ] Advanced Ads: create a placement named "home" and turn off its own ad
-      label, since the site prints "Sponsored" itself.
+- [ ] Ads: none to install. Ads are entered under Ads in wp-admin (see
+      monetization.md, "Ad serving"). If the page cache or a security plugin
+      blocks REST POSTs, allow `/wp-json/guam-restaurants/v1/ads/events`.
 - [ ] Persistent object cache (Redis or Memcached), from the host or W3 Total
       Cache. Use W3 Total Cache's page cache only if the host has none.
 - [ ] An SMTP plugin so site email works. Without it, logged-out visitors can't
