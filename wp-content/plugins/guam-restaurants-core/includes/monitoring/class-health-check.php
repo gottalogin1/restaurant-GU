@@ -13,7 +13,8 @@ defined( 'ABSPATH' ) || exit;
  * Emails the owner when an enabled job has not succeeded within its
  * interval plus grace period (OSM: 8 days; status checks: 34 days). Each
  * missed window is reported once; the next report comes only after the job
- * succeeds and then misses again.
+ * succeeds and then misses again. Also reports sources whose failures are
+ * rising (Failure_Rates).
  */
 final class Health_Check {
 
@@ -44,12 +45,25 @@ final class Health_Check {
 	}
 
 	/**
-	 * Runs the check and emails about newly missed jobs.
+	 * Runs the check: emails about newly missed jobs and about sources
+	 * whose failures are rising (Failure_Rates).
 	 *
 	 * @param int|null $now Unix time; defaults to now.
 	 * @return string Summary.
 	 */
 	public static function run( ?int $now = null ): string {
+		$summary  = self::check_jobs( $now );
+		$failures = Failure_Rates::run();
+		return '' === $failures ? $summary : $summary . ' ' . $failures;
+	}
+
+	/**
+	 * Emails about newly missed jobs.
+	 *
+	 * @param int|null $now Unix time; defaults to now.
+	 * @return string Summary.
+	 */
+	private static function check_jobs( ?int $now ): string {
 		$overdue = self::overdue( $now );
 		$new     = array();
 		foreach ( $overdue as $job => $details ) {

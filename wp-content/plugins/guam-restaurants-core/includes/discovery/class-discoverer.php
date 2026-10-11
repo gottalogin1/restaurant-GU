@@ -201,7 +201,8 @@ final class Discoverer {
 		}
 
 		if ( $run_id ) {
-			Ingestion_Runs::finish( $run_id, $result['counts'], sprintf( 'discover: %d queries, %d requests', $result['queries'], $result['requests'] ) );
+			Ingestion_Runs::finish( $run_id, $result['counts'], sprintf( 'discover: %d queries, %d requests', $result['queries'], $result['requests'] ), $result['errors'] );
+			Ingestion_Runs::record_retries( $run_id, $this->client->attempt_log() );
 		}
 
 		return $result;

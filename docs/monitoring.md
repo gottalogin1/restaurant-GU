@@ -46,7 +46,9 @@ Add the site's status to the CDN's health checks too if the plan has them.
   dashboard.
 - The plugin writes one line per failed job:
   `[guam-restaurants] job <name> failed: <message>`. Import runs keep their counts and
-  errors in Restaurants > Import runs (rule 9).
+  errors in Restaurants > Import runs (rule 9), plus their retried requests. The daily
+  health check emails when a source's failures rise (docs/scheduling.md, "Health check
+  and alerts").
 - Rotate the log: hosts usually do; otherwise logrotate weekly, 8 weeks kept.
 - Weekly glance (or a host log alert, if offered) for `PHP Fatal error` and
   `[guam-restaurants]`:

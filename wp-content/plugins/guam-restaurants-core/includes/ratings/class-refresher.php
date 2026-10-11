@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Ratings;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Database\Ingestion_Runs;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -89,14 +90,30 @@ final class Refresher {
 		try {
 			Ratings::refresh( $provider, (int) $restaurant_id );
 		} catch ( \Throwable $e ) {
-			return;
+			// Only failures are logged; a run row per successful page-view refresh would bury the log.
+			$run_id = Ingestion_Runs::start( self::run_source( $source ) );
+			if ( $run_id ) {
+				Ingestion_Runs::finish( $run_id, array( 'failed' => 1 ), sprintf( 'refresh of restaurant #%d', (int) $restaurant_id ), array( $e->getMessage() ) );
+			}
 		}
+	}
+
+	/**
+	 * Ingestion run source for a rating source's refreshes.
+	 *
+	 * @param string $source Rating source key.
+	 * @return string
+	 */
+	public static function run_source( string $source ): string {
+		return $source . '_refresh';
 	}
 
 	/**
 	 * Refreshes every cacheable source for every restaurant that has its ID,
 	 * stopping at the budget cap. Removes the cache of sources that are no
 	 * longer configured (Yelp API Terms §4: delete content on termination).
+	 * Each source's refresh is logged as an ingestion run
+	 * (`<source>_refresh`) with its failures.
 	 *
 	 * @param array<string, Provider> $providers Providers.
 	 * @param Budget                  $budget    Run budget.
@@ -121,23 +138,48 @@ final class Refresher {
 			if ( $provider->max_cache_seconds() <= 0 ) {
 				continue;
 			}
-			foreach ( self::restaurants_with_id( $provider->id_meta_key() ) as $restaurant_id ) {
+			$restaurant_ids = self::restaurants_with_id( $provider->id_meta_key() );
+			if ( ! $restaurant_ids ) {
+				continue;
+			}
+
+			$run_id = Ingestion_Runs::start( self::run_source( $source ) );
+			$counts = array(
+				'updated' => 0,
+				'failed'  => 0,
+			);
+			$errors = array();
+			foreach ( $restaurant_ids as $restaurant_id ) {
 				if ( ! $budget->try_call( $provider->fetch_sku( true ), $provider->fetch_calls( true ) ) ) {
 					$result['stopped_at_cap'] = true;
-					break 2;
+					break;
 				}
 				try {
 					Ratings::refresh( $provider, $restaurant_id );
-					++$result['refreshed'];
+					++$counts['updated'];
 				} catch ( \Throwable $e ) {
-					++$result['failed'];
-					$result['errors'][] = sprintf( '%s #%d: %s', $source, $restaurant_id, $e->getMessage() );
+					++$counts['failed'];
+					$errors[] = sprintf( '%s #%d: %s', $source, $restaurant_id, $e->getMessage() );
 					// A failed refresh must not leave content past its limit.
 					$cached = get_transient( Ratings::transient_key( $source, $restaurant_id ) );
 					if ( is_array( $cached ) && (int) ( $cached['cached_until'] ?? 0 ) < time() ) {
 						delete_transient( Ratings::transient_key( $source, $restaurant_id ) );
 					}
 				}
+			}
+
+			$result['refreshed'] += $counts['updated'];
+			$result['failed']    += $counts['failed'];
+			$result['errors']     = array_merge( $result['errors'], $errors );
+			if ( $run_id ) {
+				$notes = sprintf( 'refresh-ratings: %d of %d restaurants', $counts['updated'] + $counts['failed'], count( $restaurant_ids ) );
+				if ( $result['stopped_at_cap'] ) {
+					$notes .= '; stopped at the cost cap';
+				}
+				Ingestion_Runs::finish( $run_id, $counts, $notes, $errors );
+			}
+			if ( $result['stopped_at_cap'] ) {
+				break;
 			}
 		}
 

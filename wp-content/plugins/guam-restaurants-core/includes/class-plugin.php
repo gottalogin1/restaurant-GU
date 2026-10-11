@@ -108,6 +108,7 @@ final class Plugin {
 		Admin\Ingestion_Runs_Screen::register();
 		Admin\Review_Queue_Screen::register();
 		Admin\Tag_Origins_Box::register();
+		Admin\No_Cuisine_Filter::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			Cli\Commands::register();

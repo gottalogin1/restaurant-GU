@@ -66,6 +66,21 @@ with its window plus grace. A job that is overdue (or has never run since it
 was enabled) triggers one email to `GUAM_RESTAURANTS_ALERT_EMAIL` (or the
 site admin email) per missed deadline, with the command to run by hand.
 
+The health check also emails when an import source is failing more than
+usual (`Monitoring\Failure_Rates`), looking at that source's last 4 runs:
+
+- more than 5% of the records failed;
+- 2 or more runs failed outright (for example Overpass unreachable);
+- the last 2 runs each needed 3 or more retried requests. The API still
+  answered, but it is struggling.
+
+Each run records its retried requests (the "Retried requests" column on
+Restaurants > Import runs, with the reasons in the notes). A source is
+reported once per new run that still shows the problem. Rating refreshes
+are logged as `<source>_refresh` runs (for example `yelp_refresh`): the
+twice-daily refresh logs one run per source, and a single page-view refresh
+logs a run only when it fails.
+
 A run that queues more than `GUAM_RESTAURANTS_CLOSURE_ALERT_THRESHOLD`
 (default 5) restaurants as possibly closed sends an email too. Jobs never
 mark a restaurant closed: two checks in a row from the same source put it in

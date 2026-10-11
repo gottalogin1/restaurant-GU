@@ -132,4 +132,13 @@ final class Places_Client {
 			'next_page_token' => (string) ( $data['nextPageToken'] ?? '' ),
 		);
 	}
+
+	/**
+	 * Failed attempts so far, across every search.
+	 *
+	 * @return string[]
+	 */
+	public function attempt_log(): array {
+		return $this->http->attempt_log();
+	}
 }

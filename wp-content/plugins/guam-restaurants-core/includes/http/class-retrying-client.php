@@ -90,7 +90,7 @@ class Retrying_Client {
 	 * @param string               $url  URL.
 	 * @param array<string, mixed> $args wp_remote_request() arguments.
 	 * @return array{code: int, body: string}
-	 * @throws \RuntimeException When every attempt fails or a non-retryable error comes back.
+	 * @throws Request_Failed When every attempt fails or a non-retryable error comes back.
 	 */
 	public function request( string $url, array $args ): array {
 		$last_error = '';
@@ -130,11 +130,11 @@ class Retrying_Client {
 			}
 			if ( $code < 500 ) {
 				// A client error will not fix itself; retrying would only spend quota.
-				throw new \RuntimeException( esc_html( $last_error . ': ' . substr( $body, 0, 300 ) ) );
+				throw new Request_Failed( esc_html( $last_error . ': ' . substr( $body, 0, 300 ) ), $this->attempt_log ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the attempt log is data for the run log, not output.
 			}
 		}
 
-		throw new \RuntimeException( esc_html( sprintf( 'Gave up after %d attempts (%s).', $this->max_retries + 1, $last_error ) ) );
+		throw new Request_Failed( esc_html( sprintf( 'Gave up after %d attempts (%s).', $this->max_retries + 1, $last_error ) ), $this->attempt_log ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the attempt log is data for the run log, not output.
 	}
 
 	/**

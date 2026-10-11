@@ -73,16 +73,53 @@ final class Ingestion_Runs {
 	 * Logs a run that failed before it could do any work (for example the
 	 * API was unreachable), so the failure shows on the Import runs screen.
 	 *
-	 * @param string $source  Source key.
-	 * @param string $message Error.
+	 * @param string   $source      Source key.
+	 * @param string   $message     Error.
+	 * @param string[] $attempt_log Failed HTTP attempts, recorded as retries.
 	 * @return int Run ID.
 	 */
-	public static function log_failure( string $source, string $message ): int {
+	public static function log_failure( string $source, string $message, array $attempt_log = array() ): int {
 		$run_id = self::start( $source );
 		if ( $run_id ) {
-			self::finish( $run_id, array( 'failed' => 1 ), 'Run failed before it started.', array( $message ) );
+			self::finish( $run_id, array( 'failed' => 1 ), 'Run failed before it started.', array_merge( array( $message ), $attempt_log ) );
+			self::set_retries( $run_id, max( 0, count( $attempt_log ) - 1 ) );
 		}
 		return $run_id;
+	}
+
+	/**
+	 * Records the HTTP requests a run had to retry, so a source that is
+	 * slowly failing shows up before it fails outright (Failure_Rates).
+	 *
+	 * @param int      $run_id      Run ID.
+	 * @param string[] $attempt_log Failed attempts before the request succeeded.
+	 * @return void
+	 */
+	public static function record_retries( int $run_id, array $attempt_log ): void {
+		if ( ! $attempt_log ) {
+			return;
+		}
+		self::set_retries( $run_id, count( $attempt_log ) );
+		self::append_note( $run_id, sprintf( '%d retried request(s): %s', count( $attempt_log ), implode( ', ', $attempt_log ) ) );
+	}
+
+	/**
+	 * Sets a run's retry count.
+	 *
+	 * @param int $run_id  Run ID.
+	 * @param int $retries Retries.
+	 * @return void
+	 */
+	private static function set_retries( int $run_id, int $retries ): void {
+		global $wpdb;
+
+		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			Schema::table( Schema::INGESTION_RUNS ),
+			array( 'retries' => min( 65535, max( 0, $retries ) ) ),
+			array( 'id' => $run_id ),
+			array( '%d' ),
+			array( '%d' )
+		);
 	}
 
 	/**
