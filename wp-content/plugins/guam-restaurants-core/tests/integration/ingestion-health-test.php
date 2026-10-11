@@ -121,7 +121,7 @@ class Ingestion_Health_Test extends Guam_Test_Case {
 		$this->assertTrue( $outcome['ok'] );
 		$run = Ingestion_Runs::get( (int) $outcome['run_id'] );
 		$this->assertSame( 3, (int) $run['retries'] );
-		$this->assertStringContainsString( '3 retried request(s): attempt 1: HTTP 504, attempt 2: HTTP 504, attempt 3: HTTP 504', $run['notes'] );
+		$this->assertStringContainsString( '3 retried request(s): overpass-api.de attempt 1: HTTP 504, overpass-api.de attempt 2: HTTP 504, overpass-api.de attempt 3: HTTP 504', $run['notes'] );
 	}
 
 	/**
@@ -133,9 +133,10 @@ class Ingestion_Health_Test extends Guam_Test_Case {
 		$this->assertFalse( $outcome['ok'] );
 		$run = Ingestion_Runs::get( (int) $outcome['run_id'] );
 		$this->assertTrue( Ingestion_Runs::failed_to_start( $run ) );
-		$this->assertSame( 5, (int) $run['retries'], 'Six attempts are five retries.' );
+		$this->assertSame( 11, (int) $run['retries'], 'Six attempts at each of the two instances are eleven retries.' );
 		$this->assertSame( 'Gave up after 6 attempts (HTTP 504).', $run['errors'][0] );
-		$this->assertCount( 7, $run['errors'] );
+		$this->assertCount( 13, $run['errors'] );
+		$this->assertStringStartsWith( 'overpass.kumi.systems attempt 6:', end( $run['errors'] ) );
 	}
 
 	/**

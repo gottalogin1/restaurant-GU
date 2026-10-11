@@ -89,6 +89,14 @@ main instance is currently overloaded). For a weekly Guam import, one query
 per run is enough; a Geofabrik extract is an alternative (⚠️ check which
 Geofabrik region contains Guam).
 
+**Fallback instance.** When overpass-api.de fails every retry (it often
+answers HTTP 504 under load), `import-osm` sends the same single query, with
+the same retries and user agent, to <https://overpass.kumi.systems/api/interpreter>,
+one of the public instances listed on the Overpass wiki page above. The two
+are never queried in parallel, and the fallback is only used after the main
+instance has given up. Override it with `GUAM_RESTAURANTS_OVERPASS_FALLBACK_URL`,
+or set that to `none` to turn it off.
+
 **Storing, caching, displaying.** Data is under the Open Database Licence
 (ODbL 1.0). It may be stored permanently and displayed. Two obligations:
 
