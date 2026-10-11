@@ -20,7 +20,7 @@ final class Schema {
 	/**
 	 * Bump when a table definition changes so upgrades run dbDelta() again.
 	 */
-	public const VERSION = '7';
+	public const VERSION = '8';
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
@@ -232,6 +232,7 @@ final class Schema {
   updated int(10) unsigned NOT NULL DEFAULT 0,
   unchanged int(10) unsigned NOT NULL DEFAULT 0,
   failed int(10) unsigned NOT NULL DEFAULT 0,
+  retries smallint(5) unsigned NOT NULL DEFAULT 0,
   notes text NULL,
   errors longtext NULL,
   PRIMARY KEY  (id),

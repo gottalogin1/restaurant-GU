@@ -35,6 +35,7 @@ final class Restaurant_Meta {
 	public const YELP_ID            = 'gr_yelp_id';
 	public const FOURSQUARE_ID      = 'gr_foursquare_id';
 	public const OSM_ID             = 'gr_osm_id';
+	public const OSM_CUISINE        = 'gr_osm_cuisine';
 	public const FORMER_NAMES       = 'gr_former_names';
 
 	/**
@@ -224,6 +225,14 @@ final class Restaurant_Meta {
 				'default'     => '',
 				'sanitize'    => array( self::class, 'sanitize_osm_id' ),
 				'schema'      => array( 'pattern' => '^$|' . self::OSM_ID_PATTERN ),
+			),
+			self::OSM_CUISINE                 => array(
+				'type'        => 'string',
+				'description' => __( 'OpenStreetMap cuisine tag as of the last import, unmapped (for checking the cuisine map; not shown on the site).', 'guam-restaurants-core' ),
+				'default'     => '',
+				'sanitize'    => 'sanitize_text_field',
+				'private'     => true,
+				'schema'      => array( 'maxLength' => 255 ),
 			),
 			self::FORMER_NAMES                => array(
 				'type'        => 'string',

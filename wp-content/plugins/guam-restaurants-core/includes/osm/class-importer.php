@@ -154,7 +154,7 @@ final class Importer {
 	 *
 	 * @param array<int, array<string, mixed>> $elements Elements.
 	 * @param bool                             $dry_run  Report without writing (no ingestion run is logged).
-	 * @return array{counts: array<string, int>, skipped: array<string, int>, unmapped: array<string, int>, unmatched_malls: array<string, string>, village_unresolved: string[], closures: array{checked: bool, closed: int[], queued: int[], note: string}, errors: string[], run_id: int|null}
+	 * @return array{counts: array<string, int>, skipped: array<string, int>, unmapped: array<string, int>, no_cuisine_tag: int, unmatched_malls: array<string, string>, village_unresolved: string[], closures: array{checked: bool, closed: int[], queued: int[], note: string}, errors: string[], run_id: int|null}
 	 */
 	public function run( array $elements, bool $dry_run = false ): array {
 		return Mall_Verification::with_unverified(
@@ -190,6 +190,7 @@ final class Importer {
 			'counts'             => array_fill_keys( array( self::CREATED, self::UPDATED, self::UNCHANGED, self::FAILED ), 0 ),
 			'skipped'            => array(),
 			'unmapped'           => array(),
+			'no_cuisine_tag'     => 0,
 			'unmatched_malls'    => array(),
 			'village_unresolved' => array(),
 			'closures'           => array(
@@ -225,6 +226,9 @@ final class Importer {
 			}
 
 			$record = $this->mapper->map( $element );
+			if ( '' === $record['osm_cuisine'] ) {
+				++$result['no_cuisine_tag'];
+			}
 			foreach ( $record['unmapped'] as $value ) {
 				$result['unmapped'][ $value ] = ( $result['unmapped'][ $value ] ?? 0 ) + 1;
 			}
@@ -344,6 +348,7 @@ final class Importer {
 
 		if ( ! $dry_run ) {
 			$this->apply( $post_id, $changes );
+			self::save_osm_cuisine( $post_id, $record['osm_cuisine'] );
 		}
 
 		// Tags last, so the mall can use an updated address.
@@ -433,6 +438,7 @@ final class Importer {
 		update_post_meta( $post_id, Restaurant_Meta::LATITUDE, $record['latitude'] );
 		update_post_meta( $post_id, Restaurant_Meta::LONGITUDE, $record['longitude'] );
 		update_post_meta( $post_id, Restaurant_Meta::COORD_SOURCE, 'osm' );
+		self::save_osm_cuisine( $post_id, $record['osm_cuisine'] );
 		foreach ( $record['meta'] as $key => $value ) {
 			if ( array() !== $value && '' !== $value ) {
 				update_post_meta( $post_id, $key, $value );
@@ -695,6 +701,24 @@ final class Importer {
 	}
 
 	/**
+	 * Stores OSM's raw cuisine tag, so restaurants without a cuisine can be
+	 * told apart: no tag in OSM, or a value the cuisine map does not cover.
+	 * Not a fact shown on the site, so it is not in the change log or the
+	 * updated count.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $value   Raw tag; '' when absent.
+	 * @return void
+	 */
+	private static function save_osm_cuisine( int $post_id, string $value ): void {
+		if ( '' === $value ) {
+			delete_post_meta( $post_id, Restaurant_Meta::OSM_CUISINE );
+		} elseif ( get_post_meta( $post_id, Restaurant_Meta::OSM_CUISINE, true ) !== $value ) {
+			update_post_meta( $post_id, Restaurant_Meta::OSM_CUISINE, $value );
+		}
+	}
+
+	/**
 	 * Ingestion run notes.
 	 *
 	 * @param array<string, mixed> $result Run result.
@@ -714,6 +738,9 @@ final class Importer {
 				$values[] = "{$value} ({$count})";
 			}
 			$parts[] = 'unmapped cuisines: ' . implode( ', ', $values );
+		}
+		if ( $result['no_cuisine_tag'] ) {
+			$parts[] = $result['no_cuisine_tag'] . ' with no OSM cuisine tag';
 		}
 		if ( $result['unmatched_malls'] ) {
 			$parts[] = 'OSM malls with no term: ' . implode( ', ', array_filter( $result['unmatched_malls'] ) );

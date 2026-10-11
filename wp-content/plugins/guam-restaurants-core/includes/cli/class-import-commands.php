@@ -7,8 +7,10 @@
 
 namespace GuamRestaurants\Core\Cli;
 
+use GuamRestaurants\Core\Database\Ingestion_Runs;
 use GuamRestaurants\Core\Discovery\Discoverer;
 use GuamRestaurants\Core\Discovery\Places_Client;
+use GuamRestaurants\Core\Http\Request_Failed;
 use GuamRestaurants\Core\Monitoring\Alerts;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
 use GuamRestaurants\Core\Osm\Element_Mapper;
@@ -92,6 +94,7 @@ final class Import_Commands {
 		$radius  = (float) WP_CLI\Utils\get_flag_value( $assoc_args, 'mall-radius', 150 );
 		$closure = (bool) WP_CLI\Utils\get_flag_value( $assoc_args, 'closure-check', true );
 
+		$attempts = array();
 		try {
 			if ( '' !== $input ) {
 				$json = is_readable( $input ) ? file_get_contents( $input ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
@@ -102,9 +105,19 @@ final class Import_Commands {
 				WP_CLI::log( sprintf( 'Read %d elements from %s.', count( $elements ), $input ) );
 			} else {
 				WP_CLI::log( 'Querying Overpass (one request; waits and retries on errors)...' );
-				$client  = new Overpass_Client();
-				$fetched = $client->fetch();
-				foreach ( $client->attempt_log() as $line ) {
+				$client = new Overpass_Client();
+				try {
+					$fetched = $client->fetch();
+				} catch ( Request_Failed $e ) {
+					if ( ! $dry_run ) {
+						// Logged so failures count toward the source's failure rate (Failure_Rates).
+						Ingestion_Runs::log_failure( 'osm', 'Overpass: ' . $e->getMessage(), $e->attempt_log() );
+					}
+					WP_CLI::error( $e->getMessage() );
+					return;
+				}
+				$attempts = $client->attempt_log();
+				foreach ( $attempts as $line ) {
 					WP_CLI::warning( $line );
 				}
 				$elements = $fetched['elements'];
@@ -116,6 +129,9 @@ final class Import_Commands {
 
 			$importer = ( new Importer( new Element_Mapper( Cuisine_Map::from_file() ), null, $radius, $status ) )->with_closure_checks( $closure );
 			$result   = $importer->run( $elements, $dry_run );
+			if ( $result['run_id'] ) {
+				Ingestion_Runs::record_retries( $result['run_id'], $attempts );
+			}
 		} catch ( \Throwable $e ) {
 			WP_CLI::error( $e->getMessage() );
 			return;
@@ -146,6 +162,10 @@ final class Import_Commands {
 				);
 			}
 			WP_CLI\Utils\format_items( 'table', $rows, array( 'cuisine', 'restaurants' ) );
+		}
+
+		if ( $result['no_cuisine_tag'] ) {
+			WP_CLI::log( sprintf( '%d restaurant(s) have no cuisine tag in OSM (Restaurants > No cuisine lists those still untagged).', $result['no_cuisine_tag'] ) );
 		}
 
 		if ( $result['closures']['checked'] ) {

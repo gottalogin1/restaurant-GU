@@ -93,6 +93,7 @@ final class Ingestion_Runs_Screen {
 			__( 'Updated', 'guam-restaurants-core' ),
 			__( 'Unchanged', 'guam-restaurants-core' ),
 			__( 'Failed', 'guam-restaurants-core' ),
+			__( 'Retried requests', 'guam-restaurants-core' ),
 			__( 'Notes and errors', 'guam-restaurants-core' ),
 		) as $heading ) {
 			echo '<th scope="col">' . esc_html( $heading ) . '</th>';
@@ -100,7 +101,7 @@ final class Ingestion_Runs_Screen {
 		echo '</tr></thead><tbody>';
 
 		if ( ! $runs ) {
-			echo '<tr><td colspan="9">' . esc_html__( 'No runs yet.', 'guam-restaurants-core' ) . '</td></tr>';
+			echo '<tr><td colspan="10">' . esc_html__( 'No runs yet.', 'guam-restaurants-core' ) . '</td></tr>';
 		}
 		foreach ( $runs as $run ) {
 			echo '<tr>';
@@ -112,6 +113,7 @@ final class Ingestion_Runs_Screen {
 				$style = 'failed' === $count && (int) $run[ $count ] > 0 ? ' style="color:#b32d2e;font-weight:600"' : '';
 				echo '<td' . $style . '>' . esc_html( number_format_i18n( (int) $run[ $count ] ) ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute.
 			}
+			echo '<td>' . esc_html( number_format_i18n( (int) ( $run['retries'] ?? 0 ) ) ) . '</td>';
 			echo '<td>' . esc_html( (string) $run['notes'] );
 			if ( $run['errors'] ) {
 				/* translators: %d: number of errors. */

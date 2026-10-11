@@ -10,6 +10,7 @@ namespace GuamRestaurants\Core\Monitoring;
 use GuamRestaurants\Core\Billing\Reminders;
 use GuamRestaurants\Core\Config;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
+use GuamRestaurants\Core\Http\Request_Failed;
 use GuamRestaurants\Core\Newsletter\Newsletter;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
 use GuamRestaurants\Core\Osm\Element_Mapper;
@@ -225,7 +226,7 @@ final class Jobs {
 	 * a failed ingestion run, and returned.
 	 *
 	 * @param string $job Job.
-	 * @param array  $options Per-job options: `elements` (osm: use these instead of calling Overpass).
+	 * @param array  $options Per-job options: `elements` (osm: use these instead of calling Overpass), `client` (osm: an Overpass_Client, for tests).
 	 * @return array{ok: bool, run_id: int|null, summary: string, error: string, result: array<string, mixed>}
 	 */
 	public static function run( string $job, array $options = array() ): array {
@@ -259,7 +260,8 @@ final class Jobs {
 					$outcome = self::outcome( true, null, Health_Check::run(), '' );
 			}
 		} catch ( \Throwable $e ) {
-			$run_id = in_array( $job, array( self::HEALTH_CHECK, self::RENEWALS, self::SPEND_REPORT ), true ) ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage() );
+			$attempts = $e instanceof Request_Failed ? $e->attempt_log() : array();
+			$run_id   = in_array( $job, array( self::HEALTH_CHECK, self::RENEWALS, self::SPEND_REPORT ), true ) ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage(), $attempts );
 			// Also to the PHP error log, which the host's log monitoring reads (docs/monitoring.md §2).
 			error_log( sprintf( '[guam-restaurants] job %s failed: %s', $job, $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intended production log line.
 			$outcome = self::outcome( false, $run_id ? $run_id : null, '', $e->getMessage() );
@@ -286,16 +288,21 @@ final class Jobs {
 	 * @return array<string, mixed>
 	 */
 	private static function run_osm( array $options ): array {
+		$attempts = array();
 		if ( isset( $options['elements'] ) ) {
 			$elements = (array) $options['elements'];
 		} else {
-			$client   = new Overpass_Client();
+			$client   = $options['client'] ?? new Overpass_Client();
 			$elements = $client->fetch()['elements'];
+			$attempts = $client->attempt_log();
 		}
 
 		$importer = new Importer( new Element_Mapper( Cuisine_Map::from_file() ) );
 		$result   = $importer->run( $elements );
 		$run_id   = $result['run_id'];
+		if ( $run_id ) {
+			Ingestion_Runs::record_retries( $run_id, $attempts );
+		}
 
 		$duplicates = ( new Duplicate_Detector() )->run( false, $run_id );
 		if ( $run_id ) {

@@ -69,9 +69,11 @@ final class Roles {
 	 */
 	public static function install(): void {
 		if ( null === get_role( self::OWNER_ROLE ) ) {
+			// Untranslated, like core's role names: this runs on plugins_loaded, before translations may load
+			// (WordPress 6.7+ warns), and a stored role name should not depend on the locale at install time.
 			add_role(
 				self::OWNER_ROLE,
-				__( 'Restaurant owner', 'guam-restaurants-core' ),
+				'Restaurant owner',
 				array(
 					'read'      => true,
 					self::OWNER => true,
