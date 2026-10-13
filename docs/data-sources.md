@@ -229,6 +229,14 @@ counts and (optionally) reviews on listing pages, within these rules:
   Search Pro: 5,000 free a month; one full run is at most 75 requests).
   Only the place ID is stored, in the review queue; names are compared in
   memory to skip places we already list and are not kept.
+  Since 2026-10-13 discovery works through a search log (docs/scheduling.md)
+  that also searches place types per village and cuisines; the log stores
+  our query text and result counts only, nothing Google returns. A daily
+  job runs the never-run searches first and re-checks each search weekly
+  (about 140 searches and up to 3 requests each, so roughly 1,800 to 2,000
+  requests a month), stopping at the free allowance under the $0 cap.
+  "Add as restaurant" in the review queue creates a draft holding the place
+  ID; the name and details are entered by hand.
 - Matching (`wp guam-restaurants match-ratings --source=google`,
   2026-10-10): Text Search with the restaurant's name, biased to 150 m
   around its OSM coordinates, field mask

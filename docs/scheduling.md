@@ -1,11 +1,12 @@
 # Scheduled jobs
 
-The plugin runs seven jobs. Each one is a WP-CLI command, so a real server
+The plugin runs eight jobs. Each one is a WP-CLI command, so a real server
 cron can run it directly. WP-Cron is the fallback.
 
 | Job | Command | Window | Suggested crontab (UTC) |
 |---|---|---|---|
 | OpenStreetMap import, duplicate check, closure checks | `wp guam-restaurants run-job osm` | weekly, plus 1 day grace | `15 3 * * 1` |
+| Google discovery from the search log (needs the Google key) | `wp guam-restaurants run-job discover` | daily, plus 1 day grace | `0 4 * * *` |
 | Google status check (needs the Google key) | `wp guam-restaurants run-job google-status` | monthly, plus 3 days grace | `30 4 2 * *` |
 | Yelp status check (off unless enabled, see below) | `wp guam-restaurants run-job yelp-status` | monthly, plus 3 days grace | `45 4 2 * *` |
 | Renewal reminder emails (docs/billing.md §2) | `wp guam-restaurants run-job renewal-reminders` | daily, plus 1 day grace | `30 22 * * *` (08:30 Guam) |
@@ -34,6 +35,7 @@ run's counts, notes and errors.
 
    ```cron
    15 3 * * 1  cd /path/to/wordpress && wp guam-restaurants run-job osm >> /var/log/guam-jobs.log 2>&1
+   0 4 * * *   cd /path/to/wordpress && wp guam-restaurants run-job discover >> /var/log/guam-jobs.log 2>&1
    30 4 2 * *  cd /path/to/wordpress && wp guam-restaurants run-job google-status >> /var/log/guam-jobs.log 2>&1
    30 22 * * * cd /path/to/wordpress && wp guam-restaurants run-job renewal-reminders >> /var/log/guam-jobs.log 2>&1
    0 7 * * *   cd /path/to/wordpress && wp guam-restaurants run-job health-check >> /var/log/guam-jobs.log 2>&1
@@ -94,3 +96,26 @@ the existing $0 caps, so it costs nothing; `wp guam-restaurants check-status
 --estimate` shows the count first. Yelp has no free tier, so its check stays
 off unless `GUAM_RESTAURANTS_YELP_STATUS_CHECKS=1` and a Yelp key are set and
 the ratings caps allow spending.
+
+## Discovery and the search log
+
+`discover` finds restaurants OpenStreetMap is missing. It keeps a search log
+(`wp guam-restaurants search-log status|list|add|disable|enable`) of every
+Google Places Text Search query it runs: the area searched, when it last ran,
+how many results came back and how many were new. Each run does the searches
+that have never run first, then the ones whose weekly re-check is due, and
+keeps going until none are left or the next request would leave the free
+monthly allowance (4,500 Text Search calls, under the default $0 cap). So a
+search is never repeated within a week, and every search is re-checked at
+least once a week for new places.
+
+The log starts with "restaurants in <village or mall>", cafes, bakeries, bars,
+fast food and food trucks in each village, and "<cuisine> restaurants in
+Guam". Text Search returns at most 60 results per query, so when a village's
+search fills all 60 the log adds "<cuisine> restaurants in <village>" searches
+for it. Add your own with `wp guam-restaurants search-log add "<query>"
+--village=<slug>`.
+
+New places go to Restaurants > Review queue (New place). "Add as restaurant"
+there creates a draft with the place ID and village; fill in the details and
+publish it.

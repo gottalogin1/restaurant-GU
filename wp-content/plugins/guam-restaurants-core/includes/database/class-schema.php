@@ -20,7 +20,7 @@ final class Schema {
 	/**
 	 * Bump when a table definition changes so upgrades run dbDelta() again.
 	 */
-	public const VERSION = '8';
+	public const VERSION = '9';
 
 	public const VERSION_OPTION = 'guam_restaurants_core_db_version';
 
@@ -38,6 +38,7 @@ final class Schema {
 	public const CLAIMS         = 'gr_claims';
 	public const LISTING_STATS  = 'gr_listing_daily_stats';
 	public const LISTING_VIEWS  = 'gr_listing_views';
+	public const SEARCH_LOG     = 'gr_search_log';
 
 	/**
 	 * Tables with a restaurant_id column, cleaned up when a restaurant is deleted.
@@ -187,6 +188,7 @@ final class Schema {
 		$claims         = self::table( self::CLAIMS );
 		$listing_stats  = self::table( self::LISTING_STATS );
 		$listing_views  = self::table( self::LISTING_VIEWS );
+		$search_log     = self::table( self::SEARCH_LOG );
 
 		return array(
 			self::AWARDS         => "CREATE TABLE $awards (
@@ -340,6 +342,32 @@ final class Schema {
   views int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY  (restaurant_id,stat_date),
   KEY stat_date (stat_date)
+) $charset;",
+
+			// Discovery searches (Discovery\Search_Log): our own query text and result counts only, no API content.
+			self::SEARCH_LOG     => "CREATE TABLE $search_log (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  source varchar(32) NOT NULL,
+  query varchar(255) NOT NULL,
+  query_hash char(32) NOT NULL,
+  origin varchar(20) NOT NULL,
+  area_kind varchar(20) NOT NULL,
+  area_slug varchar(191) NOT NULL DEFAULT '',
+  village varchar(191) NOT NULL DEFAULT '',
+  active tinyint(1) unsigned NOT NULL DEFAULT 1,
+  added_at datetime NOT NULL,
+  last_run_at datetime NULL,
+  next_due_at datetime NULL,
+  runs int(10) unsigned NOT NULL DEFAULT 0,
+  last_results smallint(5) unsigned NOT NULL DEFAULT 0,
+  last_new smallint(5) unsigned NOT NULL DEFAULT 0,
+  total_new int(10) unsigned NOT NULL DEFAULT 0,
+  saturated tinyint(1) unsigned NOT NULL DEFAULT 0,
+  last_run_id bigint(20) unsigned NULL,
+  last_error varchar(255) NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY source_query (source,query_hash),
+  KEY active_due (active,next_due_at)
 ) $charset;",
 		);
 	}

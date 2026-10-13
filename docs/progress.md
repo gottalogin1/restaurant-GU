@@ -212,3 +212,8 @@ Legal and code:
 - Done (approved by Sanjay): `import-osm` falls back to overpass.kumi.systems (same single query and retries, never in parallel) only after overpass-api.de gives up; `GUAM_RESTAURANTS_OVERPASS_FALLBACK_URL` overrides it, `none` turns it off. Attempt log lines name the host.
 - Declined: DFS Galleria Guam mall term (Sanjay: not a mall, and closed).
 - Remaining: Sanjay runs `import-osm` once after updating, so `gr_osm_cuisine` fills in, then tags the 51 by hand or reports values to map.
+
+## Discovery search log, 2026-10-13
+- Cause of the flat restaurant count (checked on Sanjay's PC): `.env` has no `GUAM_RESTAURANTS_GOOGLE_PLACES_KEY`, so `discover` never ran, and nothing scheduled it. The weekly OSM import is one query for all of Guam and returns the same 240 places (run #6: created 0, unchanged 240).
+- Done: search log (`gr_search_log`, schema version 9; `Discovery\Search_Log`). `discover` now works through it: never-run searches first, then weekly re-checks, until nothing is due or the free allowance/cap is reached. Searches: per area, five place types per village, one per cuisine island-wide, and per-cuisine searches for a village whose search fills all 60 results. `wp guam-restaurants search-log status|list|add|disable|enable`. Daily `discover` job (enabled when the key is set). Review queue "Add as restaurant (draft)" for New place items.
+- Remaining: Sanjay sets the Google key in `.env` and recreates the containers, then runs `discover` once (or waits for the daily job) and works through the review queue.

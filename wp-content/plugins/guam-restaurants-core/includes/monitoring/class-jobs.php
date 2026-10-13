@@ -10,6 +10,8 @@ namespace GuamRestaurants\Core\Monitoring;
 use GuamRestaurants\Core\Billing\Reminders;
 use GuamRestaurants\Core\Config;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
+use GuamRestaurants\Core\Discovery\Discoverer;
+use GuamRestaurants\Core\Discovery\Places_Client;
 use GuamRestaurants\Core\Http\Request_Failed;
 use GuamRestaurants\Core\Newsletter\Newsletter;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
@@ -22,9 +24,13 @@ use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Five jobs:
+ * Jobs:
  *
  * - `osm`: weekly OpenStreetMap import, then duplicate detection.
+ * - `discover`: daily Google Places discovery (needs a key). Works through
+ *   the search log until nothing is due or the free allowance or cap is
+ *   reached, so new searches run as soon as there is allowance and every
+ *   search is re-checked weekly (Discovery\Search_Log).
  * - `google-status`: monthly Google business-status check (needs a key;
  *   stays inside the free allowance with the default $0 cap).
  * - `yelp-status`: monthly Yelp check, off unless enabled (Yelp has no free tier).
@@ -48,6 +54,7 @@ final class Jobs {
 	public const MONTHLY         = 'guam_monthly';
 	public const OSM             = 'osm';
 	public const GOOGLE_STATUS   = 'google-status';
+	public const DISCOVER        = 'discover';
 	public const YELP_STATUS     = 'yelp-status';
 	public const HEALTH_CHECK    = 'health-check';
 	public const RENEWALS        = 'renewal-reminders';
@@ -71,6 +78,14 @@ final class Jobs {
 				'grace'      => DAY_IN_SECONDS,
 				'recurrence' => 'weekly',
 				'cron'       => '15 3 * * 1',
+			),
+			self::DISCOVER      => array(
+				'label'      => 'Google discovery (search log)',
+				'source'     => 'google',
+				'interval'   => DAY_IN_SECONDS,
+				'grace'      => DAY_IN_SECONDS,
+				'recurrence' => 'daily',
+				'cron'       => '0 4 * * *',
 			),
 			self::GOOGLE_STATUS => array(
 				'label'      => 'Google status check',
@@ -166,6 +181,7 @@ final class Jobs {
 	public static function enabled( string $job ): bool {
 		switch ( $job ) {
 			case self::GOOGLE_STATUS:
+			case self::DISCOVER:
 				return '' !== Config::get( Config::GOOGLE_PLACES_KEY );
 			case self::YELP_STATUS:
 				return '' !== Config::get( Config::YELP_KEY ) && in_array( strtolower( Config::get( Config::YELP_STATUS_CHECKS ) ), array( '1', 'true', 'yes', 'on' ), true );
@@ -215,7 +231,7 @@ final class Jobs {
 		if ( self::HEALTH_CHECK === $job && self::ran_recently( $job, self::HEALTH_MIN_HOUR * HOUR_IN_SECONDS ) ) {
 			return;
 		}
-		if ( function_exists( 'set_time_limit' ) && self::OSM === $job ) {
+		if ( function_exists( 'set_time_limit' ) && in_array( $job, array( self::OSM, self::DISCOVER ), true ) ) {
 			set_time_limit( 900 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- long import in a cron request.
 		}
 		self::run( $job );
@@ -241,6 +257,9 @@ final class Jobs {
 			switch ( $job ) {
 				case self::OSM:
 					$outcome = self::run_osm( $options );
+					break;
+				case self::DISCOVER:
+					$outcome = self::run_discover( $options );
 					break;
 				case self::GOOGLE_STATUS:
 				case self::YELP_STATUS:
@@ -326,6 +345,38 @@ final class Jobs {
 			),
 			'',
 			$result + array( 'duplicates' => $duplicates )
+		);
+	}
+
+	/**
+	 * The discovery job: due searches from the search log, until the cap.
+	 *
+	 * @param array<string, mixed> $options Options: `client` (a Places_Client, for tests), `delay`, `sleeper`, `budget`, `max_requests`.
+	 * @return array<string, mixed>
+	 */
+	private static function run_discover( array $options ): array {
+		$client = $options['client'] ?? Places_Client::from_config();
+		if ( null === $client ) {
+			return self::outcome( true, null, 'Skipped: no Google Places key.', '' );
+		}
+
+		$discoverer = new Discoverer( $client, (int) ( $options['delay'] ?? 1 ), 3, $options['sleeper'] ?? null, $options['budget'] ?? null );
+		$result     = $discoverer->run_from_log( 'all', false, $options['max_requests'] ?? null );
+
+		return self::outcome(
+			true,
+			$result['run_id'],
+			sprintf(
+				'%d searches, %d requests, %d new candidate(s) queued, %d failed; %d searches still due%s',
+				$result['queries'],
+				$result['requests'],
+				$result['counts']['created'],
+				$result['counts']['failed'],
+				$result['left'],
+				$result['stopped_at_cap'] ? ' (stopped at the cost cap)' : ''
+			),
+			'',
+			$result
 		);
 	}
 
