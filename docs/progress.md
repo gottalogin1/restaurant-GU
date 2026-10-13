@@ -212,3 +212,9 @@ Legal and code:
 - Done (approved by Sanjay): `import-osm` falls back to overpass.kumi.systems (same single query and retries, never in parallel) only after overpass-api.de gives up; `GUAM_RESTAURANTS_OVERPASS_FALLBACK_URL` overrides it, `none` turns it off. Attempt log lines name the host.
 - Declined: DFS Galleria Guam mall term (Sanjay: not a mall, and closed).
 - Remaining: Sanjay runs `import-osm` once after updating, so `gr_osm_cuisine` fills in, then tags the 51 by hand or reports values to map.
+
+## Settings kept across git pulls, 2026-10-13
+- Done: `make install` is safe to re-run. Permalinks, theme and WooCommerce "coming soon" are set only on a fresh install; the site's plugin and WooCommerce are activated only when they are off, so activation routines do not re-run. New `make update` (up + install) is the command to run after `git pull`.
+- Done: `docker-compose.yml` pins the project name (`restaurant-gu`), so the database and WordPress volumes stay the same whatever the checkout folder is called.
+- Done: `make woocommerce` replaces the files inside the mounted folder instead of deleting it (a deleted bind-mount folder looks empty to the running container, and WordPress then turns WooCommerce off), and stops with a clear message when `unzip` is missing.
+- Done: `Database\Migrations`, one-time setting fixes recorded in `guam_restaurants_core_migrations`; applied on load (or by `wp guam-restaurants db upgrade` when `GUAM_RESTAURANTS_DB_UPGRADE=cli`); `db status` lists pending ones. None defined yet.

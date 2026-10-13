@@ -48,6 +48,7 @@ final class Plugin {
 
 		// Boot runs on plugins_loaded, so tables are upgraded before anything uses them.
 		Database\Schema::maybe_upgrade();
+		Database\Migrations::maybe_run();
 		Highlights\Roles::maybe_install();
 		add_action( 'admin_notices', array( Database\Schema::class, 'admin_notice' ) );
 

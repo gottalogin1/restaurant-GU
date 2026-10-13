@@ -7,6 +7,7 @@
 
 namespace GuamRestaurants\Core\Cli;
 
+use GuamRestaurants\Core\Database\Migrations;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Monitoring\Health_Endpoint;
 use GuamRestaurants\Core\Monitoring\Spend_Report;
@@ -63,11 +64,18 @@ final class Operations_Commands {
 		} else {
 			WP_CLI::warning( sprintf( 'Schema version %s is stored; the code needs %s. Run: wp guam-restaurants db upgrade', $stored, Schema::VERSION ) );
 		}
+		$pending = array_keys( Migrations::pending() );
+		if ( $pending ) {
+			WP_CLI::warning( sprintf( 'Setting migrations not yet applied: %s. Run: wp guam-restaurants db upgrade', implode( ', ', $pending ) ) );
+		} else {
+			WP_CLI::success( sprintf( 'Setting migrations: %d applied, none pending.', count( Migrations::applied() ) ) );
+		}
 	}
 
 	/**
-	 * Creates or upgrades the custom tables (dbDelta, additive only). Safe
-	 * to run on every deploy.
+	 * Creates or upgrades the custom tables (dbDelta, additive only), then
+	 * applies any one-time setting migrations not yet run. Safe to run on
+	 * every deploy and after every git pull.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -81,6 +89,12 @@ final class Operations_Commands {
 			WP_CLI::error( 'Another upgrade is running (lock option ' . Schema::LOCK_OPTION . '). Try again in a few minutes.' );
 		}
 		WP_CLI::success( sprintf( 'Schema upgraded from %s to %s.', $before, Schema::VERSION ) );
+
+		$ran = Migrations::run();
+		if ( null === $ran ) {
+			WP_CLI::error( 'Another migration run is in progress (lock option ' . Migrations::LOCK_OPTION . '). Try again in a few minutes.' );
+		}
+		WP_CLI::success( $ran ? 'Applied setting migrations: ' . implode( ', ', $ran ) . '.' : 'No setting migrations pending; settings left as they are.' );
 	}
 
 	/**

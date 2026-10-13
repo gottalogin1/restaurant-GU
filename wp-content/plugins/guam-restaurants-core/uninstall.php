@@ -17,6 +17,7 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 delete_option( 'guam_restaurants_core_version' );
 delete_option( 'guam_restaurants_core_activated_at' );
 delete_option( 'guam_restaurants_core_db_version' );
+delete_option( 'guam_restaurants_core_migrations' );
 delete_option( 'guam_restaurants_core_ratings_usage' );
 delete_option( 'guam_restaurants_awards_routes' );
 delete_option( 'guam_restaurants_core_roles_version' );
