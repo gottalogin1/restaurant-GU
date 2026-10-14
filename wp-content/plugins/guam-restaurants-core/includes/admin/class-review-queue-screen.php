@@ -10,9 +10,11 @@ namespace GuamRestaurants\Core\Admin;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Corrections\Corrections;
 use GuamRestaurants\Core\Database\Review_Queue;
+use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Closures;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Tagging\Duplicate_Detector;
+use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Tagging\Merger;
 use GuamRestaurants\Core\Vocabulary;
 
@@ -92,6 +94,13 @@ final class Review_Queue_Screen {
 
 		$note = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
 
+		if ( 'add_restaurant' === $decision ) {
+			$name    = isset( $_POST['restaurant_name'] ) ? sanitize_text_field( wp_unslash( $_POST['restaurant_name'] ) ) : '';
+			$post_id = self::add_restaurant( $item_id, $name, get_current_user_id() );
+			wp_safe_redirect( $post_id ? (string) get_edit_post_link( $post_id, 'url' ) : add_query_arg( 'gr_notice', 'gr_review_failed', self::url( $type ) ) );
+			exit;
+		}
+
 		$notice = self::decide( $item_id, $decision, get_current_user_id(), $note ) ? 'gr_review_done' : 'gr_review_failed';
 		wp_safe_redirect( add_query_arg( 'gr_notice', $notice, self::url( $type ) ) );
 		exit;
@@ -140,6 +149,66 @@ final class Review_Queue_Screen {
 			return false;
 		}
 		return false;
+	}
+
+	/**
+	 * Turns a discovered place into a draft restaurant. The administrator
+	 * types the name after checking the place on Google Maps (a manually
+	 * recorded fact); the draft keeps the place ID and the village or mall
+	 * the search was about, and is published from the editor once the
+	 * details are filled in.
+	 *
+	 * @param int    $item_id A pending `new_place` item.
+	 * @param string $name    Restaurant name.
+	 * @param int    $user_id Administrator.
+	 * @return int Draft post ID, or 0.
+	 */
+	public static function add_restaurant( int $item_id, string $name, int $user_id ): int {
+		$item = Review_Queue::get( $item_id );
+		$name = trim( $name );
+		if ( ! $item || 'new_place' !== $item['type'] || 'pending' !== $item['status'] || '' === $name || ! user_can( $user_id, self::CAPABILITY ) ) {
+			return 0;
+		}
+
+		$payload  = (array) $item['payload'];
+		$place_id = (string) ( $payload['place_id'] ?? '' );
+		$post_id  = wp_insert_post(
+			array(
+				'post_type'   => Content_Types::POST_TYPE,
+				'post_status' => 'draft',
+				'post_title'  => $name,
+				'post_author' => $user_id,
+			),
+			true
+		);
+		if ( is_wp_error( $post_id ) || ! $post_id ) {
+			return 0;
+		}
+		if ( '' !== $place_id ) {
+			update_post_meta( $post_id, Restaurant_Meta::GOOGLE_PLACE_ID, $place_id );
+		}
+
+		$found_by = (array) ( $payload['found_by'] ?? array() );
+		$slug     = (string) ( $found_by['slug'] ?? '' );
+		if ( 'village' === ( $found_by['kind'] ?? '' ) && '' !== $slug ) {
+			wp_set_object_terms( $post_id, $slug, Content_Types::TAX_VILLAGE );
+		} elseif ( 'mall' === ( $found_by['kind'] ?? '' ) && '' !== $slug ) {
+			Mall_Verification::with_unverified(
+				static function () use ( $post_id, $slug ) {
+					$mall = get_term_by( 'slug', $slug, Content_Types::TAX_MALL );
+					if ( $mall instanceof \WP_Term ) {
+						wp_set_object_terms( $post_id, array( $mall->term_id ), Content_Types::TAX_MALL );
+						$village = (int) get_term_meta( $mall->term_id, Term_Meta::MALL_VILLAGE, true );
+						if ( $village ) {
+							wp_set_object_terms( $post_id, array( $village ), Content_Types::TAX_VILLAGE );
+						}
+					}
+				}
+			);
+		}
+
+		Review_Queue::resolve( $item_id, 'approved', $user_id );
+		return (int) $post_id;
 	}
 
 	/**
@@ -243,6 +312,10 @@ final class Review_Queue_Screen {
 
 		echo '<ul style="margin:0">';
 		foreach ( $payload as $key => $value ) {
+			if ( is_string( $value ) && '_url' === substr( (string) $key, -4 ) && wp_http_validate_url( $value ) ) {
+				echo '<li><code>' . esc_html( (string) $key ) . '</code>: <a href="' . esc_url( $value ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open', 'guam-restaurants-core' ) . '</a></li>';
+				continue;
+			}
 			echo '<li><code>' . esc_html( (string) $key ) . '</code>: ' . esc_html( is_scalar( $value ) || null === $value ? (string) $value : (string) wp_json_encode( $value ) ) . '</li>';
 		}
 		echo '</ul>';
@@ -340,6 +413,12 @@ final class Review_Queue_Screen {
 					'request_decline' => __( 'Decline', 'guam-restaurants-core' ),
 				);
 				break;
+			case 'new_place':
+				$buttons = array(
+					'add_restaurant' => __( 'Add as restaurant (draft)', 'guam-restaurants-core' ),
+					'dismiss'        => __( 'Not a restaurant / skip', 'guam-restaurants-core' ),
+				);
+				break;
 			default:
 				$buttons = array( 'dismiss' => __( 'Mark handled', 'guam-restaurants-core' ) );
 		}
@@ -350,8 +429,11 @@ final class Review_Queue_Screen {
 		if ( Corrections::is_request( $item ) ) {
 			echo '<p><label for="gr-note-' . esc_attr( (string) $item['id'] ) . '">' . esc_html__( 'Private note: what you checked, or why you declined', 'guam-restaurants-core' ) . '</label><br /><textarea id="gr-note-' . esc_attr( (string) $item['id'] ) . '" name="note" rows="2" cols="30" maxlength="' . esc_attr( (string) Corrections::MAX_NOTE ) . '"></textarea></p>';
 		}
+		if ( 'new_place' === $item['type'] ) {
+			echo '<p><label for="gr-name-' . esc_attr( (string) $item['id'] ) . '">' . esc_html__( 'Name, as shown on Google Maps (needed to add it)', 'guam-restaurants-core' ) . '</label><br /><input type="text" id="gr-name-' . esc_attr( (string) $item['id'] ) . '" name="restaurant_name" class="regular-text" maxlength="200" /></p>';
+		}
 		foreach ( $buttons as $value => $label ) {
-			echo '<button type="submit" class="button' . ( in_array( $value, array( 'approve_closure', 'merge', 'request_done' ), true ) ? ' button-primary' : '' ) . '" name="decision" value="' . esc_attr( $value ) . '" style="margin:0 .5em .5em 0">' . esc_html( $label ) . '</button>';
+			echo '<button type="submit" class="button' . ( in_array( $value, array( 'approve_closure', 'merge', 'request_done', 'add_restaurant' ), true ) ? ' button-primary' : '' ) . '" name="decision" value="' . esc_attr( $value ) . '" style="margin:0 .5em .5em 0">' . esc_html( $label ) . '</button>';
 		}
 		echo '</form>';
 	}

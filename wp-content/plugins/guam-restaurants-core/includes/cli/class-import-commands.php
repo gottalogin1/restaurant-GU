@@ -1,6 +1,6 @@
 <?php
 /**
- * WP-CLI commands: `wp guam-restaurants import-osm` and `wp guam-restaurants discover`.
+ * WP-CLI commands: `wp guam-restaurants import-osm`, `discover` and `search-log`.
  *
  * @package GuamRestaurants\Core
  */
@@ -10,6 +10,7 @@ namespace GuamRestaurants\Core\Cli;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
 use GuamRestaurants\Core\Discovery\Discoverer;
 use GuamRestaurants\Core\Discovery\Places_Client;
+use GuamRestaurants\Core\Discovery\Search_Log;
 use GuamRestaurants\Core\Http\Request_Failed;
 use GuamRestaurants\Core\Monitoring\Alerts;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
@@ -33,6 +34,7 @@ final class Import_Commands {
 	public static function register(): void {
 		WP_CLI::add_command( 'guam-restaurants import-osm', array( self::class, 'import_osm' ) );
 		WP_CLI::add_command( 'guam-restaurants discover', array( self::class, 'discover' ) );
+		WP_CLI::add_command( 'guam-restaurants search-log', Search_Log_Command::class );
 	}
 
 	/**
@@ -182,29 +184,46 @@ final class Import_Commands {
 
 	/**
 	 * Finds restaurants missing from the directory with Google Places Text
-	 * Search ("restaurants in <village or mall>, Guam") and adds them to the
-	 * review queue as candidates. Never creates restaurant posts.
+	 * Search and adds them to the review queue as candidates. Never creates
+	 * restaurant posts.
+	 *
+	 * Works through the search log (`wp guam-restaurants search-log`):
+	 * searches that have never run come first, then searches whose weekly
+	 * re-check is due. It keeps going until nothing is due or the next
+	 * request would pass the cost cap, so a run never repeats a search that
+	 * was just done. A village whose search fills every result page gets
+	 * narrower cuisine searches for the next run.
 	 *
 	 * Stores only each candidate's place ID (Google allows nothing else to
 	 * be kept). Needs the GUAM_RESTAURANTS_GOOGLE_PLACES_KEY constant or
-	 * environment variable. Each request is billed as Text Search Pro: 19
-	 * villages plus the malls, up to 3 pages each. Requests count against
-	 * the free monthly allowance; with the default $0 run cap it stops
-	 * rather than make a paid request.
+	 * environment variable. Each request is billed as Text Search Pro and
+	 * counts against the free monthly allowance; with the default $0 run
+	 * cap (GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD) it stops rather than make a
+	 * paid request.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [--dry-run]
-	 * : Call the API and report, but queue nothing.
+	 * : Call the API and report, but queue nothing and leave the log alone.
 	 *
 	 * [--scope=<scope>]
-	 * : Which areas to search.
+	 * : Which searches to run.
 	 * ---
 	 * default: all
 	 * options:
 	 *   - all
 	 *   - villages
 	 *   - malls
+	 *   - island
+	 * ---
+	 *
+	 * [--max-requests=<n>]
+	 * : Stop after this many requests (default: no limit besides the cap).
+	 *
+	 * [--recheck-days=<days>]
+	 * : Days before a finished search is due again.
+	 * ---
+	 * default: 7
 	 * ---
 	 *
 	 * [--max-pages=<n>]
@@ -221,7 +240,7 @@ final class Import_Commands {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp guam-restaurants discover --dry-run --scope=malls
+	 *     wp guam-restaurants discover --dry-run --max-requests=10
 	 *     wp guam-restaurants discover
 	 *
 	 * @param string[]             $args       Positional arguments (unused).
@@ -231,28 +250,44 @@ final class Import_Commands {
 	public static function discover( array $args, array $assoc_args ): void {
 		$dry_run = (bool) WP_CLI\Utils\get_flag_value( $assoc_args, 'dry-run', false );
 		$scope   = (string) WP_CLI\Utils\get_flag_value( $assoc_args, 'scope', 'all' );
+		$max     = WP_CLI\Utils\get_flag_value( $assoc_args, 'max-requests', null );
+		$recheck = (int) WP_CLI\Utils\get_flag_value( $assoc_args, 'recheck-days', Search_Log::DEFAULT_RECHECK_DAYS );
 		$pages   = (int) WP_CLI\Utils\get_flag_value( $assoc_args, 'max-pages', 3 );
 		$delay   = (int) WP_CLI\Utils\get_flag_value( $assoc_args, 'delay', 1 );
 
 		$client = Places_Client::from_config();
 		if ( null === $client ) {
-			WP_CLI::error( 'No Google Places key. Define GUAM_RESTAURANTS_GOOGLE_PLACES_KEY in wp-config.php or the environment.' );
+			WP_CLI::error( 'No Google Places key. Define GUAM_RESTAURANTS_GOOGLE_PLACES_KEY in wp-config.php or the environment (for the Docker setup, in .env, then `docker compose up -d`).' );
 			return;
 		}
 
-		$areas = Discoverer::areas( $scope );
-		WP_CLI::log( sprintf( 'Searching %d area(s)...', count( $areas ) ) );
+		$result = ( new Discoverer( $client, $delay, $pages ) )->run_from_log( $scope, $dry_run, null === $max ? null : max( 1, (int) $max ), max( 1, $recheck ) );
 
-		$result = ( new Discoverer( $client, $delay, $pages ) )->run( $areas, $dry_run );
+		self::report_discovery( $result, $dry_run );
+	}
 
+	/**
+	 * Prints a discovery result.
+	 *
+	 * @param array<string, mixed> $result  Discoverer::run_from_log() result.
+	 * @param bool                 $dry_run Dry run.
+	 * @return void
+	 */
+	private static function report_discovery( array $result, bool $dry_run ): void {
 		foreach ( $result['errors'] as $error ) {
 			WP_CLI::warning( $error );
 		}
-		if ( $result['stopped_at_cap'] ) {
-			WP_CLI::warning( 'Stopped: this month\'s free Text Search allowance is used up and GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD allows no paid calls.' );
+		if ( $result['added_queries'] ) {
+			WP_CLI::log( sprintf( 'Added %d new search(es) to the search log.', $result['added_queries'] ) );
 		}
-		WP_CLI::log( sprintf( '%d queries, %d requests.', $result['queries'], $result['requests'] ) );
+		if ( $result['stopped_at_cap'] ) {
+			WP_CLI::warning( 'Stopped: this month\'s free Text Search allowance is used up and GUAM_RESTAURANTS_RATINGS_RUN_CAP_USD allows no paid calls. The remaining searches run next month (or raise the cap).' );
+		}
+		WP_CLI::log( sprintf( '%d queries, %d requests; %d search(es) still due.', $result['queries'], $result['requests'], $result['left'] ) );
 		WP_CLI::log( sprintf( '%s %d new candidate(s) to the review queue; %d result(s) already listed, queued or permanently closed; %d failed queries.', $dry_run ? 'Would add' : 'Added', $result['counts']['created'], $result['counts']['unchanged'], $result['counts']['failed'] ) );
+		if ( $result['counts']['created'] && ! $dry_run ) {
+			WP_CLI::log( 'Review them under Restaurants > Review queue (New place): "Add as restaurant" creates a draft.' );
+		}
 		if ( $result['run_id'] ) {
 			WP_CLI::log( sprintf( 'Ingestion run #%d.', $result['run_id'] ) );
 		}

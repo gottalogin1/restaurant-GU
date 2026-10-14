@@ -46,6 +46,12 @@ final class Discoverer {
 	public const QUERY_TEMPLATE = 'restaurants in %s, Guam';
 
 	/**
+	 * A run stops after this many searches fail in a row (a bad key or an
+	 * outage), rather than spend a request on every remaining search.
+	 */
+	public const MAX_FAILURES_IN_A_ROW = 3;
+
+	/**
 	 * Places client.
 	 *
 	 * @var Places_Client
@@ -141,13 +147,76 @@ final class Discoverer {
 	}
 
 	/**
-	 * Runs discovery.
+	 * Runs one query per area ("restaurants in <area>, Guam").
 	 *
 	 * @param array<int, array{kind: string, slug: string, name: string, village: string}> $areas   Areas to search.
 	 * @param bool                                                                         $dry_run Report without writing.
-	 * @return array{counts: array<string, int>, queries: int, requests: int, errors: string[], run_id: int|null, stopped_at_cap: bool}
+	 * @return array{counts: array<string, int>, queries: int, requests: int, errors: string[], run_id: int|null, stopped_at_cap: bool, searches: array<int, array<string, mixed>>}
 	 */
 	public function run( array $areas, bool $dry_run = false ): array {
+		$searches = array();
+		foreach ( $areas as $area ) {
+			$searches[] = array(
+				'query'     => sprintf( self::QUERY_TEMPLATE, $area['name'] ),
+				'area_kind' => $area['kind'],
+				'area_slug' => $area['slug'],
+				'village'   => $area['village'],
+			);
+		}
+		return $this->run_searches( $searches, $dry_run );
+	}
+
+	/**
+	 * Runs the searches the search log says are due: never-run queries
+	 * first, then weekly re-checks, until none are left, the request limit
+	 * is reached or the next request would pass the cost cap. Each finished
+	 * search is recorded in the log; a village whose search filled every
+	 * page gets narrower cuisine queries for a later run.
+	 *
+	 * @param string   $scope        all, villages, malls or island.
+	 * @param bool     $dry_run      Report without writing (the log is not updated).
+	 * @param int|null $max_requests Stop after this many requests; null for no limit.
+	 * @param int      $recheck_days Days before a search is due again.
+	 * @return array{counts: array<string, int>, queries: int, requests: int, errors: string[], run_id: int|null, stopped_at_cap: bool, searches: array<int, array<string, mixed>>, added_queries: int, left: int}
+	 */
+	public function run_from_log( string $scope = 'all', bool $dry_run = false, ?int $max_requests = null, int $recheck_days = Search_Log::DEFAULT_RECHECK_DAYS ): array {
+		$added = $dry_run ? 0 : Search_Log::sync();
+		$due   = Search_Log::due( $scope );
+
+		$result = $this->run_searches( $due, $dry_run, $max_requests );
+
+		foreach ( $result['searches'] as $search ) {
+			if ( $dry_run || empty( $search['id'] ) || ! $search['done'] ) {
+				continue;
+			}
+			Search_Log::record( (int) $search['id'], $search['results'], $search['new'], $search['saturated'], $result['run_id'], $recheck_days );
+			if ( $search['saturated'] && 'village' === $search['area_kind'] && Search_Log::ORIGIN_AREA === ( $search['origin'] ?? '' ) ) {
+				$added += Search_Log::narrow( (string) $search['village'] );
+			}
+		}
+		foreach ( $result['searches'] as $search ) {
+			if ( ! $dry_run && ! empty( $search['id'] ) && '' !== $search['error'] ) {
+				Search_Log::record_error( (int) $search['id'], $search['error'] );
+			}
+		}
+
+		$result['added_queries'] = $added;
+		$result['left']          = $dry_run ? count( $due ) - count( array_filter( array_column( $result['searches'], 'done' ) ) ) : count( Search_Log::due( $scope ) );
+		if ( $result['run_id'] ) {
+			Ingestion_Runs::append_note( $result['run_id'], sprintf( '%d searches still due', $result['left'] ) );
+		}
+		return $result;
+	}
+
+	/**
+	 * Runs searches, up to max_pages each.
+	 *
+	 * @param array<int, array<string, mixed>> $searches     Each with query, area_kind, area_slug, village (and id, origin from the log).
+	 * @param bool                             $dry_run      Report without writing.
+	 * @param int|null                         $max_requests Request limit.
+	 * @return array{counts: array<string, int>, queries: int, requests: int, errors: string[], run_id: int|null, stopped_at_cap: bool, searches: array<int, array<string, mixed>>}
+	 */
+	private function run_searches( array $searches, bool $dry_run, ?int $max_requests = null ): array {
 		$listing   = self::listing();
 		$known_ids = array_merge( self::stored_place_ids(), self::queued_place_ids() );
 		$known_ids = array_fill_keys( $known_ids, true );
@@ -159,21 +228,44 @@ final class Discoverer {
 			'errors'         => array(),
 			'run_id'         => null,
 			'stopped_at_cap' => false,
+			'searches'       => array(),
 		);
 
 		$run_id           = $dry_run ? 0 : Ingestion_Runs::start( 'google' );
 		$run_id           = $run_id > 0 ? $run_id : null;
 		$result['run_id'] = $run_id;
+		$failures         = 0;
 
-		foreach ( $areas as $area ) {
-			$query = sprintf( self::QUERY_TEMPLATE, $area['name'] );
-			++$result['queries'];
+		foreach ( $searches as $search ) {
+			if ( $failures >= self::MAX_FAILURES_IN_A_ROW ) {
+				$result['errors'][] = sprintf( 'Stopped after %d failed searches in a row.', $failures );
+				break;
+			}
+			$query = (string) $search['query'];
+			$area  = array(
+				'kind'    => (string) $search['area_kind'],
+				'slug'    => (string) $search['area_slug'],
+				'village' => (string) $search['village'],
+			);
+			$stats = $search + array(
+				'results'   => 0,
+				'new'       => 0,
+				'saturated' => false,
+				'done'      => false,
+				'error'     => '',
+			);
 			$token = '';
 
 			for ( $page = 0; $page < $this->max_pages; $page++ ) {
+				if ( null !== $max_requests && $result['requests'] >= $max_requests ) {
+					break 2;
+				}
 				if ( ! $this->budget->try_call( Pricing::GOOGLE_TEXT_SEARCH_PRO ) ) {
 					$result['stopped_at_cap'] = true;
 					break 2;
+				}
+				if ( 0 === $page ) {
+					++$result['queries'];
 				}
 				if ( $result['requests'] > 0 && $this->delay > 0 ) {
 					call_user_func( $this->sleeper, $this->delay );
@@ -185,12 +277,15 @@ final class Discoverer {
 				} catch ( \Throwable $e ) {
 					++$result['counts'][ self::FAILED ];
 					$result['errors'][] = $query . ': ' . $e->getMessage();
+					$stats['error']     = $e->getMessage();
 					break;
 				}
 
 				foreach ( $response['places'] as $place ) {
 					$status = $this->consider( $place, $area, $query, $listing, $known_ids, $run_id, $dry_run );
 					++$result['counts'][ $status ];
+					++$stats['results'];
+					$stats['new'] += self::CREATED === $status ? 1 : 0;
 				}
 
 				$token = $response['next_page_token'];
@@ -198,6 +293,12 @@ final class Discoverer {
 					break;
 				}
 			}
+
+			// A search that stopped only because max_pages ran out still had results left.
+			$stats['saturated']   = '' === $stats['error'] && '' !== $token;
+			$stats['done']        = '' === $stats['error'];
+			$failures             = $stats['done'] ? 0 : $failures + 1;
+			$result['searches'][] = $stats;
 		}
 
 		if ( $run_id ) {
@@ -212,7 +313,7 @@ final class Discoverer {
 	 * Queues one place if it is not already listed or queued.
 	 *
 	 * @param array{id: string, name: string, business_status: string}           $place     Place (name used in memory only).
-	 * @param array{kind: string, slug: string, name: string, village: string}   $area      Searched area.
+	 * @param array{kind: string, slug: string, village: string}                 $area      Searched area (kind village, mall or island).
 	 * @param string                                                             $query     Query text.
 	 * @param array<string, array<int, array{village: string, malls: string[]}>> $listing   Our restaurants by name key.
 	 * @param array<string, bool>                                                $known_ids Place IDs already stored or queued, updated in place.
@@ -226,6 +327,10 @@ final class Discoverer {
 		}
 
 		$same_name = $listing[ Names::key( $place['name'] ) ] ?? array();
+		// An island-wide search cannot tell which branch it found; village searches catch new branches.
+		if ( 'island' === $area['kind'] && $same_name ) {
+			return self::UNCHANGED;
+		}
 		foreach ( $same_name as $restaurant ) {
 			$in_area = 'mall' === $area['kind']
 				? in_array( $area['slug'], $restaurant['malls'], true ) || ( '' !== $area['village'] && $restaurant['village'] === $area['village'] )
