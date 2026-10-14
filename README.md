@@ -49,7 +49,9 @@ This runs three steps you can also run on their own:
 1. `make composer` installs PHPCS and PHPUnit into `vendor/` and turns on the pre-commit hook.
 2. `make up` downloads the Docker images (first run only) and starts WordPress and MariaDB.
 3. `make install` installs WordPress, sets pretty permalinks, and activates the
-   `guam-restaurants-core` plugin and `guam-restaurants-theme` theme.
+   `guam-restaurants-core` plugin and `guam-restaurants-theme` theme. Permalinks, theme and
+   WooCommerce's "coming soon" are set only on that first install; running it again changes
+   none of your settings.
 
 ### 4. Open the site
 
@@ -69,12 +71,23 @@ make test    # PHPUnit: should end with "OK"
 
 | Command | What it does |
 |---|---|
+| `make update` | After `git pull`: starts the containers, turns the site's own plugin and WooCommerce back on if they are off, and applies database and setting updates. Your settings, theme and other plugins stay as they are. |
 | `make up` / `make down` | Start or stop the containers. Data is kept. |
 | `make wp ARGS="plugin list"` | Run any WP-CLI command. |
 | `make lint` / `make lint-fix` | Check or auto-fix coding standards. |
 | `make test` | Run the plugin's PHPUnit tests (containers must be up). |
 | `make logs` | Follow the WordPress container logs. PHP errors go to `wp-content/debug.log` inside the container. |
 | `make reset` | Delete the database and WordPress volumes and start over (`make up install` afterwards). |
+
+## Updating after `git pull`
+
+Run `make update`. Settings you change in wp-admin, and plugins you install there, are kept:
+they live in the `restaurant-gu_db` and `restaurant-gu_wordpress` Docker volumes, which only
+`make reset` (or `docker compose down -v`) deletes. When an update has to fix a stored setting
+on purpose, it ships as a one-time migration in
+`wp-content/plugins/guam-restaurants-core/includes/database/class-migrations.php`; it runs once,
+and if you change that setting again afterwards your value stays. `wp guam-restaurants db status`
+lists any that have not run yet.
 
 ## Working on the code
 
@@ -97,6 +110,9 @@ make test    # PHPUnit: should end with "OK"
 - **`make test` says it cannot connect to the database:** run `make up` first.
 - **The test database is missing** (for example after changing `DB_USER`): the test database is
   created only when the MariaDB volume is first created. Run `make reset setup`.
+- **WooCommerce keeps switching itself off:** WordPress turns a plugin off when its files are
+  missing. Run `make update` rather than `docker compose up`: it downloads WooCommerce into
+  `.cache/plugins/woocommerce` first (it needs `unzip`; on Ubuntu/WSL: `sudo apt install unzip`).
 - **Plugin updates from wordpress.org fail locally:** the site still works; your network may
   block wordpress.org.
 

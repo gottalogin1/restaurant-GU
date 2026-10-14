@@ -15,7 +15,7 @@ WP       := $(COMPOSE) run --rm cli wp
 COMPOSER_CMD := $(if $(shell command -v composer 2>/dev/null),composer,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) composer)
 PHP_RUN  := $(if $(shell command -v php 2>/dev/null),,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) -w /project cli)
 
-.PHONY: help setup up down reset install composer woocommerce lint lint-fix test wp logs
+.PHONY: help setup update up down reset install composer woocommerce lint lint-fix test wp logs
 
 # WooCommerce for local development and tests (premium profile checkout). Pinned and checked;
 # downloaded from the GitHub release because wordpress.org is not reachable from every machine.
@@ -28,6 +28,8 @@ help: ## List available commands.
 
 setup: composer up install ## First run: dependencies, containers, WordPress install.
 
+update: up install ## After `git pull`: start containers, re-enable required plugins, apply updates. Keeps your settings.
+
 composer: ## Install PHP dev tools (PHPCS, PHPUnit) and the git pre-commit hook.
 	$(COMPOSER_CMD) install
 	git config core.hooksPath .githooks
@@ -36,10 +38,15 @@ woocommerce: ## Download the pinned WooCommerce release into .cache/plugins (onc
 	@if grep -qs "Version: $(WOOCOMMERCE_VERSION)$$" $(WOOCOMMERCE_DIR)/woocommerce.php; then \
 		echo "WooCommerce $(WOOCOMMERCE_VERSION) is in $(WOOCOMMERCE_DIR)."; \
 	else \
-		mkdir -p .cache/plugins && \
+		command -v unzip >/dev/null || { echo "unzip is missing. Install it (Ubuntu/WSL: sudo apt install unzip) and run this again."; exit 1; }; \
+		mkdir -p .cache/plugins $(WOOCOMMERCE_DIR) && \
 		curl -fsSL -o .cache/woocommerce.zip https://github.com/woocommerce/woocommerce/releases/download/$(WOOCOMMERCE_VERSION)/woocommerce.zip && \
 		echo "$(WOOCOMMERCE_SHA256)  .cache/woocommerce.zip" | sha256sum -c - && \
-		rm -rf $(WOOCOMMERCE_DIR) && unzip -q .cache/woocommerce.zip -d .cache/plugins && rm .cache/woocommerce.zip; \
+		rm -rf .cache/woocommerce-new && unzip -q .cache/woocommerce.zip -d .cache/woocommerce-new && \
+		find $(WOOCOMMERCE_DIR) -mindepth 1 -delete && \
+		cp -a .cache/woocommerce-new/woocommerce/. $(WOOCOMMERCE_DIR)/ && \
+		rm -rf .cache/woocommerce-new .cache/woocommerce.zip || \
+		{ echo "WooCommerce download failed. If $(WOOCOMMERCE_DIR) is owned by root, run: sudo chown -R $$(id -u):$$(id -g) .cache"; exit 1; }; \
 	fi
 
 up: woocommerce ## Start WordPress and the database.
@@ -51,16 +58,29 @@ down: ## Stop containers (data is kept).
 reset: ## Stop containers and delete the database and WordPress volumes.
 	$(COMPOSE) down -v
 
-install: ## Install WordPress, activate the plugin and theme.
+install: ## Install WordPress and turn on the plugin, theme and WooCommerce. Safe to re-run: keeps your settings.
 	@until $(COMPOSE) exec -T wordpress test -f /var/www/html/wp-config.php; do sleep 2; done
-	$(WP) core is-installed || $(WP) core install --url=$(SITE_URL) --title="Guam Restaurants (local)" \
-		--admin_user=$(WP_ADMIN_USER) --admin_password=$(WP_ADMIN_PASSWORD) --admin_email=$(WP_ADMIN_EMAIL) --skip-email
-	$(WP) rewrite structure '/%postname%/' --hard
-	$(WP) plugin activate guam-restaurants-core
-	$(WP) plugin activate woocommerce
-	$(WP) option update woocommerce_coming_soon no
+	@test -f $(WOOCOMMERCE_DIR)/woocommerce.php || { echo "WooCommerce is missing from $(WOOCOMMERCE_DIR). Run: make up"; exit 1; }
+	@# Settings are chosen once, on a fresh install. Later runs (after every git pull) leave the
+	@# permalinks, theme and WooCommerce settings as they are; deliberate fixes ship as one-time
+	@# migrations (includes/database/class-migrations.php) that `db upgrade` applies.
+	@if $(WP) core is-installed >/dev/null 2>&1; then \
+		echo "WordPress is already installed; keeping its settings, theme and plugins."; \
+	else \
+		$(WP) core install --url=$(SITE_URL) --title="Guam Restaurants (local)" \
+			--admin_user=$(WP_ADMIN_USER) --admin_password=$(WP_ADMIN_PASSWORD) --admin_email=$(WP_ADMIN_EMAIL) --skip-email && \
+		$(WP) rewrite structure '/%postname%/' --hard && \
+		$(WP) theme activate guam-restaurants-theme; \
+	fi
+	@# Required plugins are activated only when they are off, so their activation routines do not run again.
+	@$(WP) plugin is-active guam-restaurants-core || $(WP) plugin activate guam-restaurants-core
+	@$(WP) plugin is-active woocommerce || { \
+		first=$$($(WP) option get woocommerce_version >/dev/null 2>&1 || echo yes); \
+		$(WP) plugin activate woocommerce && \
+		if [ -n "$$first" ]; then $(WP) option update woocommerce_coming_soon no; fi; \
+	}
+	$(WP) guam-restaurants db upgrade
 	$(WP) guam-restaurants premium-products
-	$(WP) theme activate guam-restaurants-theme
 	@echo "Site: $(SITE_URL)  Admin: $(SITE_URL)/wp-admin ($(WP_ADMIN_USER) / $(WP_ADMIN_PASSWORD))"
 
 lint: ## Run PHPCS (WordPress Coding Standards).
