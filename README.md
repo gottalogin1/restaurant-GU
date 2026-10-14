@@ -113,6 +113,8 @@ lists any that have not run yet.
 - **WooCommerce keeps switching itself off:** WordPress turns a plugin off when its files are
   missing. Run `make update` rather than `docker compose up`: it downloads WooCommerce into
   `.cache/plugins/woocommerce` first (it needs `unzip`; on Ubuntu/WSL: `sudo apt install unzip`).
+  The first download unpacks about 5,500 files, which takes several minutes when the checkout is
+  on a Windows drive (`/mnt/c`); it prints a line when it starts and when it is done.
 - **Plugin updates from wordpress.org fail locally:** the site still works; your network may
   block wordpress.org.
 

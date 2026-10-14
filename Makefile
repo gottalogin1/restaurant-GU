@@ -39,18 +39,27 @@ woocommerce: ## Download the pinned WooCommerce release into .cache/plugins (onc
 		echo "WooCommerce $(WOOCOMMERCE_VERSION) is in $(WOOCOMMERCE_DIR)."; \
 	else \
 		command -v unzip >/dev/null || { echo "unzip is missing. Install it (Ubuntu/WSL: sudo apt install unzip) and run this again."; exit 1; }; \
-		mkdir -p .cache/plugins $(WOOCOMMERCE_DIR) && \
+		mkdir -p .cache/plugins && \
+		echo "Downloading WooCommerce $(WOOCOMMERCE_VERSION)..." && \
 		curl -fsSL -o .cache/woocommerce.zip https://github.com/woocommerce/woocommerce/releases/download/$(WOOCOMMERCE_VERSION)/woocommerce.zip && \
 		echo "$(WOOCOMMERCE_SHA256)  .cache/woocommerce.zip" | sha256sum -c - && \
-		rm -rf .cache/woocommerce-new && unzip -q .cache/woocommerce.zip -d .cache/woocommerce-new && \
-		find $(WOOCOMMERCE_DIR) -mindepth 1 -delete && \
-		cp -a .cache/woocommerce-new/woocommerce/. $(WOOCOMMERCE_DIR)/ && \
-		rm -rf .cache/woocommerce-new .cache/woocommerce.zip || \
-		{ echo "WooCommerce download failed. If $(WOOCOMMERCE_DIR) is owned by root, run: sudo chown -R $$(id -u):$$(id -g) .cache"; exit 1; }; \
+		echo "Unpacking about 5,500 files. On a Windows drive (/mnt/c) this can take several minutes." && \
+		rm -rf .cache/woocommerce-new .cache/woocommerce-old && \
+		unzip -q .cache/woocommerce.zip -d .cache/woocommerce-new && \
+		{ [ ! -e $(WOOCOMMERCE_DIR) ] || mv $(WOOCOMMERCE_DIR) .cache/woocommerce-old; } && \
+		mv .cache/woocommerce-new/woocommerce $(WOOCOMMERCE_DIR) && \
+		touch .cache/woocommerce-changed && \
+		rm -rf .cache/woocommerce-new .cache/woocommerce-old .cache/woocommerce.zip && \
+		echo "WooCommerce $(WOOCOMMERCE_VERSION) is in $(WOOCOMMERCE_DIR)." || \
+		{ echo "WooCommerce download failed. If .cache is owned by root, run: sudo chown -R $$(id -u):$$(id -g) .cache"; exit 1; }; \
 	fi
 
 up: woocommerce ## Start WordPress and the database.
 	$(COMPOSE) up -d --wait db wordpress
+	@# A running container keeps showing the old WooCommerce folder after it is replaced, so restart it once.
+	@if [ -f .cache/woocommerce-changed ]; then \
+		$(COMPOSE) up -d --wait --force-recreate --no-deps wordpress && rm -f .cache/woocommerce-changed; \
+	fi
 
 down: ## Stop containers (data is kept).
 	$(COMPOSE) down
