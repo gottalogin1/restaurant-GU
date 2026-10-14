@@ -22,6 +22,8 @@ PHP_RUN  := $(if $(shell command -v php 2>/dev/null),,$(COMPOSE) run --rm --user
 WOOCOMMERCE_VERSION ?= 11.2.1
 WOOCOMMERCE_SHA256  ?= 3066f85e46d1c1f6451296da0300b459963b504fd0d2f75869701ee744833aaf
 WOOCOMMERCE_DIR     := .cache/plugins/woocommerce
+# Written last, after a full unpack, so an interrupted or partial copy is detected and replaced.
+WOOCOMMERCE_STAMP   := $(WOOCOMMERCE_DIR)/.download-complete
 
 help: ## List available commands.
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-10s %s\n", $$1, $$2}'
@@ -35,11 +37,12 @@ composer: ## Install PHP dev tools (PHPCS, PHPUnit) and the git pre-commit hook.
 	git config core.hooksPath .githooks
 
 woocommerce: ## Download the pinned WooCommerce release into .cache/plugins (once).
-	@if grep -qs "Version: $(WOOCOMMERCE_VERSION)$$" $(WOOCOMMERCE_DIR)/woocommerce.php; then \
+	@if grep -qsx "$(WOOCOMMERCE_VERSION)" $(WOOCOMMERCE_STAMP); then \
 		echo "WooCommerce $(WOOCOMMERCE_VERSION) is in $(WOOCOMMERCE_DIR)."; \
 	else \
 		command -v unzip >/dev/null || { echo "unzip is missing. Install it (Ubuntu/WSL: sudo apt install unzip) and run this again."; exit 1; }; \
 		mkdir -p .cache/plugins && \
+		{ [ ! -e $(WOOCOMMERCE_DIR) ] || echo "$(WOOCOMMERCE_DIR) is incomplete or out of date; replacing it."; } && \
 		echo "Downloading WooCommerce $(WOOCOMMERCE_VERSION)..." && \
 		curl -fsSL -o .cache/woocommerce.zip https://github.com/woocommerce/woocommerce/releases/download/$(WOOCOMMERCE_VERSION)/woocommerce.zip && \
 		echo "$(WOOCOMMERCE_SHA256)  .cache/woocommerce.zip" | sha256sum -c - && \
@@ -48,6 +51,7 @@ woocommerce: ## Download the pinned WooCommerce release into .cache/plugins (onc
 		unzip -q .cache/woocommerce.zip -d .cache/woocommerce-new && \
 		{ [ ! -e $(WOOCOMMERCE_DIR) ] || mv $(WOOCOMMERCE_DIR) .cache/woocommerce-old; } && \
 		mv .cache/woocommerce-new/woocommerce $(WOOCOMMERCE_DIR) && \
+		echo "$(WOOCOMMERCE_VERSION)" > $(WOOCOMMERCE_STAMP) && \
 		touch .cache/woocommerce-changed && \
 		rm -rf .cache/woocommerce-new .cache/woocommerce-old .cache/woocommerce.zip && \
 		echo "WooCommerce $(WOOCOMMERCE_VERSION) is in $(WOOCOMMERCE_DIR)." || \
@@ -69,7 +73,7 @@ reset: ## Stop containers and delete the database and WordPress volumes.
 
 install: ## Install WordPress and turn on the plugin, theme and WooCommerce. Safe to re-run: keeps your settings.
 	@until $(COMPOSE) exec -T wordpress test -f /var/www/html/wp-config.php; do sleep 2; done
-	@test -f $(WOOCOMMERCE_DIR)/woocommerce.php || { echo "WooCommerce is missing from $(WOOCOMMERCE_DIR). Run: make up"; exit 1; }
+	@grep -qsx "$(WOOCOMMERCE_VERSION)" $(WOOCOMMERCE_STAMP) || { echo "WooCommerce in $(WOOCOMMERCE_DIR) is missing or incomplete. Run: make update"; exit 1; }
 	@# Settings are chosen once, on a fresh install. Later runs (after every git pull) leave the
 	@# permalinks, theme and WooCommerce settings as they are; deliberate fixes ship as one-time
 	@# migrations (includes/database/class-migrations.php) that `db upgrade` applies.
