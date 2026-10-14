@@ -1,6 +1,10 @@
 # Local development stack: WordPress (Apache + PHP 8.3), MariaDB 11.4 and WP-CLI.
 # Values come from .env when present (copy .env.example); defaults below otherwise.
 
+# A fixed project name keeps the database and WordPress volumes (your settings and any plugins
+# installed from wp-admin) the same whatever the checkout folder is called or where you run from.
+name: restaurant-gu
+
 x-wp-env: &wp-env
   WORDPRESS_DB_HOST: db
   WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
