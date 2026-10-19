@@ -103,10 +103,12 @@ final class Plugin {
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();
 		Monitoring\Jobs::register();
+		Monitoring\Job_Controls::register();
 		Monitoring\Health_Endpoint::register();
 		Legal\Pages::register();
 		Tagging\Tag_Store::register();
 		Admin\Ingestion_Runs_Screen::register();
+		Admin\Scheduled_Jobs_Screen::register();
 		Admin\Review_Queue_Screen::register();
 		Admin\Website_Followup_Screen::register();
 		Admin\Tag_Origins_Box::register();

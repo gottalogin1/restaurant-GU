@@ -9,6 +9,7 @@ namespace GuamRestaurants\Core\Ratings;
 
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
+use GuamRestaurants\Core\Monitoring\Job_Controls;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,16 +24,31 @@ final class Refresher {
 	public const SINGLE_HOOK = 'guam_restaurants_refresh_rating';
 
 	/**
-	 * Hooks the cron events and schedules the twice-daily refresh, so each
-	 * cached rating is replaced well before its 24-hour limit.
+	 * Hooks the cron events and schedules the twice-daily refresh.
 	 *
 	 * @return void
 	 */
 	public static function register(): void {
 		add_action( self::HOOK, array( self::class, 'run_scheduled' ) );
 		add_action( self::SINGLE_HOOK, array( self::class, 'refresh_one' ), 10, 2 );
+		self::schedule();
+	}
 
-		if ( ! wp_next_scheduled( self::HOOK ) ) {
+	/**
+	 * Schedules the twice-daily refresh, so each cached rating is replaced
+	 * well before its 24-hour limit, or removes it while an administrator
+	 * has it paused (Restaurants > Scheduled jobs). Cached ratings still
+	 * expire after 24 hours while paused.
+	 *
+	 * @return void
+	 */
+	public static function schedule(): void {
+		$next = wp_next_scheduled( self::HOOK );
+		if ( Job_Controls::is_paused( Job_Controls::RATINGS_REFRESH ) ) {
+			if ( $next ) {
+				wp_clear_scheduled_hook( self::HOOK );
+			}
+		} elseif ( ! $next ) {
 			wp_schedule_event( time() + MINUTE_IN_SECONDS, 'twicedaily', self::HOOK );
 		}
 	}
@@ -67,7 +83,9 @@ final class Refresher {
 	 * @return void
 	 */
 	public static function run_scheduled(): void {
-		self::run( Ratings::providers(), Budget::for_run() );
+		if ( ! Job_Controls::is_paused( Job_Controls::RATINGS_REFRESH ) ) {
+			Job_Controls::run_ratings_refresh();
+		}
 	}
 
 	/**

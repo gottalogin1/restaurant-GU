@@ -192,7 +192,8 @@ final class Jobs {
 
 	/**
 	 * Keeps WP-Cron events in line with the mode: every enabled job in
-	 * wp-cron mode; only the health-check backstop in server mode.
+	 * wp-cron mode; only the health-check backstop in server mode. Jobs an
+	 * administrator paused (Job_Controls) get no event.
 	 *
 	 * @return void
 	 */
@@ -200,7 +201,7 @@ final class Jobs {
 		add_option( self::SINCE_OPTION, time() );
 		$mode = self::mode();
 		foreach ( self::definitions() as $job => $definition ) {
-			$wanted = self::enabled( $job ) && ( self::MODE_WP_CRON === $mode || self::HEALTH_CHECK === $job );
+			$wanted = self::enabled( $job ) && ! Job_Controls::is_paused( $job ) && ( self::MODE_WP_CRON === $mode || self::HEALTH_CHECK === $job );
 			$next   = wp_next_scheduled( self::HOOK, array( $job ) );
 			if ( $wanted && ! $next ) {
 				wp_schedule_event( time() + HOUR_IN_SECONDS, $definition['recurrence'], self::HOOK, array( $job ) );
@@ -217,6 +218,7 @@ final class Jobs {
 	 */
 	public static function unschedule(): void {
 		wp_unschedule_hook( self::HOOK );
+		wp_unschedule_hook( Job_Controls::RUN_NOW_HOOK );
 	}
 
 	/**
@@ -227,6 +229,9 @@ final class Jobs {
 	 */
 	public static function run_from_cron( $job ): void {
 		$job = (string) $job;
+		if ( Job_Controls::is_paused( $job ) ) {
+			return;
+		}
 		// In server mode the crontab normally runs the health check; the WP-Cron copy is a backstop.
 		if ( self::HEALTH_CHECK === $job && self::ran_recently( $job, self::HEALTH_MIN_HOUR * HOUR_IN_SECONDS ) ) {
 			return;
@@ -469,7 +474,8 @@ final class Jobs {
 	}
 
 	/**
-	 * When the job is next due to have run by (last success + interval + grace).
+	 * When the job is next due to have run by (last success + interval +
+	 * grace), counting from when it was last resumed if that is later.
 	 *
 	 * @param string $job Job.
 	 * @return int Unix time.
@@ -478,7 +484,8 @@ final class Jobs {
 		$definition = self::definitions()[ $job ];
 		$last       = self::last_success( $job );
 		$since      = (int) get_option( self::SINCE_OPTION, time() );
-		return max( $last, $since ) + $definition['interval'] + $definition['grace'];
+		$resumed    = (int) ( self::state( $job )['resumed_at'] ?? 0 );
+		return max( $last, $since, $resumed ) + $definition['interval'] + $definition['grace'];
 	}
 
 	/**

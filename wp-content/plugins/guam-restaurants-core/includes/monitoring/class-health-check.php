@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 final class Health_Check {
 
 	/**
-	 * Jobs past their deadline: job => details.
+	 * Jobs past their deadline: job => details. Paused jobs are left out.
 	 *
 	 * @param int|null $now Unix time; defaults to now.
 	 * @return array<string, array{label: string, last_success: int, deadline: int, last_error: string}>
@@ -28,7 +28,7 @@ final class Health_Check {
 		$now = $now ?? time();
 		$out = array();
 		foreach ( Jobs::definitions() as $job => $definition ) {
-			if ( Jobs::HEALTH_CHECK === $job || ! Jobs::enabled( $job ) ) {
+			if ( Jobs::HEALTH_CHECK === $job || ! Jobs::enabled( $job ) || Job_Controls::is_paused( $job ) ) {
 				continue;
 			}
 			$deadline = Jobs::deadline( $job );

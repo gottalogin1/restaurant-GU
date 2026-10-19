@@ -15,8 +15,36 @@ cron can run it directly. WP-Cron is the fallback.
 | API spend report for last month (docs/monitoring.md §3) | `wp guam-restaurants run-job spend-report` | monthly, plus 3 days grace | `0 22 1 * *` (08:00 Guam on the 2nd) |
 
 `wp guam-restaurants jobs` prints the same table with the last success and
-the next deadline. Restaurants > Import runs shows it in the admin, with every
-run's counts, notes and errors.
+the next deadline. Restaurants > Scheduled jobs shows it in the admin, and
+Restaurants > Import runs shows every run's counts, notes and errors.
+
+## Turning jobs off and running them now
+
+Restaurants > Scheduled jobs (administrators) lists the eight jobs and the
+twice-daily ratings refresh with how often each runs, its last success, its
+next run and its status. Each row has two buttons:
+
+- **Turn off / Turn on.** A job that is off has no WP-Cron event, `run-job`
+  from the server crontab skips it (exit 0; `--force` runs it anyway), and
+  the health check does not report it as missed. Turning it back on restarts
+  its window, so a long pause does not trigger a missed-window email.
+  Turning off the health check stops all missed-job emails; the screen warns
+  while it is off. Jobs that need an API key show as off until the key is set.
+- **Run now.** Queues one extra run as a single WP-Cron event
+  (`guam_restaurants_run_job_now`) and starts WP-Cron in the background, so
+  a long import does not hold up the page. It works for a job that is off
+  and leaves the regular schedule as it is. A job that is already queued or
+  running cannot be queued again. With `DISABLE_WP_CRON`, the extra run waits
+  for the `wp cron event run --due-now` crontab line (step 3 below).
+
+The on/off choice is stored in the database (`guam_restaurants_core_jobs_paused`),
+so `git pull` and `make update` keep it.
+
+WP-Cron starts by calling the site's own address. In the local Docker stack
+that is `http://localhost:8080`, which nothing answers inside the container, so
+WP-Cron never ran there before. `docker-compose.yml` sets
+`GUAM_RESTAURANTS_CRON_LOOPBACK_URL=http://localhost` so it does. Leave it
+unset on a real host.
 
 ## Server cron (preferred)
 
