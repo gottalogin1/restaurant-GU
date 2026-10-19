@@ -1,5 +1,15 @@
 # Progress log
 
+## Yellow pages source, Google details and website follow-up, 2026-10-19
+- Requested by Sanjay: find restaurants from a Guam yellow pages site, look each up with our search, and keep a list of businesses with no website for website proposals.
+- Checked: Guam Phone Book (guamphonebook.com and its mobile app host) disallows automated access in robots.txt and is unreachable from both the cloud and the device link; no reuse terms found. Not used. The Guam Guide is copyright-only; Guam DRT publishes no business list (docs/data-sources.md §4c).
+- Done: Foursquare Open Source Places (Apache 2.0) as the business-listings source. `make fsq-extract` (bin/fsq-extract-guam.py, DuckDB, needs `HF_TOKEN`) writes Guam's rows; `wp guam-restaurants import-fsq` matches each place to existing listings by name, phone and distance (Duplicate_Detector score; link at 0.8 with a 0.1 lead), fills only empty fields, creates the rest as drafts, and queues near matches as `duplicate`. Idempotent by `gr_foursquare_id`; trashed listings are not re-created; ingestion runs logged as `fsq_os`.
+- Done: new meta `gr_email` (admin-only), `gr_facebook`, `gr_instagram`; a Facebook or Instagram URL is never treated as a website. Listing pages show Facebook and Instagram links.
+- Done: Google's live phone, website and opening hours shown in the Google ratings section (same Place Details Enterprise request as the rating, so no extra cost; never stored).
+- Done: Restaurants → Website follow-up: restaurants with no website of their own, with phone, email, social pages, address, Google Maps and web search links, and a follow-up status and private note.
+- Not run: the real extract (Hugging Face is blocked from the cloud environment), so Guam coverage and counts are unknown until Sanjay runs `make fsq-extract` (docs/run-fsq-import.md).
+- Remaining: run the extract and import locally; review the drafts and possible duplicates; add any unmapped categories the import reports to data/osm-cuisine-map.json.
+
 ## Local front end and HTTPS, 2026-10-19
 - Done: the local stack defines `WP_HOME`/`WP_SITEURL` from the address you browse with, so a saved `https://` site address no longer breaks front-end links and REST calls (wp-admin kept working because it uses the other address). Production config is unchanged.
 - Done: optional `make https` (https://localhost:8443) with a name-constrained local CA you import into Firefox once; README "Local HTTPS".

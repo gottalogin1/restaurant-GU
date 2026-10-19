@@ -1,6 +1,6 @@
 <?php
 /**
- * WP-CLI commands: `wp guam-restaurants import-osm`, `discover` and `search-log`.
+ * WP-CLI commands: `wp guam-restaurants import-osm`, `import-fsq`, `discover` and `search-log`.
  *
  * @package GuamRestaurants\Core
  */
@@ -11,6 +11,9 @@ use GuamRestaurants\Core\Database\Ingestion_Runs;
 use GuamRestaurants\Core\Discovery\Discoverer;
 use GuamRestaurants\Core\Discovery\Places_Client;
 use GuamRestaurants\Core\Discovery\Search_Log;
+use GuamRestaurants\Core\Fsq\Importer as Fsq_Importer;
+use GuamRestaurants\Core\Fsq\Place_Mapper;
+use GuamRestaurants\Core\Fsq\Reader as Fsq_Reader;
 use GuamRestaurants\Core\Http\Request_Failed;
 use GuamRestaurants\Core\Monitoring\Alerts;
 use GuamRestaurants\Core\Osm\Cuisine_Map;
@@ -33,6 +36,7 @@ final class Import_Commands {
 	 */
 	public static function register(): void {
 		WP_CLI::add_command( 'guam-restaurants import-osm', array( self::class, 'import_osm' ) );
+		WP_CLI::add_command( 'guam-restaurants import-fsq', array( self::class, 'import_fsq' ) );
 		WP_CLI::add_command( 'guam-restaurants discover', array( self::class, 'discover' ) );
 		WP_CLI::add_command( 'guam-restaurants search-log', Search_Log_Command::class );
 	}
@@ -177,6 +181,86 @@ final class Import_Commands {
 			}
 		} elseif ( '' !== $result['closures']['note'] ) {
 			WP_CLI::warning( ucfirst( $result['closures']['note'] ) . '.' );
+		}
+
+		self::log_counts( $dry_run, $result['counts'], $result['run_id'] );
+	}
+
+	/**
+	 * Adds Guam's eating and drinking places from Foursquare Open Source
+	 * Places, a free business listings dataset (Apache 2.0).
+	 *
+	 * Reads the Guam extract made by `make fsq-extract` (JSON Lines, a JSON
+	 * array, or CSV with Foursquare's column names). Each place is matched
+	 * to the listings we already have first, by name, phone and distance: a
+	 * clear match is linked and only gets the address, phone, website, email
+	 * or social links it is missing; anything else becomes a draft for an
+	 * administrator to check and publish. A new draft that looks like an
+	 * existing listing is also queued as a possible duplicate. Places that
+	 * Foursquare marks closed or flags are skipped. Run it again with a new
+	 * extract at any time: it never creates the same place twice.
+	 *
+	 * Then run `wp guam-restaurants match-ratings --source=google` to find
+	 * each new draft on Google Maps, so listings show Google's live rating,
+	 * hours, phone and website.
+	 *
+	 * ## OPTIONS
+	 *
+	 * --input=<file>
+	 * : The Guam extract.
+	 *
+	 * [--dry-run]
+	 * : Compare, but write nothing.
+	 *
+	 * [--max-age-days=<days>]
+	 * : Skip places Foursquare has not refreshed in this many days (likely
+	 * stale). 0 keeps all.
+	 * ---
+	 * default: 1095
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp guam-restaurants import-fsq --input=/project/.cache/fsq-guam.jsonl --dry-run
+	 *     wp guam-restaurants import-fsq --input=/project/.cache/fsq-guam.jsonl
+	 *
+	 * @param string[]             $args       Positional arguments (unused).
+	 * @param array<string, mixed> $assoc_args Flags.
+	 * @return void
+	 */
+	public static function import_fsq( array $args, array $assoc_args ): void {
+		$dry_run = (bool) WP_CLI\Utils\get_flag_value( $assoc_args, 'dry-run', false );
+		$input   = (string) WP_CLI\Utils\get_flag_value( $assoc_args, 'input', '' );
+		$max_age = max( 0, (int) WP_CLI\Utils\get_flag_value( $assoc_args, 'max-age-days', 1095 ) );
+		$since   = $max_age ? gmdate( 'Y-m-d', time() - $max_age * DAY_IN_SECONDS ) : '';
+
+		try {
+			$rows = Fsq_Reader::read( $input );
+			WP_CLI::log( sprintf( 'Read %d places from %s.', count( $rows ), $input ) );
+			$importer = new Fsq_Importer( new Place_Mapper( Cuisine_Map::from_file() ), $since );
+			$result   = $importer->run( $rows, $dry_run );
+		} catch ( \Throwable $e ) {
+			WP_CLI::error( $e->getMessage() );
+			return;
+		}
+
+		foreach ( array_slice( $result['errors'], 0, 20 ) as $error ) {
+			WP_CLI::warning( $error );
+		}
+		foreach ( $result['skipped'] as $reason => $count ) {
+			WP_CLI::log( sprintf( 'Skipped %d place(s): %s.', $count, $reason ) );
+		}
+		WP_CLI::log( sprintf( '%d matched to listings we already had; %d new draft(s) look like an existing listing and are in the review queue.', $result['linked'], $result['queued'] ) );
+		if ( $result['unmapped'] ) {
+			WP_CLI::log( 'Categories with no cuisine (add them to data/osm-cuisine-map.json to tag them):' );
+			$rows = array();
+			foreach ( $result['unmapped'] as $value => $count ) {
+				$rows[] = array(
+					'cuisine' => $value,
+					'places'  => $count,
+				);
+			}
+			WP_CLI\Utils\format_items( 'table', $rows, array( 'cuisine', 'places' ) );
 		}
 
 		self::log_counts( $dry_run, $result['counts'], $result['run_id'] );

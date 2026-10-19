@@ -103,6 +103,11 @@ abstract class Base_Provider implements Provider {
 				'providers' => array(),
 			),
 			'stars_image'    => '',
+			'details'        => array(
+				'phone'   => '',
+				'website' => '',
+				'hours'   => array(),
+			),
 			'reviews'        => array(),
 			'reviews_notice' => '',
 			'fetched_at'     => time(),

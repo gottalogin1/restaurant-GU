@@ -51,10 +51,15 @@ final class Ratings_Fixtures {
 	 */
 	public static function google_details( bool $reviews = true ): array {
 		$data = array(
-			'rating'          => 4.3,
-			'userRatingCount' => 812,
-			'googleMapsUri'   => 'https://maps.google.com/?cid=1111',
-			'attributions'    => array(
+			'rating'              => 4.3,
+			'userRatingCount'     => 812,
+			'googleMapsUri'       => 'https://maps.google.com/?cid=1111',
+			'nationalPhoneNumber' => '(671) 646-1234',
+			'websiteUri'          => 'https://example-grill.com/',
+			'regularOpeningHours' => array(
+				'weekdayDescriptions' => array( 'Monday: 11:00 AM – 9:00 PM', 'Tuesday: Closed' ),
+			),
+			'attributions'        => array(
 				array(
 					'provider'    => 'Example Data Co',
 					'providerUri' => 'https://data.example.com/',

@@ -26,6 +26,9 @@ final class Restaurant_Meta {
 	public const COORD_SOURCE       = 'gr_coord_source';
 	public const PHONE              = 'gr_phone';
 	public const WEBSITE            = 'gr_website';
+	public const EMAIL              = 'gr_email';
+	public const FACEBOOK           = 'gr_facebook';
+	public const INSTAGRAM          = 'gr_instagram';
 	public const HOURS              = 'gr_hours';
 	public const STATUS             = 'gr_status';
 	public const OPENED_ON          = 'gr_opened_on';
@@ -158,6 +161,28 @@ final class Restaurant_Meta {
 				'description' => __( 'Website URL.', 'guam-restaurants-core' ),
 				'default'     => '',
 				'sanitize'    => 'esc_url_raw',
+				'schema'      => array(),
+			),
+			self::EMAIL                       => array(
+				'type'        => 'string',
+				'description' => __( 'Business email address, for administrators following up with the restaurant; not shown on the site.', 'guam-restaurants-core' ),
+				'default'     => '',
+				'sanitize'    => 'sanitize_email',
+				'private'     => true,
+				'schema'      => array(),
+			),
+			self::FACEBOOK                    => array(
+				'type'        => 'string',
+				'description' => __( 'Facebook page URL.', 'guam-restaurants-core' ),
+				'default'     => '',
+				'sanitize'    => array( self::class, 'sanitize_social_url' ),
+				'schema'      => array(),
+			),
+			self::INSTAGRAM                   => array(
+				'type'        => 'string',
+				'description' => __( 'Instagram profile URL.', 'guam-restaurants-core' ),
+				'default'     => '',
+				'sanitize'    => array( self::class, 'sanitize_social_url' ),
 				'schema'      => array(),
 			),
 			self::HOURS                       => array(
@@ -527,6 +552,38 @@ final class Restaurant_Meta {
 	 */
 	public static function sanitize_identifier( $value ): string {
 		return (string) preg_replace( '/[^A-Za-z0-9_\-:.]/', '', (string) $value );
+	}
+
+	/**
+	 * Sanitizes a Facebook or Instagram URL: https only, on that network's
+	 * own domain; anything else is dropped.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string
+	 */
+	public static function sanitize_social_url( $value ): string {
+		$url = esc_url_raw( trim( (string) $value ), array( 'https' ) );
+		return null === self::social_network( $url ) ? '' : $url;
+	}
+
+	/**
+	 * The social network a URL belongs to (facebook or instagram), or null.
+	 * Used to keep social pages out of the website field: a business whose
+	 * only web presence is a Facebook page has no website of its own.
+	 *
+	 * @param string $url URL.
+	 * @return string|null
+	 */
+	public static function social_network( string $url ): ?string {
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		$host = (string) preg_replace( '/^(www|m|web|business)\./', '', $host );
+		if ( in_array( $host, array( 'facebook.com', 'fb.com', 'fb.me' ), true ) ) {
+			return 'facebook';
+		}
+		if ( in_array( $host, array( 'instagram.com', 'instagr.am' ), true ) ) {
+			return 'instagram';
+		}
+		return null;
 	}
 
 	/**
