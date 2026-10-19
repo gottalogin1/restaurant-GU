@@ -93,7 +93,8 @@ make test    # PHPUnit: should end with "OK"
 
 | Command | What it does |
 |---|---|
-| `make update` | After `git pull`: starts the containers, turns the site's own plugin and WooCommerce back on if they are off, and applies database and setting updates. Your settings, theme and other plugins stay as they are. |
+| `make update` | After `git pull`: starts the containers, turns the site's own plugin and WooCommerce back on if they are off, applies database and setting updates, then updates plugins (see below). Your settings and theme stay as they are. |
+| `make plugins` | Lists each plugin's version and any available update, then installs the updates. `make update` runs it. |
 | `make up` / `make down` | Start or stop the containers. Data is kept. |
 | `make wp ARGS="plugin list"` | Run any WP-CLI command. |
 | `make lint` / `make lint-fix` | Check or auto-fix coding standards. |
@@ -110,6 +111,14 @@ on purpose, it ships as a one-time migration in
 `wp-content/plugins/guam-restaurants-core/includes/database/class-migrations.php`; it runs once,
 and if you change that setting again afterwards your value stays. `wp guam-restaurants db status`
 lists any that have not run yet.
+
+`make update` finishes by updating plugins (`make plugins` on its own). It prints every
+installed plugin with its version and the version available, installs the updates, and shows
+each plugin's old and new version. Two plugins are left alone because they change through
+this repository: `guam-restaurants-core` (with `git pull`) and WooCommerce, whose version is
+pinned by `WOOCOMMERCE_VERSION` in the Makefile; a newer WooCommerce is reported, not
+installed. Pro plugins update only once their license key is entered. If wordpress.org cannot
+be reached, the step says so and `make update` still succeeds.
 
 ## Working on the code
 
