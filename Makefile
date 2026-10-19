@@ -8,6 +8,7 @@ WP_PORT           ?= 8080
 WP_ADMIN_USER     ?= admin
 WP_ADMIN_PASSWORD ?= password
 WP_ADMIN_EMAIL    ?= admin@example.com
+WP_HTTPS_PORT     ?= 8443
 SITE_URL          := http://localhost:$(WP_PORT)
 
 COMPOSE  := docker compose
@@ -15,7 +16,7 @@ WP       := $(COMPOSE) run --rm cli wp
 COMPOSER_CMD := $(if $(shell command -v composer 2>/dev/null),composer,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) composer)
 PHP_RUN  := $(if $(shell command -v php 2>/dev/null),,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) -w /project cli)
 
-.PHONY: help setup update up down reset install composer woocommerce lint lint-fix test wp logs
+.PHONY: help setup update up down reset install composer woocommerce https lint lint-fix test wp logs
 
 # WooCommerce for local development and tests (premium profile checkout). Pinned and checked;
 # downloaded from the GitHub release because wordpress.org is not reachable from every machine.
@@ -59,6 +60,8 @@ woocommerce: ## Download the pinned WooCommerce release into .cache/plugins (onc
 	fi
 
 up: woocommerce ## Start WordPress and the database.
+	@# Created by you, not by Docker (which would make it root-owned), so `make https` can write it.
+	@mkdir -p .cache/certs
 	$(COMPOSE) up -d --wait db wordpress
 	@# A running container keeps showing the old WooCommerce folder after it is replaced, so restart it once.
 	@if [ -f .cache/woocommerce-changed ]; then \
@@ -95,6 +98,14 @@ install: ## Install WordPress and turn on the plugin, theme and WooCommerce. Saf
 	$(WP) guam-restaurants db upgrade
 	$(WP) guam-restaurants premium-products
 	@echo "Site: $(SITE_URL)  Admin: $(SITE_URL)/wp-admin ($(WP_ADMIN_USER) / $(WP_ADMIN_PASSWORD))"
+
+https: ## Optional: serve https://localhost:$(WP_HTTPS_PORT) with a certificate Firefox trusts (README).
+	@mkdir -p .cache/certs
+	$(COMPOSE) run --rm --no-deps --user $(shell id -u):$(shell id -g) -v "$(CURDIR)/bin:/scripts:ro" -v "$(CURDIR)/.cache/certs:/certs" \
+		--entrypoint sh wordpress /scripts/local-https-cert.sh /certs
+	$(COMPOSE) up -d --wait --force-recreate --no-deps wordpress
+	@echo "HTTPS: https://localhost:$(WP_HTTPS_PORT)  (http://localhost:$(WP_PORT) keeps working)"
+	@echo "Firefox trusts it once you import .cache/certs/local-ca.crt (README, \"Local HTTPS\")."
 
 lint: ## Run PHPCS (WordPress Coding Standards).
 	$(PHP_RUN) vendor/bin/phpcs
