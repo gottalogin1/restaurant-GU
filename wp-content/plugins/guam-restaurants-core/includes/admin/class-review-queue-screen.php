@@ -10,8 +10,12 @@ namespace GuamRestaurants\Core\Admin;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Corrections\Corrections;
 use GuamRestaurants\Core\Database\Review_Queue;
+use GuamRestaurants\Core\Discovery\Places_Client;
+use GuamRestaurants\Core\Http\Retrying_Client;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Closures;
+use GuamRestaurants\Core\Ratings\Budget;
+use GuamRestaurants\Core\Ratings\Pricing;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 use GuamRestaurants\Core\Term_Meta;
@@ -26,12 +30,31 @@ defined( 'ABSPATH' ) || exit;
  * requests with a private note; other item types can be dismissed once
  * handled by hand. Only administrators see the screen, so every
  * closure is an administrator's decision.
+ *
+ * Items are shown 100 to a page. The whole page is one form, so names
+ * typed for discovered places and ticked "Skip" boxes are all saved by one
+ * "Save this page" (or Enter in a name box). On request the page shows each
+ * discovered place's current name and address from Google, to read while
+ * typing; it is fetched for that page view and never saved.
  */
 final class Review_Queue_Screen {
 
 	public const PAGE       = 'gr-review-queue';
 	public const ACTION     = 'guam_restaurants_review_item';
 	public const CAPABILITY = Closures::CAPABILITY;
+
+	public const PER_PAGE     = 100;
+	public const LOOKUP_NONCE = 'guam_restaurants_review_lookup';
+
+	/**
+	 * Types whose only decision is "skip / handled", so they can be skipped in bulk.
+	 */
+	public const SKIPPABLE = array( 'new_place', 'match_conflict', 'village_unresolved', 'mall_unresolved', 'owner_submission' );
+
+	/**
+	 * Google lookups that may fail in a row before the page stops asking.
+	 */
+	public const MAX_LOOKUP_FAILURES = 3;
 
 	/**
 	 * Hooks.
@@ -46,16 +69,25 @@ final class Review_Queue_Screen {
 	/**
 	 * Screen URL.
 	 *
-	 * @param string $type Type filter.
+	 * @param string $type   Type filter.
+	 * @param int    $paged  Page number.
+	 * @param bool   $lookup Show Google names (adds a nonce, since each view uses API calls).
 	 * @return string
 	 */
-	public static function url( string $type = '' ): string {
+	public static function url( string $type = '', int $paged = 1, bool $lookup = false ): string {
 		$args = array(
 			'post_type' => Content_Types::POST_TYPE,
 			'page'      => self::PAGE,
 		);
 		if ( '' !== $type ) {
 			$args['type'] = $type;
+		}
+		if ( $paged > 1 ) {
+			$args['paged'] = $paged;
+		}
+		if ( $lookup ) {
+			$args['lookup']   = 1;
+			$args['_wpnonce'] = wp_create_nonce( self::LOOKUP_NONCE );
 		}
 		return add_query_arg( $args, admin_url( 'edit.php' ) );
 	}
@@ -79,7 +111,8 @@ final class Review_Queue_Screen {
 	}
 
 	/**
-	 * Handles a decision.
+	 * Handles the page form: one row's decision button, if one was pressed,
+	 * then every typed name and ticked "Skip" box on the page.
 	 *
 	 * @return void
 	 */
@@ -87,23 +120,125 @@ final class Review_Queue_Screen {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die( esc_html__( 'Only administrators can decide review items.', 'guam-restaurants-core' ), 403 );
 		}
-		$item_id = isset( $_POST['item_id'] ) ? absint( $_POST['item_id'] ) : 0;
-		check_admin_referer( self::ACTION . '_' . $item_id );
-		$decision = isset( $_POST['decision'] ) ? sanitize_key( wp_unslash( $_POST['decision'] ) ) : '';
-		$type     = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+		check_admin_referer( self::ACTION );
+		$type    = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+		$paged   = isset( $_POST['paged'] ) ? max( 1, absint( $_POST['paged'] ) ) : 1;
+		$lookup  = ! empty( $_POST['lookup'] );
+		$user_id = get_current_user_id();
 
-		$note = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+		$names = array();
+		foreach ( isset( $_POST['restaurant_name'] ) ? (array) wp_unslash( $_POST['restaurant_name'] ) : array() as $id => $name ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized per value.
+			$names[ absint( $id ) ] = sanitize_text_field( (string) $name );
+		}
+		$notes = array();
+		foreach ( isset( $_POST['note'] ) ? (array) wp_unslash( $_POST['note'] ) : array() as $id => $note ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized per value.
+			$notes[ absint( $id ) ] = sanitize_textarea_field( (string) $note );
+		}
+		$skip = isset( $_POST['skip'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['skip'] ) ) : array();
 
-		if ( 'add_restaurant' === $decision ) {
-			$name    = isset( $_POST['restaurant_name'] ) ? sanitize_text_field( wp_unslash( $_POST['restaurant_name'] ) ) : '';
-			$post_id = self::add_restaurant( $item_id, $name, get_current_user_id() );
-			wp_safe_redirect( $post_id ? (string) get_edit_post_link( $post_id, 'url' ) : add_query_arg( 'gr_notice', 'gr_review_failed', self::url( $type ) ) );
-			exit;
+		$args = array();
+		if ( isset( $_POST['row_decision'] ) ) {
+			list( $item_id, $decision ) = array_pad( explode( ':', sanitize_text_field( wp_unslash( $_POST['row_decision'] ) ), 2 ), 2, '' );
+			$item_id                    = absint( $item_id );
+			$args['gr_notice']          = self::decide( $item_id, sanitize_key( $decision ), $user_id, $notes[ $item_id ] ?? '' ) ? 'gr_review_done' : 'gr_review_failed';
 		}
 
-		$notice = self::decide( $item_id, $decision, get_current_user_id(), $note ) ? 'gr_review_done' : 'gr_review_failed';
-		wp_safe_redirect( add_query_arg( 'gr_notice', $notice, self::url( $type ) ) );
+		$saved = self::save_page( $names, $skip, $user_id );
+		foreach ( $saved as $key => $count ) {
+			if ( $count > 0 ) {
+				$args[ 'gr_' . $key ] = $count;
+			}
+		}
+
+		wp_safe_redirect( add_query_arg( $args, self::url( $type, $paged, $lookup ) ) );
 		exit;
+	}
+
+	/**
+	 * Saves a page: adds each named place as a draft and skips each ticked
+	 * item. A typed name wins over a ticked box, so a place the administrator
+	 * named is never skipped. Items already decided count as failed.
+	 *
+	 * @param array<int, string> $names   Item ID => typed name (blank names are ignored).
+	 * @param int[]              $skip    Item IDs to skip.
+	 * @param int                $user_id Administrator.
+	 * @return array{added: int, skipped: int, failed: int}
+	 */
+	public static function save_page( array $names, array $skip, int $user_id ): array {
+		$out   = array(
+			'added'   => 0,
+			'skipped' => 0,
+			'failed'  => 0,
+		);
+		$named = array();
+		foreach ( $names as $item_id => $name ) {
+			if ( '' === trim( $name ) ) {
+				continue;
+			}
+			$named[ (int) $item_id ] = true;
+			if ( self::add_restaurant( (int) $item_id, $name, $user_id ) ) {
+				++$out['added'];
+			} else {
+				++$out['failed'];
+			}
+		}
+		foreach ( array_unique( $skip ) as $item_id ) {
+			if ( isset( $named[ $item_id ] ) ) {
+				continue;
+			}
+			$item = Review_Queue::get( $item_id );
+			if ( $item && in_array( $item['type'], self::SKIPPABLE, true ) && self::decide( $item_id, 'dismiss', $user_id ) ) {
+				++$out['skipped'];
+			} else {
+				++$out['failed'];
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Current Google name, address and business status for each discovered
+	 * place on the page, for the administrator to read. Nothing is stored:
+	 * the values live for this page view only (Maps ToS §3.2.3(a)). Each
+	 * place is one Place Details Pro call, counted against the monthly cap,
+	 * so lookups stop when the free allowance runs out.
+	 *
+	 * @param array<int, array<string, mixed>> $items  Items on the page.
+	 * @param Places_Client|null               $client Client; built from the key when null.
+	 * @return array{places: array<int, array{name: string, address: string, business_status: string}>, error: string}
+	 */
+	public static function google_details( array $items, ?Places_Client $client = null ): array {
+		$out    = array(
+			'places' => array(),
+			'error'  => '',
+		);
+		$client = $client ?? Places_Client::from_config( new Retrying_Client( null, null, array( 429 ), 5, 1 ) );
+		if ( ! $client ) {
+			$out['error'] = __( 'No Google Places key is set, so Google names cannot be shown.', 'guam-restaurants-core' );
+			return $out;
+		}
+
+		$failures = 0;
+		foreach ( $items as $item ) {
+			$place_id = (string) ( $item['payload']['place_id'] ?? '' );
+			if ( 'new_place' !== $item['type'] || '' === $place_id ) {
+				continue;
+			}
+			if ( ! Budget::try_call_monthly( 'google', Pricing::GOOGLE_DETAILS_PRO ) ) {
+				$out['error'] = __( 'Stopped showing Google names: this month\'s free Google Place Details calls are used up.', 'guam-restaurants-core' );
+				break;
+			}
+			try {
+				$out['places'][ (int) $item['id'] ] = $client->details( $place_id );
+				$failures                           = 0;
+			} catch ( \Throwable $e ) {
+				if ( ++$failures >= self::MAX_LOOKUP_FAILURES ) {
+					$out['error'] = __( 'Stopped showing Google names: Google did not answer.', 'guam-restaurants-core' );
+					break;
+				}
+			}
+		}
+		return $out;
 	}
 
 	/**
@@ -153,8 +288,8 @@ final class Review_Queue_Screen {
 
 	/**
 	 * Turns a discovered place into a draft restaurant. The administrator
-	 * types the name after checking the place on Google Maps (a manually
-	 * recorded fact); the draft keeps the place ID and the village or mall
+	 * types the name after checking the place on Google Maps or the name
+	 * shown on the page (a manually recorded fact); the draft keeps the place ID and the village or mall
 	 * the search was about, and is published from the editor once the
 	 * details are filled in.
 	 *
@@ -220,20 +355,22 @@ final class Review_Queue_Screen {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			return;
 		}
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only view filters.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only view filters; the Google lookup checks its own nonce.
 		$type   = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : '';
+		$paged  = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;
 		$notice = isset( $_GET['gr_notice'] ) ? sanitize_key( wp_unslash( $_GET['gr_notice'] ) ) : '';
+		$saved  = array();
+		foreach ( array( 'added', 'skipped', 'failed' ) as $key ) {
+			$saved[ $key ] = isset( $_GET[ 'gr_' . $key ] ) ? absint( $_GET[ 'gr_' . $key ] ) : 0;
+		}
+		$lookup = ! empty( $_GET['lookup'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), self::LOOKUP_NONCE );
 		// phpcs:enable
 		if ( ! in_array( $type, Vocabulary::REVIEW_QUEUE_TYPES, true ) ) {
 			$type = '';
 		}
 
 		echo '<div class="wrap"><h1>' . esc_html__( 'Review queue', 'guam-restaurants-core' ) . '</h1>';
-		if ( 'gr_review_done' === $notice ) {
-			echo '<div class="notice notice-success"><p>' . esc_html__( 'Item updated.', 'guam-restaurants-core' ) . '</p></div>';
-		} elseif ( 'gr_review_failed' === $notice ) {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'The item could not be updated. It may already have been decided.', 'guam-restaurants-core' ) . '</p></div>';
-		}
+		self::render_notices( $notice, $saved );
 		echo '<p>' . esc_html__( 'A restaurant is marked permanently closed only when you approve it here, after two checks in a row reported it closed. Closures are shown to visitors as a plain status.', 'guam-restaurants-core' ) . '</p>';
 
 		$counts = Review_Queue::pending_counts();
@@ -243,31 +380,190 @@ final class Review_Queue_Screen {
 		}
 		echo '<ul class="subsubsub"><li>' . implode( ' | </li><li>', $links ) . '</li></ul><br class="clear" />'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
 
-		$items = Review_Queue::pending( $type, 100 );
+		$total = '' === $type ? array_sum( $counts ) : (int) ( $counts[ $type ] ?? 0 );
+		$pages = max( 1, (int) ceil( $total / self::PER_PAGE ) );
+		$paged = min( $paged, $pages );
+		$items = Review_Queue::pending( $type, self::PER_PAGE, ( $paged - 1 ) * self::PER_PAGE );
 		if ( ! $items ) {
 			echo '<p>' . esc_html__( 'Nothing to review.', 'guam-restaurants-core' ) . '</p></div>';
 			return;
 		}
 
-		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Item', 'guam-restaurants-core' ) . '</th><th>' . esc_html__( 'Details', 'guam-restaurants-core' ) . '</th><th>' . esc_html__( 'Decision', 'guam-restaurants-core' ) . '</th></tr></thead><tbody>';
+		$new_places = count( wp_list_filter( $items, array( 'type' => 'new_place' ) ) );
+		if ( $lookup && $new_places ) {
+			if ( function_exists( 'set_time_limit' ) ) {
+				set_time_limit( 300 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- up to 100 sequential lookups.
+			}
+			$google = self::google_details( $items );
+		} else {
+			$google = array(
+				'places' => array(),
+				'error'  => '',
+			);
+		}
+		if ( '' !== $google['error'] ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html( $google['error'] ) . '</p></div>';
+		}
+		if ( $new_places ) {
+			self::render_naming_help( $type, $paged, $lookup, $new_places );
+		}
+
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		wp_nonce_field( self::ACTION );
+		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" /><input type="hidden" name="type" value="' . esc_attr( $type ) . '" /><input type="hidden" name="paged" value="' . esc_attr( (string) $paged ) . '" />';
+		if ( $lookup ) {
+			echo '<input type="hidden" name="lookup" value="1" />';
+		}
+
+		self::render_tablenav( 'top', $type, $paged, $pages, $total, $lookup );
+		echo '<table class="wp-list-table widefat striped"><thead><tr><td class="manage-column column-cb check-column"><label class="screen-reader-text" for="gr-skip-all">' . esc_html__( 'Select all to skip', 'guam-restaurants-core' ) . '</label><input type="checkbox" id="gr-skip-all" /></td><th>' . esc_html__( 'Item', 'guam-restaurants-core' ) . '</th><th>' . esc_html__( 'Details', 'guam-restaurants-core' ) . '</th><th>' . esc_html__( 'Decision', 'guam-restaurants-core' ) . '</th></tr></thead><tbody>';
 		foreach ( $items as $item ) {
-			echo '<tr><td><strong>' . esc_html( self::type_label( (string) $item['type'] ) ) . '</strong><br />#' . esc_html( (string) $item['id'] ) . ' · ' . esc_html( (string) $item['source'] ) . '<br />' . esc_html( (string) $item['created_at'] ) . ' UTC</td><td>';
-			self::render_details( $item );
+			$id      = (int) $item['id'];
+			$details = $google['places'][ $id ] ?? null;
+			echo '<tr><th scope="row" class="check-column">';
+			if ( in_array( $item['type'], self::SKIPPABLE, true ) ) {
+				$closed = $details && 'CLOSED_PERMANENTLY' === $details['business_status'];
+				echo '<label class="screen-reader-text" for="gr-skip-' . esc_attr( (string) $id ) . '">' . esc_html__( 'Skip', 'guam-restaurants-core' ) . '</label><input type="checkbox" id="gr-skip-' . esc_attr( (string) $id ) . '" name="skip[]" value="' . esc_attr( (string) $id ) . '"' . checked( $closed, true, false ) . ' />';
+			}
+			echo '</th><td><strong>' . esc_html( self::type_label( (string) $item['type'] ) ) . '</strong><br />#' . esc_html( (string) $id ) . ' · ' . esc_html( (string) $item['source'] ) . '<br />' . esc_html( (string) $item['created_at'] ) . ' UTC</td><td>';
+			self::render_details( $item, $details );
 			echo '</td><td>';
-			self::render_actions( $item, $type );
+			self::render_actions( $item );
 			echo '</td></tr>';
 		}
-		echo '</tbody></table></div>';
+		echo '</tbody></table>';
+		self::render_tablenav( 'bottom', $type, $paged, $pages, $total, $lookup );
+		echo '</form></div>';
+	}
+
+	/**
+	 * Result notices.
+	 *
+	 * @param string             $notice Row decision notice.
+	 * @param array<string, int> $saved  Counts from save_page().
+	 * @return void
+	 */
+	private static function render_notices( string $notice, array $saved ): void {
+		if ( 'gr_review_done' === $notice ) {
+			echo '<div class="notice notice-success"><p>' . esc_html__( 'Item updated.', 'guam-restaurants-core' ) . '</p></div>';
+		} elseif ( 'gr_review_failed' === $notice ) {
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'The item could not be updated. It may already have been decided.', 'guam-restaurants-core' ) . '</p></div>';
+		}
+		if ( $saved['added'] || $saved['skipped'] ) {
+			$drafts = add_query_arg(
+				array(
+					'post_type'   => Content_Types::POST_TYPE,
+					'post_status' => 'draft',
+				),
+				admin_url( 'edit.php' )
+			);
+			printf(
+				'<div class="notice notice-success"><p>%1$s <a href="%2$s">%3$s</a></p></div>',
+				esc_html(
+					sprintf(
+						/* translators: 1: places added, 2: items skipped. */
+						__( 'Added %1$d as draft restaurants; skipped %2$d.', 'guam-restaurants-core' ),
+						$saved['added'],
+						$saved['skipped']
+					)
+				),
+				esc_url( $drafts ),
+				esc_html__( 'See the drafts', 'guam-restaurants-core' )
+			);
+		}
+		if ( $saved['failed'] ) {
+			/* translators: %d: number of items. */
+			echo '<div class="notice notice-error"><p>' . esc_html( sprintf( _n( '%d item could not be saved. It may already have been decided.', '%d items could not be saved. They may already have been decided.', $saved['failed'], 'guam-restaurants-core' ), $saved['failed'] ) ) . '</p></div>';
+		}
+	}
+
+	/**
+	 * How to name discovered places quickly, and the Google names switch.
+	 *
+	 * @param string $type       Type filter.
+	 * @param int    $paged      Page.
+	 * @param bool   $lookup     Whether Google names are shown.
+	 * @param int    $new_places Discovered places on this page.
+	 * @return void
+	 */
+	private static function render_naming_help( string $type, int $paged, bool $lookup, int $new_places ): void {
+		echo '<p>' . esc_html__( 'For each new place, type its name, or tick its box to skip it, then press Enter or "Save this page". Named places become draft restaurants with their Google place ID and village; you can fill in the details later from the drafts list.', 'guam-restaurants-core' ) . '</p><p>';
+		if ( $lookup ) {
+			echo esc_html__( 'Names and addresses below are from Google Maps, shown for checking only and not saved. Places Google lists as permanently closed are ticked to skip.', 'guam-restaurants-core' ) . ' <a href="' . esc_url( self::url( $type, $paged ) ) . '">' . esc_html__( 'Stop showing Google names', 'guam-restaurants-core' ) . '</a>';
+		} else {
+			printf(
+				'<a class="button" href="%1$s">%2$s</a> %3$s',
+				esc_url( self::url( $type, $paged, true ) ),
+				esc_html__( 'Show Google names on this page', 'guam-restaurants-core' ),
+				esc_html(
+					sprintf(
+						/* translators: 1: places on the page, 2: free calls left. */
+						__( 'Uses one Google Place Details call per new place (%1$d on this page) each time the page loads; %2$s free calls left this month. It stops when they run out, so it never costs money. Loading can take up to a minute.', 'guam-restaurants-core' ),
+						$new_places,
+						number_format_i18n( Budget::free_left( Pricing::GOOGLE_DETAILS_PRO ) )
+					)
+				)
+			);
+		}
+		echo '</p>';
+	}
+
+	/**
+	 * Save button and pagination, above or below the table.
+	 *
+	 * @param string $which  top or bottom.
+	 * @param string $type   Type filter.
+	 * @param int    $paged  Page.
+	 * @param int    $pages  Pages.
+	 * @param int    $total  Pending items in this view.
+	 * @param bool   $lookup Keep Google names on in page links.
+	 * @return void
+	 */
+	private static function render_tablenav( string $which, string $type, int $paged, int $pages, int $total, bool $lookup ): void {
+		echo '<div class="tablenav ' . esc_attr( $which ) . '"><div class="alignleft actions">';
+		// The first submit button in the form, so Enter in a name box saves the page.
+		echo '<button type="submit" class="button button-primary">' . esc_html__( 'Save this page', 'guam-restaurants-core' ) . '</button>';
+		echo '</div><div class="tablenav-pages"><span class="displaying-num">' . esc_html( sprintf( /* translators: %s: number of items. */ _n( '%s item', '%s items', $total, 'guam-restaurants-core' ), number_format_i18n( $total ) ) ) . '</span>';
+		if ( $pages > 1 ) {
+			echo '<span class="pagination-links">';
+			$links = array(
+				array( 1, '&laquo;', __( 'First page', 'guam-restaurants-core' ), $paged > 1 ),
+				array( $paged - 1, '&lsaquo;', __( 'Previous page', 'guam-restaurants-core' ), $paged > 1 ),
+				null,
+				array( $paged + 1, '&rsaquo;', __( 'Next page', 'guam-restaurants-core' ), $paged < $pages ),
+				array( $pages, '&raquo;', __( 'Last page', 'guam-restaurants-core' ), $paged < $pages ),
+			);
+			foreach ( $links as $link ) {
+				if ( null === $link ) {
+					/* translators: 1: current page, 2: total pages. */
+					echo ' <span class="paging-input">' . esc_html( sprintf( __( 'Page %1$s of %2$s', 'guam-restaurants-core' ), number_format_i18n( $paged ), number_format_i18n( $pages ) ) ) . '</span> ';
+					continue;
+				}
+				list( $page, $symbol, $label, $enabled ) = $link;
+				if ( $enabled ) {
+					echo '<a class="button" href="' . esc_url( self::url( $type, $page, $lookup ) ) . '"><span class="screen-reader-text">' . esc_html( $label ) . '</span><span aria-hidden="true">' . $symbol . '</span></a> '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed entity.
+				} else {
+					echo '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">' . $symbol . '</span> '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed entity.
+				}
+			}
+			echo '</span>';
+		}
+		echo '</div><br class="clear" /></div>';
 	}
 
 	/**
 	 * Details cell.
 	 *
-	 * @param array<string, mixed> $item Item.
+	 * @param array<string, mixed>                                               $item   Item.
+	 * @param array{name: string, address: string, business_status: string}|null $google Google's current details, for a new place when shown.
 	 * @return void
 	 */
-	private static function render_details( array $item ): void {
+	private static function render_details( array $item, ?array $google = null ): void {
 		$payload = (array) $item['payload'];
+		if ( 'new_place' === $item['type'] ) {
+			self::render_new_place( $payload, $google );
+			return;
+		}
 		if ( 'duplicate' === $item['type'] ) {
 			echo '<div style="display:flex;gap:2em;flex-wrap:wrap">';
 			self::render_restaurant( (int) $item['restaurant_id'] );
@@ -319,6 +615,42 @@ final class Review_Queue_Screen {
 			echo '<li><code>' . esc_html( (string) $key ) . '</code>: ' . esc_html( is_scalar( $value ) || null === $value ? (string) $value : (string) wp_json_encode( $value ) ) . '</li>';
 		}
 		echo '</ul>';
+	}
+
+	/**
+	 * A discovered place: how it was found, a Google Maps link, and Google's
+	 * current name and address when the administrator asked to see them.
+	 *
+	 * @param array<string, mixed>                                               $payload Payload.
+	 * @param array{name: string, address: string, business_status: string}|null $google Google details.
+	 * @return void
+	 */
+	private static function render_new_place( array $payload, ?array $google ): void {
+		if ( $google ) {
+			echo '<p style="margin:0 0 .3em"><strong>' . esc_html( '' !== $google['name'] ? $google['name'] : __( '(no name from Google)', 'guam-restaurants-core' ) ) . '</strong>';
+			if ( '' !== $google['address'] ) {
+				echo '<br />' . esc_html( $google['address'] );
+			}
+			if ( 'CLOSED_PERMANENTLY' === $google['business_status'] ) {
+				echo '<br /><span style="color:#b32d2e;font-weight:600">' . esc_html__( 'Permanently closed on Google', 'guam-restaurants-core' ) . '</span>';
+			} elseif ( 'CLOSED_TEMPORARILY' === $google['business_status'] ) {
+				echo '<br /><em>' . esc_html__( 'Temporarily closed on Google', 'guam-restaurants-core' ) . '</em>';
+			}
+			echo '<br /><small>' . esc_html__( 'Google Maps', 'guam-restaurants-core' ) . '</small></p>';
+		}
+		$found_by = (array) ( $payload['found_by'] ?? array() );
+		if ( '' !== (string) ( $found_by['query'] ?? '' ) ) {
+			echo esc_html__( 'Found by:', 'guam-restaurants-core' ) . ' ' . esc_html( (string) $found_by['query'] ) . '<br />';
+		}
+		if ( ! empty( $payload['same_name_elsewhere'] ) ) {
+			echo '<em>' . esc_html__( 'A restaurant with this name is listed in another village or mall (could be a new branch).', 'guam-restaurants-core' ) . '</em><br />';
+		}
+		// Built from the place ID; wp_http_validate_url() would look up DNS for every row.
+		$place_id = (string) ( $payload['place_id'] ?? '' );
+		if ( '' !== $place_id ) {
+			$maps = 'https://www.google.com/maps/place/?q=place_id:' . rawurlencode( $place_id );
+			echo '<a href="' . esc_url( $maps ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Open in Google Maps', 'guam-restaurants-core' ) . '</a>';
+		}
 	}
 
 	/**
@@ -386,13 +718,19 @@ final class Review_Queue_Screen {
 	}
 
 	/**
-	 * Decision buttons.
+	 * Decision cell: a name box for a discovered place, or the row's
+	 * decision buttons (each submits the page form with that one decision).
 	 *
 	 * @param array<string, mixed> $item Item.
-	 * @param string               $type Current filter.
 	 * @return void
 	 */
-	private static function render_actions( array $item, string $type ): void {
+	private static function render_actions( array $item ): void {
+		$id = (string) $item['id'];
+		if ( 'new_place' === $item['type'] ) {
+			echo '<label for="gr-name-' . esc_attr( $id ) . '">' . esc_html__( 'Name, as shown on Google Maps', 'guam-restaurants-core' ) . '</label><br /><input type="text" id="gr-name-' . esc_attr( $id ) . '" name="restaurant_name[' . esc_attr( $id ) . ']" class="regular-text" maxlength="200" autocomplete="off" />';
+			return;
+		}
+
 		switch ( $item['type'] ) {
 			case 'closure_signal':
 				$buttons = array(
@@ -413,29 +751,18 @@ final class Review_Queue_Screen {
 					'request_decline' => __( 'Decline', 'guam-restaurants-core' ),
 				);
 				break;
-			case 'new_place':
-				$buttons = array(
-					'add_restaurant' => __( 'Add as restaurant (draft)', 'guam-restaurants-core' ),
-					'dismiss'        => __( 'Not a restaurant / skip', 'guam-restaurants-core' ),
-				);
-				break;
 			default:
-				$buttons = array( 'dismiss' => __( 'Mark handled', 'guam-restaurants-core' ) );
+				// Skipped with the row's box and "Save this page".
+				echo '<em>' . esc_html__( 'Tick the box to mark it handled.', 'guam-restaurants-core' ) . '</em>';
+				return;
 		}
 
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
-		wp_nonce_field( self::ACTION . '_' . $item['id'] );
-		echo '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" /><input type="hidden" name="item_id" value="' . esc_attr( (string) $item['id'] ) . '" /><input type="hidden" name="type" value="' . esc_attr( $type ) . '" />';
 		if ( Corrections::is_request( $item ) ) {
-			echo '<p><label for="gr-note-' . esc_attr( (string) $item['id'] ) . '">' . esc_html__( 'Private note: what you checked, or why you declined', 'guam-restaurants-core' ) . '</label><br /><textarea id="gr-note-' . esc_attr( (string) $item['id'] ) . '" name="note" rows="2" cols="30" maxlength="' . esc_attr( (string) Corrections::MAX_NOTE ) . '"></textarea></p>';
-		}
-		if ( 'new_place' === $item['type'] ) {
-			echo '<p><label for="gr-name-' . esc_attr( (string) $item['id'] ) . '">' . esc_html__( 'Name, as shown on Google Maps (needed to add it)', 'guam-restaurants-core' ) . '</label><br /><input type="text" id="gr-name-' . esc_attr( (string) $item['id'] ) . '" name="restaurant_name" class="regular-text" maxlength="200" /></p>';
+			echo '<p><label for="gr-note-' . esc_attr( $id ) . '">' . esc_html__( 'Private note: what you checked, or why you declined', 'guam-restaurants-core' ) . '</label><br /><textarea id="gr-note-' . esc_attr( $id ) . '" name="note[' . esc_attr( $id ) . ']" rows="2" cols="30" maxlength="' . esc_attr( (string) Corrections::MAX_NOTE ) . '"></textarea></p>';
 		}
 		foreach ( $buttons as $value => $label ) {
-			echo '<button type="submit" class="button' . ( in_array( $value, array( 'approve_closure', 'merge', 'request_done', 'add_restaurant' ), true ) ? ' button-primary' : '' ) . '" name="decision" value="' . esc_attr( $value ) . '" style="margin:0 .5em .5em 0">' . esc_html( $label ) . '</button>';
+			echo '<button type="submit" class="button' . ( in_array( $value, array( 'approve_closure', 'merge', 'request_done' ), true ) ? ' button-primary' : '' ) . '" name="row_decision" value="' . esc_attr( $id . ':' . $value ) . '" style="margin:0 .5em .5em 0">' . esc_html( $label ) . '</button>';
 		}
-		echo '</form>';
 	}
 
 	/**

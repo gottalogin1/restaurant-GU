@@ -14,19 +14,28 @@ use GuamRestaurants\Core\Osm\Overpass_Client;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Runs Text Search requests for discovery.
+ * Runs Text Search requests for discovery, and Place Details lookups for
+ * the review queue.
  *
  * Asks only for the fields discovery needs: the place ID (the only Google
  * value we store) and the name and business status, which are used in
  * memory to skip places we already list and are never written anywhere
  * (Maps Platform ToS §3.2.3(a), docs/data-sources.md §2). Results are
- * restricted to Guam's bounding box.
+ * restricted to Guam's bounding box. Details are shown to an administrator
+ * on the review queue page and are not stored either.
  */
 final class Places_Client {
 
 	public const URL = 'https://places.googleapis.com/v1/places:searchText';
 
 	public const FIELD_MASK = 'places.id,places.displayName,places.businessStatus,nextPageToken';
+
+	public const DETAILS_URL = 'https://places.googleapis.com/v1/places/';
+
+	/**
+	 * Place Details Pro fields (the address is a cheaper field, billed at Pro with the name).
+	 */
+	public const DETAILS_FIELD_MASK = 'displayName,formattedAddress,businessStatus';
 
 	/**
 	 * API key.
@@ -57,11 +66,12 @@ final class Places_Client {
 	 * Builds a client from the GUAM_RESTAURANTS_GOOGLE_PLACES_KEY constant
 	 * or environment variable.
 	 *
+	 * @param Retrying_Client|null $http HTTP client.
 	 * @return Places_Client|null Null when no key is configured.
 	 */
-	public static function from_config(): ?Places_Client {
+	public static function from_config( ?Retrying_Client $http = null ): ?Places_Client {
 		$key = Config::get( Config::GOOGLE_PLACES_KEY );
-		return '' === $key ? null : new self( $key );
+		return '' === $key ? null : new self( $key, $http );
 	}
 
 	/**
@@ -130,6 +140,40 @@ final class Places_Client {
 		return array(
 			'places'          => $places,
 			'next_page_token' => (string) ( $data['nextPageToken'] ?? '' ),
+		);
+	}
+
+	/**
+	 * A place's current name, address and business status, for display only.
+	 *
+	 * @param string $place_id Place ID.
+	 * @return array{name: string, address: string, business_status: string}
+	 * @throws \RuntimeException On request failure or an unexpected response.
+	 */
+	public function details( string $place_id ): array {
+		$response = $this->http->request(
+			self::DETAILS_URL . rawurlencode( $place_id ),
+			array(
+				'method'     => 'GET',
+				'timeout'    => 10,
+				'user-agent' => Config::user_agent(),
+				'headers'    => array(
+					'X-Goog-Api-Key'   => $this->key,
+					'X-Goog-FieldMask' => self::DETAILS_FIELD_MASK,
+					'Accept'           => 'application/json',
+				),
+			)
+		);
+
+		$data = json_decode( $response['body'], true );
+		if ( ! is_array( $data ) ) {
+			throw new \RuntimeException( 'Places response is not valid JSON.' );
+		}
+
+		return array(
+			'name'            => (string) ( $data['displayName']['text'] ?? '' ),
+			'address'         => (string) ( $data['formattedAddress'] ?? '' ),
+			'business_status' => (string) ( $data['businessStatus'] ?? '' ),
 		);
 	}
 

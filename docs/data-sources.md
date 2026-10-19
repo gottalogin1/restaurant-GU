@@ -238,6 +238,14 @@ counts and (optionally) reviews on listing pages, within these rules:
   requests a month), stopping at the free allowance under the $0 cap.
   "Add as restaurant" in the review queue creates a draft holding the place
   ID; the name and details are entered by hand.
+  Since 2026-10-19 the review queue can show each discovered place's
+  current name, address and business status on request ("Show Google names
+  on this page"): Place Details with field mask
+  `displayName,formattedAddress,businessStatus` (Pro: 5,000 free a month,
+  we stop at 4,500 under the $0 monthly cap), one call per place per page
+  view. The values are displayed with "Google Maps" attribution for the
+  administrator to read and are never stored; the name is still typed by
+  hand. Places Google lists as permanently closed are pre-ticked to skip.
 - Matching (`wp guam-restaurants match-ratings --source=google`,
   2026-10-10): Text Search with the restaurant's name, biased to 150 m
   around its OSM coordinates, field mask

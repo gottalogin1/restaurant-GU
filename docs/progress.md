@@ -1,5 +1,12 @@
 # Progress log
 
+## Review queue paging and faster naming, 2026-10-19
+- Requested by Sanjay: the review queue showed only the first 100 of 809 pending items; page through 100 at a time, and speed up naming the discovered places.
+- Done: Restaurants → Review queue shows 100 items a page with first, previous, next and last links and a "Page x of y" count, for All and each type.
+- Done: the page is one form. Type names for any number of new places and tick boxes to skip items (header box ticks the whole page), then press Enter or "Save this page": named places become drafts (place ID and village kept), ticked ones are skipped, and the page stays open on the next items. Closures, duplicates and requests keep their own buttons and are never skipped in bulk.
+- Done: "Show Google names on this page" shows Google's current name, address and open/closed status beside each new place (Place Details Pro, free allowance only, not stored); permanently closed places are pre-ticked to skip. Google names are not saved automatically: the project's Google rule is to store only place IDs (data-sources.md §2), so the name is still typed.
+- Remaining: Sanjay to `git pull` + `make update` and work through the queue.
+
 ## Yellow pages source, Google details and website follow-up, 2026-10-19
 - Requested by Sanjay: find restaurants from a Guam yellow pages site, look each up with our search, and keep a list of businesses with no website for website proposals.
 - Checked: Guam Phone Book (guamphonebook.com and its mobile app host) disallows automated access in robots.txt and is unreachable from both the cloud and the device link; no reuse terms found. Not used. The Guam Guide is copyright-only; Guam DRT publishes no business list (docs/data-sources.md §4c).
