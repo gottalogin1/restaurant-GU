@@ -229,3 +229,8 @@ Legal and code:
 - Done: `Database\Migrations`, one-time setting fixes recorded in `guam_restaurants_core_migrations`; applied on load (or by `wp guam-restaurants db upgrade` when `GUAM_RESTAURANTS_DB_UPGRADE=cli`); `db status` lists pending ones. None defined yet.
 - Fixed 2026-10-14: `make update` looked stuck after "woocommerce.zip: OK" on /mnt/c. The download unpacked 5,500 files, then copied them again and deleted the old ones, all silently. It now unpacks once and swaps the folder with a rename, prints what it is doing, and `make up` recreates the WordPress container once so it sees the new folder.
 - Fixed 2026-10-14: an interrupted earlier run left a half-copied WooCommerce folder that passed the version check, so activation died on a missing i18n/currencies.php. `make woocommerce` now trusts only a `.download-complete` stamp written after a full unpack, and replaces anything else.
+
+## Plugin updates on `make update`, 2026-10-19
+- Done: `make plugins` (`bin/update-plugins.sh`, run in the WP-CLI container) lists each plugin's version and available update, then runs `wp plugin update` for those with one. `make update` runs it last. Skips `guam-restaurants-core` (git) and WooCommerce (pinned in the Makefile; a newer release is reported). Skips with a message when api.wordpress.org is unreachable.
+- Tested 2026-10-19 in the cloud stack with a faked wordpress.org answer (the real host is blocked there): Akismet 5.7.2 → fake 99.0 updated and reported; WooCommerce 11.3.0 reported, not installed; unreachable path prints the skip message and exits 0.
+- Remaining: bump `WOOCOMMERCE_VERSION`/`WOOCOMMERCE_SHA256` when a newer WooCommerce is wanted.

@@ -31,7 +31,7 @@ help: ## List available commands.
 
 setup: composer up install ## First run: dependencies, containers, WordPress install.
 
-update: up install ## After `git pull`: start containers, re-enable required plugins, apply updates. Keeps your settings.
+update: up install plugins ## After `git pull`: start containers, re-enable required plugins, apply updates, update plugins. Keeps your settings.
 
 composer: ## Install PHP dev tools (PHPCS, PHPUnit) and the git pre-commit hook.
 	$(COMPOSER_CMD) install
@@ -115,6 +115,10 @@ lint-fix: ## Auto-fix what PHPCS can fix.
 
 test: ## Run the plugin's PHPUnit tests (needs `make up`).
 	$(COMPOSE) run --rm -w /project cli vendor/bin/phpunit -c wp-content/plugins/guam-restaurants-core/phpunit.xml.dist
+
+.PHONY: plugins
+plugins: ## Show plugin versions and available updates, then install the updates.
+	$(COMPOSE) run --rm cli sh /project/bin/update-plugins.sh
 
 wp: ## Run WP-CLI, e.g. `make wp ARGS="plugin list"`.
 	$(WP) $(ARGS)
