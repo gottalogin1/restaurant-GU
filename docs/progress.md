@@ -1,5 +1,9 @@
 # Progress log
 
+## Local front end and HTTPS, 2026-10-19
+- Done: the local stack defines `WP_HOME`/`WP_SITEURL` from the address you browse with, so a saved `https://` site address no longer breaks front-end links and REST calls (wp-admin kept working because it uses the other address). Production config is unchanged.
+- Done: optional `make https` (https://localhost:8443) with a name-constrained local CA you import into Firefox once; README "Local HTTPS".
+
 ## Awards research (docs/awards-research.md), 2026-10-09
 - Done: Pika's Best of Guam (PDN) start year 2014, annual cycle, full 2023 categories/winners/finalists source located.
 - Checked: guampdn.biz pikasbestofguam index + 2023 PDF, guampdn.biz advertising page and WP API, Wikipedia PDN.

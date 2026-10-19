@@ -49,6 +49,14 @@ x-wp-env: &wp-env
     define( 'WP_ENVIRONMENT_TYPE', 'local' );
     define( 'WP_DEBUG_LOG', true );
     define( 'WP_DEBUG_DISPLAY', false );
+    // Local only: links use the address you browse with (http on WP_PORT, or https on
+    // WP_HTTPS_PORT after `make https`), whatever home/siteurl the database holds. A stored
+    // https:// address made every front-end link and REST call fail while wp-admin still worked.
+    $$gr_host = isset( $$_SERVER['HTTP_HOST'] ) && preg_match( '/^[A-Za-z0-9.\-]+(:[0-9]+)?$$/', $$_SERVER['HTTP_HOST'] ) ? $$_SERVER['HTTP_HOST'] : 'localhost:${WP_PORT:-8080}';
+    $$gr_https = ! empty( $$_SERVER['HTTPS'] ) && 'off' !== strtolower( $$_SERVER['HTTPS'] );
+    define( 'WP_HOME', ( $$gr_https ? 'https://' : 'http://' ) . $$gr_host );
+    define( 'WP_SITEURL', WP_HOME );
+    unset( $$gr_host, $$gr_https );
 
 services:
   db:
@@ -75,6 +83,8 @@ services:
         condition: service_healthy
     ports:
       - "${WP_PORT:-8080}:80"
+      # HTTPS with a locally trusted certificate, once `make https` has created it.
+      - "${WP_HTTPS_PORT:-8443}:443"
     environment: *wp-env
     volumes:
       - wordpress:/var/www/html
@@ -83,6 +93,8 @@ services:
       # WooCommerce (premium profile checkout), downloaded by `make woocommerce`.
       - ./.cache/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce
       - ./docker/apache/compression.conf:/etc/apache2/conf-enabled/zz-guam-restaurants-compression.conf:ro
+      - ./docker/apache/local-https.conf:/etc/apache2/conf-enabled/zz-guam-restaurants-https.conf:ro
+      - ./.cache/certs:/etc/guam-restaurants-certs:ro
 
   # WP-CLI and PHPUnit run here: `docker compose run --rm cli wp <command>`.
   cli:

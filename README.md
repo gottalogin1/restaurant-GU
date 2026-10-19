@@ -60,6 +60,28 @@ This runs three steps you can also run on their own:
   them in `.env`)
 - Restaurants: **Restaurants** in the admin menu, or http://localhost:8080/restaurants/
 
+Use `http://` locally. `https://localhost:8080` gives Firefox's "Secure Connection Failed"
+(`SSL_ERROR_RX_RECORD_TOO_LONG`) because that port only speaks plain HTTP. For HTTPS, see
+[Local HTTPS](#local-https-optional).
+
+### Local HTTPS (optional)
+
+`make https` serves the site on https://localhost:8443 as well, with a certificate from an
+authority created on your machine. It is limited to `localhost` and `127.0.0.1`, so it cannot
+vouch for any real website. Firefox shows no warning once you trust it, which you do once:
+
+1. Run `make https`. It writes `.cache/certs/local-ca.crt` (in a Windows checkout such as
+   `/mnt/c/docker/restaurant-GU`, that is `C:\docker\restaurant-GU\.cache\certs\local-ca.crt`).
+2. In Firefox: **Settings → Privacy & Security → Certificates → View Certificates →
+   Authorities → Import**, pick `local-ca.crt`, tick **Trust this CA to identify websites**, OK.
+3. Open https://localhost:8443.
+
+Running `make https` again renews the server certificate and keeps the authority, so Firefox
+keeps trusting it. Set `WP_HTTPS_PORT` in `.env` if 8443 is taken.
+
+Links on every page follow the address you opened (http on 8080, https on 8443) whatever site
+address the database holds; this applies to the local Docker stack only.
+
 ### 5. Check your setup
 
 ```sh
@@ -105,8 +127,12 @@ lists any that have not run yet.
 
 ## Troubleshooting
 
-- **Port 8080 is in use:** set `WP_PORT=8081` in `.env`, then `make reset setup` (the site URL
-  is stored in the database at install time).
+- **Port 8080 is in use:** set `WP_PORT=8081` in `.env`, then `make update`. Locally the site
+  address follows the address you browse with, so nothing needs reinstalling.
+- **wp-admin works but the public site does not (links, search, map or directory fail, or
+  Firefox shows a secure-connection error):** the site address saved in **Settings → General**
+  was `https://` while the local server speaks plain HTTP. `make update` fixes it: the local
+  stack now ignores the saved address. For HTTPS, use [Local HTTPS](#local-https-optional).
 - **`make test` says it cannot connect to the database:** run `make up` first.
 - **The test database is missing** (for example after changing `DB_USER`): the test database is
   created only when the MariaDB volume is first created. Run `make reset setup`.
