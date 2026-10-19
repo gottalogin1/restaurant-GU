@@ -23,6 +23,7 @@ that page. Re-check before building an importer.
 | US Census TIGER/Line (Guam) | **Use** | Public domain (CC0) village boundaries for village tagging. |
 | Guam DPHSS inspection results | **Skip** | Project decision (2026-10-09): the site promotes businesses and will not publish inspection grades or other negative marks. |
 | Foursquare Open Source Places | **Use with limits** | Apache 2.0 bulk POI data (name, address, phone, website, category, closed date). Good for gap-filling; quality varies. |
+| Guam Phone Book (guamphonebook.com, Guam's yellow pages) | **Skip** | robots.txt disallows automated access (checked 2026-10-19); no published terms allowing reuse. FSQ OS Places is the permitted business-listings source instead (§4c). |
 | Foursquare Places API | **Use with limits** (or skip) | Ratings, hours, tips are Premium-only and **cannot be cached** on a server on pay-as-you-go. Little gain over the OS dataset for a directory. |
 | Google Places API (New) | **Use with limits** | Attorney cleared the directory-use question (2026-10-10). Store only place IDs; fetch ratings live; never show Places content on or near a non-Google map. |
 | Yelp Places API | **Use with limits** (optional) | Attorney cleared the commercial-use question (2026-10-10). 24-hour cache cap; Yelp ratings may not sit alongside other user-generated content; paid plans start at $229/month. |
@@ -376,6 +377,36 @@ schema <https://docs.foursquare.com/data-products/docs/places-os-data-schema>
 - Use: cross-check OSM, find restaurants OSM lacks, flag closures via
   `date_closed`. Treat `date_refreshed` as a staleness signal and verify
   before publishing.
+- Access (checked 2026-10-19): the dataset is now gated on Hugging Face
+  (<https://huggingface.co/datasets/foursquare/fsq-os-places>): sign in,
+  accept the conditions once, and use an access token. The public S3 bucket
+  now holds only LICENSE.txt and NOTICE.txt. Files are under
+  `release/dt=YYYY-MM-DD/places/parquet/`. Hugging Face is blocked from the
+  cloud research environment, so Guam coverage is still untested.
+- In use since 2026-10-19: `make fsq-extract` (bin/fsq-extract-guam.py,
+  DuckDB) writes Guam's rows to `.cache/fsq-guam.jsonl`, and
+  `wp guam-restaurants import-fsq` imports them (docs/run-fsq-import.md).
+
+## 4c. Guam yellow pages (Guam Phone Book)
+
+Requested 2026-10-19 as a source of restaurants to look up.
+
+- <https://www.guamphonebook.com/> (Guam's printed and online yellow pages,
+  with a mobile app at mobapp.guamphonebook.com): robots.txt disallows
+  automated fetching for both hosts (the fetch tool refused with
+  ROBOTS_DISALLOWED on 2026-10-19), and the hosts are also blocked from the
+  research environment and the user's device link. No terms of use granting
+  reuse of the listings were found. **Not used** (CLAUDE.md rule 1).
+- The Guam Guide (theguamguide.com) states "All text, images, and content
+  on this website are protected by U.S. and International copyright laws"
+  and lists businesses only as editorial content: research reference only (§10).
+- Guam DRT does not publish a list of licensed businesses (its website
+  directory PDF lists only its own offices).
+- Closest permitted alternative: FSQ OS Places (§4b), which carries the same
+  phone-book fields (name, address, phone, website, email, Facebook and
+  Instagram IDs, category) under Apache 2.0.
+- If wanted, ask the Guam Phone Book's publisher for a licensed data feed;
+  it would need written permission before any import.
 
 ## 5. Guam DPHSS food-establishment data
 
@@ -568,7 +599,7 @@ permission email in `docs/awards-research.md` §8.
 |---|---|---|---|
 | Restaurant name, coordinates, cuisine, address, phone, website, hours | OSM (ODbL) | **Stored permanently** in a separate OSM layer, with attribution and share-alike | Re-import weekly |
 | Mall polygons | OSM | **Stored permanently** | Re-import monthly |
-| POI cross-check fields, closed date | FSQ OS Places (Apache 2.0) | **Stored permanently** | Each release (use delta files) |
+| Name, coordinates, address, phone, website, email, Facebook and Instagram links, category, closed date | FSQ OS Places (Apache 2.0) | **Stored permanently**, only where the listing has no value (OSM, owners and editors win); email shown to administrators only | Each release, re-run `import-fsq` |
 | Village boundaries | Census TIGER/Line (CC0) | **Stored permanently** | Yearly |
 | Award year, category, placing, source URL | Pika's Best (PDN) | **Stored permanently** as facts | Yearly, after winners announced |
 | Editorial copy, highlights, owner submissions, ad and sponsor data | First-party | **Stored permanently** | n/a |
@@ -579,7 +610,7 @@ permission email in `docs/awards-research.md` §8.
 | Foursquare place ID | Foursquare API | **Stored permanently** (performance only) | n/a |
 | Match confidence per source (our own score from name similarity and distance) | First-party | **Stored permanently** | Each match run |
 | Monthly API call counts per billing unit and page-view spend (numbers only) | First-party | **Stored**, current month | Monthly |
-| Google rating, count, reviews, hours, summaries | Google | **Fetched live** per view, never stored | n/a |
+| Google rating, count, reviews, phone, website, hours, summaries | Google | **Fetched live** per view, never stored (phone, website and hours come in the same Place Details Enterprise request as the rating) | n/a |
 | Foursquare rating, hours, tips, photos | Foursquare API | **Fetched live** per view (pay-as-you-go) | n/a |
 | Map tiles | OpenFreeMap by default, or MapTiler Cloud (Flex) via `GUAM_RESTAURANTS_MAP_STYLE_URL`; Google Maps Embed on pages with Google content | **Fetched live** in the visitor's browser | n/a |
 | Corrections and owner listing requests | Visitors and owners via the correction form | Stored privately in the review queue; only verified facts are published, with a source | Kept in the queue |
@@ -619,6 +650,11 @@ in `docs/seo-and-analytics.md` and `docs/monetization.md` §8.
 | https://docs.developer.yelp.com/docs/fusion-display-requirements | Error |
 | https://www.yelp.com/developers/display_requirements, https://www.yelp.com/brand | Robots disallowed; not read |
 | https://api.yelp.com | Blocked by network proxy |
+| https://www.guamphonebook.com/, https://mobapp.guamphonebook.com/ | Robots disallowed; blocked by network proxy (2026-10-19) |
+| https://theguamguide.com/website-terms-use | Read 2026-10-19 |
+| https://www.guamtax.com/about/WebsiteDirectoryListing.pdf | Read 2026-10-19; DRT offices only |
+| https://huggingface.co/datasets/foursquare/fsq-os-places | Read 2026-10-19 (gated; release layout) |
+| https://fsq-os-places-us-east-1.s3.amazonaws.com/ | Listed 2026-10-19; only LICENSE.txt and NOTICE.txt |
 | https://foursquare.com/pricing/ | Read |
 | https://foursquare.com/legal/terms/apilicenseagreement/ | Read (updated 2024-02-29) |
 | https://developer.foursquare.com/docs/usage-guidelines | Read |

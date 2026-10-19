@@ -28,9 +28,10 @@ final class Google_Provider extends Base_Provider {
 	public const SEARCH_FIELD_MASK = 'places.id,places.displayName,places.location';
 
 	/**
-	 * Place Details Enterprise fields.
+	 * Place Details Enterprise fields. The phone, website and opening hours
+	 * are in the same billing unit as the rating, so they cost nothing extra.
 	 */
-	public const DETAILS_FIELD_MASK = 'rating,userRatingCount,googleMapsUri,attributions';
+	public const DETAILS_FIELD_MASK = 'rating,userRatingCount,googleMapsUri,attributions,nationalPhoneNumber,websiteUri,regularOpeningHours.weekdayDescriptions';
 
 	/**
 	 * Added for reviews; raises the request to Enterprise + Atmosphere.
@@ -162,6 +163,12 @@ final class Google_Provider extends Base_Provider {
 				'url'  => (string) ( $attribution['providerUri'] ?? '' ),
 			);
 		}
+
+		$rating['details'] = array(
+			'phone'   => sanitize_text_field( (string) ( $data['nationalPhoneNumber'] ?? '' ) ),
+			'website' => esc_url_raw( (string) ( $data['websiteUri'] ?? '' ), array( 'http', 'https' ) ),
+			'hours'   => array_values( array_map( 'sanitize_text_field', array_filter( (array) ( $data['regularOpeningHours']['weekdayDescriptions'] ?? array() ), 'is_string' ) ) ),
+		);
 
 		if ( $with_reviews ) {
 			foreach ( $data['reviews'] ?? array() as $review ) {

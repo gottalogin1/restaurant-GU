@@ -112,3 +112,37 @@
 .gr-review__text {
 	white-space: pre-line;
 }
+
+.gr-ratings__details {
+	margin-top: 0.75em;
+	font-size: 0.9em;
+}
+
+.gr-ratings__details-title {
+	margin: 0 0 0.25em;
+	font-weight: 600;
+}
+
+.gr-ratings__details dl {
+	margin: 0;
+}
+
+.gr-ratings__detail {
+	display: flex;
+	gap: 0.5em;
+}
+
+.gr-ratings__detail dt {
+	min-width: 5em;
+	font-weight: 600;
+}
+
+.gr-ratings__detail dd {
+	margin: 0;
+}
+
+.gr-ratings__hours {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}

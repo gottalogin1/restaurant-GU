@@ -161,6 +161,15 @@ class Ratings_Display_Test extends Test_Case {
 		$this->assertSame( 'Google Maps', $google['attribution']['text'] );
 		$this->assertSame( 'Example Data Co', $google['attribution']['providers'][0]['name'] );
 		$this->assertSame( 0, $google['cached_until'] );
+		$this->assertSame(
+			array(
+				'phone'   => '(671) 646-1234',
+				'website' => 'https://example-grill.com/',
+				'hours'   => array( 'Monday: 11:00 AM – 9:00 PM', 'Tuesday: Closed' ),
+			),
+			$google['details']
+		);
+		$this->assertSame( '', (string) get_post_meta( $this->restaurant, Restaurant_Meta::WEBSITE, true ), 'Google details are never stored.' );
 
 		// The 1-star review comes back first and unchanged: no sentiment filtering or reordering.
 		$this->assertCount( 2, $google['reviews'] );

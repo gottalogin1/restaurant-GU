@@ -87,8 +87,10 @@ final class Ratings {
 	 * rating_scale (5, or 10 for Foursquare), review_count, url (the place on
 	 * the source's site), attribution {text, logo_url, providers}, stars_image
 	 * (Yelp's official image), reviews [{author, author_url, author_photo,
-	 * rating, text, time, url, flag_url}], reviews_notice, fetched_at and
-	 * cached_until (0 when fetched live).
+	 * rating, text, time, url, flag_url}], reviews_notice, details {phone,
+	 * website, hours: one line per day} (Google only, shown in its own
+	 * section and never stored), fetched_at and cached_until (0 when fetched
+	 * live).
 	 *
 	 * @param int                  $restaurant_id Restaurant post ID.
 	 * @param array<string, mixed> $args {

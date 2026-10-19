@@ -13,6 +13,7 @@ use GuamRestaurants\Core\Awards\Pages as Awards_Pages;
 use GuamRestaurants\Core\Awards\Policy as Awards_Policy;
 use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Database\Ingestion_Runs;
 use GuamRestaurants\Core\Highlights\Policy_Page;
 use GuamRestaurants\Core\Legal\Pages as Legal_Pages;
 use GuamRestaurants\Core\Monitoring\Queries;
@@ -378,6 +379,15 @@ final class Blocks {
 		if ( '' !== $website ) {
 			$rows[ __( 'Website', 'guam-restaurants-core' ) ] = sprintf( '<a href="%1$s" rel="noopener" data-gr-listing-click="website">%2$s</a>', esc_url( $website ), esc_html( Restaurant_View::website_label( $website ) ) );
 		}
+		foreach ( array(
+			Restaurant_Meta::FACEBOOK  => __( 'Facebook', 'guam-restaurants-core' ),
+			Restaurant_Meta::INSTAGRAM => __( 'Instagram', 'guam-restaurants-core' ),
+		) as $key => $label ) {
+			$url = (string) get_post_meta( $id, $key, true );
+			if ( '' !== $url && $url !== $website ) {
+				$rows[ $label ] = sprintf( '<a href="%1$s" rel="noopener">%2$s</a>', esc_url( $url ), esc_html( (string) preg_replace( '#^https?://(www\.)?#i', '', untrailingslashit( $url ) ) ) );
+			}
+		}
 		$directions = Maps::directions_url( $id );
 		if ( '' !== $directions ) {
 			/* translators: %s: restaurant name. */
@@ -616,6 +626,13 @@ final class Blocks {
 				__( 'Village boundaries: %s.', 'guam-restaurants-core' ),
 				'<a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html">' . esc_html__( 'U.S. Census Bureau TIGER/Line', 'guam-restaurants-core' ) . '</a>'
 			),
+			Ingestion_Runs::has_previous( 'fsq_os' )
+				? sprintf(
+					/* translators: %s: Foursquare Open Source Places link. */
+					__( 'Some business details: %s, © Foursquare Labs, Inc., Apache License 2.0.', 'guam-restaurants-core' ),
+					'<a href="https://docs.foursquare.com/data-products/docs/fsq-places-open-source">Foursquare Open Source Places</a>'
+				)
+				: '',
 			esc_html__( 'Ratings from other sites are shown as each site provides them, with its own credit.', 'guam-restaurants-core' ),
 		);
 		/**

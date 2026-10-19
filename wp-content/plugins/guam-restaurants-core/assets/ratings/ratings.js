@@ -137,6 +137,39 @@
 		] );
 	}
 
+	// Google's live phone, website and hours, in Google's own section and never stored.
+	function details( data ) {
+		var info = data.details || {};
+		var rows = [];
+		if ( info.phone ) {
+			rows.push( el( 'div', { className: 'gr-ratings__detail' }, [
+				el( 'dt', { text: __( 'Phone', 'guam-restaurants-core' ) } ),
+				el( 'dd', {}, [ el( 'a', { href: 'tel:' + info.phone.replace( /[^0-9+]/g, '' ), text: info.phone } ) ] ),
+			] ) );
+		}
+		if ( isHttp( info.website ) ) {
+			rows.push( el( 'div', { className: 'gr-ratings__detail' }, [
+				el( 'dt', { text: __( 'Website', 'guam-restaurants-core' ) } ),
+				el( 'dd', {}, [ link( info.website, 'gr-ratings__website', [ el( 'span', { text: info.website.replace( /^https?:\/\/(www\.)?/i, '' ).replace( /\/$/, '' ) } ) ] ) ] ),
+			] ) );
+		}
+		if ( info.hours && info.hours.length ) {
+			rows.push( el( 'div', { className: 'gr-ratings__detail' }, [
+				el( 'dt', { text: __( 'Hours', 'guam-restaurants-core' ) } ),
+				el( 'dd', {}, [ el( 'ul', { className: 'gr-ratings__hours' }, info.hours.map( function ( line ) {
+					return el( 'li', { text: line } );
+				} ) ) ] ),
+			] ) );
+		}
+		if ( ! rows.length ) {
+			return null;
+		}
+		return el( 'div', { className: 'gr-ratings__details' }, [
+			el( 'p', { className: 'gr-ratings__details-title', text: sprintf( __( 'Contact and hours from %s', 'guam-restaurants-core' ), data.label ) } ),
+			el( 'dl', {}, rows ),
+		] );
+	}
+
 	function section( data ) {
 		var children = [
 			brand( data ),
@@ -145,6 +178,7 @@
 				el( 'span', { className: 'gr-ratings__count', text: countLabel( data ) } ),
 			] ),
 			providers( data ),
+			data.source === 'google' ? details( data ) : null,
 		];
 		if ( data.reviews && data.reviews.length ) {
 			children.push( el( 'ul', { className: 'gr-ratings__reviews' }, data.reviews.map( function ( item ) {

@@ -16,7 +16,7 @@ WP       := $(COMPOSE) run --rm cli wp
 COMPOSER_CMD := $(if $(shell command -v composer 2>/dev/null),composer,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) composer)
 PHP_RUN  := $(if $(shell command -v php 2>/dev/null),,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) -w /project cli)
 
-.PHONY: help setup update up down reset install composer woocommerce https lint lint-fix test wp logs
+.PHONY: help setup update up down reset install composer woocommerce https lint lint-fix test wp logs fsq-extract
 
 # WooCommerce for local development and tests (premium profile checkout). Pinned and checked;
 # downloaded from the GitHub release because wordpress.org is not reachable from every machine.
@@ -119,6 +119,18 @@ test: ## Run the plugin's PHPUnit tests (needs `make up`).
 .PHONY: plugins
 plugins: ## Show plugin versions and available updates, then install the updates.
 	$(COMPOSE) run --rm cli sh /project/bin/update-plugins.sh
+
+# Pinned for the Foursquare extract below.
+DUCKDB_VERSION ?= 1.4.1
+
+fsq-extract: ## Download Guam's places from Foursquare Open Source Places into .cache/fsq-guam.jsonl (needs HF_TOKEN in .env).
+	@[ -n "$(HF_TOKEN)" ] || { echo "Set HF_TOKEN in .env first (docs/run-fsq-import.md)."; exit 1; }
+	@mkdir -p .cache
+	@# The token is passed by name only, so it is never printed.
+	@HF_TOKEN="$(HF_TOKEN)" FSQ_RELEASE="$(FSQ_RELEASE)" docker run --rm -e HF_TOKEN -e FSQ_RELEASE \
+		-v "$(CURDIR)/bin:/scripts:ro" -v "$(CURDIR)/.cache:/out" python:3.12-slim sh -c \
+		"pip install --quiet --root-user-action=ignore duckdb==$(DUCKDB_VERSION) && python -I /scripts/fsq-extract-guam.py /out/fsq-guam.jsonl && chown $(shell id -u):$(shell id -g) /out/fsq-guam.jsonl"
+	@echo "Next: make wp ARGS=\"guam-restaurants import-fsq --input=/project/.cache/fsq-guam.jsonl --dry-run\""
 
 wp: ## Run WP-CLI, e.g. `make wp ARGS="plugin list"`.
 	$(WP) $(ARGS)

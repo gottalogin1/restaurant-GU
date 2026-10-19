@@ -3,6 +3,7 @@
 ## Restaurant details
 
 - **OpenStreetMap.** Restaurant names, addresses, phone numbers, websites, hours and locations come in part from [OpenStreetMap](https://www.openstreetmap.org/copyright), © OpenStreetMap contributors, available under the [Open Database License](https://opendatacommons.org/licenses/odbl/). Corrections made on OpenStreetMap reach this site at the next weekly import.
+- **Foursquare Open Source Places.** Some business names, addresses, phone numbers, websites and social links come from [Foursquare Open Source Places](https://docs.foursquare.com/data-products/docs/fsq-places-open-source), © Foursquare Labs, Inc., used under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 - **Restaurant owners.** Verified owners can update their own listing's hours, menu links, photos and specials. Their text and photos are shown under "From the owner".
 - **Our editors.** Facts we add by hand are checked against a published source, such as the restaurant's own website or a government record.
 

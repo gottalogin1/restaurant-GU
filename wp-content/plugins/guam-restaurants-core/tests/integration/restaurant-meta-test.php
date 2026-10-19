@@ -28,7 +28,22 @@ class Restaurant_Meta_Test extends Test_Case {
 			$this->assertArrayHasKey( $key, $registered, $key );
 			$this->assertNotEmpty( $registered[ $key ]['show_in_rest'], $key );
 		}
-		$this->assertCount( 20, Restaurant_Meta::fields() );
+		$this->assertCount( 23, Restaurant_Meta::fields() );
+	}
+
+	/**
+	 * Social links stay on their own network over https; the email is admin-only.
+	 */
+	public function test_social_links_and_email() {
+		$this->assertSame( 'https://www.facebook.com/KrackedEgg', Restaurant_Meta::sanitize_social_url( 'https://www.facebook.com/KrackedEgg' ) );
+		$this->assertSame( 'https://instagram.com/krackedegg', Restaurant_Meta::sanitize_social_url( ' https://instagram.com/krackedegg ' ) );
+		$this->assertSame( '', Restaurant_Meta::sanitize_social_url( 'https://evil.example/facebook.com' ) );
+		$this->assertSame( '', Restaurant_Meta::sanitize_social_url( 'javascript:alert(1)' ) );
+		$this->assertSame( 'facebook', Restaurant_Meta::social_network( 'https://m.facebook.com/x' ) );
+		$this->assertNull( Restaurant_Meta::social_network( 'https://krackedegg.example/' ) );
+
+		$registered = get_registered_meta_keys( 'post', Content_Types::POST_TYPE );
+		$this->assertSame( array( 'edit' ), $registered[ Restaurant_Meta::EMAIL ]['show_in_rest']['schema']['context'] );
 	}
 
 	/**
