@@ -9,14 +9,12 @@ namespace GuamRestaurants\Core\Admin;
 
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Ingestion_Runs;
-use GuamRestaurants\Core\Monitoring\Jobs;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Lists ingestion runs with their counts, notes and errors, and the
- * schedule status of each job (last success, next deadline, overdue).
- * Read-only; administrators only.
+ * Lists ingestion runs with their counts, notes and errors, and links to
+ * Scheduled jobs for each job's schedule. Read-only; administrators only.
  */
 final class Ingestion_Runs_Screen {
 
@@ -68,7 +66,8 @@ final class Ingestion_Runs_Screen {
 		}
 
 		echo '<div class="wrap"><h1>' . esc_html__( 'Import runs', 'guam-restaurants-core' ) . '</h1>';
-		self::render_jobs();
+		/* translators: %s: link to the Scheduled jobs screen. */
+		echo '<p>' . wp_kses_post( sprintf( __( 'Last and next runs of each job, and controls to turn a job off or run it now: %s.', 'guam-restaurants-core' ), '<a href="' . esc_url( Scheduled_Jobs_Screen::url() ) . '">' . esc_html__( 'Scheduled jobs', 'guam-restaurants-core' ) . '</a>' ) ) . '</p>';
 
 		echo '<h2>' . esc_html__( 'Runs', 'guam-restaurants-core' ) . '</h2>';
 		echo '<form method="get"><input type="hidden" name="post_type" value="' . esc_attr( Content_Types::POST_TYPE ) . '" /><input type="hidden" name="page" value="' . esc_attr( self::PAGE ) . '" />';
@@ -143,45 +142,6 @@ final class Ingestion_Runs_Screen {
 			echo '</div></div>';
 		}
 		echo '</div>';
-	}
-
-	/**
-	 * Job schedule table.
-	 *
-	 * @return void
-	 */
-	private static function render_jobs(): void {
-		echo '<h2>' . esc_html__( 'Scheduled jobs', 'guam-restaurants-core' ) . '</h2>';
-		echo '<p>' . esc_html(
-			Jobs::MODE_SERVER === Jobs::mode()
-				? __( 'Jobs run from the server crontab (wp guam-restaurants run-job). The daily health check also runs on WP-Cron as a backstop.', 'guam-restaurants-core' )
-				: __( 'Jobs run on WP-Cron, which needs site visits. A server cron is more reliable: see docs/scheduling.md.', 'guam-restaurants-core' )
-		) . '</p>';
-		echo '<table class="widefat striped" style="max-width:60em"><thead><tr><th>' . esc_html__( 'Job', 'guam-restaurants-core' ) . '</th><th>' . esc_html__( 'Last success (UTC)', 'guam-restaurants-core' ) . '</th><th>' . esc_html__( 'Due by (UTC)', 'guam-restaurants-core' ) . '</th><th>' . esc_html__( 'Status', 'guam-restaurants-core' ) . '</th></tr></thead><tbody>';
-		foreach ( Jobs::definitions() as $job => $definition ) {
-			$enabled = Jobs::enabled( $job );
-			$last    = Jobs::last_success( $job );
-			$error   = (string) ( Jobs::state( $job )['last_error'] ?? '' );
-			if ( ! $enabled ) {
-				$status = __( 'Off (no API key or switched off)', 'guam-restaurants-core' );
-			} elseif ( Jobs::HEALTH_CHECK !== $job && time() > Jobs::deadline( $job ) ) {
-				$status = __( 'Missed its window', 'guam-restaurants-core' );
-			} else {
-				$status = __( 'OK', 'guam-restaurants-core' );
-			}
-			if ( '' !== $error ) {
-				$status .= ' · ' . __( 'last attempt failed:', 'guam-restaurants-core' ) . ' ' . $error;
-			}
-			printf(
-				'<tr><td>%1$s <code>%2$s</code></td><td>%3$s</td><td>%4$s</td><td>%5$s</td></tr>',
-				esc_html( $definition['label'] ),
-				esc_html( $job ),
-				esc_html( $last ? gmdate( 'Y-m-d H:i', $last ) : __( 'never', 'guam-restaurants-core' ) ),
-				esc_html( $enabled && Jobs::HEALTH_CHECK !== $job ? gmdate( 'Y-m-d H:i', Jobs::deadline( $job ) ) : '—' ),
-				esc_html( $status )
-			);
-		}
-		echo '</tbody></table>';
 	}
 
 	/**

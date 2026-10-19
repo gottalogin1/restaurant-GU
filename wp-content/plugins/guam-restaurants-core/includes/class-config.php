@@ -70,6 +70,13 @@ final class Config {
 	public const CRON_MODE = 'GUAM_RESTAURANTS_CRON_MODE';
 
 	/**
+	 * Base URL WP-Cron uses to call the site itself, when the site address
+	 * does not work from inside the server (the local Docker stack sets
+	 * `http://localhost`). Empty uses the site address.
+	 */
+	public const CRON_LOOPBACK_URL = 'GUAM_RESTAURANTS_CRON_LOOPBACK_URL';
+
+	/**
 	 * Set to 1 to include Yelp in the monthly status check. Yelp has no free
 	 * tier, so it also needs a run cap above $0.
 	 */

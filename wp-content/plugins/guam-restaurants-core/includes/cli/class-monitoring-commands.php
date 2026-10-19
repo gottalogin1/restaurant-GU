@@ -13,6 +13,7 @@ use GuamRestaurants\Core\Database\Change_Log;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
 use GuamRestaurants\Core\Monitoring\Google_Status_Source;
+use GuamRestaurants\Core\Monitoring\Job_Controls;
 use GuamRestaurants\Core\Monitoring\Jobs;
 use GuamRestaurants\Core\Monitoring\Queries;
 use GuamRestaurants\Core\Monitoring\Status_Checker;
@@ -49,12 +50,16 @@ final class Monitoring_Commands {
 	/**
 	 * Runs a scheduled job now. This is what the server crontab calls
 	 * (docs/scheduling.md). Exits with an error when the job fails, so cron
-	 * can report it.
+	 * can report it. A job turned off on Restaurants > Scheduled jobs is
+	 * skipped (exit 0) unless --force is given.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <job>
 	 * : osm (weekly import + duplicates), discover (daily Google discovery from the search log), newsletter (weekly draft), google-status, yelp-status (monthly), or health-check (daily).
+	 *
+	 * [--force]
+	 * : Run even when the job is turned off in the admin.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -62,13 +67,17 @@ final class Monitoring_Commands {
 	 *     wp guam-restaurants run-job health-check
 	 *
 	 * @param string[]             $args       Job name.
-	 * @param array<string, mixed> $assoc_args Flags (unused).
+	 * @param array<string, mixed> $assoc_args Flags.
 	 * @return void
 	 */
-	public static function run_job( array $args, array $assoc_args ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- command signature.
+	public static function run_job( array $args, array $assoc_args ): void {
 		$job = (string) ( $args[0] ?? '' );
 		if ( ! isset( Jobs::definitions()[ $job ] ) ) {
 			WP_CLI::error( 'Unknown job. Use one of: ' . implode( ', ', array_keys( Jobs::definitions() ) ) );
+		}
+		if ( Job_Controls::is_paused( $job ) && ! WP_CLI\Utils\get_flag_value( $assoc_args, 'force', false ) ) {
+			WP_CLI::log( sprintf( '%s is turned off on Restaurants > Scheduled jobs; skipped. Pass --force to run it anyway.', $job ) );
+			return;
 		}
 		$outcome = Jobs::run( $job );
 		if ( ! $outcome['ok'] ) {
@@ -96,6 +105,7 @@ final class Monitoring_Commands {
 			$rows[]  = array(
 				'job'          => $job,
 				'enabled'      => $enabled ? 'yes' : 'no',
+				'turned_off'   => Job_Controls::is_paused( $job ) ? 'yes' : 'no',
 				'crontab'      => $definition['cron'],
 				'last_success' => $last ? gmdate( 'Y-m-d H:i', $last ) : 'never',
 				'due_by'       => $enabled && Jobs::HEALTH_CHECK !== $job ? gmdate( 'Y-m-d H:i', Jobs::deadline( $job ) ) : '-',
