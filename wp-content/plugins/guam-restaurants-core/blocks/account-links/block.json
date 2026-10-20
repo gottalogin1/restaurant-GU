@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/account-links",
+	"version": "0.1.0",
+	"title": "Saved and sign in",
+	"category": "widgets",
+	"icon": "admin-users",
+	"description": "Header links: Saved, with the number of saved restaurants, and Sign in (or Account when signed in).",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

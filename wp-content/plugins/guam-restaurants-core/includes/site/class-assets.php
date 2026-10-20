@@ -13,8 +13,9 @@ defined( 'ABSPATH' ) || exit;
  * One small stylesheet for every site block, and scripts loaded only
  * where they are needed: directory.js (filter form), hours.js ("open now"
  * labels, computed in the browser so cached pages stay correct), map.js
- * (loads MapLibre only when a map is about to be seen) and picker.js (the
- * random place picker).
+ * (loads MapLibre only when a map is about to be seen), picker.js (the
+ * random place picker) and saved.js (hearts and saved lists, registered by
+ * Saved\View).
  */
 final class Assets {
 
@@ -27,6 +28,7 @@ final class Assets {
 		'share'     => 'guam-restaurants-share',
 		'photos'    => 'guam-restaurants-photos',
 		'picker'    => 'guam-restaurants-picker',
+		'saved'     => 'guam-restaurants-saved',
 	);
 
 	/**

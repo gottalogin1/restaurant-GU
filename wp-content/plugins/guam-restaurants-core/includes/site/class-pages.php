@@ -18,6 +18,10 @@ defined( 'ABSPATH' ) || exit;
  *
  * - map, what to eat (the random place picker), recently opened and
  *   closed: published, made of this plugin's blocks.
+ * - saved: published (VERSION 5). The visitor's saved restaurants with a
+ *   map, a share link and sign-in or account options (Saved\View). Also
+ *   the account page for visitor accounts, and the page Meta's app
+ *   settings link to for deleting an account.
  * - claim: published, with the claim form block (Claims\Claim_Form). A
  *   claim page still holding the old editor placeholder is upgraded and
  *   published once (VERSION 3).
@@ -38,7 +42,7 @@ defined( 'ABSPATH' ) || exit;
 final class Pages {
 
 	public const OPTION  = 'guam_restaurants_site_pages';
-	public const VERSION = '4';
+	public const VERSION = '5';
 
 	/**
 	 * Placeholder the claim page shipped with before the claim form existed.
@@ -78,6 +82,14 @@ final class Pages {
 				'content' => $p( __( 'Can\'t decide? Choose a village, food type, price or anything else that matters, and we pick a restaurant at random from the places that match. Every match has the same chance. Ads appear only in the box marked Sponsored, above the pick.', 'guam-restaurants-core' ) )
 					. "\n\n" . '<!-- wp:guam-restaurants/random-picker /-->',
 				'excerpt' => __( 'Can\'t decide where to eat on Guam? Pick a village, food type and price, and get a random restaurant that matches.', 'guam-restaurants-core' ),
+			),
+			'saved'      => array(
+				'slug'    => 'saved',
+				'title'   => __( 'Saved', 'guam-restaurants-core' ),
+				'status'  => 'publish',
+				'content' => $p( __( 'Restaurants you saved with the heart. Without an account they stay in this browser; sign in to keep them on every device. To delete your account and list, sign in and use Delete my account below.', 'guam-restaurants-core' ) )
+					. "\n\n" . '<!-- wp:guam-restaurants/saved-list {"align":"wide"} /-->',
+				'excerpt' => __( 'Your saved restaurants on Guam, with a map and a link to share them.', 'guam-restaurants-core' ),
 			),
 			'recent'     => array(
 				'slug'    => 'recently-opened-and-closed',

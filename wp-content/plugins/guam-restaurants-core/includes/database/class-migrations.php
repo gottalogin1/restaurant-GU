@@ -40,7 +40,18 @@ final class Migrations {
 	 * @return array<string, callable(): void> ID => callback.
 	 */
 	public static function definitions(): array {
-		return array();
+		return array(
+			// Visitor accounts keep saved lists (Saved\Members). WordPress ships with
+			// sign-up off; turn it on once, as Subscribers, and leave it to the admin after.
+			'2026-10-20-visitor-signup' => static function (): void {
+				if ( ! get_option( 'users_can_register' ) ) {
+					update_option( 'users_can_register', 1 );
+				}
+				if ( '' === (string) get_option( 'default_role', '' ) ) {
+					update_option( 'default_role', 'subscriber' );
+				}
+			},
+		);
 	}
 
 	/**

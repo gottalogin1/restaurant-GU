@@ -22,6 +22,7 @@ use GuamRestaurants\Core\Owners\Listing_Stats;
 use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Saved\View as Saved_View;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -57,6 +58,8 @@ final class Blocks {
 		'policy-links'        => 'policy_links',
 		'color-scheme-toggle' => 'color_scheme_toggle',
 		'random-picker'       => 'random_picker',
+		'saved-list'          => 'saved_list',
+		'account-links'       => 'account_links',
 	);
 
 	/**
@@ -185,6 +188,24 @@ final class Blocks {
 		$params = wp_unslash( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Picker sanitizes each value.
 		$action = is_singular() ? (string) get_permalink( get_queried_object_id() ) : home_url( '/' );
 		return self::wrap( 'div', Picker::render( is_array( $params ) ? $params : array(), $action ) );
+	}
+
+	/**
+	 * The Saved page: the visitor's list, or a shared one, with the map.
+	 *
+	 * @return string
+	 */
+	public static function saved_list(): string {
+		return Saved_View::render_page();
+	}
+
+	/**
+	 * Header links to the Saved page and to sign in or the account.
+	 *
+	 * @return string
+	 */
+	public static function account_links(): string {
+		return Saved_View::account_links();
 	}
 
 	/**
@@ -485,6 +506,7 @@ final class Blocks {
 		if ( $menus && 'menu' !== ( $cta['action'] ?? '' ) ) {
 			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener nofollow">%2$s</a>', esc_url( $menus[0]['url'] ), esc_html__( 'Menu', 'guam-restaurants-core' ) );
 		}
+		$actions[] = Saved_View::action_button( $id );
 		$actions[] = sprintf(
 			'<button type="button" class="gr-action" data-gr-share data-gr-share-url="%1$s" data-gr-share-title="%2$s" data-gr-copied="%3$s" hidden>%4$s</button>',
 			esc_url( (string) get_permalink( $id ) ),

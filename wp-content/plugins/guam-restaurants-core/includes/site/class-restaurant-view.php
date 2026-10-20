@@ -14,6 +14,7 @@ use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Photos\Cuisine_Photos;
 use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Saved\View as Saved_View;
 use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Vocabulary;
 
@@ -406,7 +407,7 @@ final class Restaurant_View {
 		$status        = self::status_label( $restaurant_id );
 
 		return sprintf(
-			'<article class="gr-card">%7$s<div class="gr-card__body">%8$s<h%1$d class="gr-card__name"><a href="%2$s">%3$s</a></h%1$d>%4$s%5$s%6$s</div></article>',
+			'<article class="gr-card">%7$s%9$s<div class="gr-card__body">%8$s<h%1$d class="gr-card__name"><a href="%2$s">%3$s</a></h%1$d>%4$s%5$s%6$s</div></article>',
 			$heading_level,
 			esc_url( (string) get_permalink( $restaurant_id ) ),
 			esc_html( get_the_title( $restaurant_id ) ),
@@ -416,7 +417,8 @@ final class Restaurant_View {
 				? '<p class="gr-card__status">' . esc_html( $status ) . '</p>'
 				: ( '' !== $hours ? '<p class="gr-card__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' ),
 			self::media( $restaurant_id, 'medium_large', 'gr-card__media' ),
-			self::badges( $restaurant_id )
+			self::badges( $restaurant_id ),
+			Saved_View::heart( $restaurant_id )
 		);
 	}
 }

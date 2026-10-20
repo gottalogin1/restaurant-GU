@@ -101,6 +101,9 @@ final class Plugin {
 		Site\Rest_Controller::register();
 		Site\Pages::register();
 		Site\Picker::register();
+		Saved\View::register();
+		Saved\Members::register();
+		Saved\Rest_Controller::register();
 		Site\Seo::register();
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();
