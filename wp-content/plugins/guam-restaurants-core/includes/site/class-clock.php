@@ -21,6 +21,16 @@ final class Clock {
 	public const MINUTES_PER_WEEK = 10080;
 
 	/**
+	 * "Open late" means open at this hour tonight.
+	 */
+	public const LATE_HOUR = 22;
+
+	/**
+	 * Before this hour, "tonight" is still last night.
+	 */
+	public const NIGHT_ENDS_HOUR = 4;
+
+	/**
 	 * Current Unix time. Tests set it with the `guam_restaurants_now` filter.
 	 *
 	 * @return int
@@ -52,6 +62,23 @@ final class Clock {
 	public static function minute_of_week( ?int $timestamp = null ): int {
 		$date = ( new \DateTimeImmutable( '@' . ( $timestamp ?? self::now() ) ) )->setTimezone( self::zone() );
 		return ( (int) $date->format( 'N' ) - 1 ) * self::MINUTES_PER_DAY + (int) $date->format( 'G' ) * 60 + (int) $date->format( 'i' );
+	}
+
+	/**
+	 * The minute of the week that "open late" checks: 10 pm tonight, Guam
+	 * time, or now once it is past 10 pm (until 4 am, when the night ends).
+	 *
+	 * @param int|null $timestamp Unix time; defaults to now().
+	 * @return int 0 to 10079.
+	 */
+	public static function late_minute( ?int $timestamp = null ): int {
+		$timestamp = $timestamp ?? self::now();
+		$hour      = (int) ( new \DateTimeImmutable( '@' . $timestamp ) )->setTimezone( self::zone() )->format( 'G' );
+		$now       = self::minute_of_week( $timestamp );
+		if ( $hour >= self::LATE_HOUR || $hour < self::NIGHT_ENDS_HOUR ) {
+			return $now;
+		}
+		return intdiv( $now, self::MINUTES_PER_DAY ) * self::MINUTES_PER_DAY + self::LATE_HOUR * 60;
 	}
 
 	/**

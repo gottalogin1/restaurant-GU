@@ -136,7 +136,7 @@ final class Directory_Query {
 	public static function args( array $filters, int $per_page = self::PER_PAGE ): array {
 		$tax_query = array();
 		$search    = (string) $filters['q'];
-		if ( '' !== $search ) {
+		if ( '' !== $search && ! Query_Parser::is_literal( $search ) ) {
 			$match = Village_Aliases::extract( $search );
 			if ( $match['village_id'] ) {
 				$search      = $match['search'];
@@ -168,6 +168,7 @@ final class Directory_Query {
 		$extra = array(
 			'award'      => ! empty( $filters['award'] ),
 			'open_at'    => ! empty( $filters['open'] ) ? Clock::minute_of_week() : null,
+			'late_at'    => ! empty( $filters['late'] ) ? Clock::late_minute() : null,
 			'price_sort' => in_array( $sort, array( 'price_asc', 'price_desc' ), true ) ? $sort : '',
 		);
 
@@ -219,7 +220,7 @@ final class Directory_Query {
 	}
 
 	/**
-	 * Adds the award, open-now, closed and price conditions.
+	 * Adds the award, open-now, open-late, closed and price conditions.
 	 *
 	 * @param array<string, string> $clauses SQL clauses.
 	 * @param \WP_Query             $query   Query.
@@ -248,6 +249,9 @@ final class Directory_Query {
 		if ( isset( $extra['open_at'] ) && null !== $extra['open_at'] ) {
 			$clauses['where'] .= ' AND ' . Open_Hours::open_sql( (int) $extra['open_at'], $posts );
 		}
+		if ( isset( $extra['late_at'] ) && null !== $extra['late_at'] ) {
+			$clauses['where'] .= ' AND ' . Open_Hours::open_sql( (int) $extra['late_at'], $posts );
+		}
 		if ( ! empty( $extra['price_sort'] ) ) {
 			$rank               = $wpdb->prepare(
 				"(SELECT MIN(CAST(gr_tm.meta_value AS UNSIGNED)) FROM {$wpdb->term_relationships} gr_tr INNER JOIN {$wpdb->term_taxonomy} gr_tt ON gr_tt.term_taxonomy_id = gr_tr.term_taxonomy_id AND gr_tt.taxonomy = %s INNER JOIN {$wpdb->termmeta} gr_tm ON gr_tm.term_id = gr_tt.term_id AND gr_tm.meta_key = %s WHERE gr_tr.object_id = {$posts}.ID)",
@@ -261,13 +265,13 @@ final class Directory_Query {
 	}
 
 	/**
-	 * "Open now" results change by the minute, so keep them out of page caches.
+	 * "Open now" and "open late" results change by the minute, so keep them out of page caches.
 	 *
 	 * @return void
 	 */
 	public static function no_page_cache_for_open_now(): void {
 		global $wp_query;
-		if ( $wp_query instanceof \WP_Query && self::is_directory( $wp_query ) && ! empty( self::current_filters()['open'] ) && ! defined( 'DONOTCACHEPAGE' ) ) {
+		if ( $wp_query instanceof \WP_Query && self::is_directory( $wp_query ) && Filters::is_timed( self::current_filters() ) && ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- constant read by page cache plugins.
 		}
 	}

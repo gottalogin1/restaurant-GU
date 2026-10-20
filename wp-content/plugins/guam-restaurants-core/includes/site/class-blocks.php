@@ -158,7 +158,7 @@ final class Blocks {
 				esc_html__( 'What', 'guam-restaurants-core' ),
 				esc_attr( Filters::SEARCH ),
 				Filters::MAX_SEARCH_LENGTH,
-				esc_attr__( 'Name, dish or cuisine', 'guam-restaurants-core' ),
+				esc_attr__( 'Name, dish, or “cheap Korean in Tumon”', 'guam-restaurants-core' ),
 				esc_html__( 'Search', 'guam-restaurants-core' ),
 				'' === $groups ? '' : sprintf(
 					'<span class="gr-search__field gr-search__where"><label for="%1$s-where">%2$s</label><select id="%1$s-where" name="%3$s"><option value="">%4$s</option>%5$s</select></span>',

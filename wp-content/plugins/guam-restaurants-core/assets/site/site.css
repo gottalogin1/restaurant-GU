@@ -223,6 +223,43 @@
 	font-size: 0.9rem;
 }
 
+/* Filters in use, and how a typed search was read */
+.gr-active {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.gr-active__lead,
+.gr-active__links {
+	margin: 0;
+}
+
+.gr-active__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1rem;
+	font-size: 0.9rem;
+}
+
+.gr-chip--remove {
+	color: inherit;
+	border-color: var(--gr-primary);
+}
+
+.gr-chip--remove > span[aria-hidden="true"] {
+	font-size: 1.1rem;
+	line-height: 1;
+}
+
+.gr-chip__note {
+	color: var(--gr-muted-text);
+	font-size: 0.85rem;
+	font-weight: 400;
+}
+
 .gr-cards {
 	list-style: none;
 	margin: 0;
