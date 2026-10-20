@@ -143,7 +143,7 @@ class Job_Controls_Test extends Guam_Test_Case {
 		foreach ( array_keys( Job_Controls::tasks() ) as $task ) {
 			$this->assertStringContainsString( 'id="gr-job-' . $task . '"', $html );
 		}
-		$this->assertCount( 9, Job_Controls::tasks() );
+		$this->assertCount( 10, Job_Controls::tasks() );
 		$this->assertStringContainsString( 'Turn on', $html );
 		$this->assertStringContainsString( 'Turn off', $html );
 		$this->assertStringContainsString( 'Run now', $html );

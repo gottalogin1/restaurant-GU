@@ -171,10 +171,18 @@ final class Config {
 	public const REQUIRE_ADMIN_2FA = 'GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA';
 
 	/**
-	 * Largest upload in megabytes for everyone (default 10). The server's
+	 * Largest upload in megabytes for everyone (default 20, the visitor photo
+	 * limit Sanjay set on 2026-10-20). The server's
 	 * own upload_max_filesize still applies when it is lower.
 	 */
 	public const MAX_UPLOAD_MB = 'GUAM_RESTAURANTS_MAX_UPLOAD_MB';
+
+	/**
+	 * Formal legal name of the company that runs the site, used in the photo
+	 * upload agreement. Until it is set, the site name is used and the
+	 * Photo submissions screen says the agreement still needs it.
+	 */
+	public const LEGAL_NAME = 'GUAM_RESTAURANTS_LEGAL_NAME';
 
 	/**
 	 * 1 keeps XML-RPC on (off by default; nothing on this site uses it).
@@ -190,7 +198,7 @@ final class Config {
 
 	public const DEFAULT_CLOSURE_ALERT_THRESHOLD = 5;
 
-	public const DEFAULT_MAX_UPLOAD_MB = 10;
+	public const DEFAULT_MAX_UPLOAD_MB = 20;
 
 	public const DEFAULT_RUN_CAP_USD     = 0.0;
 	public const DEFAULT_MONTHLY_CAP_USD = 0.0;

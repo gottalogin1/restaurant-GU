@@ -148,7 +148,8 @@ class Production_Readiness_Test extends Test_Case {
 	 * Upload cap and allowed types.
 	 */
 	public function test_upload_limits() {
-		$this->assertSame( 10 * MB_IN_BYTES, Hardening::upload_size_limit( 64 * MB_IN_BYTES ) );
+		putenv( 'GUAM_RESTAURANTS_MAX_UPLOAD_MB' );
+		$this->assertSame( 20 * MB_IN_BYTES, Hardening::upload_size_limit( 64 * MB_IN_BYTES ), 'Default: 20 MB, the visitor photo limit.' );
 		$this->assertSame( 2 * MB_IN_BYTES, Hardening::upload_size_limit( 2 * MB_IN_BYTES ), 'A lower server limit wins.' );
 		putenv( 'GUAM_RESTAURANTS_MAX_UPLOAD_MB=5' );
 		$this->assertSame( 5 * MB_IN_BYTES, Hardening::upload_size_limit( 64 * MB_IN_BYTES ) );

@@ -12,6 +12,7 @@ use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Monitoring\Queries;
 use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Photos\Cuisine_Photos;
+use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Vocabulary;
@@ -262,7 +263,7 @@ final class Restaurant_View {
 
 	/**
 	 * Photo for cards and the page top: the featured image, else the
-	 * verified owner's first photo.
+	 * verified owner's first photo, else the newest approved upload.
 	 *
 	 * @param int $restaurant_id Restaurant.
 	 * @return int Attachment ID, 0 for none.
@@ -273,15 +274,15 @@ final class Restaurant_View {
 			return $featured;
 		}
 		// Owner photos show only while the listing is claimed, as in Owner_Content::render_block().
-		if ( (int) get_post_meta( $restaurant_id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) <= 0 ) {
-			return 0;
-		}
-		foreach ( Owner_Content::get( $restaurant_id )['photos'] as $photo ) {
-			if ( wp_attachment_is_image( $photo ) ) {
-				return $photo;
+		if ( (int) get_post_meta( $restaurant_id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0 ) {
+			foreach ( Owner_Content::get( $restaurant_id )['photos'] as $photo ) {
+				if ( wp_attachment_is_image( $photo ) ) {
+					return $photo;
+				}
 			}
 		}
-		return 0;
+		$uploads = Photo_Submissions::ids( Photo_Submissions::APPROVED, $restaurant_id, 1 );
+		return $uploads ? $uploads[0] : 0;
 	}
 
 	/**

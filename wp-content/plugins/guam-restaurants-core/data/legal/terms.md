@@ -11,7 +11,8 @@ Ratings and reviews from Google, Yelp, Foursquare and other services belong to t
 ## What you post
 
 - You may post reviews, owner responses, photos and other content only if it is yours to share and follows our [editorial policy]({editorial_url}).
-- You keep ownership of what you post. You give {site} a non-exclusive, worldwide, royalty-free license to show, store, and format it on the site and in our newsletter for as long as it is published, and to keep a copy afterwards for our records.
+- Photos are covered by our [photo upload agreement]({home}photo-upload-agreement/): uploading a photo transfers it to us.
+- You keep ownership of everything else you post. You give {site} a non-exclusive, worldwide, royalty-free license to show, store, and format it on the site and in our newsletter for as long as it is published, and to keep a copy afterwards for our records.
 - We may decline or remove content only under the rules in the editorial policy. We never remove a review because it is negative.
 - Nothing in these terms stops you from writing an honest review of {site} anywhere.
 

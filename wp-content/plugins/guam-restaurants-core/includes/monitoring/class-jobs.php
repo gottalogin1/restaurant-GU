@@ -18,6 +18,7 @@ use GuamRestaurants\Core\Osm\Cuisine_Map;
 use GuamRestaurants\Core\Osm\Element_Mapper;
 use GuamRestaurants\Core\Osm\Importer;
 use GuamRestaurants\Core\Osm\Overpass_Client;
+use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Ratings\Budget;
 use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 
@@ -39,6 +40,9 @@ defined( 'ABSPATH' ) || exit;
  * - `health-check`: daily; emails the owner when a job missed its window.
  * - `newsletter`: weekly, Monday 06:00 Guam time; assembles the newsletter
  *   draft (Newsletter\Newsletter). It never sends anything to subscribers.
+ * - `photo-cleanup`: daily; deletes full-size originals of uploaded photos
+ *   30 days after upload, and uploads whose email was never confirmed
+ *   (Photos\Photo_Submissions::cleanup()).
  *
  * Preferred: a real server cron runs `wp guam-restaurants run-job <job>`
  * (set GUAM_RESTAURANTS_CRON_MODE=server; docs/scheduling.md). Otherwise
@@ -60,6 +64,7 @@ final class Jobs {
 	public const RENEWALS        = 'renewal-reminders';
 	public const NEWSLETTER      = 'newsletter';
 	public const SPEND_REPORT    = 'spend-report';
+	public const PHOTO_CLEANUP   = 'photo-cleanup';
 	public const MODE_SERVER     = 'server';
 	public const MODE_WP_CRON    = 'wp-cron';
 	public const HEALTH_MIN_HOUR = 20;
@@ -134,6 +139,14 @@ final class Jobs {
 				'grace'      => 3 * DAY_IN_SECONDS,
 				'recurrence' => self::MONTHLY,
 				'cron'       => '0 22 1 * *',
+			),
+			self::PHOTO_CLEANUP => array(
+				'label'      => 'Uploaded photo cleanup',
+				'source'     => 'photo_cleanup',
+				'interval'   => DAY_IN_SECONDS,
+				'grace'      => DAY_IN_SECONDS,
+				'recurrence' => 'daily',
+				'cron'       => '20 5 * * *',
 			),
 		);
 	}
@@ -276,6 +289,10 @@ final class Jobs {
 				case self::SPEND_REPORT:
 					$outcome = self::outcome( true, null, Spend_Report::run(), '' );
 					break;
+				case self::PHOTO_CLEANUP:
+					$counts  = Photo_Submissions::cleanup();
+					$outcome = self::outcome( true, null, sprintf( 'deleted %d original(s) past 30 days and %d unconfirmed upload(s)', $counts['originals'], $counts['unconfirmed'] ), '', $counts );
+					break;
 				case self::NEWSLETTER:
 					$draft   = Newsletter::assemble( $options );
 					$outcome = self::outcome( true, null, Newsletter::summary( $draft ), '', $draft );
@@ -285,7 +302,7 @@ final class Jobs {
 			}
 		} catch ( \Throwable $e ) {
 			$attempts = $e instanceof Request_Failed ? $e->attempt_log() : array();
-			$run_id   = in_array( $job, array( self::HEALTH_CHECK, self::RENEWALS, self::SPEND_REPORT ), true ) ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage(), $attempts );
+			$run_id   = in_array( $job, array( self::HEALTH_CHECK, self::RENEWALS, self::SPEND_REPORT, self::PHOTO_CLEANUP ), true ) ? null : Ingestion_Runs::log_failure( $definitions[ $job ]['source'], $e->getMessage(), $attempts );
 			// Also to the PHP error log, which the host's log monitoring reads (docs/monitoring.md §2).
 			error_log( sprintf( '[guam-restaurants] job %s failed: %s', $job, $e->getMessage() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intended production log line.
 			$outcome = self::outcome( false, $run_id ? $run_id : null, '', $e->getMessage() );

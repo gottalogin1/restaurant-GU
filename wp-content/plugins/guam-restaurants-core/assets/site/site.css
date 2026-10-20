@@ -14,7 +14,7 @@
 	--gr-radius: 0.5rem;
 }
 
-:where(.gr-card, .gr-chips, .gr-recent, .gr-details, .gr-hero, .gr-row, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
+:where(.gr-card, .gr-photos, .gr-chips, .gr-recent, .gr-details, .gr-hero, .gr-row, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
 	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
 	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
@@ -1098,4 +1098,128 @@
 .gr-related__title {
 	margin: 0 0 0.5rem;
 	font-size: 1.125rem;
+}
+
+/* Restaurant photos block (Photos\Photo_Gallery) */
+.gr-photos__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+	gap: 0.75rem;
+	margin: 0 0 1rem;
+	padding: 0;
+	list-style: none;
+}
+
+.gr-photos__item {
+	margin: 0;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	overflow: hidden;
+	background: var(--gr-surface);
+}
+
+.gr-photos__item img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1;
+	height: auto;
+	object-fit: cover;
+}
+
+.gr-photos__item figcaption {
+	display: grid;
+	gap: 0.1rem;
+	padding: 0.45rem 0.6rem 0.55rem;
+	font-size: 0.85rem;
+}
+
+.gr-photos__stars {
+	color: #b26a00;
+	letter-spacing: 0.05em;
+}
+
+.gr-photos__by,
+.gr-photos__hint,
+.gr-photos__intro {
+	color: var(--gr-muted-text);
+}
+
+.gr-photos__owner {
+	font-weight: 700;
+}
+
+.gr-photos__add {
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	padding: 0.6rem 1rem;
+}
+
+.gr-photos__add summary {
+	cursor: pointer;
+	font-weight: 700;
+}
+
+.gr-photos__form {
+	display: grid;
+	gap: 0.75rem;
+	margin-top: 0.75rem;
+}
+
+.gr-photos__form p {
+	margin: 0;
+}
+
+.gr-photos__field {
+	display: grid;
+	gap: 0.25rem;
+}
+
+.gr-photos__field input[type="text"],
+.gr-photos__field input[type="email"] {
+	padding: 0.5rem 0.6rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	font: inherit;
+}
+
+.gr-photos__hint {
+	font-size: 0.85rem;
+}
+
+.gr-photos__rating {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem 1rem;
+	margin: 0;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+}
+
+.gr-photos__rating[disabled] {
+	opacity: 0.5;
+}
+
+.gr-photos__trap {
+	position: absolute;
+	left: -9999px;
+}
+
+.gr-photos__submit {
+	padding: 0.6rem 1.1rem;
+	border: 0;
+	border-radius: 999px;
+	background: var(--gr-primary);
+	color: #fff;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.gr-photos__status span {
+	display: block;
+}
+
+.gr-photos__status.is-error {
+	color: #a4161a;
 }

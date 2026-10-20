@@ -235,6 +235,7 @@ Publish a short **Corrections and Removals** page that explains these rules and 
 - **Terms of Use.** Content license from users who submit reviews or photos, review rules, prohibited uses, disclaimers, limitation of liability, governing law (Guam), and a dispute process. No clause may restrict honest reviews of the site (Consumer Review Fairness Act).
 - **Website accessibility.** ADA Title III lawsuits over website accessibility are common in the US. Target WCAG 2.2 AA.
 - **Insurance.** Media liability or errors-and-omissions coverage for defamation, copyright, and privacy claims.
+- **Photo uploads (added 2026-10-20).** Visitors and owners can upload photos with a dish name and an optional 1 to 5 star dish rating. Sanjay decided that an upload makes the photo the site's property. The photo upload agreement (`data/legal/photo-upload-agreement.md`, published at /photo-upload-agreement/ and linked in the footer and on the form) transfers all rights to the company. If a transfer is not effective, it falls back to a permanent, transferable license. Counsel should confirm three things: whether a tick box is enough for a copyright transfer (17 U.S.C. § 204(a) needs a signed writing; E-SIGN may cover it), how this fits the Terms of Use (now pointed at the agreement), and what to do for minors. The formal company name is still to be decided (`GUAM_RESTAURANTS_LEGAL_NAME`). Every photo waits for an administrator. Photos are declined only under the published photo rules, never because of their rating (16 CFR § 465.7). Owners and connected people can upload photos but cannot rate (§ 465.5). The server keeps a reduced copy with camera and location data removed, and deletes the original after 30 days.
 
 ---
 
@@ -245,7 +246,7 @@ Publish a short **Corrections and Removals** page that explains these rules and 
 3. Does any Guam privacy law, regulation, or pending bill beyond 9 GCA Ch. 48 apply to website analytics and cookies?
 4. Given visitors from Japan, Korea, the EU, and US states, which outside privacy laws should the site plan for, and is a site-wide consent banner advisable?
 5. Can a restaurant owner force removal of a truthful listing in Guam? What risk comes from listing home-based or unlicensed food businesses?
-6. Should the site register a DMCA agent before launch, even if users cannot upload content at first?
+6. Should the site register a DMCA agent before launch? Visitors can now upload photos (2026-10-20).
 7. Should the site disclose a restaurant's advertiser status on award and ranking pages the site itself publishes?
 8. What should the advertiser contract and the Terms of Use include? Is there a Guam form the attorney recommends?
 9. What are the business license and gross receipts tax obligations for advertising revenue?

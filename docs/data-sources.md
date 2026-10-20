@@ -646,6 +646,7 @@ uploaded without a license, so neither is copied without permission.
 | Corrections and owner listing requests | Visitors and owners via the correction form | Stored privately in the review queue; only verified facts are published, with a source | Kept in the queue |
 | Listing view counts | Our own site (anonymous daily counts) | Stored, aggregate only | 400 days |
 | Illustrative cuisine photo and its credit (title, author, license, source page, Openverse id) | Openverse (CC0, PDM, CC BY, CC BY-SA) | **Stored permanently** in the media library, always shown with label and credit | When an editor runs `cuisine-photos --refresh` |
+| Visitor and owner photo uploads (reduced copy, dish name, optional dish rating, display name, agreement version) | First-party, under the photo upload agreement | **Stored permanently** after approval; the full-size original is deleted after 30 days; email never stored | n/a |
 | Restaurant photo from its own website, with the permission note | Restaurant website, owner's permission | **Stored permanently** as the featured image; removed if the owner asks | n/a |
 
 ## 10. Research-only references (not data sources)

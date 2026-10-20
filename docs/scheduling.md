@@ -13,6 +13,7 @@ cron can run it directly. WP-Cron is the fallback.
 | Health check | `wp guam-restaurants run-job health-check` | daily | `0 7 * * *` |
 | Newsletter draft (Monday 06:00 Guam time; never sends) | `wp guam-restaurants run-job newsletter` | weekly, plus 1 day grace | `0 20 * * 0` |
 | API spend report for last month (docs/monitoring.md §3) | `wp guam-restaurants run-job spend-report` | monthly, plus 3 days grace | `0 22 1 * *` (08:00 Guam on the 2nd) |
+| Uploaded photo cleanup: delete originals after 30 days and unconfirmed uploads after 24 hours | `wp guam-restaurants run-job photo-cleanup` | daily, plus 1 day grace | `20 5 * * *` (15:20 Guam) |
 
 `wp guam-restaurants jobs` prints the same table with the last success and
 the next deadline. Restaurants > Scheduled jobs shows it in the admin, and
@@ -68,6 +69,7 @@ unset on a real host.
    30 22 * * * cd /path/to/wordpress && wp guam-restaurants run-job renewal-reminders >> /var/log/guam-jobs.log 2>&1
    0 7 * * *   cd /path/to/wordpress && wp guam-restaurants run-job health-check >> /var/log/guam-jobs.log 2>&1
    0 22 1 * *  cd /path/to/wordpress && wp guam-restaurants run-job spend-report >> /var/log/guam-jobs.log 2>&1
+   20 5 * * *  cd /path/to/wordpress && wp guam-restaurants run-job photo-cleanup >> /var/log/guam-jobs.log 2>&1
    15 17 * * * /path/to/bin/backup.sh >> /var/log/guam-backup.log 2>&1
    ```
 

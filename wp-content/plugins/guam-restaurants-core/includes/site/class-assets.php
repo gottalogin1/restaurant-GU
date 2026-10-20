@@ -24,6 +24,7 @@ final class Assets {
 		'hours'     => 'guam-restaurants-hours',
 		'map'       => 'guam-restaurants-map',
 		'share'     => 'guam-restaurants-share',
+		'photos'    => 'guam-restaurants-photos',
 	);
 
 	/**
@@ -63,6 +64,9 @@ final class Assets {
 		);
 
 		wp_register_script( self::SCRIPTS['share'], $base . 'share.js', array(), $ver, array( 'strategy' => 'defer' ) );
+
+		wp_register_script( self::SCRIPTS['photos'], $base . 'photos.js', array( 'wp-i18n' ), $ver, array( 'strategy' => 'defer' ) );
+		wp_set_script_translations( self::SCRIPTS['photos'], 'guam-restaurants-core' );
 
 		wp_register_script( self::SCRIPTS['map'], $base . 'map.js', array( 'wp-i18n' ), $ver, array( 'strategy' => 'defer' ) );
 		wp_set_script_translations( self::SCRIPTS['map'], 'guam-restaurants-core' );

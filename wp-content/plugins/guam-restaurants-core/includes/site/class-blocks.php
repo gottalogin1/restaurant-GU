@@ -820,6 +820,7 @@ final class Blocks {
 			__( 'Terms of use', 'guam-restaurants-core' ) => Pages::url( 'terms' ),
 			__( 'Advertising disclosure', 'guam-restaurants-core' ) => Legal_Pages::url( 'disclosure' ),
 			__( 'Data sources', 'guam-restaurants-core' ) => Legal_Pages::url( 'sources' ),
+			__( 'Photo upload agreement', 'guam-restaurants-core' ) => Legal_Pages::url( 'photos' ),
 			__( 'Advertise with us', 'guam-restaurants-core' ) => Pages::url( 'advertise' ),
 		);
 		$items  = '';
