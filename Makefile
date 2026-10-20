@@ -16,7 +16,7 @@ WP       := $(COMPOSE) run --rm cli wp
 COMPOSER_CMD := $(if $(shell command -v composer 2>/dev/null),composer,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) composer)
 PHP_RUN  := $(if $(shell command -v php 2>/dev/null),,$(COMPOSE) run --rm --user $(shell id -u):$(shell id -g) -w /project cli)
 
-.PHONY: help setup update up down reset install composer woocommerce https lint lint-fix test wp logs fsq-extract
+.PHONY: help setup update up down reset install composer woocommerce https lint lint-fix test wp logs fsq-extract photo-source-check
 
 # WooCommerce for local development and tests (premium profile checkout). Pinned and checked;
 # downloaded from the GitHub release because wordpress.org is not reachable from every machine.
@@ -131,6 +131,10 @@ fsq-extract: ## Download Guam's places from Foursquare Open Source Places into .
 		-v "$(CURDIR)/bin:/scripts:ro" -v "$(CURDIR)/.cache:/out" python:3.12-slim sh -c \
 		"pip install --quiet --root-user-action=ignore duckdb==$(DUCKDB_VERSION) && python -I /scripts/fsq-extract-guam.py /out/fsq-guam.jsonl && chown $(shell id -u):$(shell id -g) /out/fsq-guam.jsonl"
 	@echo "Next: make wp ARGS=\"guam-restaurants import-fsq --input=/project/.cache/fsq-guam.jsonl --dry-run\""
+
+photo-source-check: ## Time Openverse and Wikimedia requests from this machine and from the cli container (for cuisine-photos timeouts).
+	@sh bin/photo-source-check.sh "host"
+	@$(COMPOSE) run --rm --no-deps --entrypoint sh cli /project/bin/photo-source-check.sh "cli container"
 
 wp: ## Run WP-CLI, e.g. `make wp ARGS="plugin list"`.
 	$(WP) $(ARGS)
