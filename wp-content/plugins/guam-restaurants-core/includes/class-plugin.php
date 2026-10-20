@@ -107,6 +107,7 @@ final class Plugin {
 		Monitoring\Health_Endpoint::register();
 		Legal\Pages::register();
 		Tagging\Tag_Store::register();
+		Tagging\Branch_Names::register();
 		Admin\Ingestion_Runs_Screen::register();
 		Admin\Scheduled_Jobs_Screen::register();
 		Admin\Review_Queue_Screen::register();
