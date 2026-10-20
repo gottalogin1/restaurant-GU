@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/color-scheme-toggle",
+	"version": "0.1.0",
+	"title": "Light / dark switch",
+	"category": "widgets",
+	"icon": "lightbulb",
+	"description": "Lets visitors pick light, dark, or their device's setting. Shows on the live site only.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

@@ -1,0 +1,275 @@
+/*
+ * wp-admin in dark mode (Appearance\Color_Scheme). Applies only while
+ * <html data-theme="dark"> is set; not loaded in the block editor, which
+ * draws its own interface. Covers WordPress's own screens and this
+ * plugin's; other plugins' screens get the dark page and form controls but
+ * may keep some light panels of their own.
+ */
+
+html[data-theme="dark"] {
+	color-scheme: dark;
+	--gr-admin-bg: #1a1c1f;
+	--gr-admin-surface: #23262a;
+	--gr-admin-raised: #2b2f34;
+	--gr-admin-border: #3a3f45;
+	--gr-admin-text: #e3e3e3;
+	--gr-admin-muted: #a7aaad;
+	--gr-admin-link: #72aee6;
+	--gr-admin-link-hover: #a8cdf0;
+	--gr-admin-input: #16181b;
+}
+
+html[data-theme="dark"],
+html[data-theme="dark"] body,
+html[data-theme="dark"] #wpwrap,
+html[data-theme="dark"] #wpcontent,
+html[data-theme="dark"] #wpbody,
+html[data-theme="dark"] #wpbody-content {
+	background: var(--gr-admin-bg);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] :is(h1, h2, h3, h4, h5, h6, .wrap h1, .wrap h2, label, legend, th, strong, dt, .form-table th, .form-wrap label, .postbox .hndle, .stuffbox .hndle) {
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] :is(.description, p.description, .form-table td .description, .howto, .count, #wpfooter, #wpfooter a, .subsubsub, .tablenav .displaying-num, .post-state, .row-title + .post-state) {
+	color: var(--gr-admin-muted);
+}
+
+html[data-theme="dark"] #wpbody-content a:not(.button):not(.page-title-action):not(.nav-tab),
+html[data-theme="dark"] .subsubsub a {
+	color: var(--gr-admin-link);
+}
+
+html[data-theme="dark"] #wpbody-content a:not(.button):not(.page-title-action):not(.nav-tab):hover,
+html[data-theme="dark"] .subsubsub a:hover {
+	color: var(--gr-admin-link-hover);
+}
+
+html[data-theme="dark"] .subsubsub a.current {
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] .row-actions .trash a,
+html[data-theme="dark"] .row-actions .delete a,
+html[data-theme="dark"] a.submitdelete {
+	color: #f28b82 !important;
+}
+
+/* Panels and cards. */
+html[data-theme="dark"] :is(.postbox, .stuffbox, .card, .welcome-panel-column-container, .health-check-body .health-check-accordion, .site-health-progress-wrapper, .wp-filter, .widefat, .plugin-card, .theme-browser .theme, .community-events, .activity-block, #screen-meta, .contextual-help-tabs-wrap, .nav-menus-php .menu-item-handle, .menu-item-settings, .accordion-section-content, .tool-box, .metabox-holder .postbox-container .empty-container, .update-php .wrap > div, .notice, div.updated, div.error, .update-nag, .media-item, .imgedit-wrap) {
+	background: var(--gr-admin-surface);
+	border-color: var(--gr-admin-border);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] :is(.postbox-header, .postbox .hndle, .plugin-card-bottom, .welcome-panel-header, .health-check-header, .health-check-tabs-wrapper, #dashboard-widgets .postbox .inside .sub, .community-events-footer, #major-publishing-actions, .misc-pub-section, #submitpost, .inside .submitbox, .accordion-section-title) {
+	background: var(--gr-admin-raised);
+	border-color: var(--gr-admin-border);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] .health-check-header,
+html[data-theme="dark"] .health-check-tabs-wrapper {
+	background: var(--gr-admin-surface);
+}
+
+/* List tables. */
+html[data-theme="dark"] :is(.widefat thead th, .widefat thead td, .widefat tfoot th, .widefat tfoot td, .widefat td, .widefat th, .widefat p, .widefat ol, .widefat ul, .welcome-panel-column-content, .welcome-panel-column-content h3) {
+	border-color: var(--gr-admin-border);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] :is(.widefat thead, .widefat tfoot, .widefat tbody, .widefat tr) {
+	background: var(--gr-admin-surface);
+}
+
+html[data-theme="dark"] :is(.striped > tbody > :nth-child(odd), ul.striped > :nth-child(odd), .alternate) {
+	background: var(--gr-admin-raised);
+}
+
+html[data-theme="dark"] .wp-list-table tbody tr:hover,
+html[data-theme="dark"] .plugins .active td,
+html[data-theme="dark"] .plugins .active th {
+	background: #2f343a;
+}
+
+html[data-theme="dark"] .plugins tr.active + tr.inactive th,
+html[data-theme="dark"] .plugins tr.active + tr.inactive td,
+html[data-theme="dark"] .plugin-update-tr .plugin-update {
+	background: var(--gr-admin-surface);
+	box-shadow: none;
+}
+
+html[data-theme="dark"] :is(.update-message p, .plugin-update-tr .update-message) {
+	background: #3b3420;
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] .form-table,
+html[data-theme="dark"] .form-table td,
+html[data-theme="dark"] .form-table th {
+	background: transparent;
+	color: var(--gr-admin-text);
+}
+
+/* Tabs. */
+html[data-theme="dark"] .nav-tab {
+	background: var(--gr-admin-surface);
+	border-color: var(--gr-admin-border);
+	color: var(--gr-admin-muted);
+}
+
+html[data-theme="dark"] .nav-tab:hover,
+html[data-theme="dark"] .nav-tab-active,
+html[data-theme="dark"] .nav-tab-active:hover,
+html[data-theme="dark"] .nav-tab-active:focus {
+	background: var(--gr-admin-bg);
+	border-bottom-color: var(--gr-admin-bg);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] .nav-tab-wrapper,
+html[data-theme="dark"] .wrap h2.nav-tab-wrapper {
+	border-bottom-color: var(--gr-admin-border);
+}
+
+/* Form controls. */
+html[data-theme="dark"] :is(input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="password"], input[type="number"], input[type="tel"], input[type="date"], input[type="datetime-local"], input[type="time"], input[type="month"], input[type="week"], input[type="color"], select, textarea, .wp-editor-area) {
+	background-color: var(--gr-admin-input);
+	border-color: #5a6067;
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] select {
+	background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%206l5%205%205-5%202%201-7%207-7-7%202-1z%22%20fill%3D%22%23a7aaad%22%2F%3E%3C%2Fsvg%3E");
+}
+
+html[data-theme="dark"] :is(input, textarea)::placeholder {
+	color: #8c8f94;
+}
+
+html[data-theme="dark"] :is(input[type="checkbox"], input[type="radio"]) {
+	background: var(--gr-admin-input);
+	border-color: #6c7279;
+}
+
+html[data-theme="dark"] input[type="checkbox"]:checked::before {
+	content: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2020%2020%27%3E%3Cpath%20d%3D%27M14.83%204.89l1.34.94-5.81%208.38H9.02L5.78%209.67l1.34-1.25%202.57%202.4z%27%20fill%3D%27%2372aee6%27%2F%3E%3C%2Fsvg%3E");
+}
+
+html[data-theme="dark"] input[type="radio"]:checked::before {
+	background-color: var(--gr-admin-link);
+}
+
+html[data-theme="dark"] :is(input, select, textarea):disabled,
+html[data-theme="dark"] :is(input, textarea)[readonly] {
+	background-color: #24272b;
+	color: #8c8f94;
+}
+
+/* Secondary buttons (primary buttons keep the admin color scheme's blue). */
+html[data-theme="dark"] :is(.button:not(.button-primary), .button-secondary, .page-title-action, .wrap .add-new-h2, .wrap .page-title-action) {
+	background: var(--gr-admin-raised);
+	border-color: #5a6067;
+	color: var(--gr-admin-link);
+}
+
+html[data-theme="dark"] :is(.button:not(.button-primary), .button-secondary, .page-title-action):hover {
+	background: #343940;
+	border-color: var(--gr-admin-link);
+	color: var(--gr-admin-link-hover);
+}
+
+html[data-theme="dark"] .button-link {
+	color: var(--gr-admin-link);
+}
+
+/* Notices keep their colored edge. */
+html[data-theme="dark"] .notice-success,
+html[data-theme="dark"] div.updated {
+	border-left-color: #68de7c;
+}
+
+html[data-theme="dark"] .notice-error,
+html[data-theme="dark"] div.error {
+	border-left-color: #f86368;
+}
+
+html[data-theme="dark"] .notice-warning {
+	border-left-color: #f0c33c;
+}
+
+html[data-theme="dark"] .notice-info {
+	border-left-color: var(--gr-admin-link);
+}
+
+/* Screen options and help tabs. */
+html[data-theme="dark"] :is(#screen-options-link-wrap, #contextual-help-link-wrap, #screen-meta-links .show-settings) {
+	background: var(--gr-admin-surface);
+	border-color: var(--gr-admin-border);
+	color: var(--gr-admin-muted);
+}
+
+html[data-theme="dark"] .contextual-help-tabs .active {
+	background: var(--gr-admin-raised);
+	border-color: var(--gr-admin-border);
+}
+
+/* Paging, search and code. */
+html[data-theme="dark"] :is(.tablenav .tablenav-pages a, .tablenav-pages-navspan) {
+	background: var(--gr-admin-raised);
+	border-color: #5a6067;
+	color: var(--gr-admin-link);
+}
+
+html[data-theme="dark"] :is(code, kbd, pre) {
+	background: rgb(255 255 255 / 8%);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] :is(hr, .wp-header-end) {
+	border-color: var(--gr-admin-border);
+}
+
+/* Classic editor and media. */
+html[data-theme="dark"] :is(.quicktags-toolbar, .wp-editor-tabs .wp-switch-editor, .wp-editor-container, #post-status-info, .mce-toolbar-grp, .mce-panel) {
+	background: var(--gr-admin-raised) !important;
+	border-color: var(--gr-admin-border) !important;
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] #titlediv #title {
+	background: var(--gr-admin-input);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] :is(.media-modal-content, .media-frame-content, .media-sidebar, .attachments-browser .media-toolbar, .media-frame-toolbar .media-toolbar, .media-router, .media-frame-router, .media-frame-title, .media-menu, .upload-php .media-toolbar.wp-filter, .uploader-inline, .media-upload-form .drag-drop-area) {
+	background: var(--gr-admin-surface);
+	border-color: var(--gr-admin-border);
+	color: var(--gr-admin-text);
+}
+
+html[data-theme="dark"] .attachment-preview {
+	background: var(--gr-admin-raised);
+}
+
+/* Dashboard. */
+html[data-theme="dark"] :is(#dashboard_right_now li a::before, #dashboard_right_now .main p, .activity-block h3, #activity-widget #the-comment-list .comment-item) {
+	color: var(--gr-admin-muted);
+}
+
+html[data-theme="dark"] #dashboard-widgets .postbox-container .empty-container {
+	outline-color: var(--gr-admin-border);
+}
+
+html[data-theme="dark"] #activity-widget #the-comment-list .comment-item,
+html[data-theme="dark"] #activity-widget #the-comment-list .unapproved {
+	background: var(--gr-admin-surface);
+}
+
+/* This plugin's screens mark problems in red inline. */
+html[data-theme="dark"] [style*="color:#b32d2e"] {
+	color: #f28b82 !important;
+}

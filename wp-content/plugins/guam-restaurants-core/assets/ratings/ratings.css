@@ -7,7 +7,7 @@
 
 .gr-ratings__source {
 	border: 1px solid currentcolor;
-	border-color: rgb(0 0 0 / 15%);
+	border-color: color-mix(in srgb, currentColor 15%, transparent);
 	border-radius: 0.5rem;
 	padding: 1rem;
 }
@@ -51,7 +51,7 @@
 	display: inline-block;
 	font-size: 1.1em;
 	line-height: 1;
-	background: linear-gradient(90deg, #f5a623 var(--gr-stars-fill), #ccc var(--gr-stars-fill));
+	background: linear-gradient(90deg, #f5a623 var(--gr-stars-fill), color-mix(in srgb, currentColor 25%, transparent) var(--gr-stars-fill));
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
@@ -86,7 +86,7 @@
 }
 
 .gr-review + .gr-review {
-	border-top: 1px solid rgb(0 0 0 / 10%);
+	border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 	margin-top: 0.75rem;
 	padding-top: 0.75rem;
 }

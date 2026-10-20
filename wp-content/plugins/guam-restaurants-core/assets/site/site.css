@@ -11,6 +11,8 @@
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
 	--gr-surface: var(--wp--preset--color--muted, #f4f1ec);
 	--gr-border: var(--wp--preset--color--border, #c9c3b8);
+	--gr-card: var(--wp--preset--color--base, #fff);
+	--gr-on-primary: var(--wp--preset--color--base, #fff);
 	--gr-radius: 0.5rem;
 }
 
@@ -20,6 +22,8 @@
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
 	--gr-surface: var(--wp--preset--color--muted, #f4f1ec);
 	--gr-border: var(--wp--preset--color--border, #c9c3b8);
+	--gr-card: var(--wp--preset--color--base, #fff);
+	--gr-on-primary: var(--wp--preset--color--base, #fff);
 	--gr-radius: 0.5rem;
 }
 
@@ -69,7 +73,7 @@
 	font: inherit;
 	min-height: 2.75rem;
 	padding: 0.5rem 0.75rem;
-	background: #fff;
+	background: var(--gr-card);
 	color: var(--gr-text);
 }
 
@@ -100,7 +104,7 @@
 .gr-facet {
 	border: 1px solid var(--gr-border);
 	border-radius: var(--gr-radius);
-	background: #fff;
+	background: var(--gr-card);
 }
 
 .gr-facet summary {
@@ -169,7 +173,7 @@
 .gr-chip--toggle:has(input:checked) {
 	background: var(--gr-primary);
 	border-color: var(--gr-primary);
-	color: #fff;
+	color: var(--gr-on-primary);
 }
 
 .gr-chip--toggle:has(input:focus-visible) {
@@ -230,7 +234,7 @@
 .gr-card {
 	border: 1px solid var(--gr-border);
 	border-radius: var(--gr-radius);
-	background: #fff;
+	background: var(--gr-card);
 	height: 100%;
 	box-sizing: border-box;
 	position: relative;
@@ -391,14 +395,14 @@
 	min-height: 2.5rem;
 	padding: 0 1.1rem;
 	border: 0;
-	background: #fff;
+	background: var(--gr-card);
 	color: var(--gr-text);
 	cursor: pointer;
 }
 
 .gr-directory__view[aria-pressed="true"] {
 	background: var(--gr-primary);
-	color: #fff;
+	color: var(--gr-on-primary);
 }
 
 .gr-directory__map {
@@ -441,7 +445,7 @@
 	margin-right: 0.4rem;
 	border-radius: 999px;
 	background: var(--gr-primary);
-	color: #fff;
+	color: var(--gr-on-primary);
 	font-size: 0.8rem;
 	vertical-align: 0.1em;
 }
@@ -524,7 +528,7 @@
 .gr-pagination a[aria-current="page"] {
 	background: var(--gr-primary);
 	border-color: var(--gr-primary);
-	color: #fff;
+	color: var(--gr-on-primary);
 }
 
 /* Chips */
@@ -566,7 +570,7 @@
 	padding: 0 0.9rem;
 	border: 1px solid var(--gr-border);
 	border-radius: 999px;
-	background: #fff;
+	background: var(--gr-card);
 	text-decoration: none;
 	box-sizing: border-box;
 }
@@ -602,7 +606,7 @@
 	border: 1px solid var(--gr-border);
 	border-radius: var(--gr-radius);
 	padding: 0.85rem 1rem;
-	background: #fff;
+	background: var(--gr-card);
 }
 
 .gr-recent--list .gr-recent__item {
@@ -716,7 +720,7 @@
 	padding: 0 1.1rem;
 	border: 1px solid var(--gr-primary);
 	border-radius: 999px;
-	background: #fff;
+	background: var(--gr-card);
 	color: var(--gr-primary);
 	font: inherit;
 	font-weight: 600;
@@ -727,7 +731,7 @@
 
 .gr-action:first-child {
 	background: var(--gr-primary);
-	color: #fff;
+	color: var(--gr-on-primary);
 }
 
 .gr-action[hidden] {
@@ -1210,7 +1214,7 @@
 	border: 0;
 	border-radius: 999px;
 	background: var(--gr-primary);
-	color: #fff;
+	color: var(--gr-on-primary);
 	font: inherit;
 	font-weight: 700;
 	cursor: pointer;
@@ -1222,4 +1226,39 @@
 
 .gr-photos__status.is-error {
 	color: #a4161a;
+}
+
+/*
+ * Dark theme (Appearance\Color_Scheme). The theme swaps its presets; these
+ * are the status colours that are not presets.
+ */
+:root[data-theme="dark"] :is(.gr-card__media--empty, .gr-hero__media--empty) {
+	background: hsl(var(--gr-hue, 190) 30% 22%);
+	color: hsl(var(--gr-hue, 190) 45% 85%);
+}
+
+:root[data-theme="dark"] .gr-badge--award {
+	background: #4a3b10;
+	color: #f6dd8f;
+}
+
+:root[data-theme="dark"] .gr-badge--new {
+	background: #1d3b26;
+	color: #a8e0b6;
+}
+
+:root[data-theme="dark"] :is(.gr-card__open.is-open, .gr-hours__now.is-open) {
+	color: #6fcf8a;
+}
+
+:root[data-theme="dark"] .gr-photos__stars {
+	color: #f0b54a;
+}
+
+:root[data-theme="dark"] .gr-photos__status.is-error {
+	color: #ff8a80;
+}
+
+:root[data-theme="dark"] .gr-claim__message--error {
+	border-left-color: #ff8a80;
 }
