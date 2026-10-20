@@ -54,6 +54,7 @@ final class Blocks {
 		'map-explorer'       => 'map_explorer',
 		'data-attributions'  => 'data_attributions',
 		'policy-links'       => 'policy_links',
+		'random-picker'      => 'random_picker',
 	);
 
 	/**
@@ -170,6 +171,18 @@ final class Blocks {
 				'action' => esc_url( (string) get_post_type_archive_link( Content_Types::POST_TYPE ) ),
 			)
 		);
+	}
+
+	/**
+	 * Random place picker.
+	 *
+	 * @return string
+	 */
+	public static function random_picker(): string {
+		// Read-only choices on a public page; no state changes, so no nonce.
+		$params = wp_unslash( $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Picker sanitizes each value.
+		$action = is_singular() ? (string) get_permalink( get_queried_object_id() ) : home_url( '/' );
+		return self::wrap( 'div', Picker::render( is_array( $params ) ? $params : array(), $action ) );
 	}
 
 	/**

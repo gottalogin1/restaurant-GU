@@ -99,6 +99,7 @@ final class Plugin {
 		Site\Open_Hours::register();
 		Site\Rest_Controller::register();
 		Site\Pages::register();
+		Site\Picker::register();
 		Site\Seo::register();
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();

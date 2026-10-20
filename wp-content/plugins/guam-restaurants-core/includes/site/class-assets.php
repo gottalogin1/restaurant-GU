@@ -10,10 +10,11 @@ namespace GuamRestaurants\Core\Site;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * One small stylesheet for every site block, and three scripts loaded only
+ * One small stylesheet for every site block, and scripts loaded only
  * where they are needed: directory.js (filter form), hours.js ("open now"
- * labels, computed in the browser so cached pages stay correct) and map.js
- * (loads MapLibre only when a map is about to be seen).
+ * labels, computed in the browser so cached pages stay correct), map.js
+ * (loads MapLibre only when a map is about to be seen) and picker.js (the
+ * random place picker).
  */
 final class Assets {
 
@@ -25,6 +26,7 @@ final class Assets {
 		'map'       => 'guam-restaurants-map',
 		'share'     => 'guam-restaurants-share',
 		'photos'    => 'guam-restaurants-photos',
+		'picker'    => 'guam-restaurants-picker',
 	);
 
 	/**
@@ -67,6 +69,10 @@ final class Assets {
 
 		wp_register_script( self::SCRIPTS['photos'], $base . 'photos.js', array( 'wp-i18n' ), $ver, array( 'strategy' => 'defer' ) );
 		wp_set_script_translations( self::SCRIPTS['photos'], 'guam-restaurants-core' );
+
+		wp_register_script( self::SCRIPTS['picker'], $base . 'picker.js', array( 'wp-i18n', self::SCRIPTS['hours'] ), $ver, array( 'strategy' => 'defer' ) );
+		wp_set_script_translations( self::SCRIPTS['picker'], 'guam-restaurants-core' );
+		wp_add_inline_script( self::SCRIPTS['picker'], 'window.guamRestaurantsPicker = ' . wp_json_encode( array( 'endpoint' => rest_url( Rest_Controller::NAMESPACE . '/pick' ) ) ) . ';', 'before' );
 
 		wp_register_script( self::SCRIPTS['map'], $base . 'map.js', array( 'wp-i18n' ), $ver, array( 'strategy' => 'defer' ) );
 		wp_set_script_translations( self::SCRIPTS['map'], 'guam-restaurants-core' );

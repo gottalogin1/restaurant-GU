@@ -1223,3 +1223,128 @@
 .gr-photos__status.is-error {
 	color: #a4161a;
 }
+
+/* Random place picker (Site\Picker) */
+.gr-picker {
+	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
+	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
+	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
+	--gr-surface: var(--wp--preset--color--muted, #f4f1ec);
+	--gr-border: var(--wp--preset--color--border, #c9c3b8);
+	--gr-radius: 0.5rem;
+	display: grid;
+	gap: 1.5rem;
+}
+
+.gr-picker__form {
+	display: grid;
+	gap: 1rem;
+	padding: 1rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	background: var(--gr-surface);
+}
+
+.gr-picker__select label,
+.gr-picker__chips legend {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+	padding: 0;
+}
+
+.gr-picker__select select {
+	width: 100%;
+	box-sizing: border-box;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	font: inherit;
+	min-height: 2.75rem;
+	padding: 0.5rem 0.75rem;
+	background: #fff;
+	color: var(--gr-text);
+}
+
+.gr-picker__chips {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+}
+
+.gr-picker__options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.gr-picker__actions,
+.gr-picker__next {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1rem;
+}
+
+.gr-picker__go[disabled] {
+	opacity: 0.7;
+	cursor: progress;
+}
+
+.gr-picker__result:empty {
+	display: none;
+}
+
+.gr-picker__result:focus {
+	outline: none;
+}
+
+.gr-picker__summary {
+	font-weight: 600;
+	margin: 0 0 0.75rem;
+}
+
+.gr-picker__card {
+	max-width: 28rem;
+	margin-bottom: 1rem;
+	animation: gr-picker-in 0.35s ease-out;
+}
+
+.gr-picker__note {
+	color: var(--gr-muted-text);
+	font-size: 0.9em;
+}
+
+.is-picking .gr-picker__result {
+	opacity: 0.5;
+}
+
+@keyframes gr-picker-in {
+	from {
+		opacity: 0;
+		transform: scale(0.96);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media (min-width: 48rem) {
+	.gr-picker__form {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.gr-picker__form > .gr-facet,
+	.gr-picker__form > .gr-picker__chips,
+	.gr-picker__actions {
+		grid-column: 1 / -1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gr-picker__card {
+		animation: none;
+	}
+}

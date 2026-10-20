@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/random-picker",
+	"version": "0.1.0",
+	"title": "Random place picker",
+	"category": "widgets",
+	"icon": "randomize",
+	"description": "Can't decide where to eat? Visitors choose a village, mall, food type, price, open now or award winners, and get one matching restaurant picked at random. Sponsored placements play no part.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

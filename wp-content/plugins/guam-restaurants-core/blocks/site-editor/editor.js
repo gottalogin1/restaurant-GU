@@ -159,6 +159,7 @@
 		'related-links',
 		'restaurant-row',
 		'restaurant-hero',
+		'random-picker',
 	];
 
 	names.forEach( function ( name ) {
