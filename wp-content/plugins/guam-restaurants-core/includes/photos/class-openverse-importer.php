@@ -125,8 +125,16 @@ final class Openverse_Importer {
 
 			$credit = self::credit_from( $images[0] );
 			if ( null !== $current && ( $current['credit']['openverse_id'] ?? '' ) === $credit['openverse_id'] ) {
-				++$counts['unchanged'];
-				$rows[] = $row + self::credit_columns( $credit );
+				// Same photo: only the credit can have changed (for example a name that is now decoded).
+				$fixed = array_map( 'sanitize_text_field', $credit ) != $current['credit']; // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- key order may differ.
+				if ( $fixed && ! $dry_run ) {
+					Cuisine_Photos::set( $cuisine->term_id, (int) $current['id'], $credit );
+				}
+				++$counts[ $fixed ? 'updated' : 'unchanged' ];
+				$rows[] = array(
+					'cuisine' => $cuisine->slug,
+					'action'  => $fixed ? 'updated' : 'unchanged',
+				) + self::credit_columns( $credit );
 				continue;
 			}
 
@@ -300,8 +308,8 @@ final class Openverse_Importer {
 	 */
 	private static function credit_from( array $image ): array {
 		return array(
-			'title'           => (string) ( $image['title'] ?? '' ),
-			'creator'         => (string) ( $image['creator'] ?? '' ),
+			'title'           => self::decode( (string) ( $image['title'] ?? '' ) ),
+			'creator'         => self::decode( (string) ( $image['creator'] ?? '' ) ),
 			'creator_url'     => (string) ( $image['creator_url'] ?? '' ),
 			'license'         => strtolower( (string) ( $image['license'] ?? '' ) ),
 			'license_version' => (string) ( $image['license_version'] ?? '' ),
@@ -309,6 +317,29 @@ final class Openverse_Importer {
 			'source_url'      => (string) ( $image['foreign_landing_url'] ?? '' ),
 			'openverse_id'    => (string) ( $image['id'] ?? '' ),
 		);
+	}
+
+	/**
+	 * Undoes URL encoding that some providers leave in names, for example
+	 * "Krzysztof%20Puszczy%u0144ski" (StockSnap) becomes "Krzysztof Puszczyński".
+	 * Text without escapes, or that would not decode to valid UTF-8, is kept as is.
+	 *
+	 * @param string $text Name or title from Openverse.
+	 * @return string
+	 */
+	public static function decode( string $text ): string {
+		if ( ! preg_match( '/%(?:u[0-9a-f]{4}|[0-9a-f]{2})/i', $text ) ) {
+			return $text;
+		}
+		$decoded = preg_replace_callback(
+			'/%u([0-9a-f]{4})/i',
+			static function ( array $m ): string {
+				return (string) mb_chr( (int) hexdec( $m[1] ), 'UTF-8' );
+			},
+			$text
+		);
+		$decoded = rawurldecode( (string) $decoded );
+		return mb_check_encoding( $decoded, 'UTF-8' ) ? $decoded : $text;
 	}
 
 	/**

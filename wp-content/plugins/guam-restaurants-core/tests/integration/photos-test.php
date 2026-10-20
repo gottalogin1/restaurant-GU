@@ -176,6 +176,33 @@ class Photos_Test extends Guam_Test_Case {
 	}
 
 	/**
+	 * URL-encoded names are decoded; a photo already saved gets its credit fixed without a new download.
+	 */
+	public function test_importer_decodes_names() {
+		$this->assertSame( 'Krzysztof Puszczyński', Openverse_Importer::decode( 'Krzysztof%20Puszczy%u0144ski' ) );
+		$this->assertSame( 'José', Openverse_Importer::decode( 'Jos%C3%A9' ) );
+		$this->assertSame( '100% juice', Openverse_Importer::decode( '100% juice' ) );
+		$this->assertSame( 'Bad %FF byte', Openverse_Importer::decode( 'Bad %FF byte' ), 'Invalid UTF-8 is left alone.' );
+
+		$cuisine = $this->cuisine( 'Pizza' );
+		$id      = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
+		( new Openverse_Importer( $this->client( array( self::result( $id ) ) ), 0 ) )->run( array( $cuisine ) );
+		$photo = Cuisine_Photos::get( $cuisine->term_id );
+		update_post_meta( $photo['id'], Cuisine_Photos::CREDIT, array( 'creator' => 'Krzysztof%20Puszczy%u0144ski' ) + $photo['credit'] );
+
+		$this->urls = array();
+		$fix        = ( new Openverse_Importer( $this->client( array( self::result( $id, array( 'creator' => 'Krzysztof%20Puszczy%u0144ski' ) ) ) ), 0 ) )->run( array( $cuisine ), true );
+		$this->assertSame( 1, $fix['counts']['updated'] );
+		$this->assertCount( 1, $this->urls, 'Only the search; the photo is not downloaded again.' );
+		$after = Cuisine_Photos::get( $cuisine->term_id );
+		$this->assertSame( $photo['id'], $after['id'] );
+		$this->assertSame( 'Krzysztof Puszczyński', $after['credit']['creator'] );
+
+		$again = ( new Openverse_Importer( $this->client( array( self::result( $id, array( 'creator' => 'Krzysztof%20Puszczy%u0144ski' ) ) ) ), 0 ) )->run( array( $cuisine ), true );
+		$this->assertSame( 1, $again['counts']['unchanged'] );
+	}
+
+	/**
 	 * A result whose image is gone gives way to the next suitable one, and its credit is the one saved.
 	 */
 	public function test_importer_skips_dead_image() {
