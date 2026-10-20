@@ -1,7 +1,8 @@
 <?php
 /**
- * Review queue screen tests: paging, saving a page of names and skips, and
- * Google names shown for checking.
+ * Review queue screen tests: paging, saving a page of names and skips,
+ * Google names shown for checking, and editing, deleting and bulk deciding
+ * restaurants from the queue.
  *
  * @package GuamRestaurants\Core
  */
@@ -9,6 +10,9 @@
 namespace GuamRestaurants\Core\Tests;
 
 use GuamRestaurants\Core\Admin\Review_Queue_Screen;
+use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Mall_Verification;
+use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 use GuamRestaurants\Core\Database\Review_Queue;
 use GuamRestaurants\Core\Discovery\Places_Client;
 use GuamRestaurants\Core\Ratings\Budget;
@@ -124,9 +128,12 @@ class Review_Queue_Screen_Test extends Guam_Test_Case {
 
 		$this->assertSame(
 			array(
-				'added'   => 2,
-				'skipped' => 1,
-				'failed'  => 1,
+				'added'     => 2,
+				'skipped'   => 1,
+				'merged'    => 0,
+				'separated' => 0,
+				'deleted'   => 0,
+				'failed'    => 1,
 			),
 			$result
 		);
@@ -284,11 +291,205 @@ class Review_Queue_Screen_Test extends Guam_Test_Case {
 
 		$this->assertStringContainsString( 'name="restaurant_name[' . $open . ']" value="' . esc_attr( 'Ben & Jerry\'s "Tumon"' ) . '"', $html );
 		$this->assertStringContainsString( 'name="restaurant_name[' . $closed . ']" value=""', $html );
-		$this->assertMatchesRegularExpression( '#name="skip\[\]" value="' . $closed . '" checked#', $html );
-		$this->assertDoesNotMatchRegularExpression( '#name="skip\[\]" value="' . $open . '" checked#', $html );
+		$this->assertMatchesRegularExpression( '#name="selected\[\]" value="' . $closed . '" checked#', $html );
+		$this->assertDoesNotMatchRegularExpression( '#name="selected\[\]" value="' . $open . '" checked#', $html );
 
 		$saved = Review_Queue_Screen::save_page( array( $open => 'Ben & Jerry\'s "Tumon"' ), array( $closed ), get_current_user_id() );
 		$this->assertSame( 1, $saved['added'] );
 		$this->assertSame( 1, $saved['skipped'] );
+	}
+
+	/**
+	 * Term ID by slug.
+	 *
+	 * @param string $slug     Slug.
+	 * @param string $taxonomy Taxonomy.
+	 * @return int
+	 */
+	private function term( string $slug, string $taxonomy = Content_Types::TAX_VILLAGE ): int {
+		return (int) Mall_Verification::with_unverified(
+			static function () use ( $slug, $taxonomy ) {
+				return get_term_by( 'slug', $slug, $taxonomy )->term_id;
+			}
+		);
+	}
+
+	/**
+	 * A restaurant's term slugs.
+	 *
+	 * @param int    $id       Restaurant.
+	 * @param string $taxonomy Taxonomy.
+	 * @return string[]
+	 */
+	private function slugs( int $id, string $taxonomy = Content_Types::TAX_VILLAGE ): array {
+		return Mall_Verification::with_unverified(
+			static function () use ( $id, $taxonomy ) {
+				return wp_get_object_terms( $id, $taxonomy, array( 'fields' => 'slugs' ) );
+			}
+		);
+	}
+
+	/**
+	 * A possible duplicate pair.
+	 *
+	 * @param int $a Restaurant.
+	 * @param int $b Restaurant.
+	 * @return int Item ID.
+	 */
+	private function duplicate( int $a, int $b ): int {
+		return Review_Queue::enqueue( 'duplicate', array( 'duplicate_of' => $b ), 'system', $a, 0.7 );
+	}
+
+	/**
+	 * Renaming and moving a restaurant; an unchanged value writes nothing, and
+	 * setting a village closes its "Village unknown" item.
+	 */
+	public function test_edit_restaurant() {
+		$admin   = $this->login_admin();
+		$id      = $this->restaurant( 'Jamaican Gril' );
+		$unknown = Review_Queue::enqueue( 'village_unresolved', array( 'osm_id' => 'node/1' ), 'osm', $id );
+		$mall    = Review_Queue::enqueue( 'mall_unresolved', array( 'osm_id' => 'node/1' ), 'osm', $id );
+
+		$this->assertFalse(
+			Review_Queue_Screen::edit_restaurant(
+				$id,
+				array(
+					'name'    => 'Jamaican Gril',
+					'village' => 0,
+					'mall'    => 0,
+				),
+				$admin
+			),
+			'Nothing changed.'
+		);
+		$this->assertSame( 'pending', Review_Queue::get( $unknown )['status'] );
+
+		$this->assertTrue(
+			Review_Queue_Screen::edit_restaurant(
+				$id,
+				array(
+					'name'    => 'Jamaican Grill',
+					'village' => $this->term( 'yigo' ),
+				),
+				$admin
+			)
+		);
+		$this->assertSame( 'Jamaican Grill', get_post_field( 'post_title', $id, 'raw' ) );
+		$this->assertSame( array( 'yigo' ), $this->slugs( $id ) );
+		$this->assertSame( 'approved', Review_Queue::get( $unknown )['status'], 'Village unknown is closed.' );
+		$this->assertSame( 'pending', Review_Queue::get( $mall )['status'], 'Mall unknown stays until a mall is set.' );
+
+		Review_Queue_Screen::edit_restaurant( $id, array( 'mall' => $this->term( 'micronesia-mall', Content_Types::TAX_MALL ) ), $admin );
+		$this->assertSame( array( 'micronesia-mall' ), $this->slugs( $id, Content_Types::TAX_MALL ) );
+		$this->assertSame( array( 'dededo' ), $this->slugs( $id ), 'A mall brings its village.' );
+		$this->assertSame( 'approved', Review_Queue::get( $mall )['status'] );
+
+		Review_Queue_Screen::edit_restaurant(
+			$id,
+			array(
+				'village' => $this->term( 'yona' ),
+				'mall'    => 0,
+			),
+			$admin
+		);
+		$this->assertSame( array(), $this->slugs( $id, Content_Types::TAX_MALL ), '0 clears the mall.' );
+		$this->assertSame( array( 'yona' ), $this->slugs( $id ), 'A village picked with it wins.' );
+
+		$this->assertFalse( Review_Queue_Screen::edit_restaurant( $id, array( 'village' => 999999 ), $admin ), 'Unknown terms are ignored.' );
+		$this->assertFalse( Review_Queue_Screen::edit_restaurant( $id, array( 'name' => 'X' ), self::factory()->user->create() ), 'Administrators only.' );
+	}
+
+	/**
+	 * Delete moves the restaurant to the Trash and closes every item about it.
+	 */
+	public function test_delete_restaurant() {
+		$admin   = $this->login_admin();
+		$bad     = $this->restaurant( 'Restaurant 123' );
+		$other   = $this->restaurant( 'Real Place' );
+		$unknown = Review_Queue::enqueue( 'village_unresolved', array( 'osm_id' => 'node/2' ), 'osm', $bad );
+		$pair    = $this->duplicate( $other, $bad );
+		$kept    = Review_Queue::enqueue( 'village_unresolved', array( 'osm_id' => 'node/3' ), 'osm', $other );
+
+		$this->assertTrue( Review_Queue_Screen::delete_restaurant( $bad, $admin ) );
+		$this->assertSame( 'trash', get_post_status( $bad ) );
+		$this->assertSame( 'rejected', Review_Queue::get( $unknown )['status'] );
+		$this->assertSame( 'rejected', Review_Queue::get( $pair )['status'], 'A pair naming it as the other listing closes too.' );
+		$this->assertSame( 'pending', Review_Queue::get( $kept )['status'] );
+		$this->assertFalse( Review_Queue_Screen::delete_restaurant( $bad, $admin ), 'Already in the Trash.' );
+		$this->assertFalse( Review_Queue_Screen::delete_restaurant( $other, self::factory()->user->create() ), 'Administrators only.' );
+	}
+
+	/**
+	 * Ticked duplicate pairs are merged or marked not the same in one save;
+	 * ticked rows can be deleted; a discovered place gets the village picked.
+	 */
+	public function test_bulk_actions() {
+		$admin = $this->login_admin();
+		$a1    = $this->restaurant( 'Pika\'s Cafe' );
+		$a2    = $this->restaurant( 'Pikas Cafe' );
+		$b1    = $this->restaurant( 'Kings' );
+		$b2    = $this->restaurant( 'Kings Restaurant' );
+		$c1    = $this->restaurant( 'Taco Shop' );
+		$c2    = $this->restaurant( 'Taco Shack' );
+		$merge = array( $this->duplicate( $a1, $a2 ), $this->duplicate( $b1, $b2 ) );
+		$apart = $this->duplicate( $c1, $c2 );
+
+		$result = Review_Queue_Screen::save_page( array(), $merge, $admin, 'merge' );
+		$this->assertSame( 2, $result['merged'] );
+		$this->assertSame( 'merged', Review_Queue::get( $merge[0] )['status'] );
+		$this->assertSame( 'trash', get_post_status( $a2 ) );
+
+		$result = Review_Queue_Screen::save_page( array(), array( $apart ), $admin, 'not_duplicate' );
+		$this->assertSame( 1, $result['separated'] );
+		$this->assertSame( 'rejected', Review_Queue::get( $apart )['status'] );
+		$this->assertContains( (string) $c2, get_post_meta( $c1, Duplicate_Detector::NOT_DUPLICATE_META, false ) );
+
+		$place   = $this->new_place( 'P-DEL' );
+		$unknown = Review_Queue::enqueue( 'village_unresolved', array( 'osm_id' => 'node/4' ), 'osm', $c1 );
+		$result  = Review_Queue_Screen::save_page( array(), array( $place, $unknown ), $admin, 'delete' );
+		$this->assertSame( 2, $result['deleted'] );
+		$this->assertSame( 'trash', get_post_status( $c1 ) );
+		$this->assertSame( 'rejected', Review_Queue::get( $place )['status'], 'A place with no restaurant just leaves the queue.' );
+
+		$named  = $this->new_place( 'P-NAMED' );
+		$result = Review_Queue_Screen::save_page( array( $named => 'Mall Noodles' ), array( $named ), $admin, 'delete', array( $named => array( 'mall' => $this->term( 'micronesia-mall', Content_Types::TAX_MALL ) ) ) );
+		$this->assertSame( 1, $result['added'] );
+		$this->assertSame( 0, $result['deleted'], 'A typed name wins over a ticked box.' );
+		$post = get_posts(
+			array(
+				'post_type'   => Content_Types::POST_TYPE,
+				'post_status' => 'draft',
+				'title'       => 'Mall Noodles',
+				'fields'      => 'ids',
+			)
+		)[0];
+		$this->assertSame( array( 'micronesia-mall' ), $this->slugs( $post, Content_Types::TAX_MALL ) );
+		$this->assertSame( array( 'dededo' ), $this->slugs( $post ), 'The picked mall replaces the Yigo search.' );
+	}
+
+	/**
+	 * Each restaurant gets name, village and mall boxes and a Delete button
+	 * once per page; a discovered place gets village and mall boxes set from
+	 * its search; duplicates say which listing a merge keeps.
+	 */
+	public function test_render_edit_boxes() {
+		$this->login_admin();
+		$a = $this->restaurant( 'Kings', array( 'osm_id' => 'node/9' ) );
+		$b = $this->restaurant( 'Kings Restaurant' );
+		$c = $this->restaurant( 'Kings Too' );
+		wp_set_object_terms( $a, 'tamuning', Content_Types::TAX_VILLAGE );
+		$this->duplicate( $b, $a );
+		$this->duplicate( $a, $c );
+		$this->new_place( 'P-R' );
+
+		$html = $this->render();
+		$this->assertSame( 1, substr_count( $html, 'name="edit[' . $a . '][name]"' ), 'Editable once per page.' );
+		$this->assertStringContainsString( 'name="edit[' . $b . '][village]"', $html );
+		$this->assertStringContainsString( 'name="delete_restaurant" value="' . $c . '"', $html );
+		$this->assertMatchesRegularExpression( '/name="edit\[' . $a . '\]\[village\]"[^>]*>(?:(?!<\/select>).)*?<option value="' . $this->term( 'tamuning' ) . '" selected=/s', $html );
+		$this->assertMatchesRegularExpression( '/name="place\[\d+\]\[village\]"[^>]*>(?:(?!<\/select>).)*?<option value="' . $this->term( 'yigo' ) . '" selected=/s', $html );
+		$this->assertSame( 2, substr_count( $html, 'kept if merged' ) );
+		$this->assertStringContainsString( 'name="bulk_action_top"', $html );
+		$this->assertStringContainsString( "<option value=\"skip\" selected='selected'", $html, 'Skip is the default on a page with new places.' );
 	}
 }

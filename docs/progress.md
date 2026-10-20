@@ -1,5 +1,14 @@
 # Progress log
 
+## Review queue editing tools, 2026-10-20
+- Requested by Sanjay: a delete button and village/mall dropdowns in the review queue; tick many possible duplicates and merge them or mark them "Not the same place"; delete or rename a restaurant from a duplicate pair; a village dropdown for "Village unknown".
+- Done: every restaurant shown in the queue (both sides of a possible duplicate, Village unknown, Mall unknown, closures, requests) has a Name box, Village and Mall dropdowns, and a Delete button. Changes are saved with "Save this page". Picking a mall also sets its village. Setting a village closes the restaurant's "Village unknown" item, and setting a mall closes "Mall unknown". A new name is checked against branch naming. Delete moves the restaurant to the Trash (restorable; imports do not re-create it) and closes every pending item about it.
+- Done: every row has a tick box, and an action dropdown beside "Save this page" applies to ticked rows: Skip / mark handled, Merge, Not the same place, Delete. Merge, Not the same place and Delete run only from "Save this page", never from a row's own button. The dropdown starts on Skip on pages with new places, so Google-closed places that come pre-ticked are still skipped. A duplicate pair labels the listing a merge keeps.
+- Done: new places get Village and Mall dropdowns, set from the search that found them, so a wrong village can be fixed before the draft is made.
+- Done: a restaurant shown in two rows on a page gets edit boxes once. A small script sends only changed boxes, which keeps a 100-row page under PHP's max_input_vars.
+- Checked: PHPCS clean; PHPUnit 435 tests pass (4 new in review-queue-screen-test.php). On the local stack in Chromium: a village change and rename, bulk "Not the same place", and Delete with its confirm box.
+- Remaining: Sanjay to `git pull` + `make update`.
+
 ## Discovery-style layout (comparison changes 1-5), 2026-10-20
 - Requested by Sanjay: compare our public pages with 10+ popular restaurant-discovery sites and make ours work like them. The comparison (12 sites, changes numbered 1-11) is the Claude Doc "Restaurant site layout comparison"; this entry covers changes 1-5, which need no new data.
 - Done (1): result cards show the featured image, else the verified owner's first photo, else a tinted panel with the cuisine name; "Award winner <year>" and "New" (first listed in the last 90 days) badges; the whole card stays one link.
