@@ -1,8 +1,10 @@
 /**
  * Counts ad impressions and clicks with navigator.sendBeacon.
  *
- * An impression is sent once per ad per page view, when at least half of
- * the ad is on screen; a click when the ad's link is followed. Nothing
+ * An impression is sent once per ad shown, when at least half of the ad
+ * is on screen; a click when the ad's link is followed. Ads added to the
+ * page later are counted once the adding script calls
+ * window.guamRestaurantsAds.watch( element ). Nothing
  * about the visitor is sent: only the ad ID, the event type and the page
  * type printed in the slot. Automated browsers (navigator.webdriver) send
  * nothing.
@@ -60,39 +62,44 @@
 		}
 	}
 
-	var ads = document.querySelectorAll( '[data-gr-ad]' );
-	if ( ! ads.length ) {
-		return;
-	}
+	var observer =
+		'IntersectionObserver' in window
+			? new IntersectionObserver(
+					function ( entries ) {
+						entries.forEach( function ( entry ) {
+							if ( entry.isIntersecting ) {
+								observer.unobserve( entry.target );
+								track( entry.target, 'impression', false );
+							}
+						} );
+					},
+					{ threshold: 0.5 }
+			  )
+			: null;
 
-	if ( 'IntersectionObserver' in window ) {
-		var observer = new IntersectionObserver(
-			function ( entries ) {
-				entries.forEach( function ( entry ) {
-					if ( entry.isIntersecting ) {
-						observer.unobserve( entry.target );
-						track( entry.target, 'impression', false );
-					}
-				} );
-			},
-			{ threshold: 0.5 }
-		);
-		ads.forEach( function ( el ) {
-			observer.observe( el );
-		} );
-	} else {
-		ads.forEach( function ( el ) {
-			track( el, 'impression', false );
-		} );
-	}
-
-	ads.forEach( function ( el ) {
-		el.addEventListener( 'click', function ( event ) {
-			if ( event.target.closest && event.target.closest( 'a[href]' ) ) {
-				track( el, 'click', true );
+	// Watches the ads inside root; each ad element is watched once.
+	function watch( root ) {
+		( root || document ).querySelectorAll( '[data-gr-ad]' ).forEach( function ( el ) {
+			if ( el.hasAttribute( 'data-gr-ad-watched' ) ) {
+				return;
 			}
+			el.setAttribute( 'data-gr-ad-watched', '' );
+			if ( observer ) {
+				observer.observe( el );
+			} else {
+				track( el, 'impression', false );
+			}
+			el.addEventListener( 'click', function ( event ) {
+				if ( event.target.closest && event.target.closest( 'a[href]' ) ) {
+					track( el, 'click', true );
+				}
+			} );
 		} );
-	} );
+	}
+
+	// Scripts that add ads later (the random place picker) call this.
+	settings.watch = watch;
+	watch( document );
 
 	document.addEventListener( 'visibilitychange', function () {
 		if ( 'hidden' === document.visibilityState ) {

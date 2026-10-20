@@ -7,6 +7,9 @@
 
 namespace GuamRestaurants\Core\Site;
 
+use GuamRestaurants\Core\Ads\Context as Ad_Context;
+use GuamRestaurants\Core\Ads\Slot;
+use GuamRestaurants\Core\Ads\Tracking;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Term_Meta;
@@ -18,7 +21,12 @@ defined( 'ABSPATH' ) || exit;
  * filters (village, mall, cuisine, price, open now, award winners).
  *
  * - Every match has the same chance. Sponsored placements, premium
- *   profiles and third-party ratings play no part (CLAUDE.md rule 5).
+ *   profiles and third-party ratings play no part in the pick (CLAUDE.md
+ *   rule 5).
+ * - Above the pick sits one sponsored slot (ad product `picker_sponsor`),
+ *   in its own box labeled "Sponsored" and targeted by the visitor's
+ *   village, mall and food type. While no ad is running there, the box
+ *   invites businesses to advertise instead.
  * - Only published restaurants that are not closed, permanently or
  *   temporarily, are picked.
  * - Places already shown are passed back as `not` so "Pick again" does not
@@ -225,6 +233,8 @@ final class Picker {
 	 */
 	public static function render( array $params, string $action ): string {
 		Assets::enqueue( 'picker' );
+		// Picks arriving over REST can carry an ad; the beacon counts it.
+		wp_enqueue_script( Tracking::SCRIPT );
 		$filters = self::filters( $params );
 		$result  = '';
 		if ( isset( $params[ self::PICK ] ) ) {
@@ -350,7 +360,7 @@ final class Picker {
 		}
 
 		return sprintf(
-			'<p class="gr-picker__summary">%1$s</p><div class="gr-picker__card" data-gr-picked="%2$d">%3$s</div>%4$s<div class="gr-picker__next">%5$s<a class="gr-picker__all" href="%6$s">%7$s</a></div>',
+			'%8$s<p class="gr-picker__summary">%1$s</p><div class="gr-picker__card" data-gr-picked="%2$d">%3$s</div>%4$s<div class="gr-picker__next">%5$s<a class="gr-picker__all" href="%6$s">%7$s</a></div>',
 			esc_html( $summary ),
 			(int) $pick['id'],
 			Restaurant_View::card( (int) $pick['id'], 2 ),
@@ -358,7 +368,34 @@ final class Picker {
 			'' === $again_label ? '' : sprintf( '<a class="wp-element-button gr-picker__again" href="%1$s" rel="nofollow" data-gr-not="%2$s">%3$s</a> ', esc_url( $again_url ), esc_attr( implode( ',', $pick['seen'] ) ), $again_label ),
 			esc_url( $all_url ),
 			/* translators: %s: number of matching restaurants. */
-			esc_html( sprintf( _n( 'See the %s match', 'See all %s matches', $pick['total'], 'guam-restaurants-core' ), number_format_i18n( $pick['total'] ) ) )
+			esc_html( sprintf( _n( 'See the %s match', 'See all %s matches', $pick['total'], 'guam-restaurants-core' ), number_format_i18n( $pick['total'] ) ) ),
+			self::sponsor( $filters )
+		);
+	}
+
+	/**
+	 * The sponsored slot above a pick, or, with no ad running, an
+	 * invitation to advertise there.
+	 *
+	 * @param array<string, mixed> $filters Filters.
+	 * @return string
+	 */
+	public static function sponsor( array $filters ): string {
+		$ad = Slot::render( 'picker_sponsor', 1, Ad_Context::for_picker( (array) $filters['facets'] ) );
+		if ( '' !== $ad ) {
+			return '<div class="gr-picker__sponsor">' . $ad . '</div>';
+		}
+		$advertise = Pages::url( 'advertise' );
+		if ( '' === $advertise ) {
+			return '';
+		}
+		return sprintf(
+			'<div class="gr-picker__sponsor"><aside class="gr-sponsored gr-picker__open-slot" aria-label="%1$s"><p class="gr-sponsored__label">%2$s</p><p class="gr-ad__headline"><a href="%3$s">%4$s</a></p><p class="gr-ad__text">%5$s</p></aside></div>',
+			esc_attr__( 'Advertising space', 'guam-restaurants-core' ),
+			esc_html__( 'Advertise here', 'guam-restaurants-core' ),
+			esc_url( $advertise ),
+			esc_html__( 'Your restaurant could be here, above every pick', 'guam-restaurants-core' ),
+			esc_html__( 'People use this page when they are deciding where to eat right now. Put your restaurant in front of them with a sponsored spot, shown by village or food type.', 'guam-restaurants-core' )
 		);
 	}
 

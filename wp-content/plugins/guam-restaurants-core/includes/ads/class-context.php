@@ -68,6 +68,37 @@ final class Context {
 	}
 
 	/**
+	 * Context of a random pick: the villages, malls and cuisines the visitor
+	 * chose, so an ad targeted at Dededo shows when they asked for Dededo.
+	 *
+	 * @param array<string, string[]> $facets Facet => slugs (Site\Filters).
+	 * @return array{page_type: string, villages: int[], malls: int[], cuisines: int[], premium_restaurant: int}
+	 */
+	public static function for_picker( array $facets ): array {
+		$context = self::make( 'picker' );
+		foreach ( array(
+			'villages' => 'village',
+			'malls'    => 'mall',
+			'cuisines' => 'cuisine',
+		) as $key => $facet ) {
+			$slugs = array_values( array_filter( array_map( 'strval', (array) ( $facets[ $facet ] ?? array() ) ) ) );
+			if ( ! $slugs ) {
+				continue;
+			}
+			$ids             = get_terms(
+				array(
+					'taxonomy'   => Ads::TARGET_TAXONOMIES[ $key ],
+					'slug'       => $slugs,
+					'hide_empty' => false,
+					'fields'     => 'ids',
+				)
+			);
+			$context[ $key ] = is_array( $ids ) ? array_map( 'intval', $ids ) : array();
+		}
+		return $context;
+	}
+
+	/**
 	 * Context of a restaurant page.
 	 *
 	 * @param int $restaurant_id Restaurant.

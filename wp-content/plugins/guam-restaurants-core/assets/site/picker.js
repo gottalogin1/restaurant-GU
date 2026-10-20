@@ -112,6 +112,9 @@
 					if ( window.guamRestaurantsHours ) {
 						window.guamRestaurantsHours.apply( result );
 					}
+					if ( window.guamRestaurantsAds && window.guamRestaurantsAds.watch ) {
+						window.guamRestaurantsAds.watch( result );
+					}
 					var next = again ? result.querySelector( '.gr-picker__again' ) : null;
 					( next || result ).focus( { preventScroll: true } );
 					result.scrollIntoView( { block: 'nearest' } );

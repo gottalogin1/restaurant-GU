@@ -1348,3 +1348,11 @@
 		animation: none;
 	}
 }
+
+.gr-picker__sponsor {
+	margin-bottom: 1rem;
+}
+
+.gr-picker__open-slot .gr-ad__headline {
+	margin-top: 0;
+}

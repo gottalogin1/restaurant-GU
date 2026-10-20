@@ -75,7 +75,7 @@ final class Pages {
 				'slug'    => 'what-to-eat',
 				'title'   => __( 'What should I eat?', 'guam-restaurants-core' ),
 				'status'  => 'publish',
-				'content' => $p( __( 'Can\'t decide? Choose a village, food type, price or anything else that matters, and we pick a restaurant at random from the places that match. Every match has the same chance: sponsored listings and ratings play no part.', 'guam-restaurants-core' ) )
+				'content' => $p( __( 'Can\'t decide? Choose a village, food type, price or anything else that matters, and we pick a restaurant at random from the places that match. Every match has the same chance. Ads appear only in the box marked Sponsored, above the pick.', 'guam-restaurants-core' ) )
 					. "\n\n" . '<!-- wp:guam-restaurants/random-picker /-->',
 				'excerpt' => __( 'Can\'t decide where to eat on Guam? Pick a village, food type and price, and get a random restaurant that matches.', 'guam-restaurants-core' ),
 			),

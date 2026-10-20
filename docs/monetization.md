@@ -48,6 +48,7 @@ restaurants are listed.
 | 9 | Sponsored feature | $200 | Per feature |
 | 10 | Hotel and tour operator ads | 1.5 × restaurant rates | As the product |
 | 11 | Affiliate links | Commission from partner | None |
+| 12 | Pick for me sponsor (one ad above each random pick) | Not set yet (owner to decide) | Monthly |
 
 ### 1. Claimed basic listing (free)
 
@@ -192,6 +193,10 @@ link") and uses `rel="sponsored"`. Commission never decides which restaurants
 are listed or how they are ordered, and an affiliate link is never the only
 way to contact a restaurant. Each partner's terms are checked and listed in
 [data-sources.md](data-sources.md) before its links go live.
+
+### 12. Pick for me sponsor (price not set yet)
+
+One labeled "Sponsored" box above every result on the random place picker (/what-to-eat/, product `picker_sponsor`). It can run island-wide or only when the visitor chose certain villages, malls or food types; one ad per pick. The random pick below it is never changed by it: every matching restaurant keeps the same chance. While nothing is booked, the box invites businesses to advertise and links to the advertise page.
 
 ## Founding-advertiser discount
 

@@ -7,7 +7,10 @@
 
 namespace GuamRestaurants\Core\Tests;
 
+use GuamRestaurants\Core\Ads\Ads;
+use GuamRestaurants\Core\Ads\Server;
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Site\Pages;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Picker;
@@ -276,5 +279,49 @@ class Picker_Test extends Guam_Test_Case {
 		);
 		$this->assertStringContainsString( 'Nothing matches all of these choices', do_blocks( '<!-- wp:guam-restaurants/random-picker /-->' ) );
 		$_GET = array();
+	}
+
+	/**
+	 * One sponsored ad sits above the pick, labeled, targeted by the
+	 * visitor's choices; with none running, an invitation to advertise.
+	 * The pick itself is unchanged.
+	 */
+	public function test_sponsor_slot() {
+		Server::reset();
+		Pages::ensure();
+		$tamuning = (int) get_term_by( 'slug', 'tamuning', Content_Types::TAX_VILLAGE )->term_id;
+		$ad       = Ads::create(
+			'Harbor Grill picker',
+			array(
+				'advertiser' => 'Harbor Grill LLC',
+				'product'    => 'picker_sponsor',
+				'headline'   => 'Harbor Grill: sunset dinners',
+				'link'       => 'https://example.com/harbor-grill',
+				'start'      => '2026-10-01',
+				'end'        => '2026-10-31',
+				'status'     => Ads::STATUS_ACTIVE,
+				'villages'   => array( $tamuning ),
+			)
+		);
+		$this->assertIsInt( $ad, is_wp_error( $ad ) ? implode( ' ', $ad->get_error_messages() ) : '' );
+
+		$tamuning_pick = Picker::result( Picker::pick( Picker::filters( array( 'village' => 'tamuning' ) ) ), Picker::filters( array( 'village' => 'tamuning' ) ), home_url( '/what-to-eat/' ) );
+		$this->assertStringContainsString( 'Harbor Grill: sunset dinners', $tamuning_pick );
+		$this->assertStringContainsString( '<p class="gr-sponsored__label">Sponsored</p>', $tamuning_pick );
+		$this->assertStringContainsString( 'rel="sponsored noopener"', $tamuning_pick );
+		$this->assertStringContainsString( 'data-gr-ad-page="picker"', $tamuning_pick );
+		$this->assertLessThan( strpos( $tamuning_pick, 'gr-picker__card' ), strpos( $tamuning_pick, 'Harbor Grill' ), 'The ad sits above the pick' );
+		$this->assertStringNotContainsString( 'Advertise here', $tamuning_pick );
+
+		Server::reset();
+		$dededo_pick = Picker::result( Picker::pick( Picker::filters( array( 'village' => 'dededo' ) ) ), Picker::filters( array( 'village' => 'dededo' ) ), home_url( '/what-to-eat/' ) );
+		$this->assertStringNotContainsString( 'Harbor Grill', $dededo_pick, 'A Tamuning ad stays out of Dededo picks' );
+		$this->assertStringContainsString( 'Advertise here', $dededo_pick );
+		$this->assertStringContainsString( 'href="' . Pages::url( 'advertise' ) . '"', $dededo_pick );
+
+		Server::reset();
+		$none = Picker::result( Picker::pick( Picker::filters( array( 'village' => 'yigo' ) ) ), Picker::filters( array( 'village' => 'yigo' ) ), home_url( '/what-to-eat/' ) );
+		$this->assertStringNotContainsString( 'gr-picker__sponsor', $none, 'No slot without a pick' );
+		Server::reset();
 	}
 }
