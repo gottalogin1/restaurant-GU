@@ -7,12 +7,15 @@
 
 namespace GuamRestaurants\Core\Tests;
 
+use GuamRestaurants\Core\Highlights\Roles;
 use GuamRestaurants\Core\Legal\Pages as Legal_Pages;
 use GuamRestaurants\Core\Monitoring\Jobs;
+use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Photos\Agreement;
 use GuamRestaurants\Core\Photos\Photo_Gallery;
 use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Site\Blocks;
 use GuamRestaurants\Core\Site\Restaurant_View;
 
 // phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Config reads the environment.
@@ -221,6 +224,65 @@ class Photo_Submissions_Test extends Guam_Test_Case {
 	}
 
 	/**
+	 * A trusted owner's photos go live at once; an ordinary owner's wait.
+	 */
+	public function test_trusted_owner_skips_approval() {
+		Roles::install();
+		$role = get_role( Roles::TRUSTED_OWNER_ROLE );
+		$this->assertTrue( $role->has_cap( Roles::OWNER ) );
+		$this->assertTrue( $role->has_cap( Roles::PUBLISH_PHOTOS ) );
+		$this->assertFalse( get_role( Roles::OWNER_ROLE )->has_cap( Roles::PUBLISH_PHOTOS ) );
+
+		$plain   = self::factory()->user->create( array( 'role' => Roles::OWNER_ROLE ) );
+		$trusted = self::factory()->user->create( array( 'role' => Roles::TRUSTED_OWNER_ROLE ) );
+		$a       = $this->restaurant( 'Plain Owner Cafe', array( Restaurant_Meta::CLAIMED_BY_USER_ID => $plain ) );
+		$b       = $this->restaurant( 'Trusted Owner Cafe', array( Restaurant_Meta::CLAIMED_BY_USER_ID => $trusted ) );
+
+		wp_set_current_user( $plain );
+		$this->assertSame( Photo_Submissions::PENDING, Photo_Submissions::submit( $a, self::fields( array( 'rating' => 0 ) ), $this->upload( 300, 200 ), 'k8' )['status'] );
+		wp_set_current_user( $trusted );
+		$this->assertSame( Photo_Submissions::APPROVED, Photo_Submissions::submit( $b, self::fields( array( 'rating' => 0 ) ), $this->upload( 300, 200 ), 'k9' )['status'] );
+		$this->assertCount( 1, Photo_Submissions::approved( $b ) );
+		$this->assertWPError( Owner_Content::apply( $trusted, $a, array( 'specials' => array() ) ), 'Trusted owners still edit only their own restaurant.' );
+	}
+
+	/**
+	 * Owner dashboard photos wait for approval, then show in the owner's section (not the gallery); declined ones leave the owner's list.
+	 */
+	public function test_owner_dashboard_photos_wait() {
+		$admin   = $this->login_admin();
+		$plain   = self::factory()->user->create( array( 'role' => Roles::OWNER_ROLE ) );
+		$trusted = self::factory()->user->create( array( 'role' => Roles::TRUSTED_OWNER_ROLE ) );
+		$id      = $this->restaurant( 'Dashboard Cafe', array( Restaurant_Meta::CLAIMED_BY_USER_ID => $plain ) );
+		$photos  = array();
+		foreach ( array( 'kept', 'dropped' ) as $name ) {
+			$photo = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg', $id );
+			wp_update_post(
+				array(
+					'ID'          => $photo,
+					'post_author' => $plain,
+				)
+			);
+			update_post_meta( $photo, '_wp_attachment_image_alt', 'Plate of ' . $name );
+			$this->assertTrue( Photo_Submissions::hold_owner_photo( $photo, $plain ) );
+			$photos[ $name ] = $photo;
+		}
+		Owner_Content::apply( $plain, $id, array( 'photos' => array_values( $photos ) ) );
+		$this->assertSame( array(), Owner_Content::live_photos( Owner_Content::get( $id )['photos'] ) );
+		$this->assertSame( 0, Restaurant_View::photo_id( $id ) );
+		$this->assertSame( 'Plate of kept', get_post_meta( $photos['kept'], Photo_Submissions::DISH, true ) );
+
+		$this->assertTrue( Photo_Submissions::moderate( $photos['kept'], 'approve', '', $admin ) );
+		$this->assertTrue( Photo_Submissions::moderate( $photos['dropped'], 'reject', 'not_food', $admin ) );
+		$this->assertSame( array( $photos['kept'] ), Owner_Content::get( $id )['photos'] );
+		$this->assertSame( array( $photos['kept'] ), Owner_Content::live_photos( Owner_Content::get( $id )['photos'] ) );
+		$this->assertSame( $photos['kept'], Restaurant_View::photo_id( $id ) );
+		$this->assertSame( array(), Photo_Submissions::approved( $id ), 'Owner dashboard photos are not repeated in the gallery.' );
+
+		$this->assertFalse( Photo_Submissions::hold_owner_photo( self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg', $id ), $trusted ) );
+	}
+
+	/**
 	 * The daily job deletes originals after 30 days and unconfirmed uploads after a day.
 	 */
 	public function test_cleanup_job() {
@@ -271,6 +333,6 @@ class Photo_Submissions_Test extends Guam_Test_Case {
 
 		Legal_Pages::ensure();
 		$this->assertNotSame( '', Agreement::url() );
-		$this->assertStringContainsString( 'Photo upload agreement', \GuamRestaurants\Core\Site\Blocks::policy_links() );
+		$this->assertStringContainsString( 'Photo upload agreement', Blocks::policy_links() );
 	}
 }

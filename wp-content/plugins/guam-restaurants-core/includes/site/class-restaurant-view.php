@@ -275,10 +275,9 @@ final class Restaurant_View {
 		}
 		// Owner photos show only while the listing is claimed, as in Owner_Content::render_block().
 		if ( (int) get_post_meta( $restaurant_id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0 ) {
-			foreach ( Owner_Content::get( $restaurant_id )['photos'] as $photo ) {
-				if ( wp_attachment_is_image( $photo ) ) {
-					return $photo;
-				}
+			$owner = Owner_Content::live_photos( Owner_Content::get( $restaurant_id )['photos'] );
+			if ( $owner ) {
+				return $owner[0];
 			}
 		}
 		$uploads = Photo_Submissions::ids( Photo_Submissions::APPROVED, $restaurant_id, 1 );

@@ -57,7 +57,8 @@ Reviewed every request handler, REST route, query and template in the plugin
   3-second minimum fill, 5 uploads per hour per hashed IP and per email.
   Visitors who are not logged in confirm by email first. The original is stored
   under a random name and deleted after 30 days. The public copy has its
-  camera and location data removed.
+  camera and location data removed. Owners' photos also wait for approval unless the
+  owner has the "Restaurant owner (trusted)" role.
 
 **`wp-config.php` settings** (in docs/deployment.md §2): `DISALLOW_FILE_EDIT`,
 `WP_DEBUG_DISPLAY` false, `FORCE_SSL_ADMIN`, fresh salts, and `WP_ENVIRONMENT_TYPE`.

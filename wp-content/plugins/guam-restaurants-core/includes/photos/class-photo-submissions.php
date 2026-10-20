@@ -9,6 +9,7 @@ namespace GuamRestaurants\Core\Photos;
 
 use GuamRestaurants\Core\Highlights\Highlights;
 use GuamRestaurants\Core\Highlights\Roles;
+use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Reviews\Visitor_Reviews;
 use GuamRestaurants\Core\Security\Hardening;
 use GuamRestaurants\Core\Site\Cache;
@@ -33,6 +34,9 @@ defined( 'ABSPATH' ) || exit;
  *   deletes the full-size original ORIGINAL_DAYS days after upload.
  * - Moderation follows published rules (rules()); none of them looks at
  *   the rating, so low and high ratings are treated alike.
+ * - Owners' photos also wait, both from this form and from the owner
+ *   dashboard (OWNER_GALLERY), unless an administrator gave the owner the
+ *   trusted owner role (Roles::PUBLISH_PHOTOS). Administrators have it too.
  */
 final class Photo_Submissions {
 
@@ -46,6 +50,12 @@ final class Photo_Submissions {
 	public const AGREEMENT  = '_gr_photo_agreement';
 	public const ORIGINAL   = '_gr_photo_original';
 	public const KEEP_UNTIL = '_gr_photo_original_until';
+
+	/**
+	 * Marks a photo from the owner dashboard (Owners\Owner_Content). Once
+	 * approved it shows in the owner's section, not in the photo gallery.
+	 */
+	public const OWNER_GALLERY = '_gr_photo_owner_gallery';
 
 	public const UNCONFIRMED = 'unconfirmed';
 	public const PENDING     = 'pending';
@@ -176,7 +186,7 @@ final class Photo_Submissions {
 			set_transient( $name_key, (int) get_transient( $name_key ) + 1, HOUR_IN_SECONDS );
 		}
 
-		$status = $user_id ? self::PENDING : self::UNCONFIRMED;
+		$status = $user_id ? ( user_can( $user_id, Roles::PUBLISH_PHOTOS ) ? self::APPROVED : self::PENDING ) : self::UNCONFIRMED;
 		$meta   = array(
 			self::STATUS     => $status,
 			self::DISH       => $dish,
@@ -195,6 +205,9 @@ final class Photo_Submissions {
 			update_post_meta( $id, $key, $value );
 		}
 
+		if ( self::APPROVED === $status ) {
+			Cache::flush();
+		}
 		if ( ! $user_id ) {
 			$token = wp_generate_password( 32, false, false );
 			set_transient( 'gr_photo_confirm_' . hash( 'sha256', $token ), $id, DAY_IN_SECONDS );
@@ -395,6 +408,39 @@ final class Photo_Submissions {
 	}
 
 	/**
+	 * Holds a photo an owner added on the dashboard for approval, unless
+	 * the owner may publish photos.
+	 *
+	 * @param int $id      Attachment.
+	 * @param int $user_id Owner.
+	 * @return bool Whether the photo waits for approval.
+	 */
+	public static function hold_owner_photo( int $id, int $user_id ): bool {
+		if ( user_can( $user_id, Roles::PUBLISH_PHOTOS ) ) {
+			return false;
+		}
+		$user = get_userdata( $user_id );
+		update_post_meta( $id, self::STATUS, self::PENDING );
+		update_post_meta( $id, self::OWNER_GALLERY, 1 );
+		update_post_meta( $id, self::FROM_OWNER, 1 );
+		update_post_meta( $id, self::USER, $user_id );
+		update_post_meta( $id, self::NAME, $user ? $user->display_name : '' );
+		update_post_meta( $id, self::DISH, (string) get_post_meta( $id, '_wp_attachment_image_alt', true ) );
+		return true;
+	}
+
+	/**
+	 * Whether a photo may be shown: approved, or never held (owner photos
+	 * from before approval existed, and photos of trusted owners).
+	 *
+	 * @param int $id Attachment.
+	 * @return bool
+	 */
+	public static function is_live( int $id ): bool {
+		return in_array( self::status( $id ), array( '', self::APPROVED ), true );
+	}
+
+	/**
 	 * A photo's status, or '' when it is not a submission.
 	 *
 	 * @param int $id Attachment.
@@ -418,7 +464,12 @@ final class Photo_Submissions {
 			return new WP_Error( 'gr_photo_missing', __( 'Photo not found.', 'guam-restaurants-core' ), array( 'status' => 404 ) );
 		}
 		if ( 'approve' === $action ) {
-			update_post_meta( $id, self::STATUS, self::APPROVED );
+			if ( get_post_meta( $id, self::OWNER_GALLERY, true ) ) {
+				// Back to an ordinary owner photo, shown in the owner's section.
+				delete_post_meta( $id, self::STATUS );
+			} else {
+				update_post_meta( $id, self::STATUS, self::APPROVED );
+			}
 			update_post_meta( $id, '_gr_photo_moderated', array( 'user' => $user_id, 'time' => gmdate( 'c' ) ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- short record.
 			Cache::flush();
 			return true;
@@ -438,6 +489,11 @@ final class Photo_Submissions {
 	 * @return void
 	 */
 	public static function delete( int $id ): void {
+		$restaurant = (int) wp_get_post_parent_id( $id );
+		$owner      = get_post_meta( $restaurant, Owner_Content::PHOTOS, true );
+		if ( is_array( $owner ) && in_array( $id, array_map( 'intval', $owner ), true ) ) {
+			update_post_meta( $restaurant, Owner_Content::PHOTOS, array_values( array_diff( array_map( 'intval', $owner ), array( $id ) ) ) );
+		}
 		self::delete_original( $id );
 		wp_delete_attachment( $id, true );
 	}

@@ -13,6 +13,7 @@ use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Change_Log;
 use GuamRestaurants\Core\Highlights\Roles;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
+use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Assets;
@@ -37,7 +38,9 @@ defined( 'ABSPATH' ) || exit;
  * API and meta APIs stay closed to them. apply() is the only way in and
  * ignores every other key: ratings, awards, status, opening and closing
  * dates, the change log and reviews cannot be reached from here. Each
- * change goes live at once and is written to the change log as "owner".
+ * change goes live at once and is written to the change log as "owner",
+ * except new photos, which wait for an administrator unless the owner has
+ * the trusted owner role (Photos\Photo_Submissions::hold_owner_photo()).
  *
  * Specials and menu link labels follow the ad rules (Ads\Guard): no
  * "Featured", "Top pick", "Recommended", "editor's choice" or award claims.
@@ -336,6 +339,23 @@ final class Owner_Content {
 	}
 
 	/**
+	 * Owner photos that may be shown: images that are not waiting for approval.
+	 *
+	 * @param int[] $ids Attachment IDs.
+	 * @return int[]
+	 */
+	public static function live_photos( array $ids ): array {
+		return array_values(
+			array_filter(
+				$ids,
+				static function ( int $id ): bool {
+					return wp_attachment_is_image( $id ) && Photo_Submissions::is_live( $id );
+				}
+			)
+		);
+	}
+
+	/**
 	 * Specials not past their end date (Guam).
 	 *
 	 * @param int         $restaurant_id Restaurant.
@@ -371,7 +391,7 @@ final class Owner_Content {
 		$specials = self::current_specials( $id );
 		$premium  = Premium::is_active( $id );
 		$cta      = $premium ? Premium::cta( $id ) : null;
-		$photos   = array_slice( array_values( array_filter( $fields['photos'], 'wp_attachment_is_image' ) ), 0, Premium::max_photos( $id ) );
+		$photos   = array_slice( self::live_photos( $fields['photos'] ), 0, Premium::max_photos( $id ) );
 		if ( ! $fields['menu_links'] && ! $specials && ! $photos && ! $cta ) {
 			return '';
 		}

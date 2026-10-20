@@ -106,6 +106,10 @@ final class Moderation_Screen {
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		echo '<div class="wrap"><h1>' . esc_html__( 'Photo submissions', 'guam-restaurants-core' ) . '</h1>';
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'Owners\' photos wait here too. To let an owner publish photos without approval, edit their user and set the role to "Restaurant owner (trusted)". They can still change only their own restaurant.', 'guam-restaurants-core' )
+		);
 		if ( ! Agreement::has_legal_name() ) {
 			printf(
 				'<div class="notice notice-warning"><p>%s</p></div>',
@@ -158,7 +162,9 @@ final class Moderation_Screen {
 		$rating     = (int) get_post_meta( $id, Photo_Submissions::RATING, true );
 		$agreement  = (array) get_post_meta( $id, Photo_Submissions::AGREEMENT, true );
 		$who        = esc_html( (string) get_post_meta( $id, Photo_Submissions::NAME, true ) );
-		if ( get_post_meta( $id, Photo_Submissions::FROM_OWNER, true ) ) {
+		if ( get_post_meta( $id, Photo_Submissions::OWNER_GALLERY, true ) ) {
+			$who .= ' <strong>' . esc_html__( '(owner, from the owner dashboard; the dish field shows their photo description)', 'guam-restaurants-core' ) . '</strong>';
+		} elseif ( get_post_meta( $id, Photo_Submissions::FROM_OWNER, true ) ) {
 			$who .= ' <strong>' . esc_html__( '(owner)', 'guam-restaurants-core' ) . '</strong>';
 		} elseif ( get_post_meta( $id, Photo_Submissions::CONNECTED, true ) ) {
 			$who .= ' <strong>' . esc_html__( '(says they are connected to the restaurant)', 'guam-restaurants-core' ) . '</strong>';
