@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Awards;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Translation\Languages;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -165,9 +166,9 @@ final class Display {
 	 */
 	public static function restaurant_link( int $restaurant_id, string $name, string $status ): string {
 		if ( 'publish' === $status ) {
-			return sprintf( '<a href="%1$s">%2$s</a>', esc_url( (string) get_permalink( $restaurant_id ) ), esc_html( $name ) );
+			return sprintf( '<a href="%1$s">%2$s</a>', esc_url( (string) get_permalink( $restaurant_id ) ), Languages::keep( esc_html( $name ) ) );
 		}
-		return esc_html( $name );
+		return Languages::keep( esc_html( $name ) );
 	}
 
 	/**

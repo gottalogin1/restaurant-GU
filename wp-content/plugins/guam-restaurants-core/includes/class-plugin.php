@@ -104,6 +104,7 @@ final class Plugin {
 		Saved\View::register();
 		Saved\Members::register();
 		Saved\Rest_Controller::register();
+		Translation\Integration::register();
 		Site\Seo::register();
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();

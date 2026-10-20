@@ -1,0 +1,3 @@
+{site}'s Japanese and Korean pages are machine translated from English with [Google Translate](https://translate.google.com/), so they may contain mistakes. The English page is the original and is the one to rely on. Restaurant names, addresses, village and mall names, other sites' ratings and reviews, and photo credits are left as written. On Japanese and Korean pages, Google may show its own ratings details, such as opening hours, in that language.
+
+THIS SERVICE MAY CONTAIN TRANSLATIONS POWERED BY GOOGLE. GOOGLE DISCLAIMS ALL WARRANTIES RELATED TO THE TRANSLATIONS, EXPRESS OR IMPLIED, INCLUDING ANY WARRANTIES OF ACCURACY, RELIABILITY, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.

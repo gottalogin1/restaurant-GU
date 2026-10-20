@@ -254,8 +254,8 @@ class Picker_Test extends Guam_Test_Case {
 		$_GET = array();
 		$html = do_blocks( '<!-- wp:guam-restaurants/random-picker /-->' );
 		$this->assertStringContainsString( 'data-gr-picker', $html );
-		$this->assertStringContainsString( '<option value="dededo">Dededo (Liguan, Finegayan)</option>', $html );
-		$this->assertStringContainsString( '<option value="tamuning">Tamuning (Tumon, Upper Tumon, Harmon)</option>', $html, 'Villages show their aliases' );
+		$this->assertStringContainsString( '<option value="dededo" class="notranslate" translate="no" data-no-translation>Dededo (Liguan, Finegayan)</option>', $html );
+		$this->assertStringContainsString( '<option value="tamuning" class="notranslate" translate="no" data-no-translation>Tamuning (Tumon, Upper Tumon, Harmon)</option>', $html, 'Villages show their aliases' );
 		$this->assertStringContainsString( 'name="cuisine[]" value="korean"', $html );
 		$this->assertStringContainsString( 'name="price[]" value="p1"', $html );
 		$this->assertStringContainsString( 'name="open" value="now"', $html );
@@ -270,7 +270,7 @@ class Picker_Test extends Guam_Test_Case {
 		);
 		$html = do_blocks( '<!-- wp:guam-restaurants/random-picker /-->' );
 		$this->assertStringContainsString( 'Dededo Kimchi House', $html );
-		$this->assertStringContainsString( '<option value="dededo" selected=\'selected\'>Dededo (Liguan, Finegayan)</option>', $html );
+		$this->assertStringContainsString( '<option value="dededo" selected=\'selected\' class="notranslate" translate="no" data-no-translation>Dededo (Liguan, Finegayan)</option>', $html );
 		$this->assertStringContainsString( 'Open now uses Guam time', $html );
 
 		$_GET = array(

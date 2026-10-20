@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Photos;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Translation\Languages;
 use GuamRestaurants\Core\Site\Cache;
 
 defined( 'ABSPATH' ) || exit;
@@ -126,13 +127,14 @@ final class Cuisine_Photos {
 	public static function credit_html( array $credit, bool $full ): string {
 		$parts   = array( esc_html( $full ? __( 'Illustrative photo, not from this restaurant', 'guam-restaurants-core' ) : __( 'Illustrative photo', 'guam-restaurants-core' ) ) );
 		$creator = '' !== ( $credit['creator'] ?? '' ) ? $credit['creator'] : __( 'Unknown author', 'guam-restaurants-core' );
+		// The author and licence stay as written on translated pages (licence attribution).
 		$parts[] = '' !== ( $credit['source_url'] ?? '' )
-			? sprintf( '<a href="%1$s" rel="nofollow noopener">%2$s</a>', esc_url( $credit['source_url'] ), esc_html( $creator ) )
-			: esc_html( $creator );
+			? sprintf( '<a href="%1$s" rel="nofollow noopener">%2$s</a>', esc_url( $credit['source_url'] ), Languages::keep( esc_html( $creator ) ) )
+			: Languages::keep( esc_html( $creator ) );
 		$license = self::license_label( $credit );
 		$parts[] = '' !== ( $credit['license_url'] ?? '' )
-			? sprintf( '<a href="%1$s" rel="license nofollow noopener">%2$s</a>', esc_url( $credit['license_url'] ), esc_html( $license ) )
-			: esc_html( $license );
+			? sprintf( '<a href="%1$s" rel="license nofollow noopener">%2$s</a>', esc_url( $credit['license_url'] ), Languages::keep( esc_html( $license ) ) )
+			: Languages::keep( esc_html( $license ) );
 		return '<span class="gr-media__credit">' . implode( ' <span aria-hidden="true">·</span> ', $parts ) . '</span>';
 	}
 

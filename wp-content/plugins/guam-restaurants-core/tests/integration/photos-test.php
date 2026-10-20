@@ -176,8 +176,8 @@ class Photos_Test extends Guam_Test_Case {
 
 		$card = Restaurant_View::card( $id );
 		$this->assertStringContainsString( 'gr-card__media--stock', $card );
-		$this->assertStringContainsString( '<span class="gr-media__credit">Illustrative photo <span aria-hidden="true">·</span> <a href="https://img.example/photos/99999999-9999-9999-9999-999999999999" rel="nofollow noopener">Ana Cruz</a>', $card );
-		$this->assertStringContainsString( 'rel="license nofollow noopener">CC BY 2.0</a>', $card );
+		$this->assertStringContainsString( '<span class="gr-media__credit">Illustrative photo <span aria-hidden="true">·</span> <a href="https://img.example/photos/99999999-9999-9999-9999-999999999999" rel="nofollow noopener"><span class="notranslate" translate="no" data-no-translation>Ana Cruz</span></a>', $card );
+		$this->assertStringContainsString( 'rel="license nofollow noopener"><span class="notranslate" translate="no" data-no-translation>CC BY 2.0</span></a>', $card );
 		$this->assertStringContainsString( 'Illustrative photo, not from this restaurant', Restaurant_View::media( $id, 'large', 'gr-hero__media', true ) );
 
 		$own = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg', $id );

@@ -77,6 +77,10 @@
 		return div.innerHTML;
 	}
 
+	function keep( text ) {
+		return '<span class="notranslate" translate="no" data-no-translation>' + escapeHtml( text ) + '</span>';
+	}
+
 	function initExplorer( container ) {
 		var status = document.querySelector( '[data-gr-map-status]' );
 		var list = document.querySelector( '[data-gr-map-list]' );
@@ -161,10 +165,11 @@
 					map.on( 'click', 'points', function ( event ) {
 						var feature = event.features[ 0 ];
 						var p = feature.properties;
-						var meta = [ p.cuisine, p.place, p.price ].filter( Boolean ).map( escapeHtml ).join( ' · ' );
+						// Names and places keep their own spelling on translated pages (notranslate).
+						var meta = [ escapeHtml( p.cuisine ), p.place ? keep( p.place ) : '', escapeHtml( p.price ) ].filter( Boolean ).join( ' · ' );
 						new maplibregl.Popup( { offset: 10 } )
 							.setLngLat( feature.geometry.coordinates )
-							.setHTML( '<p class="gr-popup__name"><a href="' + escapeHtml( p.url ) + '">' + escapeHtml( p.name ) + '</a></p>' + ( meta ? '<p class="gr-popup__meta">' + meta + '</p>' : '' ) )
+							.setHTML( '<p class="gr-popup__name"><a href="' + escapeHtml( p.url ) + '">' + keep( p.name ) + '</a></p>' + ( meta ? '<p class="gr-popup__meta">' + meta + '</p>' : '' ) )
 							.addTo( map );
 					} );
 					[ 'clusters', 'points' ].forEach( function ( layer ) {

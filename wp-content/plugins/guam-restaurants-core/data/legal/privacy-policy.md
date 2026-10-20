@@ -42,6 +42,7 @@ When you send a form we keep a one-way hash of your IP address and email address
 - **Maps.** Your browser loads map images from OpenFreeMap, which receives your IP address and browser details like any website you visit.
 - **Google Maps.** Some restaurant pages show an embedded Google map. Google receives your IP address and may set cookies in that map ([Google Privacy Policy](https://policies.google.com/privacy)).
 - **Ratings.** Ratings from Google, Yelp and Foursquare are fetched by our server. Your browser does not contact those services unless you follow a link to them.
+- **Japanese and Korean pages.** These pages are machine translated with Google Cloud Translation. Our server sends the text shown on our pages to Google, including reviews visitors have posted, translates each piece once and keeps the translation. Names shown with reviews are not sent. Your browser does not contact Google for this.
 
 ## Cookies
 
@@ -58,7 +59,7 @@ We use only the cookies the site needs to work. Saved restaurants are kept in yo
 
 ## Who we share it with
 
-We do not sell personal information or share it for targeted advertising. We share it only with the services that run the site for us: our host ([HOST]), our email delivery service ([EMAIL SERVICE]), PayPal for payments and SendFox for the newsletter, each only for that job. When you choose to sign in with Google or Facebook, they learn that you signed in to this site. We also share it when the law requires.
+We do not sell personal information or share it for targeted advertising. We share it only with the services that run the site for us: our host ([HOST]), our email delivery service ([EMAIL SERVICE]), PayPal for payments, SendFox for the newsletter and Google Cloud Translation for the Japanese and Korean pages (page text only), each only for that job. When you choose to sign in with Google or Facebook, they learn that you signed in to this site. We also share it when the law requires.
 
 ## How long we keep it
 

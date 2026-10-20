@@ -133,6 +133,14 @@ full list is in [.env.example](../.env.example).
 - [ ] Logo and asset URLs for Google Maps, Foursquare and Yelp (if used),
       downloaded from each brand page by hand.
 - [ ] Alert email (`GUAM_RESTAURANTS_ALERT_EMAIL`).
+- [ ] Japanese and Korean pages ([translation.md](translation.md) §5): TranslatePress
+      Personal (€99/year; free covers Japanese only), Google Cloud Translation key
+      restricted to that API and the server's IP, daily character limit, budget alert,
+      and the "powered by Google Translate" badge URL
+      (`GUAM_RESTAURANTS_GOOGLE_TRANSLATE_BADGE_URL`). Try it on staging first.
+- [ ] Ask counsel about Google's rule that its logo may not share a page with
+      competing search services' logos (translation badge next to Foursquare or Yelp
+      logos); until then leave the Foursquare logo URL empty and Yelp off.
 - [ ] Server crontab for the scheduled jobs ([scheduling.md](scheduling.md)),
       with `GUAM_RESTAURANTS_CRON_MODE=server`.
 - [ ] Confirm the host gzips JSON. The map data is about 450 KB without it and

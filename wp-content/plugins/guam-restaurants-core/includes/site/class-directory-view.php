@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Translation\Languages;
 use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Village_Aliases;
 
@@ -463,7 +464,7 @@ final class Directory_View {
 				esc_attr( $param ),
 				esc_attr( $term->slug ),
 				checked( in_array( $term->slug, $selected, true ), true, false ),
-				esc_html( $term->name )
+				Restaurant_View::is_place_taxonomy( $taxonomy ) ? Languages::keep( esc_html( $term->name ) ) : esc_html( $term->name )
 			);
 		}
 		$count = count( $selected );

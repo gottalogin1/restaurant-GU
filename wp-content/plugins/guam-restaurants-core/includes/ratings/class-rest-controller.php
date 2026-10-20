@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Ratings;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Translation\Languages;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -64,6 +65,12 @@ final class Rest_Controller {
 						'type'    => 'boolean',
 						'default' => true,
 					),
+					'lang'    => array(
+						'type'        => 'string',
+						'default'     => '',
+						'pattern'     => '^([a-z]{2,3})?$',
+						'description' => __( 'Language of the page showing the ratings (ja, ko). Google then writes its own text in it.', 'guam-restaurants-core' ),
+					),
 				),
 			)
 		);
@@ -76,7 +83,8 @@ final class Rest_Controller {
 	 * @return string
 	 */
 	public static function url( int $restaurant_id ): string {
-		return rest_url( self::NAMESPACE . '/restaurants/' . $restaurant_id . '/ratings' );
+		$url = rest_url( self::NAMESPACE . '/restaurants/' . $restaurant_id . '/ratings' );
+		return Languages::is_translated() ? add_query_arg( 'lang', Languages::current(), $url ) : $url;
 	}
 
 	/**
@@ -108,8 +116,9 @@ final class Rest_Controller {
 		$ratings = Ratings::get(
 			$id,
 			array(
-				'sources' => Ratings::sanitize_sources( (string) $request['sources'] ),
-				'reviews' => (bool) $request['reviews'],
+				'sources'  => Ratings::sanitize_sources( (string) $request['sources'] ),
+				'reviews'  => (bool) $request['reviews'],
+				'language' => (string) $request['lang'],
 			)
 		);
 

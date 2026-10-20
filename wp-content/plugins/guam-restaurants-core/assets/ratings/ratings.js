@@ -45,6 +45,15 @@
 		return node;
 	}
 
+	// Other sites' content (names, reviews, hours, attributions) stays exactly as
+	// the API returned it on machine-translated pages; only our own labels are translated.
+	function keep( node ) {
+		node.classList.add( 'notranslate' );
+		node.setAttribute( 'translate', 'no' );
+		node.setAttribute( 'data-no-translation', '' );
+		return node;
+	}
+
 	function isHttp( url ) {
 		return typeof url === 'string' && /^https?:\/\//i.test( url );
 	}
@@ -95,7 +104,7 @@
 		var mark = isHttp( attribution.logo_url )
 			? el( 'img', { className: 'gr-ratings__logo', src: attribution.logo_url, alt: attribution.text || data.label } )
 			: el( 'span', { className: 'gr-ratings__attribution', text: attribution.text || data.label } );
-		return link( data.url, 'gr-ratings__brand', [ mark ] );
+		return keep( link( data.url, 'gr-ratings__brand', [ mark ] ) );
 	}
 
 	function providers( data ) {
@@ -106,7 +115,7 @@
 		var items = list.map( function ( provider ) {
 			return link( provider.url, 'gr-ratings__provider', [ el( 'span', { text: provider.name } ) ] );
 		} );
-		return el( 'p', { className: 'gr-ratings__providers' }, [ el( 'span', { text: data.label + ' · ' } ) ].concat( items ) );
+		return keep( el( 'p', { className: 'gr-ratings__providers' }, [ el( 'span', { text: data.label + ' · ' } ) ].concat( items ) ) );
 	}
 
 	function review( data, item ) {
@@ -131,8 +140,8 @@
 		}
 
 		return el( 'li', { className: 'gr-review' }, [
-			el( 'div', { className: 'gr-review__header' }, header ),
-			el( 'p', { className: 'gr-review__text', text: item.text } ),
+			keep( el( 'div', { className: 'gr-review__header' }, header ) ),
+			keep( el( 'p', { className: 'gr-review__text', text: item.text } ) ),
 			el( 'div', { className: 'gr-review__footer' }, footer ),
 		] );
 	}
@@ -144,21 +153,21 @@
 		if ( info.phone ) {
 			rows.push( el( 'div', { className: 'gr-ratings__detail' }, [
 				el( 'dt', { text: __( 'Phone', 'guam-restaurants-core' ) } ),
-				el( 'dd', {}, [ el( 'a', { href: 'tel:' + info.phone.replace( /[^0-9+]/g, '' ), text: info.phone } ) ] ),
+				keep( el( 'dd', {}, [ el( 'a', { href: 'tel:' + info.phone.replace( /[^0-9+]/g, '' ), text: info.phone } ) ] ) ),
 			] ) );
 		}
 		if ( isHttp( info.website ) ) {
 			rows.push( el( 'div', { className: 'gr-ratings__detail' }, [
 				el( 'dt', { text: __( 'Website', 'guam-restaurants-core' ) } ),
-				el( 'dd', {}, [ link( info.website, 'gr-ratings__website', [ el( 'span', { text: info.website.replace( /^https?:\/\/(www\.)?/i, '' ).replace( /\/$/, '' ) } ) ] ) ] ),
+				keep( el( 'dd', {}, [ link( info.website, 'gr-ratings__website', [ el( 'span', { text: info.website.replace( /^https?:\/\/(www\.)?/i, '' ).replace( /\/$/, '' ) } ) ] ) ] ) ),
 			] ) );
 		}
 		if ( info.hours && info.hours.length ) {
 			rows.push( el( 'div', { className: 'gr-ratings__detail' }, [
 				el( 'dt', { text: __( 'Hours', 'guam-restaurants-core' ) } ),
-				el( 'dd', {}, [ el( 'ul', { className: 'gr-ratings__hours' }, info.hours.map( function ( line ) {
+				keep( el( 'dd', {}, [ el( 'ul', { className: 'gr-ratings__hours' }, info.hours.map( function ( line ) {
 					return el( 'li', { text: line } );
-				} ) ) ] ),
+				} ) ) ] ) ),
 			] ) );
 		}
 		if ( ! rows.length ) {

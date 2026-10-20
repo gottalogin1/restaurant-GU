@@ -29,6 +29,8 @@ defined( 'ABSPATH' ) || exit;
  *   photos (/photo-upload-agreement/): published. They describe what the site already does.
  * - editorial policy: the editorial statement, corrections and sponsored
  *   feature sections are added above the highlights rules, once.
+ * - translations: the machine-translation section with Google's disclaimer
+ *   is added to the Data sources page, once.
  *
  * The cookie notice is a section of the privacy policy. The site sets no
  * analytics or advertising cookies, so it needs no consent banner.
@@ -36,9 +38,15 @@ defined( 'ABSPATH' ) || exit;
 final class Pages {
 
 	public const OPTION  = 'guam_restaurants_legal_pages';
-	public const VERSION = '3';
+	public const VERSION = '4';
 
 	public const STATEMENT_MARKER = 'Our editorial statement';
+
+	/**
+	 * Anchor of the Translations section on the Data sources page, linked
+	 * from the notice on machine-translated pages.
+	 */
+	public const TRANSLATIONS_ANCHOR = 'translations';
 
 	/**
 	 * Hooks registration.
@@ -125,6 +133,7 @@ final class Pages {
 				$done[ $role ] = 'created';
 			}
 		}
+		$done['translations'] = self::add_translations_section();
 		update_option(
 			self::OPTION,
 			array(
@@ -276,5 +285,39 @@ final class Pages {
 			)
 		);
 		return 'added statement';
+	}
+
+	/**
+	 * Adds the Translations section (machine translation and Google's
+	 * disclaimer) to the Data sources page, before "Report a problem", once.
+	 *
+	 * @return string What was done.
+	 */
+	public static function add_translations_section(): string {
+		$page = get_page_by_path( self::definitions()['sources']['slug'], OBJECT, 'page' );
+		if ( ! $page instanceof \WP_Post ) {
+			return 'missing';
+		}
+		if ( false !== strpos( $page->post_content, 'id="' . self::TRANSLATIONS_ANCHOR . '"' ) ) {
+			return 'kept (already there)';
+		}
+		$section = sprintf(
+			'<!-- wp:heading {"anchor":"%1$s"} --><h2 class="wp-block-heading" id="%1$s">%2$s</h2><!-- /wp:heading -->',
+			self::TRANSLATIONS_ANCHOR,
+			esc_html__( 'Translations', 'guam-restaurants-core' )
+		) . "\n\n" . self::content( 'translations.md' );
+
+		$content  = $page->post_content;
+		$position = strpos( $content, '<!-- wp:heading --><h2 class="wp-block-heading">Report a problem</h2>' );
+		$content  = false === $position
+			? rtrim( $content ) . "\n\n" . $section
+			: substr( $content, 0, $position ) . $section . "\n\n" . substr( $content, $position );
+		wp_update_post(
+			array(
+				'ID'           => $page->ID,
+				'post_content' => $content,
+			)
+		);
+		return 'added translations';
 	}
 }

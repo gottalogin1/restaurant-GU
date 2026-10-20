@@ -196,7 +196,8 @@
 		var children = [
 			el( 'div', { className: 'gr-vr-review__header' }, [
 				stars( review.rating ),
-				el( 'strong', { className: 'gr-vr-review__author', text: review.author } ),
+				// Names stay as written on machine-translated pages and are never sent for translation.
+				el( 'strong', { className: 'gr-vr-review__author notranslate', translate: 'no', 'data-no-translation': true, text: review.author } ),
 				review.email_verified ? el( 'span', { className: 'gr-vr-badge', title: badge.explanation, text: badge.label } ) : null,
 				el( 'time', { className: 'gr-vr-review__date', datetime: review.date, text: review.date } ),
 			] ),
@@ -212,7 +213,9 @@
 			children.push( el( 'div', { className: 'gr-vr-response' }, [
 				el( 'p', { className: 'gr-vr-response__label' }, [
 					el( 'strong', { text: ( data.labels && data.labels.owner_response ) || __( 'Response from the owner', 'guam-restaurants-core' ) } ),
-					el( 'span', { text: ' · ' + review.response.author + ' · ' } ),
+					el( 'span', { text: ' · ' } ),
+					el( 'span', { className: 'notranslate', translate: 'no', 'data-no-translation': true, text: review.response.author } ),
+					el( 'span', { text: ' · ' } ),
 					el( 'time', { datetime: review.response.date, text: review.response.date } ),
 				] ),
 				el( 'p', { className: 'gr-vr-response__text', text: review.response.text } ),
