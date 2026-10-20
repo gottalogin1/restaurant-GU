@@ -16,7 +16,9 @@ use GuamRestaurants\Core\Geo\Village_Locator;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
 use GuamRestaurants\Core\Monitoring\Closures;
+use GuamRestaurants\Core\Names;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Tagging\Branch_Names;
 use GuamRestaurants\Core\Tagging\Cuisine_Tagger;
 use GuamRestaurants\Core\Tagging\Mall_Tagger;
 use GuamRestaurants\Core\Tagging\Term_Slugs;
@@ -154,7 +156,7 @@ final class Importer {
 	 *
 	 * @param array<int, array<string, mixed>> $elements Elements.
 	 * @param bool                             $dry_run  Report without writing (no ingestion run is logged).
-	 * @return array{counts: array<string, int>, skipped: array<string, int>, unmapped: array<string, int>, no_cuisine_tag: int, unmatched_malls: array<string, string>, village_unresolved: string[], closures: array{checked: bool, closed: int[], queued: int[], note: string}, errors: string[], run_id: int|null}
+	 * @return array{counts: array<string, int>, skipped: array<string, int>, unmapped: array<string, int>, no_cuisine_tag: int, unmatched_malls: array<string, string>, village_unresolved: string[], closures: array{checked: bool, closed: int[], queued: int[], note: string}, errors: string[], run_id: int|null, branch_names: array<string, array>|null} branch_names: Branch_Names::apply() after a real run.
 	 */
 	public function run( array $elements, bool $dry_run = false ): array {
 		return Mall_Verification::with_unverified(
@@ -201,6 +203,7 @@ final class Importer {
 			),
 			'errors'             => array(),
 			'run_id'             => null,
+			'branch_names'       => null,
 		);
 
 		$mall_terms                = self::mall_terms();
@@ -255,6 +258,7 @@ final class Importer {
 		}
 
 		if ( $run_id ) {
+			$result['branch_names'] = Branch_Names::apply();
 			Ingestion_Runs::finish( $run_id, $result['counts'], self::notes( $result ), $result['errors'] );
 		}
 
@@ -470,8 +474,10 @@ final class Importer {
 	private function diff( int $post_id, array $record, ?string $village ): array {
 		$changes = array();
 
-		$title     = (string) get_post_field( 'post_title', $post_id, 'raw' );
-		$new_title = self::stored_title( $record['title'] );
+		$title  = (string) get_post_field( 'post_title', $post_id, 'raw' );
+		$suffix = Names::split_village( $title )[1];
+		// A branch keeps its ", Village" (Branch_Names); only the OSM name part is compared.
+		$new_title = self::stored_title( $record['title'] . ( '' !== $suffix ? ', ' . $suffix : '' ) );
 		if ( $new_title !== $title ) {
 			$changes['title'] = array(
 				'old' => $title,

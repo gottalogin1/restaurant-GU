@@ -1,6 +1,6 @@
 <?php
 /**
- * WP-CLI commands: `wp guam-restaurants import-osm`, `import-fsq`, `discover` and `search-log`.
+ * WP-CLI commands: `wp guam-restaurants import-osm`, `import-fsq`, `discover`, `search-log` and `branch-names`.
  *
  * @package GuamRestaurants\Core
  */
@@ -20,6 +20,7 @@ use GuamRestaurants\Core\Osm\Cuisine_Map;
 use GuamRestaurants\Core\Osm\Element_Mapper;
 use GuamRestaurants\Core\Osm\Importer;
 use GuamRestaurants\Core\Osm\Overpass_Client;
+use GuamRestaurants\Core\Tagging\Branch_Names;
 use WP_CLI;
 
 defined( 'ABSPATH' ) || exit;
@@ -38,6 +39,7 @@ final class Import_Commands {
 		WP_CLI::add_command( 'guam-restaurants import-osm', array( self::class, 'import_osm' ) );
 		WP_CLI::add_command( 'guam-restaurants import-fsq', array( self::class, 'import_fsq' ) );
 		WP_CLI::add_command( 'guam-restaurants discover', array( self::class, 'discover' ) );
+		WP_CLI::add_command( 'guam-restaurants branch-names', array( self::class, 'branch_names' ) );
 		WP_CLI::add_command( 'guam-restaurants search-log', Search_Log_Command::class );
 	}
 
@@ -182,6 +184,9 @@ final class Import_Commands {
 		} elseif ( '' !== $result['closures']['note'] ) {
 			WP_CLI::warning( ucfirst( $result['closures']['note'] ) . '.' );
 		}
+		if ( null !== $result['branch_names'] ) {
+			self::log_branch_names( $result['branch_names'], false );
+		}
 
 		self::log_counts( $dry_run, $result['counts'], $result['run_id'] );
 	}
@@ -262,8 +267,84 @@ final class Import_Commands {
 			}
 			WP_CLI\Utils\format_items( 'table', $rows, array( 'cuisine', 'places' ) );
 		}
+		if ( null !== $result['branch_names'] ) {
+			self::log_branch_names( $result['branch_names'], false );
+		}
 
 		self::log_counts( $dry_run, $result['counts'], $result['run_id'] );
+	}
+
+	/**
+	 * Names branches "<name>, <village>": every restaurant whose name another
+	 * listing also has (a chain such as McDonald's) gets its village after
+	 * the name, so "McDonald's" in Mangilao becomes "McDonald's, Mangilao".
+	 * A restaurant with a name of its own keeps it. Branches with no village
+	 * keep their name and are added to the review queue (Village unknown);
+	 * once their village is set they are renamed. The OSM and Foursquare
+	 * imports and the review queue do this on their own; run this once for
+	 * the listings you already have, or after renaming listings by hand.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--dry-run]
+	 * : List the new names, but change nothing.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp guam-restaurants branch-names --dry-run
+	 *     wp guam-restaurants branch-names
+	 *
+	 * @param string[]             $args       Positional arguments (unused).
+	 * @param array<string, mixed> $assoc_args Flags.
+	 * @return void
+	 */
+	public static function branch_names( array $args, array $assoc_args ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed -- WP-CLI signature.
+		$dry_run = (bool) WP_CLI\Utils\get_flag_value( $assoc_args, 'dry-run', false );
+		self::log_branch_names( Branch_Names::apply( $dry_run ), $dry_run, true );
+	}
+
+	/**
+	 * Reports Branch_Names::apply().
+	 *
+	 * @param array{renamed: array<int, array{old: string, new: string}>, no_village: int[], same_village: int[]} $result  Result.
+	 * @param bool                                                                                                $dry_run Dry run.
+	 * @param bool                                                                                                $details List every rename.
+	 * @return void
+	 */
+	private static function log_branch_names( array $result, bool $dry_run, bool $details = false ): void {
+		if ( $details && $result['renamed'] ) {
+			$rows = array();
+			foreach ( $result['renamed'] as $id => $names ) {
+				$rows[] = array(
+					'id'  => $id,
+					'old' => $names['old'],
+					'new' => $names['new'],
+				);
+			}
+			WP_CLI\Utils\format_items( 'table', $rows, array( 'id', 'old', 'new' ) );
+		}
+		WP_CLI::log( sprintf( '%s %d branch name(s) to "Name, Village".', $dry_run ? 'Would rename' : 'Renamed', count( $result['renamed'] ) ) );
+		if ( $result['no_village'] ) {
+			WP_CLI::warning( sprintf( '%d branch(es) have no single village, so their names were left as they are%s: %s', count( $result['no_village'] ), $dry_run ? '' : ' (queued for review as Village unknown)', implode( ', ', self::titles( $result['no_village'] ) ) ) );
+		}
+		if ( $result['same_village'] ) {
+			WP_CLI::warning( sprintf( 'Branches with the same name in the same village still share a name; rename them by hand (for example with the mall or street): %s', implode( ', ', self::titles( $result['same_village'] ) ) ) );
+		}
+	}
+
+	/**
+	 * "Title (#ID)" for each restaurant.
+	 *
+	 * @param int[] $ids Restaurants.
+	 * @return string[]
+	 */
+	private static function titles( array $ids ): array {
+		return array_map(
+			static function ( int $id ): string {
+				return html_entity_decode( (string) get_post_field( 'post_title', $id, 'raw' ), ENT_QUOTES ) . ' (#' . $id . ')';
+			},
+			$ids
+		);
 	}
 
 	/**

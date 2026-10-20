@@ -14,9 +14,11 @@ use GuamRestaurants\Core\Discovery\Places_Client;
 use GuamRestaurants\Core\Http\Retrying_Client;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Closures;
+use GuamRestaurants\Core\Names;
 use GuamRestaurants\Core\Ratings\Budget;
 use GuamRestaurants\Core\Ratings\Pricing;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Tagging\Branch_Names;
 use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Tagging\Merger;
@@ -346,6 +348,8 @@ final class Review_Queue_Screen {
 		}
 
 		Review_Queue::resolve( $item_id, 'approved', $user_id );
+		// A place that shares its name with another listing is titled "Name, Village", and so are its branches.
+		Branch_Names::apply( false, array( Names::key( $name ) ) );
 		return (int) $post_id;
 	}
 
@@ -490,7 +494,7 @@ final class Review_Queue_Screen {
 	 * @return void
 	 */
 	private static function render_naming_help( string $type, int $paged, bool $lookup, int $new_places ): void {
-		echo '<p>' . esc_html__( 'For each new place, type its name, or tick its box to skip it, then press Enter or "Save this page". Named places become draft restaurants with their Google place ID and village; you can fill in the details later from the drafts list.', 'guam-restaurants-core' ) . '</p><p>';
+		echo '<p>' . esc_html__( 'For each new place, type its name, or tick its box to skip it, then press Enter or "Save this page". Named places become draft restaurants with their Google place ID and village; you can fill in the details later from the drafts list. A name another listing already has gets its village added (McDonald\'s, Mangilao), and so do the other branches.', 'guam-restaurants-core' ) . '</p><p>';
 		if ( $lookup ) {
 			echo esc_html__( 'The name boxes are filled in with Google Maps names. Check them, fix or clear any you do not want, then save the page. Places Google lists as permanently closed are left blank and ticked to skip.', 'guam-restaurants-core' ) . ' <a href="' . esc_url( self::url( $type, $paged ) ) . '">' . esc_html__( 'Stop showing Google names', 'guam-restaurants-core' ) . '</a>';
 		} else {

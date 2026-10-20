@@ -16,6 +16,7 @@ use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
 use GuamRestaurants\Core\Ratings\Matcher;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Tagging\Branch_Names;
 use GuamRestaurants\Core\Tagging\Cuisine_Tagger;
 use GuamRestaurants\Core\Tagging\Duplicate_Detector;
 use GuamRestaurants\Core\Tagging\Mall_Tagger;
@@ -142,7 +143,7 @@ final class Importer {
 	 *
 	 * @param array<int, array<string, mixed>> $rows    Rows.
 	 * @param bool                             $dry_run Report without writing (no ingestion run is logged).
-	 * @return array{counts: array<string, int>, linked: int, queued: int, skipped: array<string, int>, unmapped: array<string, int>, errors: string[], run_id: int|null}
+	 * @return array{counts: array<string, int>, linked: int, queued: int, skipped: array<string, int>, unmapped: array<string, int>, errors: string[], run_id: int|null, branch_names: array<string, array>|null} branch_names: Branch_Names::apply() after a real run.
 	 */
 	public function run( array $rows, bool $dry_run = false ): array {
 		return Mall_Verification::with_unverified(
@@ -165,13 +166,14 @@ final class Importer {
 	 */
 	private function import( array $rows, bool $dry_run ): array {
 		$result = array(
-			'counts'   => array_fill_keys( array( self::CREATED, self::UPDATED, self::UNCHANGED, self::FAILED ), 0 ),
-			'linked'   => 0,
-			'queued'   => 0,
-			'skipped'  => array(),
-			'unmapped' => array(),
-			'errors'   => array(),
-			'run_id'   => null,
+			'counts'       => array_fill_keys( array( self::CREATED, self::UPDATED, self::UNCHANGED, self::FAILED ), 0 ),
+			'linked'       => 0,
+			'queued'       => 0,
+			'skipped'      => array(),
+			'unmapped'     => array(),
+			'errors'       => array(),
+			'run_id'       => null,
+			'branch_names' => null,
 		);
 
 		$this->mall_tagger = Mall_Tagger::from_saved();
@@ -236,6 +238,7 @@ final class Importer {
 		arsort( $result['unmapped'] );
 
 		if ( $run_id ) {
+			$result['branch_names'] = Branch_Names::apply();
 			Ingestion_Runs::finish( $run_id, $result['counts'], self::notes( $result ), $result['errors'] );
 		}
 

@@ -1,5 +1,12 @@
 # Progress log
 
+## Branch names by village, 2026-10-20
+- Requested by Sanjay: places with several locations share a name (McDonald's in several villages), so name them "[Restaurant Name], [Village]", e.g. "McDonald's, Mangilao".
+- Done: Tagging\Branch_Names. Only restaurants whose name another listing (any status but trash) also has get ", Village" (the village term's name); a name of its own stays plain. Names::key() ignores a trailing ", <village name, Chamorro name or alias>", so discovery, duplicate detection, awards and import matching still treat "McDonald's, Mangilao" as "McDonald's".
+- Done: applied by the review queue when a place is added, at the end of every OSM and Foursquare import run, and when a person sets a restaurant's village. The OSM import keeps a branch's suffix instead of resetting the title to the OSM name. `wp guam-restaurants branch-names [--dry-run]` renames existing listings.
+- Done: a branch with no village (or more than one) keeps its name and gets a "Village unknown" review item; setting its village renames it and closes the item. Two branches in the same village still share a name; the command lists them to rename by hand.
+- Remaining: Sanjay to `git pull`, `make update`, then `make wp ARGS="guam-restaurants branch-names --dry-run"` and without `--dry-run`.
+
 ## Review queue paging and faster naming, 2026-10-19
 - Requested by Sanjay: the review queue showed only the first 100 of 809 pending items; page through 100 at a time, and speed up naming the discovered places.
 - Done: Restaurants → Review queue shows 100 items a page with first, previous, next and last links and a "Page x of y" count, for All and each type.
