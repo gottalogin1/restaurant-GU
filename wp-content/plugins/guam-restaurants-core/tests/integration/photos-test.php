@@ -125,6 +125,7 @@ class Photos_Test extends Guam_Test_Case {
 		$this->assertSame( 1, $result['counts']['created'] );
 		$this->assertStringContainsString( 'q=Chamorro%20food', $this->urls[0] );
 		$this->assertStringContainsString( 'license=cc0,pdm,by,by-sa', $this->urls[0] );
+		$this->assertStringContainsString( 'filter_dead=false', $this->urls[0], 'Openverse does not check every result\'s host before answering.' );
 		$this->assertSame( 'https://img.example/44444444-4444-4444-4444-444444444444.jpg', $this->urls[1] );
 		$photo = Cuisine_Photos::get( $cuisine->term_id );
 		$this->assertNotNull( $photo );
@@ -163,6 +164,45 @@ class Photos_Test extends Guam_Test_Case {
 		$this->assertSame( 1, $dry['counts']['created'] );
 		$this->assertNull( Cuisine_Photos::get( $cuisine->term_id ), 'A dry run saves nothing.' );
 		$this->assertSame( 0, $dry['run_id'] );
+	}
+
+	/**
+	 * A result whose image is gone gives way to the next suitable one, and its credit is the one saved.
+	 */
+	public function test_importer_skips_dead_image() {
+		$cuisine = $this->cuisine( 'Korean' );
+		$results = array(
+			self::result( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' ),
+			self::result( 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' ),
+		);
+		$bytes   = self::jpeg();
+		$client  = new Retrying_Client(
+			function ( string $url ) use ( $results, $bytes ): array {
+				$this->urls[] = $url;
+				if ( 0 === strpos( $url, Openverse_Importer::API ) ) {
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array(),
+						'body'     => (string) wp_json_encode( array( 'results' => $results ) ),
+					);
+				}
+				$dead = false !== strpos( $url, 'aaaaaaaa' );
+				return array(
+					'response' => array( 'code' => $dead ? 404 : 200 ),
+					'headers'  => array(),
+					'body'     => $dead ? 'Not found' : $bytes,
+				);
+			},
+			static function () {},
+			array( 429 ),
+			0,
+			0
+		);
+
+		$result = ( new Openverse_Importer( $client, 0 ) )->run( array( $cuisine ) );
+		$this->assertSame( 1, $result['counts']['created'] );
+		$this->assertCount( 3, $this->urls );
+		$this->assertSame( 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', Cuisine_Photos::get( $cuisine->term_id )['credit']['openverse_id'] );
 	}
 
 	/**
