@@ -34,8 +34,11 @@ defined( 'ABSPATH' ) || exit;
  * Items are shown 100 to a page. The whole page is one form, so names
  * typed for discovered places and ticked "Skip" boxes are all saved by one
  * "Save this page" (or Enter in a name box). On request the page shows each
- * discovered place's current name and address from Google, to read while
- * typing; it is fetched for that page view and never saved.
+ * discovered place's current name and address from Google and fills the
+ * name boxes with Google's names, so a page can be saved as it is. Only a
+ * name the administrator saves is kept (as the draft's title; Sanjay's
+ * attorney cleared storing business names, 2026-10-20); the address and
+ * status are shown for that page view only.
  */
 final class Review_Queue_Screen {
 
@@ -198,8 +201,8 @@ final class Review_Queue_Screen {
 
 	/**
 	 * Current Google name, address and business status for each discovered
-	 * place on the page, for the administrator to read. Nothing is stored:
-	 * the values live for this page view only (Maps ToS §3.2.3(a)). Each
+	 * place on the page. The name fills the place's name box; nothing is
+	 * stored unless the administrator saves the page. Each
 	 * place is one Place Details Pro call, counted against the monthly cap,
 	 * so lookups stop when the free allowance runs out.
 	 *
@@ -288,8 +291,8 @@ final class Review_Queue_Screen {
 
 	/**
 	 * Turns a discovered place into a draft restaurant. The administrator
-	 * types the name after checking the place on Google Maps or the name
-	 * shown on the page (a manually recorded fact); the draft keeps the place ID and the village or mall
+	 * confirms the name (typed, or filled in from Google on the page); the
+	 * draft keeps the place ID and the village or mall
 	 * the search was about, and is published from the editor once the
 	 * details are filled in.
 	 *
@@ -428,7 +431,7 @@ final class Review_Queue_Screen {
 			echo '</th><td><strong>' . esc_html( self::type_label( (string) $item['type'] ) ) . '</strong><br />#' . esc_html( (string) $id ) . ' · ' . esc_html( (string) $item['source'] ) . '<br />' . esc_html( (string) $item['created_at'] ) . ' UTC</td><td>';
 			self::render_details( $item, $details );
 			echo '</td><td>';
-			self::render_actions( $item );
+			self::render_actions( $item, $details );
 			echo '</td></tr>';
 		}
 		echo '</tbody></table>';
@@ -489,12 +492,12 @@ final class Review_Queue_Screen {
 	private static function render_naming_help( string $type, int $paged, bool $lookup, int $new_places ): void {
 		echo '<p>' . esc_html__( 'For each new place, type its name, or tick its box to skip it, then press Enter or "Save this page". Named places become draft restaurants with their Google place ID and village; you can fill in the details later from the drafts list.', 'guam-restaurants-core' ) . '</p><p>';
 		if ( $lookup ) {
-			echo esc_html__( 'Names and addresses below are from Google Maps, shown for checking only and not saved. Places Google lists as permanently closed are ticked to skip.', 'guam-restaurants-core' ) . ' <a href="' . esc_url( self::url( $type, $paged ) ) . '">' . esc_html__( 'Stop showing Google names', 'guam-restaurants-core' ) . '</a>';
+			echo esc_html__( 'The name boxes are filled in with Google Maps names. Check them, fix or clear any you do not want, then save the page. Places Google lists as permanently closed are left blank and ticked to skip.', 'guam-restaurants-core' ) . ' <a href="' . esc_url( self::url( $type, $paged ) ) . '">' . esc_html__( 'Stop showing Google names', 'guam-restaurants-core' ) . '</a>';
 		} else {
 			printf(
 				'<a class="button" href="%1$s">%2$s</a> %3$s',
 				esc_url( self::url( $type, $paged, true ) ),
-				esc_html__( 'Show Google names on this page', 'guam-restaurants-core' ),
+				esc_html__( 'Fill in Google names on this page', 'guam-restaurants-core' ),
 				esc_html(
 					sprintf(
 						/* translators: 1: places on the page, 2: free calls left. */
@@ -721,13 +724,15 @@ final class Review_Queue_Screen {
 	 * Decision cell: a name box for a discovered place, or the row's
 	 * decision buttons (each submits the page form with that one decision).
 	 *
-	 * @param array<string, mixed> $item Item.
+	 * @param array<string, mixed>                                               $item   Item.
+	 * @param array{name: string, address: string, business_status: string}|null $google Google's current details, which fill the name box unless the place is permanently closed.
 	 * @return void
 	 */
-	private static function render_actions( array $item ): void {
+	private static function render_actions( array $item, ?array $google = null ): void {
 		$id = (string) $item['id'];
 		if ( 'new_place' === $item['type'] ) {
-			echo '<label for="gr-name-' . esc_attr( $id ) . '">' . esc_html__( 'Name, as shown on Google Maps', 'guam-restaurants-core' ) . '</label><br /><input type="text" id="gr-name-' . esc_attr( $id ) . '" name="restaurant_name[' . esc_attr( $id ) . ']" class="regular-text" maxlength="200" autocomplete="off" />';
+			$name = $google && 'CLOSED_PERMANENTLY' !== $google['business_status'] ? $google['name'] : '';
+			echo '<label for="gr-name-' . esc_attr( $id ) . '">' . esc_html__( 'Name, as shown on Google Maps', 'guam-restaurants-core' ) . '</label><br /><input type="text" id="gr-name-' . esc_attr( $id ) . '" name="restaurant_name[' . esc_attr( $id ) . ']" value="' . esc_attr( $name ) . '" class="regular-text" maxlength="200" autocomplete="off" />';
 			return;
 		}
 

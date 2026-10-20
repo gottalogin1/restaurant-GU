@@ -4,7 +4,7 @@
 - Requested by Sanjay: the review queue showed only the first 100 of 809 pending items; page through 100 at a time, and speed up naming the discovered places.
 - Done: Restaurants → Review queue shows 100 items a page with first, previous, next and last links and a "Page x of y" count, for All and each type.
 - Done: the page is one form. Type names for any number of new places and tick boxes to skip items (header box ticks the whole page), then press Enter or "Save this page": named places become drafts (place ID and village kept), ticked ones are skipped, and the page stays open on the next items. Closures, duplicates and requests keep their own buttons and are never skipped in bulk.
-- Done: "Show Google names on this page" shows Google's current name, address and open/closed status beside each new place (Place Details Pro, free allowance only, not stored); permanently closed places are pre-ticked to skip. Google names are not saved automatically: the project's Google rule is to store only place IDs (data-sources.md §2), so the name is still typed.
+- Done: "Show Google names on this page" shows Google's current name, address and open/closed status beside each new place (Place Details Pro, free allowance only, not stored); permanently closed places are pre-ticked to skip. 2026-10-20: Sanjay's attorney cleared storing business names, so the button is now "Fill in Google names on this page": each name box is filled with Google's name and a page of 100 is saved with one Enter (data-sources.md §2 records the exception; addresses and other Google fields are still not stored).
 - Remaining: Sanjay to `git pull` + `make update` and work through the queue.
 
 ## Yellow pages source, Google details and website follow-up, 2026-10-19

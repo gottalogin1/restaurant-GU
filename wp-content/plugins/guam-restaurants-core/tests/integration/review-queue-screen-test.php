@@ -36,6 +36,7 @@ class Review_Queue_Screen_Test extends Guam_Test_Case {
 	 */
 	public function tear_down() {
 		unset( $_GET['paged'], $_GET['type'], $_GET['lookup'], $_GET['_wpnonce'] );
+		putenv( 'GUAM_RESTAURANTS_GOOGLE_PLACES_KEY' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		parent::tear_down();
 	}
 
@@ -237,10 +238,57 @@ class Review_Queue_Screen_Test extends Guam_Test_Case {
 		$_GET['lookup']   = '1';
 		$_GET['_wpnonce'] = 'bad';
 		$html             = $this->render();
-		$this->assertStringContainsString( 'Show Google names on this page', $html );
+		$this->assertStringContainsString( 'Fill in Google names on this page', $html );
 		$this->assertStringNotContainsString( 'No Google Places key', $html, 'An invalid nonce does not look anything up.' );
 
 		$_GET['_wpnonce'] = wp_create_nonce( Review_Queue_Screen::LOOKUP_NONCE );
 		$this->assertStringContainsString( 'No Google Places key', $this->render() );
+	}
+
+	/**
+	 * With Google names on, each name box is filled with Google's name, so the
+	 * page can be saved as it is; a permanently closed place is left blank and
+	 * ticked to skip.
+	 */
+	public function test_lookup_fills_name_boxes() {
+		$this->login_admin();
+		$open   = $this->new_place( 'P-OPEN' );
+		$closed = $this->new_place( 'P-CLOSED' );
+		putenv( 'GUAM_RESTAURANTS_GOOGLE_PLACES_KEY=test-key' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		$answer = static function ( $pre, $args, $url ) {
+			if ( ! preg_match( '#/places/(P-\w+)$#', $url, $m ) ) {
+				return $pre;
+			}
+			return array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => (string) wp_json_encode(
+					'P-OPEN' === $m[1]
+						? array(
+							'displayName'    => array( 'text' => 'Ben & Jerry\'s "Tumon"' ),
+							'businessStatus' => 'OPERATIONAL',
+						)
+						: array(
+							'displayName'    => array( 'text' => 'Old Diner' ),
+							'businessStatus' => 'CLOSED_PERMANENTLY',
+						)
+				),
+			);
+		};
+		add_filter( 'pre_http_request', $answer, 10, 3 );
+
+		$_GET['lookup']   = '1';
+		$_GET['_wpnonce'] = wp_create_nonce( Review_Queue_Screen::LOOKUP_NONCE );
+		$html             = $this->render();
+		remove_filter( 'pre_http_request', $answer, 10 );
+
+		$this->assertStringContainsString( 'name="restaurant_name[' . $open . ']" value="' . esc_attr( 'Ben & Jerry\'s "Tumon"' ) . '"', $html );
+		$this->assertStringContainsString( 'name="restaurant_name[' . $closed . ']" value=""', $html );
+		$this->assertMatchesRegularExpression( '#name="skip\[\]" value="' . $closed . '" checked#', $html );
+		$this->assertDoesNotMatchRegularExpression( '#name="skip\[\]" value="' . $open . '" checked#', $html );
+
+		$saved = Review_Queue_Screen::save_page( array( $open => 'Ben & Jerry\'s "Tumon"' ), array( $closed ), get_current_user_id() );
+		$this->assertSame( 1, $saved['added'] );
+		$this->assertSame( 1, $saved['skipped'] );
 	}
 }
