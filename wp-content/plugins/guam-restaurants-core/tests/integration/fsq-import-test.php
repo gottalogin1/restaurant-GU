@@ -164,6 +164,10 @@ class Fsq_Import_Test extends Test_Case {
 		$jsonl = Reader::parse( '{"fsq_place_id":"a","name":"A"}' . "\n\n" . '{"fsq_place_id":"b","name":"B"}' . "\n", 'jsonl' );
 		$this->assertSame( array( 'a', 'b' ), array_column( $jsonl, 'fsq_place_id' ) );
 
+		// Names with the byte 0x85 inside a UTF-8 character (Å, 々), and CRLF line ends.
+		$utf8 = Reader::parse( '{"fsq_place_id":"a","name":"Å Café"}' . "\r\n" . '{"fsq_place_id":"b","name":"人々の店"}' . "\r\n", 'jsonl' );
+		$this->assertSame( array( 'Å Café', '人々の店' ), array_column( $utf8, 'name' ) );
+
 		$array = Reader::parse( '[{"fsq_place_id":"a"}]', 'json' );
 		$this->assertSame( 'a', $array[0]['fsq_place_id'] );
 

@@ -54,7 +54,10 @@ final class Reader {
 		}
 
 		$rows = array();
-		foreach ( preg_split( '/\R/', $contents ) as $number => $line ) {
+		// Split on "\n" only: PCRE's \R also matches the byte 0x85, which is
+		// inside many UTF-8 characters (Å, 々, Ņ and others), cutting lines apart.
+		foreach ( explode( "\n", $contents ) as $number => $line ) {
+			$line = rtrim( $line, "\r" );
 			if ( '' === trim( $line ) ) {
 				continue;
 			}
