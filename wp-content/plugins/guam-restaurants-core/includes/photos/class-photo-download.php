@@ -45,6 +45,7 @@ final class Photo_Download {
 				$url,
 				array(
 					'method'              => 'GET',
+					'httpversion'         => '1.1',
 					'timeout'             => 30,
 					'redirection'         => 3,
 					'reject_unsafe_urls'  => true,

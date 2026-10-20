@@ -247,14 +247,20 @@ final class Openverse_Importer {
 	/**
 	 * Request arguments.
 	 *
+	 * HTTP/1.1 on purpose: WordPress sends HTTP/1.0 by default, and on
+	 * Sanjay's machine Openverse answered HTTP/1.0 and HTTP/2 requests with
+	 * a full page of results with nothing for 30 s, while the same request
+	 * over HTTP/1.1 answered in 0.1 s (`make photo-source-check`).
+	 *
 	 * @return array<string, mixed>
 	 */
 	private function args(): array {
 		return array(
-			'method'     => 'GET',
-			'timeout'    => self::TIMEOUT,
-			'user-agent' => Photo_Download::user_agent(),
-			'headers'    => array( 'Accept' => 'application/json' ),
+			'method'      => 'GET',
+			'httpversion' => '1.1',
+			'timeout'     => self::TIMEOUT,
+			'user-agent'  => Photo_Download::user_agent(),
+			'headers'     => array( 'Accept' => 'application/json' ),
 		);
 	}
 

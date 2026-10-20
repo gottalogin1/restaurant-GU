@@ -32,6 +32,13 @@ class Photos_Test extends Guam_Test_Case {
 	private array $urls = array();
 
 	/**
+	 * Arguments the fake transport received, in the same order.
+	 *
+	 * @var array<int, array<string, mixed>>
+	 */
+	private array $args = array();
+
+	/**
 	 * A small JPEG.
 	 *
 	 * @return string
@@ -79,8 +86,9 @@ class Photos_Test extends Guam_Test_Case {
 	private function client( array $results, ?string $image = null ): Retrying_Client {
 		$bytes = $image ?? self::jpeg();
 		return new Retrying_Client(
-			function ( string $url ) use ( $results, $bytes ): array {
+			function ( string $url, array $args ) use ( $results, $bytes ): array {
 				$this->urls[] = $url;
+				$this->args[] = $args;
 				$body         = 0 === strpos( $url, Openverse_Importer::API ) ? (string) wp_json_encode( array( 'results' => $results ) ) : $bytes;
 				return array(
 					'response' => array( 'code' => 200 ),
@@ -126,6 +134,7 @@ class Photos_Test extends Guam_Test_Case {
 		$this->assertStringContainsString( 'q=Chamorro%20food', $this->urls[0] );
 		$this->assertStringContainsString( 'license=cc0,pdm,by,by-sa', $this->urls[0] );
 		$this->assertStringContainsString( 'filter_dead=false', $this->urls[0], 'Openverse does not check every result\'s host before answering.' );
+		$this->assertSame( array( '1.1', '1.1' ), array_column( $this->args, 'httpversion' ), 'Openverse stalls on HTTP/1.0, the WordPress default.' );
 		$this->assertSame( 'https://img.example/44444444-4444-4444-4444-444444444444.jpg', $this->urls[1] );
 		$photo = Cuisine_Photos::get( $cuisine->term_id );
 		$this->assertNotNull( $photo );
