@@ -22,6 +22,11 @@ final class Directory_View {
 	public const RESULTS_ID = 'gr-directory-results';
 
 	/**
+	 * Cuisines with their own quick-filter chip.
+	 */
+	public const CUISINE_CHIPS = 5;
+
+	/**
 	 * Context string for a locked facet, for example "village:dededo".
 	 *
 	 * @param array<string, string> $locked Facet => slug.
@@ -103,11 +108,16 @@ final class Directory_View {
 	 */
 	public static function render( \WP_Query $query, array $filters, array $locked ): string {
 		Assets::enqueue( 'directory' );
+		wp_enqueue_script( Assets::SCRIPTS['map'] );
 		return sprintf(
-			'<div class="gr-directory">%1$s<div class="gr-directory__results" id="%2$s" tabindex="-1">%3$s</div></div>',
+			'<div class="gr-directory">%1$s<div class="gr-directory__views" role="group" aria-label="%4$s" hidden><button type="button" class="gr-directory__view" data-gr-view="list" aria-pressed="true">%5$s</button><button type="button" class="gr-directory__view" data-gr-view="map" aria-pressed="false">%6$s</button></div><div class="gr-directory__body"><div class="gr-directory__results" id="%2$s" tabindex="-1">%3$s</div><div class="gr-directory__map" data-gr-results-map role="region" aria-label="%7$s"></div></div></div>',
 			self::form( $filters, $locked, 'list' ),
 			esc_attr( self::RESULTS_ID ),
-			self::results( $query, $filters, $locked )
+			self::results( $query, $filters, $locked ),
+			esc_attr__( 'Show results as', 'guam-restaurants-core' ),
+			esc_html__( 'List', 'guam-restaurants-core' ),
+			esc_html__( 'Map', 'guam-restaurants-core' ),
+			esc_attr__( 'Map of these results', 'guam-restaurants-core' )
 		);
 	}
 
@@ -144,8 +154,14 @@ final class Directory_View {
 		}
 
 		$cards = '';
+		$pin   = 0;
 		foreach ( $query->posts as $post ) {
-			$cards .= '<li>' . Restaurant_View::card( (int) ( is_object( $post ) ? $post->ID : $post ), 2 ) . '</li>';
+			$id    = (int) ( is_object( $post ) ? $post->ID : $post );
+			$point = Restaurant_View::coordinates( $id );
+			// Numbered like the map pins, so a card and its pin can be matched.
+			$cards .= null === $point
+				? '<li>' . Restaurant_View::card( $id, 2 ) . '</li>'
+				: sprintf( '<li data-gr-pin="%1$d" data-gr-point="%2$s,%3$s">%4$s</li>', ++$pin, esc_attr( (string) $point['lng'] ), esc_attr( (string) $point['lat'] ), Restaurant_View::card( $id, 2 ) );
 		}
 
 		$out = '<p class="gr-directory__summary" role="status">' . $summary . '</p>';
@@ -215,12 +231,45 @@ final class Directory_View {
 		);
 
 		$facets = '';
+		$more   = 0;
 		foreach ( Filters::FACETS as $param => $taxonomy ) {
-			if ( isset( $locked[ $param ] ) ) {
+			if ( isset( $locked[ $param ] ) || 'price' === $param ) {
 				continue;
 			}
 			$facets .= self::facet( $param, $taxonomy, $labels[ $param ], (array) $filters['facets'][ $param ] );
+			$more   += count( (array) $filters['facets'][ $param ] );
 		}
+		$top   = array();
+		$chips = self::chip( Filters::OPEN, Filters::OPEN_NOW, ! empty( $filters['open'] ), esc_html__( 'Open now', 'guam-restaurants-core' ) )
+			. self::chip( Filters::AWARD, Filters::AWARD_WINNER, ! empty( $filters['award'] ), esc_html__( 'Award winners', 'guam-restaurants-core' ) );
+		if ( ! isset( $locked['price'] ) ) {
+			foreach ( self::facet_terms( Content_Types::TAX_PRICE ) as $term ) {
+				$rank   = (int) get_term_meta( (int) $term->term_id, Term_Meta::RANK, true );
+				$chips .= self::chip(
+					'price[]',
+					$term->slug,
+					in_array( $term->slug, (array) $filters['facets']['price'], true ),
+					/* translators: 1: price level, 2: highest level. */
+					'<span aria-hidden="true">' . esc_html( $term->name ) . '</span><span class="screen-reader-text">' . esc_html( $rank > 0 ? sprintf( __( 'Price level %1$d of %2$d', 'guam-restaurants-core' ), $rank, 4 ) : $term->name ) . '</span>'
+				);
+			}
+		}
+		if ( ! isset( $locked['cuisine'] ) ) {
+			// The busiest cuisines also have a chip; it mirrors the same box in More filters (directory.js keeps both in step).
+			$cuisines = self::facet_terms( Content_Types::TAX_CUISINE );
+			usort(
+				$cuisines,
+				static function ( \WP_Term $a, \WP_Term $b ): int {
+					return $b->count <=> $a->count;
+				}
+			);
+			foreach ( array_slice( $cuisines, 0, self::CUISINE_CHIPS ) as $term ) {
+				$top[]  = $term->slug;
+				$chips .= self::chip( 'cuisine[]', $term->slug, in_array( $term->slug, (array) $filters['facets']['cuisine'], true ), esc_html( $term->name ) );
+			}
+		}
+		// More filters opens only for choices that have no chip.
+		$more -= count( array_intersect( (array) $filters['facets']['cuisine'], $top ) );
 
 		$sort = '';
 		if ( 'list' === $mode ) {
@@ -249,13 +298,10 @@ final class Directory_View {
 		return sprintf(
 			'<form class="gr-filters" role="search" method="get" action="%1$s" data-gr-filters="%2$s" data-gr-context="%3$s" aria-label="%4$s">
 				<div class="gr-filters__search"><label for="gr-q">%5$s</label><input type="search" id="gr-q" name="%6$s" value="%7$s" maxlength="%8$d" autocomplete="off"></div>
-				<div class="gr-filters__facets">%9$s</div>
-				<div class="gr-filters__toggles">
-					<label class="gr-toggle"><input type="checkbox" name="%10$s" value="%11$s"%12$s> %13$s</label>
-					<label class="gr-toggle"><input type="checkbox" name="%14$s" value="%15$s"%16$s> %17$s</label>
-				</div>
-				%18$s
-				<div class="gr-filters__actions"><button type="submit" class="wp-element-button">%19$s</button> <a class="gr-filters__clear" href="%20$s">%21$s</a></div>
+				<div class="gr-filters__quick" role="group" aria-label="%10$s">%11$s</div>
+				%9$s
+				%12$s
+				<div class="gr-filters__actions"><button type="submit" class="wp-element-button">%13$s</button> <a class="gr-filters__clear" href="%14$s">%15$s</a></div>
 			</form>',
 			esc_url( $action ),
 			esc_attr( $mode ),
@@ -265,19 +311,37 @@ final class Directory_View {
 			esc_attr( Filters::SEARCH ),
 			esc_attr( (string) $filters['q'] ),
 			Filters::MAX_SEARCH_LENGTH,
-			$facets,
-			esc_attr( Filters::AWARD ),
-			esc_attr( Filters::AWARD_WINNER ),
-			checked( ! empty( $filters['award'] ), true, false ),
-			esc_html__( 'Award winners', 'guam-restaurants-core' ),
-			esc_attr( Filters::OPEN ),
-			esc_attr( Filters::OPEN_NOW ),
-			checked( ! empty( $filters['open'] ), true, false ),
-			esc_html__( 'Open now', 'guam-restaurants-core' ),
+			'' === $facets ? '' : sprintf(
+				'<details class="gr-filters__more"%1$s><summary>%2$s</summary><div class="gr-filters__facets">%3$s</div></details>',
+				$more ? ' open' : '',
+				esc_html__( 'More filters', 'guam-restaurants-core' ),
+				$facets
+			),
+			esc_attr__( 'Quick filters', 'guam-restaurants-core' ),
+			$chips,
 			$sort,
 			esc_html__( 'Show results', 'guam-restaurants-core' ),
 			esc_url( $action ),
 			esc_html__( 'Clear filters', 'guam-restaurants-core' )
+		);
+	}
+
+	/**
+	 * One quick-filter chip: a checkbox styled as a button.
+	 *
+	 * @param string $name    Input name.
+	 * @param string $value   Input value.
+	 * @param bool   $checked Checked.
+	 * @param string $label   Escaped label HTML.
+	 * @return string
+	 */
+	private static function chip( string $name, string $value, bool $checked, string $label ): string {
+		return sprintf(
+			'<label class="gr-chip gr-chip--toggle"><input type="checkbox" name="%1$s" value="%2$s"%3$s> %4$s</label>',
+			esc_attr( $name ),
+			esc_attr( $value ),
+			checked( $checked, true, false ),
+			$label
 		);
 	}
 

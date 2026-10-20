@@ -1,26 +1,39 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"1.5rem"},"blockGap":"2rem"}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"1.5rem"},"blockGap":"1.5rem"}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
 <main class="wp-block-group" style="padding-top:1.5rem">
-	<!-- wp:post-title {"level":1} /-->
-	<!-- wp:guam-restaurants/restaurant-details /-->
-	<!-- wp:guam-restaurants/restaurant-map /-->
-	<!-- wp:guam-restaurants/owner-content /-->
+	<!-- wp:guam-restaurants/restaurant-hero /-->
 
-	<!-- wp:group {"tagName":"section","className":"gr-ratings-section","layout":{"type":"default"}} -->
-	<section class="wp-block-group gr-ratings-section">
-		<!-- wp:heading {"className":"gr-section-title"} -->
-		<h2 class="wp-block-heading gr-section-title">Ratings on other sites</h2>
-		<!-- /wp:heading -->
-		<!-- wp:guam-restaurants/ratings /-->
-	</section>
-	<!-- /wp:group -->
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"2.5rem"}}}} -->
+	<div class="wp-block-columns">
+		<!-- wp:column {"width":"60%","style":{"spacing":{"blockGap":"2rem"}}} -->
+		<div class="wp-block-column" style="flex-basis:60%">
+			<!-- wp:guam-restaurants/owner-content /-->
 
-	<!-- wp:post-featured-image /-->
-	<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
-	<!-- wp:guam-restaurants/change-history /-->
-	<!-- wp:guam-restaurants/related-links /-->
-	<!-- wp:guam-restaurants/listing-actions /-->
+			<!-- wp:group {"tagName":"section","className":"gr-ratings-section","layout":{"type":"default"}} -->
+			<section class="wp-block-group gr-ratings-section">
+				<!-- wp:heading {"className":"gr-section-title"} -->
+				<h2 class="wp-block-heading gr-section-title">Ratings on other sites</h2>
+				<!-- /wp:heading -->
+				<!-- wp:guam-restaurants/ratings /-->
+			</section>
+			<!-- /wp:group -->
+
+			<!-- wp:post-content {"layout":{"type":"default"}} /-->
+			<!-- wp:guam-restaurants/related-links /-->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"width":"40%","style":{"spacing":{"blockGap":"2rem"}}} -->
+		<div class="wp-block-column" style="flex-basis:40%">
+			<!-- wp:guam-restaurants/restaurant-details /-->
+			<!-- wp:guam-restaurants/restaurant-map /-->
+			<!-- wp:guam-restaurants/change-history /-->
+			<!-- wp:guam-restaurants/listing-actions /-->
+		</div>
+		<!-- /wp:column -->
+	</div>
+	<!-- /wp:columns -->
 </main>
 <!-- /wp:group -->
 

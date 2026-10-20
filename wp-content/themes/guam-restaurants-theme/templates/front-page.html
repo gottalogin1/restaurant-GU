@@ -2,46 +2,37 @@
 
 <!-- wp:group {"tagName":"main","style":{"spacing":{"blockGap":"2.5rem","padding":{"top":"1.5rem"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
 <main class="wp-block-group" style="padding-top:1.5rem">
-	<!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"constrained","contentSize":"760px","justifyContent":"left"}} -->
+	<!-- wp:group {"style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"constrained","contentSize":"860px","justifyContent":"left"}} -->
 	<div class="wp-block-group">
 		<!-- wp:heading {"level":1,"fontSize":"xx-large"} -->
 		<h1 class="wp-block-heading has-xx-large-font-size">Find a place to eat on Guam</h1>
 		<!-- /wp:heading -->
 		<!-- wp:paragraph -->
-		<p>Search by name or dish, or browse by village, mall and cuisine.</p>
+		<p>Search by name, dish or cuisine, and pick a village or mall.</p>
 		<!-- /wp:paragraph -->
 		<!-- wp:guam-restaurants/search-form /-->
 	</div>
 	<!-- /wp:group -->
 
-	<!-- wp:guam-restaurants/term-links {"taxonomy":"gr_village","heading":"Villages"} /-->
+	<!-- wp:guam-restaurants/term-links {"taxonomy":"gr_cuisine","heading":"Browse by cuisine","limit":12,"style":"tiles"} /-->
 
-	<!-- wp:guam-restaurants/term-links {"taxonomy":"gr_mall","heading":"Malls"} /-->
+	<!-- wp:guam-restaurants/restaurant-row {"heading":"New on Guam","source":"new"} /-->
 
-	<!-- wp:guam-restaurants/term-links {"taxonomy":"gr_cuisine","heading":"Cuisines"} /-->
-
-	<!-- wp:group {"tagName":"section","style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"default"}} -->
-	<section class="wp-block-group">
-		<!-- wp:heading -->
-		<h2 class="wp-block-heading">Recently opened</h2>
-		<!-- /wp:heading -->
-		<!-- wp:guam-restaurants/recent-changes {"kind":"openings","days":90,"limit":10,"layout":"strip"} /-->
-		<!-- wp:paragraph -->
-		<p><a href="/recently-opened-and-closed/">All recent openings and closures</a></p>
-		<!-- /wp:paragraph -->
-	</section>
-	<!-- /wp:group -->
+	<!-- wp:guam-restaurants/restaurant-row {"heading":"Award winners","query":"award=winner"} /-->
 
 	<!-- wp:guam-restaurants/sponsored-slot {"product":"banner","count":1} /-->
 
-	<!-- wp:group {"tagName":"section","style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"default"}} -->
-	<section class="wp-block-group">
-		<!-- wp:heading -->
-		<h2 class="wp-block-heading">Awards</h2>
-		<!-- /wp:heading -->
-		<!-- wp:guam-restaurants/awards-feature {"limit":6} /-->
-	</section>
-	<!-- /wp:group -->
+	<!-- wp:guam-restaurants/restaurant-row {"heading":"Budget eats","query":"price=p1"} /-->
+
+	<!-- wp:guam-restaurants/restaurant-row {"heading":"In Tumon and Tamuning","query":"village=tamuning"} /-->
+
+	<!-- wp:guam-restaurants/restaurant-row {"heading":"In Dededo","query":"village=dededo"} /-->
+
+	<!-- wp:guam-restaurants/restaurant-row {"heading":"In Hagåtña","query":"village=hagatna"} /-->
+
+	<!-- wp:guam-restaurants/term-links {"taxonomy":"gr_village","heading":"Villages"} /-->
+
+	<!-- wp:guam-restaurants/term-links {"taxonomy":"gr_mall","heading":"Malls"} /-->
 </main>
 <!-- /wp:group -->
 

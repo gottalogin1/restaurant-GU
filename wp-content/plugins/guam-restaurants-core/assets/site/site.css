@@ -14,7 +14,7 @@
 	--gr-radius: 0.5rem;
 }
 
-:where(.gr-card, .gr-chips, .gr-recent, .gr-details, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
+:where(.gr-card, .gr-chips, .gr-recent, .gr-details, .gr-hero, .gr-row, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
 	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
 	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
@@ -35,19 +35,33 @@
 	word-wrap: normal !important;
 }
 
-/* Search box */
+/* Search box: What and Where */
+.gr-search {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 0.5rem;
+}
+
 .gr-search label {
 	display: block;
 	font-weight: 600;
 	margin-bottom: 0.35rem;
 }
 
-.gr-search__row {
-	display: flex;
-	gap: 0.5rem;
+.gr-search__field {
+	flex: 1 1 14rem;
+	min-width: 0;
+}
+
+.gr-search__field input,
+.gr-search__field select {
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .gr-search input[type="search"],
+.gr-search select,
 .gr-filters input[type="search"],
 .gr-filters select {
 	border: 1px solid var(--gr-border);
@@ -57,11 +71,6 @@
 	padding: 0.5rem 0.75rem;
 	background: #fff;
 	color: var(--gr-text);
-}
-
-.gr-search input[type="search"] {
-	flex: 1;
-	min-width: 0;
 }
 
 /* Filter form */
@@ -117,26 +126,73 @@
 	overflow-y: auto;
 }
 
-.gr-facet__options label,
-.gr-toggle {
+.gr-facet__options label {
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
 	min-height: 2.25rem;
 }
 
-.gr-facet input[type="checkbox"],
-.gr-toggle input[type="checkbox"] {
+.gr-facet input[type="checkbox"] {
 	width: 1.15rem;
 	height: 1.15rem;
 	accent-color: var(--gr-primary);
 	margin: 0;
 }
 
-.gr-filters__toggles {
+/* Quick filter chips: checkboxes shown as buttons; one scrolling row on phones */
+.gr-filters__quick {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem 1.25rem;
+	gap: 0.5rem;
+	overflow-x: auto;
+	padding: 3px 3px 0.25rem;
+	margin: -3px;
+}
+
+.gr-filters__quick .gr-chip {
+	flex: none;
+}
+
+.gr-chip--toggle {
+	cursor: pointer;
+	position: relative;
+}
+
+.gr-chip--toggle input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+}
+
+.gr-chip--toggle:has(input:checked) {
+	background: var(--gr-primary);
+	border-color: var(--gr-primary);
+	color: #fff;
+}
+
+.gr-chip--toggle:has(input:focus-visible) {
+	outline: 3px solid var(--gr-primary);
+	outline-offset: 2px;
+}
+
+.gr-filters__more {
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+}
+
+.gr-filters__more > summary {
+	cursor: pointer;
+	font-weight: 600;
+	min-height: 2.75rem;
+	display: flex;
+	align-items: center;
+	padding: 0 0.75rem;
+}
+
+.gr-filters__more > .gr-filters__facets {
+	padding: 0 0.75rem 0.75rem;
 }
 
 .gr-filters__actions {
@@ -174,11 +230,72 @@
 .gr-card {
 	border: 1px solid var(--gr-border);
 	border-radius: var(--gr-radius);
-	padding: 0.85rem 1rem;
 	background: #fff;
 	height: 100%;
 	box-sizing: border-box;
 	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.gr-card__body {
+	padding: 0.75rem 1rem 0.85rem;
+}
+
+/* Photo, or a tinted panel with the cuisine name (Restaurant_View::media()). */
+.gr-card__media,
+.gr-hero__media {
+	aspect-ratio: 16 / 10;
+	background: var(--gr-surface);
+}
+
+.gr-card__media img,
+.gr-hero__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.gr-card__media--empty,
+.gr-hero__media--empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+	box-sizing: border-box;
+	background: hsl(var(--gr-hue, 190) 45% 90%);
+	color: hsl(var(--gr-hue, 190) 45% 24%);
+	font-weight: 700;
+	font-size: 1.15rem;
+	text-align: center;
+}
+
+.gr-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin: 0 0 0.4rem;
+}
+
+.gr-badge {
+	display: inline-block;
+	padding: 0.1rem 0.55rem;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	line-height: 1.5;
+}
+
+.gr-badge--award {
+	background: #fbefc9;
+	color: #5c4300;
+}
+
+.gr-badge--new {
+	background: #dff1e4;
+	color: #1d5c31;
 }
 
 .gr-card__name {
@@ -234,6 +351,132 @@
 	letter-spacing: 0.05em;
 }
 
+/* Results beside their map */
+.gr-directory__views {
+	display: inline-flex;
+	border: 1px solid var(--gr-border);
+	border-radius: 999px;
+	overflow: hidden;
+	margin-bottom: 1rem;
+}
+
+.gr-directory__views[hidden] {
+	display: none;
+}
+
+.gr-directory__view {
+	font: inherit;
+	min-height: 2.5rem;
+	padding: 0 1.1rem;
+	border: 0;
+	background: #fff;
+	color: var(--gr-text);
+	cursor: pointer;
+}
+
+.gr-directory__view[aria-pressed="true"] {
+	background: var(--gr-primary);
+	color: #fff;
+}
+
+.gr-directory__map {
+	display: none;
+	border-radius: var(--gr-radius);
+	background: var(--gr-surface);
+	overflow: hidden;
+}
+
+.gr-directory.is-map-view .gr-directory__map {
+	display: block;
+	height: 70vh;
+	min-height: 22rem;
+}
+
+.gr-directory.is-map-view .gr-directory__results {
+	display: none;
+}
+
+.gr-directory__map.is-empty {
+	opacity: 0.6;
+}
+
+/* Card numbers match the map pins. */
+.gr-directory__results .gr-cards {
+	counter-reset: gr-pin;
+}
+
+.gr-directory__results li[data-gr-pin] {
+	counter-increment: gr-pin;
+}
+
+.gr-directory__results li[data-gr-pin] .gr-card__name::before {
+	content: counter(gr-pin);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.5rem;
+	height: 1.5rem;
+	margin-right: 0.4rem;
+	border-radius: 999px;
+	background: var(--gr-primary);
+	color: #fff;
+	font-size: 0.8rem;
+	vertical-align: 0.1em;
+}
+
+.gr-pin {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.75rem;
+	height: 1.75rem;
+	padding: 0 0.3rem;
+	box-sizing: border-box;
+	border: 2px solid #fff;
+	border-radius: 999px;
+	background: #0b6e8a;
+	color: #fff;
+	font: 700 0.8rem/1 system-ui, sans-serif;
+	text-decoration: none;
+	box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
+}
+
+.gr-pin.is-active {
+	background: #b5462f;
+	z-index: 2;
+	transform: scale(1.2);
+}
+
+/* Rows of cards (restaurant-row block) */
+.gr-row__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 0.75rem;
+}
+
+.gr-row__head h2 {
+	margin: 0;
+}
+
+.gr-row__all {
+	white-space: nowrap;
+}
+
+.gr-cards.gr-row__list {
+	grid-auto-flow: column;
+	grid-auto-columns: minmax(15rem, 80%);
+	grid-template-columns: none;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	padding-bottom: 0.5rem;
+}
+
+.gr-row__list > li {
+	scroll-snap-align: start;
+}
+
 /* Pagination */
 .gr-pagination {
 	display: flex;
@@ -265,6 +508,23 @@
 /* Chips */
 .gr-term-links > h2 {
 	margin: 0 0 0.75rem;
+}
+
+.gr-chips--tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+}
+
+.gr-chips--tiles .gr-chip {
+	width: 100%;
+	min-height: 4.5rem;
+	border-radius: var(--gr-radius);
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 0.5rem 0.9rem;
+	background: var(--gr-surface);
+	font-weight: 600;
 }
 
 .gr-chips {
@@ -382,6 +642,74 @@
 	text-transform: uppercase;
 	margin: 0 0 0.5rem;
 	color: var(--gr-text);
+}
+
+/* Restaurant page top (restaurant-hero block) */
+.gr-hero {
+	display: grid;
+	gap: 1rem;
+}
+
+.gr-hero__media {
+	border-radius: var(--gr-radius);
+	overflow: hidden;
+	aspect-ratio: 16 / 8;
+}
+
+.gr-hero__name {
+	font-size: clamp(1.75rem, 4vw, 2.5rem);
+	line-height: 1.15;
+	margin: 0 0 0.5rem;
+}
+
+.gr-hero__meta {
+	margin: 0 0 0.35rem;
+	font-size: 1.05rem;
+}
+
+.gr-hero__status {
+	display: inline-block;
+	font-weight: 700;
+	padding: 0.35rem 0.75rem;
+	border-radius: var(--gr-radius);
+	background: var(--gr-surface);
+	margin: 0;
+}
+
+.gr-hero__open {
+	margin: 0;
+}
+
+.gr-hero__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+.gr-action {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.75rem;
+	padding: 0 1.1rem;
+	border: 1px solid var(--gr-primary);
+	border-radius: 999px;
+	background: #fff;
+	color: var(--gr-primary);
+	font: inherit;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.gr-action:first-child {
+	background: var(--gr-primary);
+	color: #fff;
+}
+
+.gr-action[hidden] {
+	display: none;
 }
 
 /* Restaurant page */
@@ -557,6 +885,10 @@
 }
 
 @media (min-width: 48rem) {
+	.gr-filters__quick {
+		flex-wrap: wrap;
+	}
+
 	.gr-filters__facets {
 		grid-template-columns: repeat(2, 1fr);
 		align-items: start;
@@ -577,15 +909,58 @@
 	.gr-awards-feature__list {
 		grid-template-columns: repeat(2, 1fr);
 	}
+
+	.gr-cards.gr-row__list {
+		grid-auto-columns: calc((100% - 1.5rem) / 3);
+	}
+
+	.gr-hero {
+		grid-template-columns: 3fr 2fr;
+		align-items: center;
+	}
 }
 
 @media (min-width: 64rem) {
 	.gr-filters__facets {
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(3, 1fr);
 	}
 
 	.gr-cards {
 		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.gr-cards.gr-row__list {
+		grid-auto-columns: calc((100% - 2.25rem) / 4);
+	}
+
+	/* Results on the left, the map beside them. */
+	.gr-directory__views {
+		display: none;
+	}
+
+	.gr-directory__body {
+		display: grid;
+		grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+		gap: 1.25rem;
+		align-items: start;
+	}
+
+	.gr-directory__results .gr-cards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.gr-directory__map,
+	.gr-directory.is-map-view .gr-directory__map {
+		display: block;
+		position: sticky;
+		top: 1rem;
+		height: calc(100vh - 2rem);
+		max-height: 44rem;
+		min-height: 0;
+	}
+
+	.gr-directory.is-map-view .gr-directory__results {
+		display: block;
 	}
 }
 

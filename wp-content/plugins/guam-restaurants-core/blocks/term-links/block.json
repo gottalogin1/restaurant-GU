@@ -30,6 +30,14 @@
 		"heading": {
 			"type": "string",
 			"default": ""
+		},
+		"style": {
+			"type": "string",
+			"default": "chips",
+			"enum": [
+				"chips",
+				"tiles"
+			]
 		}
 	},
 	"supports": {

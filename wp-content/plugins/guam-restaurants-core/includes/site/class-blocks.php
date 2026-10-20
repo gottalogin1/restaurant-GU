@@ -18,6 +18,8 @@ use GuamRestaurants\Core\Highlights\Policy_Page;
 use GuamRestaurants\Core\Legal\Pages as Legal_Pages;
 use GuamRestaurants\Core\Monitoring\Queries;
 use GuamRestaurants\Core\Owners\Listing_Stats;
+use GuamRestaurants\Core\Owners\Owner_Content;
+use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 
 defined( 'ABSPATH' ) || exit;
@@ -38,6 +40,8 @@ final class Blocks {
 		'directory'          => 'directory',
 		'search-form'        => 'search_form',
 		'term-links'         => 'term_links',
+		'restaurant-row'     => 'restaurant_row',
+		'restaurant-hero'    => 'restaurant_hero',
 		'recent-changes'     => 'recent_changes',
 		'awards-feature'     => 'awards_feature',
 		'sponsored-slot'     => 'sponsored_slot',
@@ -128,17 +132,36 @@ final class Blocks {
 	 */
 	public static function search_form(): string {
 		Assets::enqueue();
-		$id = wp_unique_id( 'gr-search-' );
+		$id     = wp_unique_id( 'gr-search-' );
+		$groups = '';
+		foreach ( array(
+			'village' => array( Content_Types::TAX_VILLAGE, __( 'Villages', 'guam-restaurants-core' ) ),
+			'mall'    => array( Content_Types::TAX_MALL, __( 'Malls', 'guam-restaurants-core' ) ),
+		) as $facet => $group ) {
+			$options = '';
+			foreach ( Directory_View::facet_terms( $group[0] ) as $term ) {
+				$options .= sprintf( '<option value="%1$s">%2$s</option>', esc_attr( $facet . ':' . $term->slug ), esc_html( $term->name ) );
+			}
+			$groups .= '' === $options ? '' : sprintf( '<optgroup label="%1$s">%2$s</optgroup>', esc_attr( $group[1] ), $options );
+		}
 		return self::wrap(
 			'form',
 			sprintf(
-				'<label for="%1$s">%2$s</label><span class="gr-search__row"><input type="search" id="%1$s" name="%3$s" maxlength="%4$d" placeholder="%5$s"><button type="submit" class="wp-element-button">%6$s</button></span>',
+				'<span class="gr-search__field gr-search__what"><label for="%1$s">%2$s</label><input type="search" id="%1$s" name="%3$s" maxlength="%4$d" placeholder="%5$s"></span>%7$s<button type="submit" class="wp-element-button">%6$s</button>',
 				esc_attr( $id ),
-				esc_html__( 'Find a restaurant', 'guam-restaurants-core' ),
+				esc_html__( 'What', 'guam-restaurants-core' ),
 				esc_attr( Filters::SEARCH ),
 				Filters::MAX_SEARCH_LENGTH,
-				esc_attr__( 'Name, dish or village', 'guam-restaurants-core' ),
-				esc_html__( 'Search', 'guam-restaurants-core' )
+				esc_attr__( 'Name, dish or cuisine', 'guam-restaurants-core' ),
+				esc_html__( 'Search', 'guam-restaurants-core' ),
+				'' === $groups ? '' : sprintf(
+					'<span class="gr-search__field gr-search__where"><label for="%1$s-where">%2$s</label><select id="%1$s-where" name="%3$s"><option value="">%4$s</option>%5$s</select></span>',
+					esc_attr( $id ),
+					esc_html__( 'Where', 'guam-restaurants-core' ),
+					esc_attr( Filters::WHERE ),
+					esc_html__( 'Anywhere on Guam', 'guam-restaurants-core' ),
+					$groups
+				)
 			),
 			array(
 				'class'  => 'gr-search',
@@ -196,13 +219,69 @@ final class Blocks {
 				$counts ? ' <span class="gr-chip__count"><span class="screen-reader-text">' . esc_html( sprintf( _n( '%s restaurant', '%s restaurants', (int) $term->count, 'guam-restaurants-core' ), number_format_i18n( (int) $term->count ) ) ) . '</span><span aria-hidden="true">' . esc_html( number_format_i18n( (int) $term->count ) ) . '</span></span>' : ''
 			);
 		}
+		$list    = 'tiles' === ( $attributes['style'] ?? 'chips' ) ? 'gr-chips gr-chips--tiles' : 'gr-chips';
 		$heading = trim( (string) ( $attributes['heading'] ?? '' ) );
 		if ( '' === $heading ) {
-			return self::wrap( 'ul', $items, array( 'class' => 'gr-chips' ) );
+			return self::wrap( 'ul', $items, array( 'class' => $list ) );
 		}
 		// The heading lives in the block so a taxonomy with no listed terms
 		// (for example, before any mall is verified) leaves no empty section.
-		return self::wrap( 'section', '<h2 class="wp-block-heading">' . esc_html( $heading ) . '</h2><ul class="gr-chips">' . $items . '</ul>', array( 'class' => 'gr-term-links' ) );
+		return self::wrap( 'section', '<h2 class="wp-block-heading">' . esc_html( $heading ) . '</h2><ul class="' . esc_attr( $list ) . '">' . $items . '</ul>', array( 'class' => 'gr-term-links' ) );
+	}
+
+	/**
+	 * A row of restaurant cards with a link to the full list.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @return string
+	 */
+	public static function restaurant_row( $attributes ): string {
+		$limit = max( 1, min( 24, (int) ( $attributes['limit'] ?? 8 ) ) );
+		if ( 'new' === ( $attributes['source'] ?? 'filters' ) ) {
+			$ids = wp_list_pluck(
+				(array) Cache::remember(
+					'recent',
+					array( 'openings', Restaurant_View::NEW_DAYS, $limit ),
+					static function () use ( $limit ) {
+						return Queries::recent_openings( Restaurant_View::NEW_DAYS, $limit );
+					},
+					600
+				),
+				'restaurant_id'
+			);
+			$all = Pages::url( 'recent' );
+		} else {
+			wp_parse_str( (string) ( $attributes['query'] ?? '' ), $params );
+			$filters = Filters::from_params( $params );
+			$ids     = Directory_Query::query(
+				$filters,
+				$limit,
+				array(
+					'fields'        => 'ids',
+					'no_found_rows' => true,
+				)
+			)->posts;
+			$all     = Directory_View::page_url( $filters, array() );
+		}
+		if ( ! $ids ) {
+			return '';
+		}
+		Assets::enqueue( 'hours' );
+		$heading = trim( (string) ( $attributes['heading'] ?? '' ) );
+		$cards   = '';
+		foreach ( $ids as $id ) {
+			$cards .= '<li>' . Restaurant_View::card( (int) $id, '' === $heading ? 2 : 3 ) . '</li>';
+		}
+		return self::wrap(
+			'section',
+			sprintf(
+				'<div class="gr-row__head">%1$s%2$s</div><ul class="gr-cards gr-row__list" role="list">%3$s</ul>',
+				'' === $heading ? '' : '<h2 class="wp-block-heading">' . esc_html( $heading ) . '</h2>',
+				'' === $all ? '' : sprintf( '<a class="gr-row__all" href="%1$s">%2$s</a>', esc_url( $all ), esc_html__( 'See all', 'guam-restaurants-core' ) ),
+				$cards
+			),
+			array( 'class' => 'gr-row' )
+		);
 	}
 
 	/**
@@ -338,6 +417,86 @@ final class Blocks {
 		}
 		Assets::enqueue();
 		return self::wrap( 'div', Intro::render( $term ) );
+	}
+
+	/**
+	 * Top of a restaurant page: photo, badges, name (the page's h1), summary and action buttons, led by the owner's premium Order or Reserve button.
+	 *
+	 * @param array<string, mixed> $attributes Attributes.
+	 * @param string               $content    Inner content (unused).
+	 * @param \WP_Block|null       $block      Block.
+	 * @return string
+	 */
+	public static function restaurant_hero( $attributes, $content = '', $block = null ): string {
+		$id = self::restaurant_id( $block );
+		if ( ! $id ) {
+			return '';
+		}
+		Assets::enqueue( 'hours' );
+		wp_enqueue_script( Assets::SCRIPTS['share'] );
+		wp_enqueue_script( Listing_Stats::SCRIPT );
+
+		$meta   = array_filter(
+			array(
+				esc_html( Restaurant_View::term_names( $id, Content_Types::TAX_CUISINE ) ),
+				esc_html( implode( ', ', array_filter( array( Restaurant_View::term_names( $id, Content_Types::TAX_MALL ), Restaurant_View::term_names( $id, Content_Types::TAX_VILLAGE ) ) ) ) ),
+				Restaurant_View::price_html( $id ),
+			)
+		);
+		$status = Restaurant_View::status_label( $id );
+		$hours  = Open_Hours::compact( $id );
+
+		$actions = array();
+		$claimed = (int) get_post_meta( $id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0;
+		// The owner's Order or Reserve button is part of a premium profile, as in Owner_Content::render_block().
+		$cta = $claimed && Premium::is_active( $id ) ? Premium::cta( $id ) : null;
+		if ( null !== $cta ) {
+			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener nofollow">%2$s</a>', esc_url( $cta['url'] ), esc_html( Premium::cta_actions()[ $cta['action'] ] ) );
+		}
+		$phone = (string) get_post_meta( $id, Restaurant_Meta::PHONE, true );
+		if ( '' !== $phone ) {
+			$actions[] = sprintf( '<a class="gr-action" href="tel:%1$s" data-gr-listing-click="phone">%2$s</a>', esc_attr( $phone ), esc_html__( 'Call', 'guam-restaurants-core' ) );
+		}
+		$directions = Maps::directions_url( $id );
+		if ( '' !== $directions ) {
+			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener">%2$s</a>', esc_url( $directions ), esc_html__( 'Directions', 'guam-restaurants-core' ) );
+		}
+		$website = (string) get_post_meta( $id, Restaurant_Meta::WEBSITE, true );
+		if ( '' !== $website ) {
+			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener" data-gr-listing-click="website">%2$s</a>', esc_url( $website ), esc_html__( 'Website', 'guam-restaurants-core' ) );
+		}
+		// Menu links come from the verified owner, so they show only while the listing is claimed (as in Owner_Content::render_block()).
+		$menus = $claimed ? Owner_Content::get( $id )['menu_links'] : array();
+		if ( $menus && 'menu' !== ( $cta['action'] ?? '' ) ) {
+			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener nofollow">%2$s</a>', esc_url( $menus[0]['url'] ), esc_html__( 'Menu', 'guam-restaurants-core' ) );
+		}
+		$actions[] = sprintf(
+			'<button type="button" class="gr-action" data-gr-share data-gr-share-url="%1$s" data-gr-share-title="%2$s" data-gr-copied="%3$s" hidden>%4$s</button>',
+			esc_url( (string) get_permalink( $id ) ),
+			esc_attr( wp_strip_all_tags( get_the_title( $id ) ) ),
+			esc_attr__( 'Link copied', 'guam-restaurants-core' ),
+			esc_html__( 'Share', 'guam-restaurants-core' )
+		);
+
+		return self::wrap(
+			'section',
+			sprintf(
+				'%1$s<div class="gr-hero__summary">%2$s<h1 class="gr-hero__name">%7$s</h1>%3$s%4$s<nav class="gr-hero__actions" aria-label="%5$s">%6$s</nav></div>',
+				Restaurant_View::media( $id, 'large', 'gr-hero__media' ),
+				Restaurant_View::badges( $id ),
+				$meta ? '<p class="gr-hero__meta">' . implode( ' <span aria-hidden="true">·</span> ', $meta ) . '</p>' : '',
+				'' !== $status
+					? '<p class="gr-hero__status">' . esc_html( $status ) . '</p>'
+					: ( '' !== $hours ? '<p class="gr-card__open gr-hero__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' ),
+				esc_attr__( 'Restaurant actions', 'guam-restaurants-core' ),
+				implode( '', $actions ),
+				esc_html( get_the_title( $id ) )
+			),
+			array(
+				'class'           => 'gr-hero',
+				'data-gr-listing' => (string) $id,
+			)
+		);
 	}
 
 	/**

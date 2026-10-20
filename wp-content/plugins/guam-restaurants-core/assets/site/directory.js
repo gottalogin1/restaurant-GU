@@ -23,6 +23,9 @@
 			form.querySelectorAll( 'input[name="' + name + '[]"]:checked' ).forEach( function ( box ) {
 				values.push( box.value );
 			} );
+			values = values.filter( function ( value, index ) {
+				return values.indexOf( value ) === index;
+			} );
 			if ( values.length ) {
 				out.set( name, values.join( ',' ) );
 			}
@@ -57,6 +60,42 @@
 				/* translators: %d: number of selected options. */
 				label.textContent = count ? ( i18n ? i18n.sprintf( i18n.__( ' (%d selected)', 'guam-restaurants-core' ), count ) : ' (' + count + ')' ) : '';
 			}
+		} );
+	}
+
+	// A cuisine can have both a quick chip and a box in More filters; keep the two in step.
+	function mirror( form ) {
+		form.addEventListener( 'change', function ( event ) {
+			var box = event.target;
+			if ( box.type !== 'checkbox' ) {
+				return;
+			}
+			form.querySelectorAll( 'input[type="checkbox"]' ).forEach( function ( other ) {
+				if ( other !== box && other.name === box.name && other.value === box.value ) {
+					other.checked = box.checked;
+				}
+			} );
+		} );
+	}
+
+	// List / Map buttons for narrow screens, where results and map do not fit side by side.
+	function initViews( directory ) {
+		var views = directory.querySelector( '.gr-directory__views' );
+		if ( ! views ) {
+			return;
+		}
+		views.hidden = false;
+		views.addEventListener( 'click', function ( event ) {
+			var button = event.target.closest( '[data-gr-view]' );
+			if ( ! button ) {
+				return;
+			}
+			var map = button.getAttribute( 'data-gr-view' ) === 'map';
+			directory.classList.toggle( 'is-map-view', map );
+			views.querySelectorAll( '[data-gr-view]' ).forEach( function ( other ) {
+				other.setAttribute( 'aria-pressed', other === button ? 'true' : 'false' );
+			} );
+			document.dispatchEvent( new CustomEvent( 'gr:directory-view' ) );
 		} );
 	}
 
@@ -100,6 +139,7 @@
 					if ( window.guamRestaurantsHours ) {
 						window.guamRestaurantsHours.apply( results );
 					}
+					document.dispatchEvent( new CustomEvent( 'gr:directory-results' ) );
 					if ( focus ) {
 						results.focus( { preventScroll: true } );
 						results.scrollIntoView( { block: 'start' } );
@@ -176,7 +216,9 @@
 	}
 
 	function init() {
+		document.querySelectorAll( '.gr-directory' ).forEach( initViews );
 		document.querySelectorAll( 'form[data-gr-filters]' ).forEach( function ( form ) {
+			mirror( form );
 			if ( form.getAttribute( 'data-gr-filters' ) === 'map' ) {
 				initMap( form );
 			} else {

@@ -35,6 +35,7 @@ final class Filters {
 	public const AWARD  = 'award';
 	public const OPEN   = 'open';
 	public const SORT   = 'sort';
+	public const WHERE  = 'where';
 
 	public const AWARD_WINNER = 'winner';
 	public const OPEN_NOW     = 'now';
@@ -82,6 +83,12 @@ final class Filters {
 
 		$q            = isset( $params[ self::SEARCH ] ) && is_scalar( $params[ self::SEARCH ] ) ? sanitize_text_field( (string) $params[ self::SEARCH ] ) : '';
 		$filters['q'] = mb_substr( trim( $q ), 0, self::MAX_SEARCH_LENGTH );
+
+		// The home page search sends one place as "where": village:<slug> or mall:<slug>.
+		$where = isset( $params[ self::WHERE ] ) && is_scalar( $params[ self::WHERE ] ) ? (string) $params[ self::WHERE ] : '';
+		if ( 1 === preg_match( '/^(village|mall):([a-z0-9\-]+)$/', $where, $m ) && empty( $params[ $m[1] ] ) ) {
+			$params[ $m[1] ] = $m[2];
+		}
 
 		foreach ( self::FACETS as $param => $taxonomy ) {
 			$slugs = self::slugs( $params[ $param ] ?? array() );

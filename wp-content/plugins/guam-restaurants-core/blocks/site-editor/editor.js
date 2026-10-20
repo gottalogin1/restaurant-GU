@@ -22,6 +22,7 @@
 		'owner-content',
 		'correction-form',
 		'related-links',
+		'restaurant-hero',
 	];
 
 	function number( props, name, label ) {
@@ -75,6 +76,32 @@
 						},
 					} ),
 					number( props, 'limit', __( 'Most listed only (0 = all)', 'guam-restaurants-core' ) ),
+					select( props, 'style', __( 'Style', 'guam-restaurants-core' ), [
+						{ label: __( 'Chips', 'guam-restaurants-core' ), value: 'chips' },
+						{ label: __( 'Tiles', 'guam-restaurants-core' ), value: 'tiles' },
+					] ),
+				];
+			case 'restaurant-row':
+				return [
+					el( components.TextControl, {
+						label: __( 'Heading', 'guam-restaurants-core' ),
+						value: props.attributes.heading,
+						onChange: function ( value ) {
+							props.setAttributes( { heading: value } );
+						},
+					} ),
+					select( props, 'source', __( 'Show', 'guam-restaurants-core' ), [
+						{ label: __( 'Restaurants matching a filter', 'guam-restaurants-core' ), value: 'filters' },
+						{ label: __( 'Newest listings', 'guam-restaurants-core' ), value: 'new' },
+					] ),
+					el( components.TextControl, {
+						label: __( 'Filter, as in the list page address (for example award=winner or village=dededo&price=p1)', 'guam-restaurants-core' ),
+						value: props.attributes.query,
+						onChange: function ( value ) {
+							props.setAttributes( { query: value } );
+						},
+					} ),
+					number( props, 'limit', __( 'Most shown', 'guam-restaurants-core' ) ),
 				];
 			case 'recent-changes':
 				return [
@@ -130,6 +157,8 @@
 		'owner-content',
 		'correction-form',
 		'related-links',
+		'restaurant-row',
+		'restaurant-hero',
 	];
 
 	names.forEach( function ( name ) {
