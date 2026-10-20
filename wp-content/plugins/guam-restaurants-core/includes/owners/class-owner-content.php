@@ -11,6 +11,7 @@ use GuamRestaurants\Core\Ads\Guard;
 use GuamRestaurants\Core\Ads\Server;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Change_Log;
+use GuamRestaurants\Core\Dishes\Popular_Dishes;
 use GuamRestaurants\Core\Highlights\Roles;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
 use GuamRestaurants\Core\Photos\Photo_Submissions;
@@ -28,6 +29,10 @@ defined( 'ABSPATH' ) || exit;
  * - `hours`: the weekly hours (gr_hours, source "owner", so imports never
  *   overwrite them; Osm\Importer).
  * - `menu_links`: up to five labeled links (gr_menu_links).
+ * - `menu_dishes`: up to MAX_MENU_DISHES dishes from the menu, each a name
+ *   with an optional price and short description (gr_menu_dishes). They
+ *   show under "Popular dishes" (Dishes\Display) as "On the menu"; they
+ *   are listed, never rated, and never move a dish up the ranking.
  * - `specials`: up to five specials with an optional end date (gr_specials).
  * - `photos`: up to eight images they uploaded (gr_owner_photos), or
  *   Premium::MAX_PHOTOS while a premium profile runs.
@@ -42,23 +47,26 @@ defined( 'ABSPATH' ) || exit;
  * except new photos, which wait for an administrator unless the owner has
  * the trusted owner role (Photos\Photo_Submissions::hold_owner_photo()).
  *
- * Specials and menu link labels follow the ad rules (Ads\Guard): no
+ * Specials, menu dishes and menu link labels follow the ad rules (Ads\Guard): no
  * "Featured", "Top pick", "Recommended", "editor's choice" or award claims.
  * The block labels everything "From the owner".
  */
 final class Owner_Content {
 
-	public const MENU_LINKS = 'gr_menu_links';
-	public const SPECIALS   = 'gr_specials';
-	public const PHOTOS     = 'gr_owner_photos';
+	public const MENU_LINKS  = 'gr_menu_links';
+	public const MENU_DISHES = 'gr_menu_dishes';
+	public const SPECIALS    = 'gr_specials';
+	public const PHOTOS      = 'gr_owner_photos';
 
-	public const FIELDS = array( 'hours', 'menu_links', 'specials', 'photos', 'cta' );
+	public const FIELDS = array( 'hours', 'menu_links', 'menu_dishes', 'specials', 'photos', 'cta' );
 
-	public const MAX_LINKS    = 5;
-	public const MAX_SPECIALS = 5;
-	public const MAX_PHOTOS   = 8;
-	public const MAX_TITLE    = 80;
-	public const MAX_DETAILS  = 200;
+	public const MAX_LINKS       = 5;
+	public const MAX_MENU_DISHES = 15;
+	public const MAX_SPECIALS    = 5;
+	public const MAX_PHOTOS      = 8;
+	public const MAX_TITLE       = 80;
+	public const MAX_PRICE       = 20;
+	public const MAX_DETAILS     = 200;
 
 	public const BLOCK_FOLDER = 'blocks/owner-content';
 
@@ -111,6 +119,14 @@ final class Owner_Content {
 				$errors->merge_from( $links );
 			} else {
 				$values[ self::MENU_LINKS ] = $links;
+			}
+		}
+		if ( array_key_exists( 'menu_dishes', $input ) ) {
+			$dishes = self::menu_dishes_from_input( (array) $input['menu_dishes'] );
+			if ( is_wp_error( $dishes ) ) {
+				$errors->merge_from( $dishes );
+			} else {
+				$values[ self::MENU_DISHES ] = $dishes;
 			}
 		}
 		if ( array_key_exists( 'specials', $input ) ) {
@@ -232,6 +248,47 @@ final class Owner_Content {
 	}
 
 	/**
+	 * Menu dishes from a form: rows of `name`, `price` and `details`; rows
+	 * without a name are dropped, and a name listed twice is kept once.
+	 *
+	 * @param array<int, mixed> $rows Rows.
+	 * @return array<int, array{name: string, price: string, details: string}>|WP_Error
+	 */
+	public static function menu_dishes_from_input( array $rows ) {
+		$out    = array();
+		$seen   = array();
+		$errors = new WP_Error();
+		foreach ( $rows as $row ) {
+			$row  = (array) $row;
+			$name = mb_substr( sanitize_text_field( (string) ( $row['name'] ?? '' ) ), 0, self::MAX_TITLE );
+			$key  = Popular_Dishes::key( $name );
+			if ( '' === $key || isset( $seen[ $key ] ) ) {
+				continue;
+			}
+			$seen[ $key ] = true;
+			$details      = mb_substr( sanitize_text_field( (string) ( $row['details'] ?? '' ) ), 0, self::MAX_DETAILS );
+			foreach ( Guard::creative_problems(
+				array(
+					'headline' => $name,
+					'text'     => $details,
+				)
+			) as $problem ) {
+				$errors->add( 'gr_owner_words', $problem );
+			}
+			$out[] = array(
+				'name'    => $name,
+				'price'   => mb_substr( sanitize_text_field( (string) ( $row['price'] ?? '' ) ), 0, self::MAX_PRICE ),
+				'details' => $details,
+			);
+		}
+		if ( count( $out ) > self::MAX_MENU_DISHES ) {
+			/* translators: %d: maximum. */
+			$errors->add( 'gr_owner_dishes', sprintf( __( 'Add at most %d dishes.', 'guam-restaurants-core' ), self::MAX_MENU_DISHES ) );
+		}
+		return $errors->has_errors() ? $errors : $out;
+	}
+
+	/**
 	 * Specials from a form: rows of `title`, `details` and `ends` (Y-m-d or
 	 * empty); rows without a title are dropped.
 	 *
@@ -325,16 +382,17 @@ final class Owner_Content {
 	 * The owner fields for a restaurant.
 	 *
 	 * @param int $restaurant_id Restaurant.
-	 * @return array{menu_links: array<int, array<string, string>>, specials: array<int, array<string, string>>, photos: int[]}
+	 * @return array{menu_links: array<int, array<string, string>>, menu_dishes: array<int, array<string, string>>, specials: array<int, array<string, string>>, photos: int[]}
 	 */
 	public static function get( int $restaurant_id ): array {
 		$list = static function ( $value ): array {
 			return is_array( $value ) ? array_values( $value ) : array();
 		};
 		return array(
-			'menu_links' => $list( get_post_meta( $restaurant_id, self::MENU_LINKS, true ) ),
-			'specials'   => $list( get_post_meta( $restaurant_id, self::SPECIALS, true ) ),
-			'photos'     => array_map( 'intval', $list( get_post_meta( $restaurant_id, self::PHOTOS, true ) ) ),
+			'menu_links'  => $list( get_post_meta( $restaurant_id, self::MENU_LINKS, true ) ),
+			'menu_dishes' => $list( get_post_meta( $restaurant_id, self::MENU_DISHES, true ) ),
+			'specials'    => $list( get_post_meta( $restaurant_id, self::SPECIALS, true ) ),
+			'photos'      => array_map( 'intval', $list( get_post_meta( $restaurant_id, self::PHOTOS, true ) ) ),
 		);
 	}
 

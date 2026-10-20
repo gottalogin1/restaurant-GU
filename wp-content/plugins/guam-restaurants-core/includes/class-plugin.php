@@ -123,6 +123,7 @@ final class Plugin {
 		Photos\Photo_Gallery::register();
 		Photos\Photo_Rest_Controller::register();
 		Photos\Moderation_Screen::register();
+		Dishes\Display::register();
 		Admin\No_Cuisine_Filter::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {

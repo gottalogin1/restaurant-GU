@@ -70,9 +70,10 @@ final class Ads {
 
 	/**
 	 * Products sold through slots (docs/monetization.md). Exclusive
-	 * products show at most one ad per page.
+	 * products show at most one ad per page. In a rotating product's slot
+	 * the ads take turns in one spot (Slot, assets/ads/rotation.js).
 	 *
-	 * @return array<string, array{label: string, exclusive: bool}>
+	 * @return array<string, array{label: string, exclusive: bool, rotating?: bool}>
 	 */
 	public static function products(): array {
 		return array(
@@ -96,6 +97,11 @@ final class Ads {
 				'label'     => __( 'Pick for me sponsor (one above each pick)', 'guam-restaurants-core' ),
 				'exclusive' => true,
 			),
+			'dish_sponsor'     => array(
+				'label'     => __( 'Popular dishes sponsor (restaurant pages, sponsors take turns)', 'guam-restaurants-core' ),
+				'exclusive' => false,
+				'rotating'  => true,
+			),
 		);
 	}
 
@@ -107,6 +113,16 @@ final class Ads {
 	 */
 	public static function is_exclusive( string $product ): bool {
 		return ! empty( self::products()[ $product ]['exclusive'] );
+	}
+
+	/**
+	 * Whether a product's ads take turns in one spot.
+	 *
+	 * @param string $product Product key.
+	 * @return bool
+	 */
+	public static function is_rotating( string $product ): bool {
+		return ! empty( self::products()[ $product ]['rotating'] );
 	}
 
 	/**

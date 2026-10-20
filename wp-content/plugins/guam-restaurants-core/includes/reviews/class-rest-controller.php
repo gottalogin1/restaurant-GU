@@ -94,6 +94,10 @@ final class Rest_Controller {
 							'type'    => 'string',
 							'default' => '',
 						),
+						'dishes'       => array(
+							'type'    => 'string',
+							'default' => '',
+						),
 						'website'      => array(
 							'type'    => 'string',
 							'default' => '',
@@ -236,6 +240,7 @@ final class Rest_Controller {
 				'verify_email' => $request['verify_email'],
 				'connected'    => $request['connected'],
 				'connection'   => $request['connection'],
+				'dishes'       => $request['dishes'],
 				'website'      => $request['website'],
 				'elapsed_ms'   => $request['elapsed_ms'],
 			),

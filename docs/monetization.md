@@ -49,6 +49,7 @@ restaurants are listed.
 | 10 | Hotel and tour operator ads | 1.5 × restaurant rates | As the product |
 | 11 | Affiliate links | Commission from partner | None |
 | 12 | Pick for me sponsor (one ad above each random pick) | $150/month (one village, mall or food type), $250/month (every pick) | Monthly |
+| 13 | Popular dishes sponsor (rotating spot before Popular dishes on restaurant pages) | $150/month (one village, mall or food type), $250/month (every restaurant page) | Monthly |
 
 ### 1. Claimed basic listing (free)
 
@@ -180,6 +181,8 @@ restaurant price:
 | Homepage leaderboard | $400/month | $600/month |
 | Pick for me sponsor, one village, mall or food type | $150/month | $225/month |
 | Pick for me sponsor, every pick | $250/month | $375/month |
+| Popular dishes sponsor, one village, mall or food type | $150/month | $225/month |
+| Popular dishes sponsor, every restaurant page | $250/month | $375/month |
 | Deal or event post | $25 / $60 | $37.50 / $90 |
 | Newsletter sponsor | band price | 1.5 × band price |
 | Sponsored feature | $200 | $300 |
@@ -203,6 +206,16 @@ One labeled "Sponsored" box above every result on the random place picker (/what
 - **$150/month:** shown when the visitor chose one village, mall or food type (priced like a category sponsor; Sanjay, 2026-10-20).
 - **$250/month:** shown above every pick, island-wide.
 
+### 13. Popular dishes sponsor ($150 or $250/month)
+
+A labeled "Sponsored" box on restaurant pages, placed before the Popular dishes section (product `dish_sponsor`, Sanjay 2026-10-20). Every running sponsor that targets the page takes a turn in the one box, round-robin: the box changes every 8 seconds (with Pause and Next buttons, and no automatic change for visitors who ask for reduced motion), and the sponsor shown first comes from the clock, so every sponsor gets the same share of time even on cached pages. Up to six sponsors share a page; beyond that, higher priority wins a place. It can run on every restaurant page or only on restaurants in chosen villages, malls or food types. On a restaurant with a premium profile, other restaurants' ads never show, so the box is empty there. While nothing is booked, the box invites businesses to advertise and links to the advertise page.
+
+The Popular dishes list itself is never paid: it is ordered by how many different visitors photographed a dish or named it in an approved review, owners and connected people cannot rate or count, and sponsors cannot change it (CLAUDE.md rule 5).
+
+- **$150/month:** shown on restaurants in one chosen village, mall or food type.
+- **$250/month:** shown on every restaurant page.
+- Same prices as the Pick for me sponsor (Sanjay, 2026-10-20). Because sponsors share the box, each sponsor's share of impressions falls as more sponsors book the same pages; consider capping sales at three or four sponsors per target.
+
 ## Founding-advertiser discount
 
 - **30 percent off** the launch price, locked for six months, for advertisers
@@ -210,7 +223,7 @@ One labeled "Sponsored" box above every result on the random place picker (/what
 - **Who qualifies:** advertisers who sign before the 90-day repricing review
   in [market-rates.md](market-rates.md#repricing-rule).
 - **Which products:** the recurring ones: premium profile, featured listing,
-  category sponsor, Pick for me sponsor, and banner. One-off products (deal posts, sponsored
+  category sponsor, Pick for me sponsor, Popular dishes sponsor, and banner. One-off products (deal posts, sponsored
   features, newsletter issues) and the homepage leaderboard are excluded.
 - **After six months:** the term renews at the rate card in effect then. The
   advertiser gets 30 days' notice of any change.
@@ -223,6 +236,8 @@ One labeled "Sponsored" box above every result on the random place picker (/what
 | Category sponsor, top cuisine | $250/month | $175/month | $1,050.00 |
 | Pick for me sponsor, one village, mall or food type | $150/month | $105/month | $630.00 |
 | Pick for me sponsor, every pick | $250/month | $175/month | $1,050.00 |
+| Popular dishes sponsor, one village, mall or food type | $150/month | $105/month | $630.00 |
+| Popular dishes sponsor, every restaurant page | $250/month | $175/month | $1,050.00 |
 | Banner | $20 CPM, $100 min | $14 CPM, $70 min | at least $420.00 |
 
 The founding discount stacks with the hotel and tour multiplier (for example,

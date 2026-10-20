@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/popular-dishes",
+	"version": "0.1.0",
+	"title": "Popular dishes",
+	"category": "widgets",
+	"icon": "carrot",
+	"description": "The dishes most visitors photographed or named in their reviews, then dishes from the owner's menu, with one rotating Sponsored spot before the list.",
+	"keywords": [ "dishes", "menu", "popular", "food" ],
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}
