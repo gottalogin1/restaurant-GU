@@ -694,5 +694,19 @@ class Site_Test extends Guam_Test_Case {
 		$this->assertStringContainsString( 'Award winner 2025', $html );
 		$this->assertStringNotContainsString( '>Website<', $html );
 		$this->assertStringNotContainsString( '>Menu<', $html, 'Menu links need a claimed listing' );
+
+		update_post_meta(
+			$this->r['meskla'],
+			\GuamRestaurants\Core\Premium\Premium::CTA,
+			array(
+				'action' => 'reserve',
+				'url'    => 'https://example.com/book',
+			)
+		);
+		$this->assertStringNotContainsString( 'Reserve a table', do_blocks( '<!-- wp:guam-restaurants/restaurant-hero /-->' ), 'The button needs a claimed listing with a premium profile' );
+
+		update_post_meta( $this->r['meskla'], Restaurant_Meta::CLAIMED_BY_USER_ID, self::factory()->user->create() );
+		\GuamRestaurants\Core\Premium\Premium::extend( $this->r['meskla'], 30, 'Test' );
+		$this->assertStringContainsString( '<a class="gr-action" href="https://example.com/book" rel="noopener nofollow">Reserve a table</a><a class="gr-action" href="tel:', do_blocks( '<!-- wp:guam-restaurants/restaurant-hero /-->' ), 'Reserve leads the actions' );
 	}
 }

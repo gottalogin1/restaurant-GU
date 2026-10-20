@@ -19,6 +19,7 @@ use GuamRestaurants\Core\Legal\Pages as Legal_Pages;
 use GuamRestaurants\Core\Monitoring\Queries;
 use GuamRestaurants\Core\Owners\Listing_Stats;
 use GuamRestaurants\Core\Owners\Owner_Content;
+use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 
 defined( 'ABSPATH' ) || exit;
@@ -419,7 +420,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Top of a restaurant page: photo, badges, name (the page's h1), summary and action buttons.
+	 * Top of a restaurant page: photo, badges, name (the page's h1), summary and action buttons, led by the owner's premium Order or Reserve button.
 	 *
 	 * @param array<string, mixed> $attributes Attributes.
 	 * @param string               $content    Inner content (unused).
@@ -446,7 +447,13 @@ final class Blocks {
 		$hours  = Open_Hours::compact( $id );
 
 		$actions = array();
-		$phone   = (string) get_post_meta( $id, Restaurant_Meta::PHONE, true );
+		$claimed = (int) get_post_meta( $id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0;
+		// The owner's Order or Reserve button is part of a premium profile, as in Owner_Content::render_block().
+		$cta = $claimed && Premium::is_active( $id ) ? Premium::cta( $id ) : null;
+		if ( null !== $cta ) {
+			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener nofollow">%2$s</a>', esc_url( $cta['url'] ), esc_html( Premium::cta_actions()[ $cta['action'] ] ) );
+		}
+		$phone = (string) get_post_meta( $id, Restaurant_Meta::PHONE, true );
 		if ( '' !== $phone ) {
 			$actions[] = sprintf( '<a class="gr-action" href="tel:%1$s" data-gr-listing-click="phone">%2$s</a>', esc_attr( $phone ), esc_html__( 'Call', 'guam-restaurants-core' ) );
 		}
@@ -459,8 +466,8 @@ final class Blocks {
 			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener" data-gr-listing-click="website">%2$s</a>', esc_url( $website ), esc_html__( 'Website', 'guam-restaurants-core' ) );
 		}
 		// Menu links come from the verified owner, so they show only while the listing is claimed (as in Owner_Content::render_block()).
-		$menus = (int) get_post_meta( $id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0 ? Owner_Content::get( $id )['menu_links'] : array();
-		if ( $menus ) {
+		$menus = $claimed ? Owner_Content::get( $id )['menu_links'] : array();
+		if ( $menus && 'menu' !== ( $cta['action'] ?? '' ) ) {
 			$actions[] = sprintf( '<a class="gr-action" href="%1$s" rel="noopener nofollow">%2$s</a>', esc_url( $menus[0]['url'] ), esc_html__( 'Menu', 'guam-restaurants-core' ) );
 		}
 		$actions[] = sprintf(
