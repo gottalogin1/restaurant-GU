@@ -290,7 +290,7 @@ class Site_Test extends Guam_Test_Case {
 				'award'   => 'winner',
 				'open'    => 'now',
 				'sort'    => 'drop table',
-				'q'       => '  <b>kimchi</b> ',
+				'q'       => '  <b>proa</b> ',
 			)
 		);
 		$this->assertSame( array( 'japanese', 'korean' ), $filters['facets']['cuisine'] );
@@ -299,11 +299,11 @@ class Site_Test extends Guam_Test_Case {
 		$this->assertTrue( $filters['award'] );
 		$this->assertTrue( $filters['open'] );
 		$this->assertSame( '', $filters['sort'] );
-		$this->assertSame( 'kimchi', $filters['q'] );
+		$this->assertSame( 'proa', $filters['q'] );
 		$this->assertSame( 'relevance', Filters::effective_sort( $filters ) );
 		$this->assertSame(
 			array(
-				'q'       => 'kimchi',
+				'q'       => 'proa',
 				'village' => 'dededo',
 				'cuisine' => 'japanese,korean',
 				'award'   => 'winner',

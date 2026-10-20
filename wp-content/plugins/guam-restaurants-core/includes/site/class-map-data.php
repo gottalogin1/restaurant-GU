@@ -30,7 +30,7 @@ final class Map_Data {
 	 */
 	public static function feature_collection( array $filters ): array {
 		$filters['page'] = 1;
-		$cache_args      = array( Filters::to_params( $filters ), ! empty( $filters['open'] ) ? Clock::minute_of_week() : null );
+		$cache_args      = array( Filters::to_params( $filters ), Filters::is_timed( $filters ) ? Clock::minute_of_week() : null );
 		return Cache::remember(
 			'map',
 			$cache_args,
@@ -62,7 +62,7 @@ final class Map_Data {
 					'features' => $out,
 				);
 			},
-			! empty( $filters['open'] ) ? 60 : Cache::TTL
+			Filters::is_timed( $filters ) ? 60 : Cache::TTL
 		);
 	}
 

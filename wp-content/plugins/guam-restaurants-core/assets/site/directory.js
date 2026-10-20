@@ -4,6 +4,12 @@
  * state has a shareable URL. Without this script the form still works as
  * a plain GET form.
  *
+ * A typed search can come back read as filters ("cheap Korean in Tumon"
+ * becomes $, Korean and Tamuning). Once the visitor submits, picks a filter
+ * or removes a chip, the form is set to match the URL the server returned,
+ * so the boxes show how the search was read. While they type it is left
+ * alone.
+ *
  * The map page uses the same form (data-gr-filters="map"); there this
  * script only keeps the URL in step and tells map.js to reload points.
  */
@@ -30,7 +36,7 @@
 				out.set( name, values.join( ',' ) );
 			}
 		} );
-		[ 'award', 'open' ].forEach( function ( name ) {
+		[ 'award', 'open', 'late' ].forEach( function ( name ) {
 			var box = form.querySelector( 'input[name="' + name + '"]' );
 			if ( box && box.checked ) {
 				out.set( name, box.value );
@@ -45,6 +51,48 @@
 			}
 		}
 		return out;
+	}
+
+	// Sets the form to a query: the search words, every box, and hidden boxes
+	// for choices the form has no box for (a cuisine with no listings yet).
+	function apply( form, query ) {
+		var q = form.querySelector( '[name="q"]' );
+		if ( q ) {
+			q.value = query.get( 'q' ) || '';
+		}
+		form.querySelectorAll( 'input[data-gr-extra]' ).forEach( function ( box ) {
+			box.remove();
+		} );
+		MULTI.forEach( function ( name ) {
+			var values = ( query.get( name ) || '' ).split( ',' ).filter( Boolean );
+			var boxes = form.querySelectorAll( 'input[name="' + name + '[]"]' );
+			boxes.forEach( function ( box ) {
+				box.checked = values.indexOf( box.value ) !== -1;
+			} );
+			values.forEach( function ( value ) {
+				var found = false;
+				boxes.forEach( function ( box ) {
+					found = found || box.value === value;
+				} );
+				if ( ! found ) {
+					var extra = document.createElement( 'input' );
+					extra.type = 'checkbox';
+					extra.name = name + '[]';
+					extra.value = value;
+					extra.checked = true;
+					extra.hidden = true;
+					extra.setAttribute( 'data-gr-extra', '' );
+					form.appendChild( extra );
+				}
+			} );
+		} );
+		[ 'award', 'open', 'late' ].forEach( function ( name ) {
+			var box = form.querySelector( 'input[name="' + name + '"]' );
+			if ( box ) {
+				box.checked = query.has( name );
+			}
+		} );
+		updateCounts( form );
 	}
 
 	function shareable( form, query ) {
@@ -106,7 +154,7 @@
 		}
 		var controller = null;
 
-		function load( query, page, push, focus ) {
+		function load( query, page, push, focus, sync ) {
 			if ( controller ) {
 				controller.abort();
 			}
@@ -133,6 +181,9 @@
 				.then( function ( data ) {
 					results.innerHTML = data.html;
 					results.removeAttribute( 'aria-busy' );
+					if ( sync ) {
+						apply( form, new URL( data.url, window.location.href ).searchParams );
+					}
 					if ( push ) {
 						window.history.pushState( { grDirectory: true }, '', data.url );
 					}
@@ -157,7 +208,7 @@
 			updateCounts( form );
 			window.clearTimeout( timer );
 			timer = window.setTimeout( function () {
-				load( params( form ), 1, true, false );
+				load( params( form ), 1, true, false, delay === 0 );
 			}, delay );
 		}
 
@@ -174,16 +225,26 @@
 		form.addEventListener( 'submit', function ( event ) {
 			event.preventDefault();
 			window.clearTimeout( timer );
-			load( params( form ), 1, true, true );
+			load( params( form ), 1, true, true, true );
 		} );
 		results.addEventListener( 'click', function ( event ) {
+			var remove = event.target.closest( 'a[data-gr-remove]' );
+			if ( remove && ! event.metaKey && ! event.ctrlKey && ! event.shiftKey ) {
+				event.preventDefault();
+				var query = new URL( remove.href, window.location.href ).searchParams;
+				query.delete( 'paged' );
+				apply( form, query );
+				window.clearTimeout( timer );
+				load( params( form ), 1, true, false, true );
+				return;
+			}
 			var link = event.target.closest( '.gr-pagination a' );
 			if ( ! link || event.metaKey || event.ctrlKey || event.shiftKey ) {
 				return;
 			}
 			var match = link.getAttribute( 'href' ).match( /\/page\/(\d+)\/?|[?&]paged=(\d+)/ );
 			event.preventDefault();
-			load( params( form ), match ? parseInt( match[ 1 ] || match[ 2 ], 10 ) : 1, true, true );
+			load( params( form ), match ? parseInt( match[ 1 ] || match[ 2 ], 10 ) : 1, true, true, false );
 		} );
 		window.addEventListener( 'popstate', function () {
 			window.location.reload();

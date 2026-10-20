@@ -17,7 +17,8 @@ defined( 'ABSPATH' ) || exit;
  * (Picker).
  *
  * All are public and read-only. Directory and map responses are cacheable
- * for a few minutes (one minute with "open now"); picks are never cached.
+ * for a few minutes (one minute with "open now" or "open late"); picks are
+ * never cached.
  */
 final class Rest_Controller {
 
@@ -46,6 +47,7 @@ final class Rest_Controller {
 			'price'   => array( 'type' => 'string' ),
 			'award'   => array( 'type' => 'string' ),
 			'open'    => array( 'type' => 'string' ),
+			'late'    => array( 'type' => 'string' ),
 			'sort'    => array( 'type' => 'string' ),
 			'page'    => array(
 				'type'    => 'integer',
@@ -164,7 +166,7 @@ final class Rest_Controller {
 	 * @return \WP_REST_Response
 	 */
 	private static function cacheable( \WP_REST_Response $response, array $filters ): \WP_REST_Response {
-		$response->header( 'Cache-Control', 'public, max-age=' . ( ! empty( $filters['open'] ) ? 60 : Cache::TTL ) );
+		$response->header( 'Cache-Control', 'public, max-age=' . ( Filters::is_timed( $filters ) ? 60 : Cache::TTL ) );
 		return $response;
 	}
 }

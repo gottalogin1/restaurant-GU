@@ -22,8 +22,12 @@ defined( 'ABSPATH' ) || exit;
  *   unverified malls are dropped.
  * - `award=winner` keeps restaurants with at least one recorded win.
  * - `open=now` keeps restaurants open at this minute, Guam time.
- * - `q` is a keyword search; a village name or alias in it ("tumon")
- *   becomes a village filter (Village_Aliases).
+ * - `late=tonight` keeps restaurants open at 10 pm tonight, Guam time
+ *   (Clock::late_minute()).
+ * - `q` is a plain-language search: Query_Parser turns the phrases it
+ *   knows ("cheap Korean open late in Tumon") into the filters above and
+ *   leaves the other words as a keyword search. What it read is kept in
+ *   `read` for the "We read your search as" line; it is not a parameter.
  * - `sort` is one of SORTS. Sponsored placements never change it
  *   (CLAUDE.md rule 5).
  *
@@ -34,11 +38,13 @@ final class Filters {
 	public const SEARCH = 'q';
 	public const AWARD  = 'award';
 	public const OPEN   = 'open';
+	public const LATE   = 'late';
 	public const SORT   = 'sort';
 	public const WHERE  = 'where';
 
 	public const AWARD_WINNER = 'winner';
 	public const OPEN_NOW     = 'now';
+	public const LATE_TONIGHT = 'tonight';
 
 	/**
 	 * URL parameter => taxonomy.
@@ -58,7 +64,7 @@ final class Filters {
 	/**
 	 * Empty filters.
 	 *
-	 * @return array{q: string, facets: array<string, string[]>, award: bool, open: bool, sort: string, page: int}
+	 * @return array{q: string, facets: array<string, string[]>, award: bool, open: bool, late: bool, sort: string, page: int, read: array{text: string, matches: array<int, array{type: string, value: string, phrase: string}>}|null}
 	 */
 	public static function defaults(): array {
 		return array(
@@ -66,8 +72,10 @@ final class Filters {
 			'facets' => array_fill_keys( array_keys( self::FACETS ), array() ),
 			'award'  => false,
 			'open'   => false,
+			'late'   => false,
 			'sort'   => '',
 			'page'   => 1,
+			'read'   => null,
 		);
 	}
 
@@ -76,7 +84,7 @@ final class Filters {
 	 *
 	 * @param array<string, mixed>  $params Raw parameters (for example $_GET, unslashed).
 	 * @param array<string, string> $locked Facet => slug fixed by the page (a village's own page).
-	 * @return array{q: string, facets: array<string, string[]>, award: bool, open: bool, sort: string, page: int}
+	 * @return array<string, mixed> See defaults().
 	 */
 	public static function from_params( array $params, array $locked = array() ): array {
 		$filters = self::defaults();
@@ -90,6 +98,25 @@ final class Filters {
 			$params[ $m[1] ] = $m[2];
 		}
 
+		$parsed = null;
+		if ( '' !== $filters['q'] && ! Query_Parser::is_literal( $filters['q'] ) ) {
+			$parsed = Query_Parser::parse( $filters['q'] );
+			if ( $parsed['matches'] ) {
+				foreach ( $parsed['facets'] as $param => $slugs ) {
+					if ( $slugs ) {
+						$params[ $param ] = array_merge( self::slugs( $params[ $param ] ?? array() ), $slugs );
+					}
+				}
+				$filters['read'] = array(
+					'text'    => $filters['q'],
+					'matches' => $parsed['matches'],
+				);
+				$filters['q']    = $parsed['search'];
+			} else {
+				$parsed = null;
+			}
+		}
+
 		foreach ( self::FACETS as $param => $taxonomy ) {
 			$slugs = self::slugs( $params[ $param ] ?? array() );
 			if ( isset( $locked[ $param ] ) ) {
@@ -100,6 +127,12 @@ final class Filters {
 
 		$filters['award'] = self::AWARD_WINNER === ( $params[ self::AWARD ] ?? '' ) || '1' === ( $params[ self::AWARD ] ?? '' );
 		$filters['open']  = self::OPEN_NOW === ( $params[ self::OPEN ] ?? '' ) || '1' === ( $params[ self::OPEN ] ?? '' );
+		$filters['late']  = self::LATE_TONIGHT === ( $params[ self::LATE ] ?? '' ) || '1' === ( $params[ self::LATE ] ?? '' );
+		if ( $parsed ) {
+			foreach ( array( 'award', 'open', 'late' ) as $flag ) {
+				$filters[ $flag ] = $filters[ $flag ] || $parsed[ $flag ];
+			}
+		}
 
 		$sort            = isset( $params[ self::SORT ] ) && is_scalar( $params[ self::SORT ] ) ? sanitize_key( (string) $params[ self::SORT ] ) : '';
 		$filters['sort'] = in_array( $sort, self::SORTS, true ) ? $sort : '';
@@ -149,10 +182,24 @@ final class Filters {
 		if ( ! empty( $filters['open'] ) ) {
 			$params[ self::OPEN ] = self::OPEN_NOW;
 		}
+		if ( ! empty( $filters['late'] ) ) {
+			$params[ self::LATE ] = self::LATE_TONIGHT;
+		}
 		if ( '' !== (string) $filters['sort'] ) {
 			$params[ self::SORT ] = (string) $filters['sort'];
 		}
 		return $params;
+	}
+
+	/**
+	 * Whether the results change by the minute ("open now", "open late"),
+	 * so they may be cached for a minute only.
+	 *
+	 * @param array<string, mixed> $filters Filters.
+	 * @return bool
+	 */
+	public static function is_timed( array $filters ): bool {
+		return ! empty( $filters['open'] ) || ! empty( $filters['late'] );
 	}
 
 	/**

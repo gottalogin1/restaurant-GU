@@ -9,6 +9,7 @@ namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Term_Meta;
+use GuamRestaurants\Core\Village_Aliases;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -164,16 +165,110 @@ final class Directory_View {
 				: sprintf( '<li data-gr-pin="%1$d" data-gr-point="%2$s,%3$s">%4$s</li>', ++$pin, esc_attr( (string) $point['lng'] ), esc_attr( (string) $point['lat'] ), Restaurant_View::card( $id, 2 ) );
 		}
 
-		$out = '<p class="gr-directory__summary" role="status">' . $summary . '</p>';
+		$active = self::active( $filters, $locked );
+		$out    = $active . '<p class="gr-directory__summary" role="status">' . $summary . '</p>';
 		if ( ! empty( $filters['open'] ) ) {
 			$out .= '<p class="gr-directory__note">' . esc_html__( 'Open now uses Guam time and lists only restaurants whose hours we have.', 'guam-restaurants-core' ) . '</p>';
 		}
+		if ( ! empty( $filters['late'] ) ) {
+			$out .= '<p class="gr-directory__note">' . esc_html__( 'Open late means open at 10 pm tonight, Guam time, and lists only restaurants whose hours we have.', 'guam-restaurants-core' ) . '</p>';
+		}
 		if ( '' !== $cards ) {
 			$out .= '<ul class="gr-cards" role="list">' . $cards . '</ul>';
-		} elseif ( Filters::is_filtered( $filters, $locked ) ) {
+		} elseif ( '' === $active && Filters::is_filtered( $filters, $locked ) ) {
 			$out .= sprintf( '<p><a href="%1$s">%2$s</a></p>', esc_url( self::page_url( Filters::defaults(), $locked ) ), esc_html__( 'Clear all filters', 'guam-restaurants-core' ) );
 		}
 		return $out . self::pagination( $page, $pages, $filters, $locked );
+	}
+
+	/**
+	 * The filters in effect as chips that each remove one, led by how a
+	 * typed search was read ("We read “cheap Korean in Tumon” as").
+	 *
+	 * @param array<string, mixed>  $filters Filters.
+	 * @param array<string, string> $locked  Facet => slug fixed by the page.
+	 * @return string Empty when nothing beyond the page's own facet is chosen.
+	 */
+	public static function active( array $filters, array $locked ): string {
+		$read    = is_array( $filters['read'] ?? null ) ? $filters['read'] : null;
+		$typed   = array();
+		$filters = array_merge( Filters::defaults(), $filters, array( 'read' => null ) );
+		foreach ( $read['matches'] ?? array() as $match ) {
+			$typed[ $match['type'] . ':' . $match['value'] ] = (string) $match['phrase'];
+		}
+
+		$chips = array();
+		$add   = static function ( string $label, array $without ) use ( &$chips, $locked ): void {
+			$chips[] = sprintf(
+				'<li><a class="gr-chip gr-chip--remove" href="%1$s" data-gr-remove>%2$s<span aria-hidden="true">×</span><span class="screen-reader-text">%3$s</span></a></li>',
+				esc_url( self::page_url( $without, $locked ) ),
+				$label,
+				esc_html__( '(remove)', 'guam-restaurants-core' )
+			);
+		};
+		foreach ( Filters::FACETS as $param => $taxonomy ) {
+			if ( isset( $locked[ $param ] ) ) {
+				continue;
+			}
+			foreach ( (array) $filters['facets'][ $param ] as $slug ) {
+				$term = get_term_by( 'slug', $slug, $taxonomy );
+				if ( ! $term instanceof \WP_Term ) {
+					continue;
+				}
+				$label = esc_html( $term->name );
+				if ( 'price' === $param && '' !== $term->description ) {
+					$label .= ' <span class="gr-chip__note">' . esc_html( $term->description ) . '</span>';
+				}
+				$phrase = $typed[ $param . ':' . $slug ] ?? '';
+				if ( '' !== $phrase && 'price' !== $param && Village_Aliases::normalize( $phrase ) !== Village_Aliases::normalize( $term->name ) ) {
+					/* translators: %s: the words the visitor typed, for example "Tumon". */
+					$label .= ' <span class="gr-chip__note">' . esc_html( sprintf( __( '(%s)', 'guam-restaurants-core' ), $phrase ) ) . '</span>';
+				}
+				$without                     = $filters;
+				$without['facets'][ $param ] = array_values( array_diff( (array) $filters['facets'][ $param ], array( $slug ) ) );
+				$add( $label, $without );
+			}
+		}
+		$flags = array(
+			'open'  => __( 'Open now', 'guam-restaurants-core' ),
+			'late'  => __( 'Open late', 'guam-restaurants-core' ),
+			'award' => __( 'Award winners', 'guam-restaurants-core' ),
+		);
+		foreach ( $flags as $flag => $label ) {
+			if ( ! empty( $filters[ $flag ] ) ) {
+				$add( esc_html( $label ), array_merge( $filters, array( $flag => false ) ) );
+			}
+		}
+		if ( '' !== (string) $filters['q'] ) {
+			/* translators: %s: keywords searched for. */
+			$add( esc_html( sprintf( __( 'Words: “%s”', 'guam-restaurants-core' ), (string) $filters['q'] ) ), array_merge( $filters, array( 'q' => '' ) ) );
+		}
+		if ( ! $chips ) {
+			return '';
+		}
+
+		$lead  = '';
+		$exact = '';
+		if ( $read ) {
+			/* translators: %s: what the visitor typed. */
+			$lead  = esc_html( sprintf( __( 'We read “%s” as:', 'guam-restaurants-core' ), (string) $read['text'] ) );
+			$exact = sprintf(
+				' <a class="gr-active__exact" href="%1$s">%2$s</a>',
+				esc_url( self::page_url( array_merge( Filters::defaults(), array( 'q' => '"' . str_replace( '"', '', (string) $read['text'] ) . '"' ) ), $locked ) ),
+				esc_html__( 'Search the exact words instead', 'guam-restaurants-core' )
+			);
+		} else {
+			$lead = esc_html__( 'Filters:', 'guam-restaurants-core' );
+		}
+		return sprintf(
+			'<div class="gr-active" role="group" aria-label="%1$s"><p class="gr-active__lead">%2$s</p><ul class="gr-chips gr-active__chips" role="list">%3$s</ul><p class="gr-active__links">%4$s <a class="gr-active__clear" href="%5$s" data-gr-remove>%6$s</a></p></div>',
+			esc_attr__( 'Filters in use', 'guam-restaurants-core' ),
+			$lead,
+			implode( '', $chips ),
+			$exact,
+			esc_url( self::page_url( Filters::defaults(), $locked ) ),
+			esc_html__( 'Clear all', 'guam-restaurants-core' )
+		);
 	}
 
 	/**
@@ -241,6 +336,7 @@ final class Directory_View {
 		}
 		$top   = array();
 		$chips = self::chip( Filters::OPEN, Filters::OPEN_NOW, ! empty( $filters['open'] ), esc_html__( 'Open now', 'guam-restaurants-core' ) )
+			. self::chip( Filters::LATE, Filters::LATE_TONIGHT, ! empty( $filters['late'] ), esc_html__( 'Open late', 'guam-restaurants-core' ) )
 			. self::chip( Filters::AWARD, Filters::AWARD_WINNER, ! empty( $filters['award'] ), esc_html__( 'Award winners', 'guam-restaurants-core' ) );
 		if ( ! isset( $locked['price'] ) ) {
 			foreach ( self::facet_terms( Content_Types::TAX_PRICE ) as $term ) {
@@ -297,7 +393,7 @@ final class Directory_View {
 
 		return sprintf(
 			'<form class="gr-filters" role="search" method="get" action="%1$s" data-gr-filters="%2$s" data-gr-context="%3$s" aria-label="%4$s">
-				<div class="gr-filters__search"><label for="gr-q">%5$s</label><input type="search" id="gr-q" name="%6$s" value="%7$s" maxlength="%8$d" autocomplete="off"></div>
+				<div class="gr-filters__search"><label for="gr-q">%5$s</label><input type="search" id="gr-q" name="%6$s" value="%7$s" maxlength="%8$d" autocomplete="off" placeholder="%16$s"></div>
 				<div class="gr-filters__quick" role="group" aria-label="%10$s">%11$s</div>
 				%9$s
 				%12$s
@@ -307,7 +403,7 @@ final class Directory_View {
 			esc_attr( $mode ),
 			esc_attr( self::context_string( $locked ) ),
 			esc_attr__( 'Filter restaurants', 'guam-restaurants-core' ),
-			esc_html__( 'Search by name or dish', 'guam-restaurants-core' ),
+			esc_html__( 'Search by name, dish or what you feel like', 'guam-restaurants-core' ),
 			esc_attr( Filters::SEARCH ),
 			esc_attr( (string) $filters['q'] ),
 			Filters::MAX_SEARCH_LENGTH,
@@ -322,7 +418,8 @@ final class Directory_View {
 			$sort,
 			esc_html__( 'Show results', 'guam-restaurants-core' ),
 			esc_url( $action ),
-			esc_html__( 'Clear filters', 'guam-restaurants-core' )
+			esc_html__( 'Clear filters', 'guam-restaurants-core' ),
+			esc_attr__( 'Try “cheap Korean open late in Tumon”', 'guam-restaurants-core' )
 		);
 	}
 
