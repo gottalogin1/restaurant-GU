@@ -134,7 +134,7 @@ full list is in [.env.example](../.env.example).
       downloaded from each brand page by hand.
 - [ ] Alert email (`GUAM_RESTAURANTS_ALERT_EMAIL`).
 - [ ] Japanese and Korean pages ([translation.md](translation.md) §5): TranslatePress
-      Personal (€99/year; free covers Japanese only), Google Cloud Translation key
+      free with one language (the second needs Personal, €99 once), Google Cloud Translation key
       restricted to that API and the server's IP, daily character limit, budget alert,
       and the "powered by Google Translate" badge URL
       (`GUAM_RESTAURANTS_GOOGLE_TRANSLATE_BADGE_URL`). Try it on staging first.

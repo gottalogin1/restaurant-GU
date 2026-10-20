@@ -5,34 +5,55 @@ not 100% accurate, "something similar to Google Translate". Every page gets a Ja
 under `/ja/` and a Korean copy under `/ko/`, translated by Google Translate and labeled as a
 machine translation. English stays the original.
 
-## 1. Choice: TranslatePress with a Google Cloud Translation key
+## 1. Choice: TranslatePress free first, with a Google Cloud Translation key
+
+Sanjay (2026-10-20): a yearly fee is not worth it before launch; find a free or
+lifetime-deal option. Plan: start on **TranslatePress free** with one language ($0), and add
+the second language later with one TranslatePress Personal purchase. A lapsed TranslatePress
+licence does not switch anything off ("When your licence expires the plugin will still
+continue to work as configured", [pricing page](https://translatepress.com/pricing/)), so
+that purchase never has to be renewed; only updates, support and TranslatePress AI stop.
+Japan and Korea are Guam's two key visitor markets
+([GVB via Isla Public Media](https://www.islapublic.org/news/2026-09-09/guam-tourism-arrivals-down-37-percent-in-july-as-gvb-targets-key-markets)),
+so pick whichever matters more for the first language.
 
 | Option | Cost for English + Japanese + Korean | Indexable `/ja/` `/ko/` URLs | How it fits this site |
 |---|---|---|---|
-| **TranslatePress Personal** (chosen) | €99/year (1 site) + Google Cloud Translation use (§3) | Yes, with hreflang; SEO Pack (included) adds translated sitemaps and meta | Translates the finished HTML, so our blocks, REST-filled lists and owner text all work without duplicating posts. Translations are stored once and served from the site, so page caches work. Honors `data-no-translation` and selector filters, which the plugin uses (§4). |
-| TranslatePress free | €0 + Google use | Yes | Only **one** extra language. Fine to start with Japanese alone; Korean needs Personal. |
+| **TranslatePress free** (start here) | €0 + Google use (§3); **one** extra language | Yes, with hreflang | Translates the finished HTML, so our blocks, REST-filled lists and owner text all work without duplicating posts. Translations are stored once and served from the site, so page caches work. Honors `data-no-translation` and selector filters, which the plugin uses (§4). |
+| **TranslatePress Personal**, bought once (second language) | €99 once; the licence can lapse | Yes; SEO Pack adds translated sitemaps and meta | Same plugin, so no code change. After the licence lapses the Pro add-ons keep working but get no updates. |
+| Autoglot | Free plugin; $0.0005 to $0.001 per word **per language**, prepaid, no subscription (about $70 to $200 to fill both languages once) | Yes | Works the same way (local tables, `notranslate` class). But its [terms](https://autoglot.com/terms-and-conditions/) are under Russian law with arbitration in St. Petersburg, no company is named, about 100 installs, and the engine is not disclosed. Built and tested on branch `claude/translations-autoglot` in case it is chosen. |
+| MultiLipi (AppSumo lifetime deal) | $79 once for 100K words and 4 languages | Yes | Sold out on AppSumo as of August 2026 ([LTD Stash](https://ltdstash.com/reviews/multilipi-lifetime-deal/)); founded 2024. |
+| Linguise | Free for one month (600,000 words), then monthly plans ([prices](https://www.linguise.com/prices/)) | Yes | Subscription, hosted translation store. |
 | GTranslate free | €0 | **No** (browser widget, nothing indexed) | Also sends every page, including Google review text, to Google from the visitor's browser. |
-| GTranslate paid | $9.99 to $39.99/month; URL translation only on Business ($29.99) and up | Yes | Pages are translated and cached on GTranslate's servers, so Google, Yelp and Foursquare content would be stored by a third party unless every block is excluded. Costs more per year than TranslatePress. |
+| GTranslate paid | $9.99 to $39.99/month; URL translation only on Business ($29.99) and up | Yes | Pages are translated and cached on GTranslate's servers, so Google, Yelp and Foursquare content would be stored by a third party unless every block is excluded. |
 | Weglot | Word-quota plans; 1,700+ listings in two languages need a high tier | Yes | Hosted translation store, same third-party storage concern as GTranslate. |
 | Polylang or WPML | Pro plans plus machine-translation credits | Yes | One post per language: 1,740 restaurants become 5,220 posts, and every import, tag, meta field and block would have to sync across copies. Not a fit for a data-driven directory. |
+
+"Lifetime" TranslatePress copies sold on Gumroad and similar sites are resold GPL files: no
+licence key, no updates, unknown changes. Do not use them.
 
 Checked 2026-10-20: [TranslatePress on wordpress.org](https://wordpress.org/plugins/translatepress-multilingual/)
 (3.3.8, 400,000+ installs, tested to WordPress 7.1.3; free version is one extra language;
 Extra Languages, SEO Pack and DeepL are paid add-ons),
-[TranslatePress pricing](https://translatepress.com/) (Personal €99, Business €199 with DeepL,
-Developer €349), [automatic translation docs](https://translatepress.com/docs/automatic-translation/)
+[TranslatePress pricing](https://translatepress.com/pricing/) (yearly only: Personal €99,
+Business €199, Developer €349; no lifetime licence),
+[automatic translation docs](https://translatepress.com/docs/automatic-translation/)
 (Google Translate v2 with your own key works in the free version; each string is translated
-once and saved), GTranslate plan list via [fitgap](https://us.fitgap.com/products/gtranslate).
+once and saved), [Autoglot on wordpress.org](https://wordpress.org/plugins/autoglot/) (3.0.2,
+100+ installs), [Autoglot pricing](https://autoglot.com/pricing/) and
+[FAQ](https://autoglot.com/frequently-asked-questions/) (words counted per language; balance
+shared by all sites on one key), GTranslate plan list via [fitgap](https://us.fitgap.com/products/gtranslate).
 
-DeepL (Business plan) is usually a little better for Japanese and Korean, but it costs €100/year
-more and Google's quality is good enough for what was asked. Switching engines later is a
+DeepL (Business plan) is usually a little better for Japanese and Korean, but it is a yearly
+plan and Google's quality is good enough for what was asked. Switching engines later is a
 setting.
 
 ## 2. What the plugin does (`includes/translation/`)
 
 - **Language switcher block** (`guam-restaurants/language-switcher`) in a thin row above the
   header: English · 日本語 · 한국어, each in its own script, current one underlined. It renders
-  nothing until TranslatePress publishes a second language. Turn TranslatePress's own floating
+  nothing until TranslatePress publishes a second language (with the free version it shows
+  English and the one translated language). Turn TranslatePress's own floating
   switcher off.
 - **Notice on every translated page**, written by hand in Japanese and Korean (not machine
   translated): it is a Google Translate machine translation and may contain mistakes; names,
@@ -67,7 +88,8 @@ setting.
 
 ## 3. Cost
 
-- TranslatePress Personal: **€99 a year** (or €0 with Japanese only on the free version).
+- TranslatePress: **€0** with one language on the free version. The second language needs
+  Personal, **€99 once** (renewal optional, §1).
 - [Google Cloud Translation](https://cloud.google.com/translate/pricing) (Basic, v2):
   **$20 per million characters**, first 500,000 characters a month free (a $10 monthly
   credit). Every character sent counts, spaces included.
@@ -110,12 +132,14 @@ setting.
 
 ## 5. Owner setup (Sanjay)
 
-1. **Buy TranslatePress Personal** (or start free with Japanese only). In wp-admin, Plugins >
-   Add New: install and activate **TranslatePress - Multilingual** (free), then upload the Pro
-   zip from your TranslatePress account and enter the license key under Settings >
-   TranslatePress > License. Never put the key in the repository or chat.
+1. **Install TranslatePress free.** In wp-admin, Plugins > Add New: install and activate
+   **TranslatePress - Multilingual**. For the second language later, buy Personal once,
+   upload the Pro zip from your TranslatePress account and enter the license key under
+   Settings > TranslatePress > License (turn auto-renew off in the account if you do not want
+   updates). Never put the key in the repository or chat.
 2. **Settings > TranslatePress > General:** default language English (United States); add
-   Japanese and Korean; URL slugs `ja` and `ko`; "Use a subdirectory for the default
+   the first language (Japanese or Korean; the other one after step 1's purchase); URL slugs
+   `ja` and `ko`; "Use a subdirectory for the default
    language" **No**; "Force language in custom links" **Yes**; floating language switcher
    **off** (the header block replaces it). Leave URL slug translation off so village names stay
    in the addresses.

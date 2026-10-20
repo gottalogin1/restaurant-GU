@@ -25,7 +25,7 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
 | Login rate limiting | LoginPress Pro, Limit Login Attempts add-on | Yes (Pro) | GPLv2 or later | 6.2.5 (free core readme) | checked 2026-10-10 (tested up to WP 7.0) | |
 | Firewall, malware scan | [MalCare](https://wordpress.org/plugins/malcare-security/) (free tier) | Yes | GPLv2 or later | 6.72 | checked 2026-10-10 (tested up to WP 7.1) | |
 | Two-factor sign-in | [Two Factor](https://wordpress.org/plugins/two-factor/) | No (free) | GPLv2 or later | 0.17.0 | checked 2026-10-10 (tested up to WP 7.1) | |
-| Japanese and Korean pages | [TranslatePress](https://wordpress.org/plugins/translatepress-multilingual/) Personal (free version: one extra language) with a Google Cloud Translation key | No | GPLv2 or later | 3.3.8 | checked 2026-10-20 (tested up to WP 7.1.3) | 400,000+ |
+| Japanese and Korean pages | [TranslatePress](https://wordpress.org/plugins/translatepress-multilingual/) free (one extra language); Personal bought once for the second (a lapsed licence keeps working) with a Google Cloud Translation key | No | GPLv2 or later | 3.3.8 | checked 2026-10-20 (tested up to WP 7.1.3) | 400,000+ |
 | Image optimization | [ShortPixel Image Optimizer](https://wordpress.org/plugins/shortpixel-image-optimiser/) (100 free credits a month) | Yes | GPLv2 or later | not recorded | checked 2026-10-10 | |
 
 ## SEO: Yoast SEO (free)
@@ -142,7 +142,9 @@ wp-admin on the host and never committed.
 Chosen over GTranslate, Weglot and Polylang/WPML in [translation.md](translation.md) §1:
 it translates the finished pages once and keeps the result on the site, works with our
 blocks and page cache, and lets the plugin keep names, places and third-party ratings
-untranslated. Personal (€99/year) is needed for two languages. Setup: translation.md §5.
+untranslated. Start on the free version with one language; the second needs Personal,
+bought once (€99; it keeps working when the licence lapses). Autoglot (pay per word, no
+subscription) was also built on a branch; see translation.md §1. Setup: translation.md §5.
 
 ## Other owned plugins worth using
 
