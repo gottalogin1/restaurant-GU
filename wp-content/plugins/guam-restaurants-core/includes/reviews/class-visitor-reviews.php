@@ -34,6 +34,9 @@ defined( 'ABSPATH' ) || exit;
  *   465.5); a connected review shows that disclosure next to its text.
  *   Users linked to the restaurant as owners cannot review it.
  * - Text is stored and shown as written (sanitized for safety only).
+ * - A reviewer may name up to MAX_DISHES dishes they tried. They show with
+ *   the review and count toward Dishes\Popular_Dishes (a connected
+ *   reviewer's dishes show but never count).
  * - The visitor's IP address and email are used, hashed, for rate limiting
  *   in short-lived transients and never stored with the review.
  */
@@ -45,6 +48,7 @@ final class Visitor_Reviews {
 	public const MAX_LENGTH      = 2000;
 	public const MAX_NAME_LENGTH = 60;
 	public const MAX_DISCLOSURE  = 200;
+	public const MAX_DISHES      = 3;
 
 	/**
 	 * Fastest plausible time to write a review, in milliseconds (bot trap).
@@ -85,6 +89,7 @@ final class Visitor_Reviews {
 	 *     @type bool   $verify_email Logged in: also confirm the account email for the badge.
 	 *     @type bool   $connected    Whether the reviewer is connected to the restaurant.
 	 *     @type string $connection   How, when connected.
+	 *     @type string|string[] $dishes Dishes tried, comma separated or a list (optional).
 	 *     @type string $website      Honeypot; must be empty.
 	 *     @type int    $elapsed_ms   Time spent on the form.
 	 * }
@@ -112,6 +117,7 @@ final class Visitor_Reviews {
 		$linked = filter_var( $input['connected'] ?? false, FILTER_VALIDATE_BOOLEAN );
 		$how    = trim( sanitize_text_field( (string) ( $input['connection'] ?? '' ) ) );
 		$email  = trim( sanitize_email( (string) ( $input['email'] ?? '' ) ) );
+		$dishes = Policy::clean_dishes( $input['dishes'] ?? array() );
 		if ( '' === $name && $user_id ) {
 			$name = trim( (string) wp_get_current_user()->display_name );
 		}
@@ -130,6 +136,17 @@ final class Visitor_Reviews {
 		}
 		if ( $linked && ( '' === $how || mb_strlen( $how ) > self::MAX_DISCLOSURE ) ) {
 			$errors->add( 'gr_review_connection', __( 'Say how you are connected to the restaurant.', 'guam-restaurants-core' ) );
+		}
+		if ( count( $dishes ) > self::MAX_DISHES ) {
+			/* translators: %d: maximum number of dishes. */
+			$errors->add( 'gr_review_dishes', sprintf( __( 'Name up to %d dishes.', 'guam-restaurants-core' ), self::MAX_DISHES ) );
+		}
+		foreach ( $dishes as $dish ) {
+			if ( mb_strlen( $dish ) > Policy::MAX_DISH_LENGTH ) {
+				/* translators: %d: maximum characters. */
+				$errors->add( 'gr_review_dish_length', sprintf( __( 'Keep each dish name to %d characters.', 'guam-restaurants-core' ), Policy::MAX_DISH_LENGTH ) );
+				break;
+			}
 		}
 		if ( ! $user_id && ! is_email( $email ) ) {
 			$errors->add( 'gr_review_email', __( 'Enter your email address so we can send you a confirmation link, or log in.', 'guam-restaurants-core' ) );
@@ -153,6 +170,7 @@ final class Visitor_Reviews {
 			'body'          => $body,
 			'author_name'   => $name,
 			'disclosure'    => $linked ? mb_substr( $how, 0, self::MAX_DISCLOSURE ) : null,
+			'dishes'        => $dishes ? implode( "\n", $dishes ) : null,
 		);
 
 		if ( ! $user_id ) {
@@ -269,14 +287,14 @@ final class Visitor_Reviews {
 	 * @param int $restaurant_id Restaurant.
 	 * @param int $per_page      Page size.
 	 * @param int $page          Page, from 1.
-	 * @return array<int, array{id: int, rating: int, text: string, author: string, disclosure: string, date: string, email_verified: bool, response: array{text: string, author: string, date: string}|null}>
+	 * @return array<int, array{id: int, rating: int, text: string, author: string, disclosure: string, dishes: string[], date: string, email_verified: bool, response: array{text: string, author: string, date: string}|null}>
 	 */
 	public static function approved( int $restaurant_id, int $per_page = 10, int $page = 1 ): array {
 		global $wpdb;
 		$table     = Schema::table( Schema::HIGHLIGHTS );
 		$rows      = $wpdb->get_results( // phpcs:ignore WordPress.DB
 			$wpdb->prepare(
-				"SELECT id, rating, body, author_name, disclosure, created_at, email_verified FROM {$table} WHERE restaurant_id = %d AND type = %s AND status = %s ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT id, rating, body, author_name, disclosure, dishes, created_at, email_verified FROM {$table} WHERE restaurant_id = %d AND type = %s AND status = %s ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$restaurant_id,
 				self::TYPE,
 				'approved',
@@ -296,6 +314,7 @@ final class Visitor_Reviews {
 					'text'           => (string) $row['body'],
 					'author'         => (string) $row['author_name'],
 					'disclosure'     => (string) $row['disclosure'],
+					'dishes'         => '' === (string) $row['dishes'] ? array() : explode( "\n", (string) $row['dishes'] ),
 					'date'           => mysql2date( 'Y-m-d', $row['created_at'] ),
 					'email_verified' => (bool) (int) $row['email_verified'],
 					'response'       => null === $response ? null : array(

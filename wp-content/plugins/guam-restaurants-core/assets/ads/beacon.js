@@ -83,6 +83,11 @@
 			if ( el.hasAttribute( 'data-gr-ad-watched' ) ) {
 				return;
 			}
+			// Without IntersectionObserver a waiting ad in a rotating slot is
+			// counted when rotation.js shows it and calls watch() again.
+			if ( ! observer && el.hidden ) {
+				return;
+			}
 			el.setAttribute( 'data-gr-ad-watched', '' );
 			if ( observer ) {
 				observer.observe( el );

@@ -94,7 +94,7 @@ final class Tracking {
 	}
 
 	/**
-	 * Registers the beacon script.
+	 * Registers the beacon script and the rotation script (Slot).
 	 *
 	 * @return void
 	 */
@@ -107,6 +107,15 @@ final class Tracking {
 			array( 'strategy' => 'defer' )
 		);
 		wp_add_inline_script( self::SCRIPT, 'window.guamRestaurantsAds = ' . wp_json_encode( array( 'endpoint' => rest_url( self::NAMESPACE . self::ROUTE ) ) ) . ';', 'before' );
+
+		wp_register_script(
+			Slot::ROTATION,
+			plugins_url( 'assets/ads/rotation.js', GUAM_RESTAURANTS_CORE_FILE ),
+			array( 'wp-i18n' ),
+			GUAM_RESTAURANTS_CORE_VERSION,
+			array( 'strategy' => 'defer' )
+		);
+		wp_set_script_translations( Slot::ROTATION, 'guam-restaurants-core' );
 	}
 
 	/**

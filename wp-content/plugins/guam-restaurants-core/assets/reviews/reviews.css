@@ -144,6 +144,11 @@
 	white-space: pre-line;
 }
 
+.gr-vr-review__dishes {
+	font-size: 0.9em;
+	margin-top: 0.25rem;
+}
+
 .gr-vr-rules {
 	margin: 1rem 0;
 }

@@ -205,6 +205,9 @@
 			children.push( el( 'p', { className: 'gr-vr-review__disclosure', text: sprintf( __( 'The reviewer says they are connected to this restaurant: %s', 'guam-restaurants-core' ), review.disclosure ) } ) );
 		}
 		children.push( el( 'p', { className: 'gr-vr-review__text', text: review.text } ) );
+		if ( review.dishes && review.dishes.length ) {
+			children.push( el( 'p', { className: 'gr-vr-review__dishes', text: sprintf( __( 'Dishes tried: %s', 'guam-restaurants-core' ), review.dishes.join( ', ' ) ) } ) );
+		}
 		if ( review.response ) {
 			children.push( el( 'div', { className: 'gr-vr-response' }, [
 				el( 'p', { className: 'gr-vr-response__label' }, [
@@ -254,6 +257,7 @@
 		} );
 
 		var body = el( 'textarea', { name: 'body', rows: '5', minlength: '20', maxlength: '2000', required: true } );
+		var dishes = el( 'input', { type: 'text', name: 'dishes', maxlength: '190', autocomplete: 'off' } );
 		var name = el( 'input', { type: 'text', name: 'author_name', maxlength: '60', required: ! nonce, autocomplete: 'nickname', value: userName } );
 		var email = el( 'input', { type: 'email', name: 'email', maxlength: '200', required: true, autocomplete: 'email' } );
 		var verify = el( 'input', { type: 'checkbox', name: 'verify_email', value: '1' } );
@@ -281,6 +285,7 @@
 			el( 'h3', { text: __( 'Write a review', 'guam-restaurants-core' ) } ),
 			ratingGroup,
 			field( __( 'Your review', 'guam-restaurants-core' ), body, __( 'At least 20 characters. Shown as you write it.', 'guam-restaurants-core' ) ),
+			field( __( 'Dishes you tried (optional)', 'guam-restaurants-core' ), dishes, __( 'Up to 3, separated by commas, for example: Chicken kelaguen, Red rice. They help others find this restaurant\'s popular dishes.', 'guam-restaurants-core' ) ),
 			field( __( 'Display name', 'guam-restaurants-core' ), name, __( 'Shown with your review. Please do not use your full name.', 'guam-restaurants-core' ) ),
 			identity,
 			el( 'p', { className: 'gr-vr-form__field gr-vr-form__check' }, [
@@ -309,6 +314,7 @@
 					verify_email: nonce ? verify.checked : false,
 					connected: connected.checked,
 					connection: connection.value,
+					dishes: dishes.value,
 					website: form.querySelector( 'input[name="website"]' ).value,
 					elapsed_ms: Date.now() - started,
 				} ),

@@ -148,6 +148,9 @@ final class Dashboard {
 			case 'menu_links':
 				$input['menu_links'] = isset( $_POST['menu_links'] ) && is_array( $_POST['menu_links'] ) ? wp_unslash( $_POST['menu_links'] ) : array();
 				break;
+			case 'menu_dishes':
+				$input['menu_dishes'] = isset( $_POST['menu_dishes'] ) && is_array( $_POST['menu_dishes'] ) ? wp_unslash( $_POST['menu_dishes'] ) : array();
+				break;
 			case 'specials':
 				$input['specials'] = isset( $_POST['specials'] ) && is_array( $_POST['specials'] ) ? wp_unslash( $_POST['specials'] ) : array();
 				break;
@@ -262,10 +265,11 @@ final class Dashboard {
 		self::render_premium( $restaurant );
 		self::render_hours_form( $restaurant );
 		self::render_links_form( $restaurant );
+		self::render_dishes_form( $restaurant );
 		self::render_specials_form( $restaurant );
 		self::render_photos_form( $restaurant, $user_id );
 
-		echo '<p class="description">' . esc_html__( 'You can change your hours, menu links, specials and photos here. Ratings, awards, the listing\'s open or closed history and reviews are not editable by owners; to report a mistake in them, contact us.', 'guam-restaurants-core' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'You can change your hours, menu links, menu dishes, specials and photos here. Ratings, awards, the listing\'s open or closed history and reviews are not editable by owners; to report a mistake in them, contact us.', 'guam-restaurants-core' ) . '</p>';
 		echo '</div>';
 	}
 
@@ -406,6 +410,37 @@ final class Dashboard {
 		}
 		echo '</tbody></table>';
 		self::form_close( __( 'Save menu links', 'guam-restaurants-core' ) );
+	}
+
+	/**
+	 * Menu dishes form.
+	 *
+	 * @param int $restaurant Restaurant.
+	 * @return void
+	 */
+	private static function render_dishes_form( int $restaurant ): void {
+		$dishes = Owner_Content::get( $restaurant )['menu_dishes'];
+		self::form_open( $restaurant, 'menu_dishes', __( 'Menu dishes', 'guam-restaurants-core' ) );
+		echo '<p class="description">' . esc_html__( 'Dishes from your menu, shown under "Popular dishes" on your listing as "On the menu". Dishes that visitors photograph or name in their reviews are listed first, by how many visitors did; you can list dishes but not rate them, and the order is not for sale. Do not call anything "Featured", "Top pick" or "Recommended".', 'guam-restaurants-core' ) . '</p><table class="form-table" role="presentation"><tbody>';
+		for ( $i = 0; $i < Owner_Content::MAX_MENU_DISHES; $i++ ) {
+			printf(
+				'<tr><th scope="row">%1$s</th><td><input type="text" class="regular-text" name="menu_dishes[%2$d][name]" placeholder="%3$s" maxlength="%4$d" value="%5$s"> <input type="text" class="small-text" name="menu_dishes[%2$d][price]" placeholder="%6$s" maxlength="%7$d" value="%8$s"><br><input type="text" class="large-text" name="menu_dishes[%2$d][details]" placeholder="%9$s" maxlength="%10$d" value="%11$s"></td></tr>',
+				/* translators: %d: row number. */
+				esc_html( sprintf( __( 'Dish %d', 'guam-restaurants-core' ), $i + 1 ) ),
+				(int) $i,
+				esc_attr__( 'Name, e.g. Chicken kelaguen', 'guam-restaurants-core' ),
+				(int) Owner_Content::MAX_TITLE,
+				esc_attr( (string) ( $dishes[ $i ]['name'] ?? '' ) ),
+				esc_attr__( 'Price', 'guam-restaurants-core' ),
+				(int) Owner_Content::MAX_PRICE,
+				esc_attr( (string) ( $dishes[ $i ]['price'] ?? '' ) ),
+				esc_attr__( 'Short description (optional)', 'guam-restaurants-core' ),
+				(int) Owner_Content::MAX_DETAILS,
+				esc_attr( (string) ( $dishes[ $i ]['details'] ?? '' ) )
+			);
+		}
+		echo '</tbody></table>';
+		self::form_close( __( 'Save menu dishes', 'guam-restaurants-core' ) );
 	}
 
 	/**
