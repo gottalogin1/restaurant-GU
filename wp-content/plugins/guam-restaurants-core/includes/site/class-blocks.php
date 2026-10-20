@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Ads\Slot;
+use GuamRestaurants\Core\Appearance\Color_Scheme;
 use GuamRestaurants\Core\Awards\Display as Awards_Display;
 use GuamRestaurants\Core\Awards\Pages as Awards_Pages;
 use GuamRestaurants\Core\Awards\Policy as Awards_Policy;
@@ -37,24 +38,25 @@ final class Blocks {
 	 * Block folder => render method.
 	 */
 	public const BLOCKS = array(
-		'directory'          => 'directory',
-		'search-form'        => 'search_form',
-		'term-links'         => 'term_links',
-		'restaurant-row'     => 'restaurant_row',
-		'restaurant-hero'    => 'restaurant_hero',
-		'recent-changes'     => 'recent_changes',
-		'awards-feature'     => 'awards_feature',
-		'sponsored-slot'     => 'sponsored_slot',
-		'term-intro'         => 'term_intro',
-		'restaurant-details' => 'restaurant_details',
-		'restaurant-map'     => 'restaurant_map',
-		'change-history'     => 'change_history',
-		'listing-actions'    => 'listing_actions',
-		'listing-context'    => 'listing_context',
-		'map-explorer'       => 'map_explorer',
-		'data-attributions'  => 'data_attributions',
-		'policy-links'       => 'policy_links',
-		'random-picker'      => 'random_picker',
+		'directory'           => 'directory',
+		'search-form'         => 'search_form',
+		'term-links'          => 'term_links',
+		'restaurant-row'      => 'restaurant_row',
+		'restaurant-hero'     => 'restaurant_hero',
+		'recent-changes'      => 'recent_changes',
+		'awards-feature'      => 'awards_feature',
+		'sponsored-slot'      => 'sponsored_slot',
+		'term-intro'          => 'term_intro',
+		'restaurant-details'  => 'restaurant_details',
+		'restaurant-map'      => 'restaurant_map',
+		'change-history'      => 'change_history',
+		'listing-actions'     => 'listing_actions',
+		'listing-context'     => 'listing_context',
+		'map-explorer'        => 'map_explorer',
+		'data-attributions'   => 'data_attributions',
+		'policy-links'        => 'policy_links',
+		'color-scheme-toggle' => 'color_scheme_toggle',
+		'random-picker'       => 'random_picker',
 	);
 
 	/**
@@ -847,5 +849,23 @@ final class Blocks {
 		}
 		Assets::enqueue();
 		return self::wrap( 'ul', $items, array( 'class' => 'gr-policy-links' ) );
+	}
+
+	/**
+	 * Light / dark / system switch. Hidden until color-scheme.js wires it up.
+	 *
+	 * @return string
+	 */
+	public static function color_scheme_toggle(): string {
+		return self::wrap(
+			'div',
+			Color_Scheme::buttons(),
+			array(
+				'class'      => 'gr-scheme',
+				'role'       => 'group',
+				'aria-label' => __( 'Color theme', 'guam-restaurants-core' ),
+				'hidden'     => 'hidden',
+			)
+		);
 	}
 }

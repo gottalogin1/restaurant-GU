@@ -6,7 +6,7 @@
 	--gr-vr-grid: color-mix(in srgb, currentColor 15%, transparent);
 	--gr-vr-series: #2a78d6;
 	--gr-vr-star: #f5a623;
-	--gr-vr-star-empty: #b5b3ad;
+	--gr-vr-star-empty: color-mix(in srgb, currentColor 30%, transparent);
 }
 
 .gr-vr-stars {

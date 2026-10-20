@@ -95,6 +95,7 @@ final class Plugin {
 		Structured_Data::register();
 		Site\Assets::register();
 		Site\Blocks::register();
+		Appearance\Color_Scheme::register();
 		Site\Directory_Query::register();
 		Site\Open_Hours::register();
 		Site\Rest_Controller::register();

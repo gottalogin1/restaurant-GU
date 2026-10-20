@@ -23,6 +23,7 @@
 		'correction-form',
 		'related-links',
 		'restaurant-hero',
+		'color-scheme-toggle',
 	];
 
 	function number( props, name, label ) {
@@ -160,6 +161,7 @@
 		'restaurant-row',
 		'restaurant-hero',
 		'random-picker',
+		'color-scheme-toggle',
 	];
 
 	names.forEach( function ( name ) {
