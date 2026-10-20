@@ -17,6 +17,7 @@
 	var settings = window.guamRestaurantsDirectory || {};
 	var i18n = window.wp && window.wp.i18n;
 	var MULTI = [ 'village', 'mall', 'cuisine', 'price' ];
+	var FLAGS = [ 'award', 'open', 'late', 'meal' ];
 
 	function params( form ) {
 		var out = new URLSearchParams();
@@ -36,12 +37,18 @@
 				out.set( name, values.join( ',' ) );
 			}
 		} );
-		[ 'award', 'open', 'late' ].forEach( function ( name ) {
+		FLAGS.forEach( function ( name ) {
 			var box = form.querySelector( 'input[name="' + name + '"]' );
 			if ( box && box.checked ) {
 				out.set( name, box.value );
 			}
 		} );
+		// "Open at" is two selects; it counts once both are chosen.
+		var atDay = form.querySelector( '[name="at_day"]' );
+		var atTime = form.querySelector( '[name="at_time"]' );
+		if ( atDay && atTime && atDay.value && atTime.value ) {
+			out.set( 'at', atDay.value + '-' + atTime.value );
+		}
 		var sort = form.querySelector( '[name="sort"]' );
 		if ( sort && sort.value ) {
 			var fallback = out.has( 'q' ) ? 'relevance' : 'name';
@@ -86,10 +93,17 @@
 				}
 			} );
 		} );
-		[ 'award', 'open', 'late' ].forEach( function ( name ) {
+		FLAGS.forEach( function ( name ) {
 			var box = form.querySelector( 'input[name="' + name + '"]' );
 			if ( box ) {
 				box.checked = query.has( name );
+			}
+		} );
+		var at = ( query.get( 'at' ) || '' ).split( '-' );
+		[ [ 'at_day', at[ 0 ] ], [ 'at_time', at[ 1 ] ] ].forEach( function ( pair ) {
+			var select = form.querySelector( '[name="' + pair[ 0 ] + '"]' );
+			if ( select ) {
+				select.value = at.length === 2 ? pair[ 1 ] : '';
 			}
 		} );
 		updateCounts( form );
