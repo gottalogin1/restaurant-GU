@@ -193,8 +193,91 @@
 		} );
 	}
 
+	// The map beside directory results: one numbered pin per card that has
+	// coordinates (Site\Directory_View::results()), redrawn when directory.js
+	// swaps in new results.
+	function initResultsMap( container ) {
+		var results = document.getElementById( 'gr-directory-results' );
+		var maplibre = null;
+		var map = null;
+		var markers = [];
+
+		function draw() {
+			markers.forEach( function ( marker ) {
+				marker.remove();
+			} );
+			markers = [];
+			var bounds = new maplibre.LngLatBounds();
+			results.querySelectorAll( 'li[data-gr-point]' ).forEach( function ( item ) {
+				var link = item.querySelector( '.gr-card__name a' );
+				var pin = document.createElement( 'a' );
+				pin.className = 'gr-pin';
+				pin.href = link ? link.href : '#';
+				pin.title = link ? link.textContent : '';
+				pin.tabIndex = -1;
+				pin.textContent = item.getAttribute( 'data-gr-pin' );
+				var point = item.getAttribute( 'data-gr-point' ).split( ',' ).map( Number );
+				markers.push( new maplibre.Marker( { element: pin } ).setLngLat( point ).addTo( map ) );
+				item.grPin = pin;
+				bounds.extend( point );
+			} );
+			container.classList.toggle( 'is-empty', ! markers.length );
+			if ( markers.length ) {
+				map.fitBounds( bounds, { padding: 48, maxZoom: 15, animate: false } );
+			}
+		}
+
+		function start() {
+			loadLibrary()
+				.then( function ( library ) {
+					maplibre = library;
+					map = baseMap( maplibre, container, { center: settings.center, zoom: settings.zoom } );
+					map.on( 'load', draw );
+				} )
+				.catch( function () {
+					failed( container, __( 'The map could not load right now.', 'guam-restaurants-core' ) );
+				} );
+		}
+
+		results.addEventListener( 'mouseover', function ( event ) {
+			var item = event.target.closest( 'li[data-gr-point]' );
+			markers.forEach( function ( marker ) {
+				marker.getElement().classList.toggle( 'is-active', !! item && marker.getElement() === item.grPin );
+			} );
+		} );
+		document.addEventListener( 'gr:directory-results', function () {
+			if ( map && map.loaded() ) {
+				draw();
+			}
+		} );
+		document.addEventListener( 'gr:directory-view', function () {
+			if ( map ) {
+				map.resize();
+			}
+		} );
+
+		// The map is hidden on phones until the visitor picks Map, so the
+		// library loads only once the map is on screen.
+		if ( ! ( 'IntersectionObserver' in window ) ) {
+			start();
+			return;
+		}
+		var observer = new IntersectionObserver( function ( entries ) {
+			if ( entries.some( function ( entry ) {
+				return entry.isIntersecting;
+			} ) ) {
+				observer.disconnect();
+				start();
+			}
+		} );
+		observer.observe( container );
+	}
+
 	function init() {
 		document.querySelectorAll( '[data-gr-map-explorer]' ).forEach( initExplorer );
+		if ( document.getElementById( 'gr-directory-results' ) ) {
+			document.querySelectorAll( '[data-gr-results-map]' ).forEach( initResultsMap );
+		}
 		var points = document.querySelectorAll( '[data-gr-map-point]' );
 		if ( ! points.length ) {
 			return;

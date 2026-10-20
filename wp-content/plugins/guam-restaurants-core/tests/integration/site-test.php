@@ -26,6 +26,7 @@ use GuamRestaurants\Core\Site\History;
 use GuamRestaurants\Core\Site\Maps;
 use GuamRestaurants\Core\Site\Open_Hours;
 use GuamRestaurants\Core\Site\Pages;
+use GuamRestaurants\Core\Site\Restaurant_View;
 use GuamRestaurants\Core\Structured_Data;
 use GuamRestaurants\Core\Term_Meta;
 use WP_REST_Request;
@@ -615,5 +616,83 @@ class Site_Test extends Guam_Test_Case {
 		$this->go_to( add_query_arg( 'cuisine', 'korean', get_term_link( 'dededo', Content_Types::TAX_VILLAGE ) ) );
 		$this->assertTrue( \GuamRestaurants\Core\Site\Seo::robots( array() )['noindex'] );
 		unset( $_GET['cuisine'] );
+	}
+
+	/**
+	 * The home page "where" choice becomes a village or mall filter; anything else is ignored.
+	 */
+	public function test_where_param() {
+		$this->assertSame( array( 'dededo' ), Filters::from_params( array( 'where' => 'village:dededo' ) )['facets']['village'] );
+		$this->assertSame(
+			array( 'tamuning' ),
+			Filters::from_params(
+				array(
+					'where'   => 'village:dededo',
+					'village' => 'tamuning',
+				)
+			)['facets']['village'],
+			'An explicit village wins'
+		);
+		$this->assertSame( array(), Filters::from_params( array( 'where' => 'cuisine:korean' ) )['facets']['cuisine'] );
+		$this->assertSame( array( 'village' => 'dededo' ), Filters::to_params( Filters::from_params( array( 'where' => 'village:dededo' ) ) ) );
+	}
+
+	/**
+	 * Cards: a cuisine panel when there is no photo, an award badge for winners only, New for recent listings.
+	 */
+	public function test_card_media_and_badges() {
+		$card = Restaurant_View::card( $this->r['meskla'] );
+		$this->assertStringContainsString( 'gr-card__media--empty', $card );
+		$this->assertStringContainsString( 'Award winner 2025', $card );
+		$this->assertStringNotContainsString( 'Award winner', Restaurant_View::card( $this->r['proa'] ), 'Finalists get no badge' );
+		$this->assertStringContainsString( 'gr-badge--new', $card, 'First listed today' );
+		$this->assertStringNotContainsString( 'gr-badge--new', Restaurant_View::card( $this->r['closed'] ), 'Closed places are never New' );
+
+		$photo = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg', $this->r['proa'] );
+		set_post_thumbnail( $this->r['proa'], $photo );
+		$this->assertStringContainsString( '<img', Restaurant_View::card( $this->r['proa'] ) );
+		$this->assertSame( $photo, Restaurant_View::photo_id( $this->r['proa'] ) );
+	}
+
+	/**
+	 * Results carry a pin number and point for listings with coordinates; the filter form has quick chips.
+	 */
+	public function test_directory_pins_and_chips() {
+		$html = Directory_View::render( Directory_Query::query( Filters::from_params( array( 'village' => 'tamuning' ) ) ), Filters::from_params( array( 'village' => 'tamuning' ) ), array() );
+		$this->assertSame( 2, substr_count( $html, 'data-gr-point=' ) );
+		$this->assertStringContainsString( 'data-gr-pin="1"', $html );
+		$this->assertStringContainsString( 'data-gr-results-map', $html );
+		$this->assertStringContainsString( 'class="gr-chip gr-chip--toggle"><input type="checkbox" name="open" value="now">', $html );
+		$this->assertStringContainsString( 'name="price[]" value="p1"', $html );
+		$this->assertStringContainsString( '<details class="gr-filters__more" open>', $html, 'A chosen village opens More filters' );
+
+		$cuisine = Directory_View::form( Filters::from_params( array( 'cuisine' => 'korean' ) ), array() );
+		$this->assertSame( 2, substr_count( $cuisine, 'name="cuisine[]" value="korean" checked' ), 'Chip and box both ticked' );
+		$this->assertStringNotContainsString( 'gr-filters__more" open', $cuisine, 'A chip choice keeps More filters closed' );
+	}
+
+	/**
+	 * A row shows matching cards with a link to the full list, and nothing when none match.
+	 */
+	public function test_restaurant_row() {
+		$html = do_blocks( '<!-- wp:guam-restaurants/restaurant-row {"heading":"Award winners","query":"award=winner"} /-->' );
+		$this->assertStringContainsString( 'Meskla Chamoru Fusion', $html );
+		$this->assertStringNotContainsString( 'Proa', $html );
+		$this->assertStringContainsString( 'award=winner', $html );
+		$this->assertSame( '', do_blocks( '<!-- wp:guam-restaurants/restaurant-row {"heading":"None","query":"village=yigo"} /-->' ) );
+	}
+
+	/**
+	 * The page top has the name as h1, badges and only the actions the listing has data for.
+	 */
+	public function test_restaurant_hero() {
+		update_post_meta( $this->r['meskla'], Restaurant_Meta::PHONE, '+16714771234' );
+		$this->go_to( get_permalink( $this->r['meskla'] ) );
+		$html = do_blocks( '<!-- wp:guam-restaurants/restaurant-hero /-->' );
+		$this->assertStringContainsString( '<h1 class="gr-hero__name">Meskla Chamoru Fusion</h1>', $html );
+		$this->assertStringContainsString( 'href="tel:+16714771234"', $html );
+		$this->assertStringContainsString( 'Award winner 2025', $html );
+		$this->assertStringNotContainsString( '>Website<', $html );
+		$this->assertStringNotContainsString( '>Menu<', $html, 'Menu links need a claimed listing' );
 	}
 }

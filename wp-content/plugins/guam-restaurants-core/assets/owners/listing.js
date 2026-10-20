@@ -34,8 +34,9 @@
 
 	send( [ 'view' ] );
 
-	root.addEventListener( 'click', function ( event ) {
-		var link = event.target.closest && event.target.closest( '[data-gr-listing-click]' );
+	// The page top and the details section both carry phone and website links.
+	document.addEventListener( 'click', function ( event ) {
+		var link = event.target.closest && event.target.closest( '[data-gr-listing] [data-gr-listing-click]' );
 		if ( link ) {
 			send( [ link.getAttribute( 'data-gr-listing-click' ) ] );
 		}

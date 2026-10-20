@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/restaurant-row",
+	"version": "0.1.0",
+	"title": "Restaurant row",
+	"category": "widgets",
+	"icon": "grid-view",
+	"description": "A heading, a scrolling row of restaurant cards and a link to see them all. Shows restaurants that match a filter (for example award=winner or village=dededo), or the newest listings. Prints nothing when none match.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": ""
+		},
+		"source": {
+			"type": "string",
+			"default": "filters",
+			"enum": [
+				"filters",
+				"new"
+			]
+		},
+		"query": {
+			"type": "string",
+			"default": ""
+		},
+		"limit": {
+			"type": "integer",
+			"default": 8
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

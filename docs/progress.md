@@ -1,5 +1,16 @@
 # Progress log
 
+## Discovery-style layout (comparison changes 1-5), 2026-10-20
+- Requested by Sanjay: compare our public pages with 10+ popular restaurant-discovery sites and make ours work like them. The comparison (12 sites, changes numbered 1-11) is the Claude Doc "Restaurant site layout comparison"; this entry covers changes 1-5, which need no new data.
+- Done (1): result cards show the featured image, else the verified owner's first photo, else a tinted panel with the cuisine name; "Award winner <year>" and "New" (first listed in the last 90 days) badges; the whole card stays one link.
+- Done (2): Restaurants and village, mall and cuisine pages show results beside a sticky map with numbered pins that match numbered cards; phones get List and Map buttons. MapLibre loads only when the map is on screen. The Map page is unchanged.
+- Done (3): quick filter chips above results (Open now, Award winners, each price level, the five busiest cuisines); village, mall and cuisine boxes moved under "More filters".
+- Done (4): home page has What and Where search (Where = one village or mall, sent as `where=village:<slug>`), cuisine tiles, and rows of cards (block `restaurant-row`): New on Guam, Award winners, Budget eats, Tumon and Tamuning, Dededo, Hagåtña. The Sponsored banner keeps its own slot. No Open now row: home pages are page-cached, so it would go stale.
+- Done (5): restaurant pages start with block `restaurant-hero` (photo, badges, name as h1, cuisine, place, price, open now, and Call, Directions, Website, Menu, Share buttons), then two columns: story, owner content, ratings and reviews on the left; details, hours, map, history and listing links on the right. listing.js now counts phone and website clicks in both places.
+- Left out on purpose (data terms and earlier decisions): third-party stars on cards and rating sort, Google photos, rating-based "best" rankings, sponsored map pins.
+- Checked: PHPCS clean; PHPUnit 416 tests pass (5 new in site-test.php); pages checked in Chromium at 1280 and 390 px on the local stack with 400 sample listings. Map tiles are blocked from the cloud environment, so pins were checked on a blank style.
+- Remaining: Sanjay to `git pull` + `make update`. If the home or restaurant template was ever edited in the Site Editor, reset it there (Appearance > Editor > Templates > Reset) so the new file templates show.
+
 ## Branch names by village, 2026-10-20
 - Requested by Sanjay: places with several locations share a name (McDonald's in several villages), so name them "[Restaurant Name], [Village]", e.g. "McDonald's, Mangilao".
 - Done: Tagging\Branch_Names. Only restaurants whose name another listing (any status but trash) also has get ", Village" (the village term's name); a name of its own stays plain. Names::key() ignores a trailing ", <village name, Chamorro name or alias>", so discovery, duplicate detection, awards and import matching still treat "McDonald's, Mangilao" as "McDonald's".

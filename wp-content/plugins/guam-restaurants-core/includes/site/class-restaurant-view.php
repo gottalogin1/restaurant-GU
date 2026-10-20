@@ -7,7 +7,10 @@
 
 namespace GuamRestaurants\Core\Site;
 
+use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Monitoring\Queries;
+use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Vocabulary;
@@ -252,11 +255,120 @@ final class Restaurant_View {
 	}
 
 	/**
-	 * A directory card.
+	 * Days a listing counts as new after we first record it.
+	 */
+	public const NEW_DAYS = 90;
+
+	/**
+	 * Photo for cards and the page top: the featured image, else the
+	 * verified owner's first photo.
 	 *
 	 * @param int $restaurant_id Restaurant.
-	 * @param int $heading_level Heading level for the name.
-	 * @return string HTML.
+	 * @return int Attachment ID, 0 for none.
+	 */
+	public static function photo_id( int $restaurant_id ): int {
+		$featured = (int) get_post_thumbnail_id( $restaurant_id );
+		if ( $featured > 0 ) {
+			return $featured;
+		}
+		// Owner photos show only while the listing is claimed, as in Owner_Content::render_block().
+		if ( (int) get_post_meta( $restaurant_id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) <= 0 ) {
+			return 0;
+		}
+		foreach ( Owner_Content::get( $restaurant_id )['photos'] as $photo ) {
+			if ( wp_attachment_is_image( $photo ) ) {
+				return $photo;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Latest year the restaurant won an award, 0 for none.
+	 *
+	 * @param int $restaurant_id Restaurant.
+	 * @return int
+	 */
+	public static function award_year( int $restaurant_id ): int {
+		$years = (array) Cache::remember( 'award-years', array(), array( Awards::class, 'winner_years' ) );
+		return (int) ( $years[ $restaurant_id ] ?? 0 );
+	}
+
+	/**
+	 * Whether we first recorded the restaurant in the last NEW_DAYS days.
+	 *
+	 * @param int $restaurant_id Restaurant.
+	 * @return bool
+	 */
+	public static function is_new( int $restaurant_id ): bool {
+		$ids = (array) Cache::remember(
+			'new-ids',
+			array( self::NEW_DAYS ),
+			static function (): array {
+				return array_fill_keys( wp_list_pluck( Queries::recent_openings( self::NEW_DAYS ), 'restaurant_id' ), true );
+			},
+			600
+		);
+		return isset( $ids[ $restaurant_id ] );
+	}
+
+	/**
+	 * Award and New badges.
+	 *
+	 * @param int $restaurant_id Restaurant.
+	 * @return string Empty when there are none.
+	 */
+	public static function badges( int $restaurant_id ): string {
+		$badges = '';
+		$year   = self::award_year( $restaurant_id );
+		if ( $year > 0 ) {
+			/* translators: %d: year. */
+			$badges .= '<span class="gr-badge gr-badge--award">' . esc_html( sprintf( __( 'Award winner %d', 'guam-restaurants-core' ), $year ) ) . '</span>';
+		}
+		if ( '' === self::status_label( $restaurant_id ) && self::is_new( $restaurant_id ) ) {
+			$badges .= '<span class="gr-badge gr-badge--new">' . esc_html__( 'New', 'guam-restaurants-core' ) . '</span>';
+		}
+		return '' === $badges ? '' : '<p class="gr-badges">' . $badges . '</p>';
+	}
+
+	/**
+	 * Photo, or a tinted panel with the cuisine name when there is none.
+	 *
+	 * @param int    $restaurant_id Restaurant.
+	 * @param string $size          Image size.
+	 * @param string $css_class     Wrapper class.
+	 * @return string
+	 */
+	public static function media( int $restaurant_id, string $size, string $css_class ): string {
+		$photo = self::photo_id( $restaurant_id );
+		if ( $photo > 0 ) {
+			return '<div class="' . esc_attr( $css_class ) . '">' . wp_get_attachment_image(
+				$photo,
+				$size,
+				false,
+				array(
+					'loading' => 'lazy',
+					'alt'     => '',
+				)
+			) . '</div>';
+		}
+		$cuisines = self::terms( $restaurant_id, Content_Types::TAX_CUISINE );
+		$label    = $cuisines ? $cuisines[0]->name : __( 'Restaurant', 'guam-restaurants-core' );
+		$hue      = $cuisines ? crc32( $cuisines[0]->slug ) % 360 : 190;
+		return sprintf(
+			'<div class="%1$s %1$s--empty" style="--gr-hue:%2$d" aria-hidden="true"><span>%3$s</span></div>',
+			esc_attr( $css_class ),
+			(int) $hue,
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * A result card.
+	 *
+	 * @param int $restaurant_id Restaurant.
+	 * @param int $heading_level Heading level of the name.
+	 * @return string
 	 */
 	public static function card( int $restaurant_id, int $heading_level = 3 ): string {
 		$heading_level = max( 2, min( 6, $heading_level ) );
@@ -271,7 +383,7 @@ final class Restaurant_View {
 		$status        = self::status_label( $restaurant_id );
 
 		return sprintf(
-			'<article class="gr-card"><h%1$d class="gr-card__name"><a href="%2$s">%3$s</a></h%1$d>%4$s%5$s%6$s</article>',
+			'<article class="gr-card">%7$s<div class="gr-card__body">%8$s<h%1$d class="gr-card__name"><a href="%2$s">%3$s</a></h%1$d>%4$s%5$s%6$s</div></article>',
 			$heading_level,
 			esc_url( (string) get_permalink( $restaurant_id ) ),
 			esc_html( get_the_title( $restaurant_id ) ),
@@ -279,7 +391,9 @@ final class Restaurant_View {
 			'' !== self::address( $restaurant_id ) ? '<p class="gr-card__address">' . esc_html( self::address( $restaurant_id ) ) . '</p>' : '',
 			'' !== $status
 				? '<p class="gr-card__status">' . esc_html( $status ) . '</p>'
-				: ( '' !== $hours ? '<p class="gr-card__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' )
+				: ( '' !== $hours ? '<p class="gr-card__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' ),
+			self::media( $restaurant_id, 'medium_large', 'gr-card__media' ),
+			self::badges( $restaurant_id )
 		);
 	}
 }

@@ -145,6 +145,24 @@ final class Repository {
 	}
 
 	/**
+	 * Latest winning year per restaurant.
+	 *
+	 * @return array<int, int> Restaurant ID => year.
+	 */
+	public static function winner_years(): array {
+		global $wpdb;
+		$rows = (array) $wpdb->get_results(
+			$wpdb->prepare( 'SELECT a.restaurant_id, MAX(a.year) AS year FROM ' . Schema::table( Schema::AWARDS ) . ' a' . self::join() . ' WHERE a.placement = %s GROUP BY a.restaurant_id', 'winner' ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table and join are constants.
+			ARRAY_A
+		);
+		$out  = array();
+		foreach ( $rows as $row ) {
+			$out[ (int) $row['restaurant_id'] ] = (int) $row['year'];
+		}
+		return $out;
+	}
+
+	/**
 	 * Distinct years, newest first.
 	 *
 	 * @param string $program Program, or '' for all.

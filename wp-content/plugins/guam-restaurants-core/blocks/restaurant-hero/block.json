@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/restaurant-hero",
+	"version": "0.1.0",
+	"title": "Restaurant summary and actions",
+	"category": "widgets",
+	"icon": "store",
+	"description": "On a restaurant page: photo, award and New badges, the name as the page heading, cuisine, place, price, open now, and buttons to call, get directions, open the website or menu, and share.",
+	"textdomain": "guam-restaurants-core",
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId",
+		"postType"
+	],
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}
