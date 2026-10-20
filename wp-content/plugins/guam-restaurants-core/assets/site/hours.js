@@ -97,12 +97,31 @@
 		} );
 	}
 
+	// "Are these hours right?": Yes only thanks the visitor (nothing is sent);
+	// No is a plain link to the correction form.
+	function initChecks() {
+		document.querySelectorAll( '[data-gr-hours-ask]' ).forEach( function ( ask ) {
+			var yes = ask.querySelector( '[data-gr-hours-yes]' );
+			var thanks = ask.nextElementSibling;
+			if ( ! yes || ! thanks ) {
+				return;
+			}
+			yes.hidden = false;
+			yes.addEventListener( 'click', function () {
+				ask.hidden = true;
+				thanks.hidden = false;
+			} );
+		} );
+	}
+
 	window.guamRestaurantsHours = { apply: apply };
 	if ( document.readyState === 'loading' ) {
 		document.addEventListener( 'DOMContentLoaded', function () {
 			apply();
+			initChecks();
 		} );
 	} else {
 		apply();
+		initChecks();
 	}
 } )();

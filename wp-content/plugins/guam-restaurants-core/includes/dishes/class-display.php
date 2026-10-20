@@ -87,13 +87,15 @@ final class Display {
 			: '<p class="gr-dishes__empty">' . esc_html__( 'No dishes yet. Tell others what you ordered: add a photo of a dish, or name the dishes you tried when you write a review.', 'guam-restaurants-core' ) . '</p>';
 
 		return sprintf(
-			'<section class="gr-dishes" id="gr-dishes">%1$s<h2 class="gr-section-title gr-dishes__title">%2$s</h2><p class="gr-dishes__intro">%3$s</p>%4$s<p class="gr-dishes__add"><a href="#gr-photos">%5$s</a> · <a href="#gr-visitor-reviews">%6$s</a></p></section>',
+			'<section class="gr-dishes" id="gr-dishes">%1$s<h2 class="gr-section-title gr-dishes__title">%2$s</h2><p class="gr-dishes__intro">%3$s</p>%4$s<p class="gr-dishes__add"><a href="#gr-photos">%5$s</a> · <a href="#gr-visitor-reviews">%6$s</a> · <a href="%7$s">%8$s</a></p></section>',
 			self::sponsor( $restaurant_id ),
 			esc_html__( 'Popular dishes', 'guam-restaurants-core' ),
 			esc_html__( 'Ordered by how many visitors photographed each dish or named it in an approved review. Dishes the owner listed come next. Owners and staff cannot rate dishes, and sponsors cannot change this list.', 'guam-restaurants-core' ),
 			$list,
 			esc_html__( 'Add a dish photo', 'guam-restaurants-core' ),
-			esc_html__( 'Write a review', 'guam-restaurants-core' )
+			esc_html__( 'Write a review', 'guam-restaurants-core' ),
+			esc_url( Dish_Pages::url() ),
+			esc_html__( 'Where to get other Guam dishes', 'guam-restaurants-core' )
 		);
 	}
 
@@ -154,10 +156,20 @@ final class Display {
 				. ( '' !== $dish['details'] ? '<p class="gr-dish__details">' . esc_html( (string) $dish['details'] ) . '</p>' : '' );
 		}
 
+		$slug = Dish_Index::page_for( (string) $dish['name'] );
+		$name = '' !== $slug
+			? sprintf(
+				'<a href="%1$s" title="%2$s">%3$s</a>',
+				esc_url( Dish_Pages::url( $slug ) ),
+				esc_attr__( 'Other places that serve it', 'guam-restaurants-core' ),
+				esc_html( (string) $dish['name'] )
+			)
+			: esc_html( (string) $dish['name'] );
+
 		return sprintf(
 			'<li class="gr-dish">%1$s<div class="gr-dish__body"><h3 class="gr-dish__name">%2$s</h3>%3$s%4$s%5$s</div></li>',
 			$media,
-			esc_html( (string) $dish['name'] ),
+			$name,
 			$counts ? '<p class="gr-dish__counts">' . esc_html( implode( ' · ', $counts ) ) . '</p>' : '',
 			$rating,
 			$menu

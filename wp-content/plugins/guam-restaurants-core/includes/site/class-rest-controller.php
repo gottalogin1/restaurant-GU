@@ -17,7 +17,8 @@ defined( 'ABSPATH' ) || exit;
  * (Picker).
  *
  * All are public and read-only. Directory and map responses are cacheable
- * for a few minutes (one minute with "open now" or "open late"); picks are
+ * for a few minutes (one minute with "open now", "open late" or "open
+ * today at"); picks are
  * never cached.
  */
 final class Rest_Controller {
@@ -48,6 +49,8 @@ final class Rest_Controller {
 			'award'   => array( 'type' => 'string' ),
 			'open'    => array( 'type' => 'string' ),
 			'late'    => array( 'type' => 'string' ),
+			'at'      => array( 'type' => 'string' ),
+			'meal'    => array( 'type' => 'string' ),
 			'sort'    => array( 'type' => 'string' ),
 			'page'    => array(
 				'type'    => 'integer',
@@ -74,7 +77,7 @@ final class Rest_Controller {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( self::class, 'pick' ),
 				'permission_callback' => '__return_true',
-				'args'                => array_diff_key( $args, array_flip( array( 'q', 'context' ) ) ) + array(
+				'args'                => array_diff_key( $args, array_flip( array( 'q', 'context', 'at' ) ) ) + array(
 					Picker::NOT => array( 'type' => 'string' ),
 					'page_url'  => array( 'type' => 'string' ),
 				),

@@ -20,8 +20,9 @@ defined( 'ABSPATH' ) || exit;
  * Reads a typed search with fixed word lists, no outside service: the
  * site's own villages (names, aliases and the spellings below), visible
  * malls, cuisines (names and the words below), price words, "open now",
- * "open late" and "award winners". Each phrase it knows becomes the same
- * filter the form offers; words it does not know stay a keyword search.
+ * "open late", "breakfast" and "award winners". Each phrase it knows
+ * becomes the same filter the form offers; words it does not know stay a
+ * keyword search.
  * Filler words ("in", "food", "place") are dropped only when something
  * else was recognized, so a plain name search is never changed.
  *
@@ -117,6 +118,12 @@ final class Query_Parser {
 	public const OPEN_WORDS = array( 'open now', 'open right now', 'right now', 'currently open', 'still open', 'open today', 'open', 'now' );
 
 	public const LATE_WORDS = array( 'open late', 'late night', 'late', 'late nite', 'open till late', 'open until late', 'after 10', 'after 10pm', 'after 10 pm', 'after midnight', 'midnight', 'night owl', '24 hours', '24 hour', '24 7', 'all night' );
+
+	/**
+	 * Phrases only: "breakfast" alone is often part of a dish ("breakfast
+	 * burritos"), so it stays in the keyword search.
+	 */
+	public const BREAKFAST_WORDS = array( 'for breakfast', 'open for breakfast', 'breakfast place', 'breakfast places', 'breakfast spot', 'breakfast spots', 'early breakfast' );
 
 	public const AWARD_WORDS = array( 'award winning', 'award winner', 'award winners', 'award', 'awards', 'awarded', 'prize winning' );
 
@@ -241,17 +248,18 @@ final class Query_Parser {
 	 * Reads a search.
 	 *
 	 * @param string $text Search text.
-	 * @return array{facets: array<string, string[]>, open: bool, late: bool, award: bool, search: string, matches: array<int, array{type: string, value: string, phrase: string}>}
+	 * @return array{facets: array<string, string[]>, open: bool, late: bool, breakfast: bool, award: bool, search: string, matches: array<int, array{type: string, value: string, phrase: string}>}
 	 *         Filters found, the words left over (as typed) and what each phrase was read as.
 	 */
 	public static function parse( string $text ): array {
 		$out = array(
-			'facets'  => array_fill_keys( array_keys( Filters::FACETS ), array() ),
-			'open'    => false,
-			'late'    => false,
-			'award'   => false,
-			'search'  => trim( $text ),
-			'matches' => array(),
+			'facets'    => array_fill_keys( array_keys( Filters::FACETS ), array() ),
+			'open'      => false,
+			'late'      => false,
+			'breakfast' => false,
+			'award'     => false,
+			'search'    => trim( $text ),
+			'matches'   => array(),
 		);
 
 		// Each typed word, and the normalized words inside it ("late-night" is two).
@@ -494,6 +502,9 @@ final class Query_Parser {
 		}
 		foreach ( self::OPEN_WORDS as $phrase ) {
 			$add( $phrase, 'open', true );
+		}
+		foreach ( self::BREAKFAST_WORDS as $phrase ) {
+			$add( $phrase, 'breakfast', true );
 		}
 		foreach ( self::AWARD_WORDS as $phrase ) {
 			$add( $phrase, 'award', true );

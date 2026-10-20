@@ -223,6 +223,24 @@ final class Open_Hours {
 	}
 
 	/**
+	 * SQL condition: the post is open at `$minute_of_day` on at least one
+	 * day of the week.
+	 *
+	 * @param int    $minute_of_day Minutes after midnight, 0 to 1439.
+	 * @param string $posts_alias   Posts table name or alias in the outer query.
+	 * @return string
+	 */
+	public static function open_any_day_sql( int $minute_of_day, string $posts_alias ): string {
+		global $wpdb;
+		$days = array();
+		for ( $day = 0; $day < 7; $day++ ) {
+			$minute = $day * Clock::MINUTES_PER_DAY + $minute_of_day;
+			$days[] = $wpdb->prepare( '(gr_oh.opens_at <= %d AND gr_oh.closes_at > %d)', $minute, $minute );
+		}
+		return 'EXISTS (SELECT 1 FROM ' . Schema::table( Schema::OPEN_HOURS ) . " gr_oh WHERE gr_oh.restaurant_id = {$posts_alias}.ID AND (" . implode( ' OR ', $days ) . '))';
+	}
+
+	/**
 	 * Replaces a restaurant's rows.
 	 *
 	 * @param int                               $restaurant_id Restaurant.

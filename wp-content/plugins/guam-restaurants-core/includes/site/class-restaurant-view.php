@@ -225,6 +225,39 @@ final class Restaurant_View {
 	}
 
 	/**
+	 * Where a restaurant's hours came from and when someone last checked
+	 * them, as one sentence: "Hours confirmed by the owner on October 12,
+	 * 2026." Only the owner and our editors date their check; hours from
+	 * OpenStreetMap say so, without a date we do not have.
+	 *
+	 * @param int $restaurant_id Restaurant.
+	 * @return string '' when no hours are known.
+	 */
+	public static function hours_checked( int $restaurant_id ): string {
+		$hours = get_post_meta( $restaurant_id, Restaurant_Meta::HOURS, true );
+		if ( ! is_array( $hours ) || ( empty( $hours['weekly'] ) && empty( $hours['always_open'] ) ) ) {
+			return '';
+		}
+		$date = '';
+		if ( 1 === preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) ( $hours['verified_on'] ?? '' ) ) ) {
+			$day  = \DateTimeImmutable::createFromFormat( '!Y-m-d', (string) $hours['verified_on'], Clock::zone() );
+			$date = $day ? wp_date( (string) get_option( 'date_format', 'F j, Y' ), $day->getTimestamp(), Clock::zone() ) : '';
+		}
+		switch ( (string) ( $hours['source'] ?? '' ) ) {
+			case 'owner':
+				/* translators: %s: date. */
+				return '' !== $date ? sprintf( __( 'Hours confirmed by the owner on %s.', 'guam-restaurants-core' ), $date ) : __( 'Hours from the owner.', 'guam-restaurants-core' );
+			case 'manual':
+				/* translators: %s: date. */
+				return '' !== $date ? sprintf( __( 'Hours checked by our editors on %s.', 'guam-restaurants-core' ), $date ) : __( 'Hours added by our editors.', 'guam-restaurants-core' );
+			case 'osm':
+				return __( 'Hours from OpenStreetMap, not yet confirmed by the owner.', 'guam-restaurants-core' );
+			default:
+				return __( 'Hours not yet confirmed by the owner.', 'guam-restaurants-core' );
+		}
+	}
+
+	/**
 	 * Day names, Monday first.
 	 *
 	 * @return array<string, string>

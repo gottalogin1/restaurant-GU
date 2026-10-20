@@ -271,6 +271,7 @@
 			}
 		}
 		requestBox.addEventListener( 'change', update );
+		var wanted = new URLSearchParams( window.location.search ).get( 'topic' ) || '';
 
 		var form = el( 'form', { className: 'gr-lead-form__form', novalidate: true }, [
 			field( prefix + '-restaurant', __( 'Restaurant', 'guam-restaurants-core' ), picker.input, __( 'Type at least two letters of the restaurant name and pick it from the list.', 'guam-restaurants-core' ), true ).node,
@@ -288,6 +289,10 @@
 			status,
 		] );
 		update();
+		// ?topic=hours (from "Are these hours right?") picks the topic.
+		if ( /^[a-z]+$/.test( wanted ) && topic.querySelector( 'option[value="' + wanted + '"]' ) ) {
+			topic.value = wanted;
+		}
 
 		function say( text, errors, kind ) {
 			status.textContent = '';

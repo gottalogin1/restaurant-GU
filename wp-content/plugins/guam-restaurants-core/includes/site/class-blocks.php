@@ -618,9 +618,18 @@ final class Blocks {
 	 * @return string
 	 */
 	private static function hours_table( int $id, bool $open_info ): string {
-		$hours = Restaurant_View::hours_by_day( $id );
+		$hours  = Restaurant_View::hours_by_day( $id );
+		$report = Pages::url( 'correction' );
+		$report = '' === $report ? '' : add_query_arg(
+			array(
+				'restaurant' => $id,
+				'topic'      => 'hours',
+			),
+			$report
+		);
 		if ( null === $hours ) {
-			return '<p class="gr-details__hours-none">' . esc_html__( 'Opening hours are not listed yet. Please check with the restaurant.', 'guam-restaurants-core' ) . '</p>';
+			return '<p class="gr-details__hours-none">' . esc_html__( 'Opening hours are not listed yet. Please check with the restaurant.', 'guam-restaurants-core' )
+				. ( '' !== $report ? ' <a href="' . esc_url( $report ) . '">' . esc_html__( 'Know the hours? Tell us', 'guam-restaurants-core' ) . '</a>' : '' ) . '</p>';
 		}
 		$body = '';
 		foreach ( Restaurant_View::day_names() as $day => $name ) {
@@ -629,14 +638,41 @@ final class Blocks {
 		}
 		$compact = Open_Hours::compact( $id );
 		return sprintf(
-			'<div class="gr-hours"%1$s><h3 class="gr-hours__title">%2$s</h3>%3$s<table class="gr-hours__table"><caption class="screen-reader-text">%4$s</caption><tbody>%5$s</tbody></table>%6$s</div>',
+			'<div class="gr-hours"%1$s><h3 class="gr-hours__title">%2$s</h3>%3$s<table class="gr-hours__table"><caption class="screen-reader-text">%4$s</caption><tbody>%5$s</tbody></table>%6$s%7$s</div>',
 			$open_info && '' !== $compact ? ' data-gr-hours="' . esc_attr( $compact ) . '"' : '',
 			esc_html__( 'Opening hours', 'guam-restaurants-core' ),
 			$open_info && '' !== $compact ? '<p class="gr-card__open gr-hours__now" aria-live="polite"></p>' : '',
 			esc_html__( 'Opening hours, Guam time', 'guam-restaurants-core' ),
 			$body,
-			'' !== $hours['note'] ? '<p class="gr-hours__note">' . esc_html( $hours['note'] ) . '</p>' : ''
+			'' !== $hours['note'] ? '<p class="gr-hours__note">' . esc_html( $hours['note'] ) . '</p>' : '',
+			self::hours_check( $id, $report )
 		);
+	}
+
+	/**
+	 * When the hours were last checked, and "Are these hours right?". "No"
+	 * opens the correction form about this restaurant's hours, so a change
+	 * goes through the corrections queue and never straight onto the page.
+	 * "Yes" (shown by hours.js) only thanks the visitor; nothing is stored.
+	 *
+	 * @param int    $id     Restaurant.
+	 * @param string $report Correction form URL for these hours, or ''.
+	 * @return string
+	 */
+	private static function hours_check( int $id, string $report ): string {
+		$checked = Restaurant_View::hours_checked( $id );
+		$ask     = '' === $report ? '' : sprintf(
+			'<p class="gr-hours__ask" data-gr-hours-ask><span>%1$s</span> <button type="button" class="gr-hours__yes" data-gr-hours-yes hidden>%2$s</button> <a class="gr-hours__no" href="%3$s">%4$s</a></p><p class="gr-hours__thanks" role="status" hidden>%5$s</p>',
+			esc_html__( 'Are these hours right?', 'guam-restaurants-core' ),
+			esc_html__( 'Yes', 'guam-restaurants-core' ),
+			esc_url( $report ),
+			esc_html__( 'No, report a change', 'guam-restaurants-core' ),
+			esc_html__( 'Thanks for checking.', 'guam-restaurants-core' )
+		);
+		if ( '' === $checked && '' === $ask ) {
+			return '';
+		}
+		return '<div class="gr-hours__check">' . ( '' !== $checked ? '<p class="gr-hours__checked">' . esc_html( $checked ) . '</p>' : '' ) . $ask . '</div>';
 	}
 
 	/**

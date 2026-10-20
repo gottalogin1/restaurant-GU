@@ -124,6 +124,8 @@ final class Plugin {
 		Photos\Photo_Rest_Controller::register();
 		Photos\Moderation_Screen::register();
 		Dishes\Display::register();
+		Dishes\Dish_Index::register();
+		Dishes\Dish_Pages::register();
 		Admin\No_Cuisine_Filter::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {

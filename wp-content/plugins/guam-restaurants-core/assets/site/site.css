@@ -16,7 +16,7 @@
 	--gr-radius: 0.5rem;
 }
 
-:where(.gr-card, .gr-photos, .gr-dishes, .gr-chips, .gr-recent, .gr-details, .gr-hero, .gr-row, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
+:where(.gr-card, .gr-photos, .gr-dishes, .gr-dish-page, .gr-chips, .gr-recent, .gr-details, .gr-hero, .gr-row, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
 	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
 	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
@@ -1909,4 +1909,144 @@
 	.gr-saved-toast {
 		transition: none;
 	}
+}
+
+/* Open at a chosen day and time (directory, More filters) */
+.gr-open-at {
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	margin: 0;
+	padding: 0.5rem 0.75rem 0.75rem;
+}
+
+.gr-open-at legend {
+	font-weight: 600;
+	padding: 0 0.25rem;
+}
+
+.gr-open-at__fields {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+}
+
+.gr-open-at__fields label {
+	display: grid;
+	gap: 0.25rem;
+	flex: 1 1 10rem;
+}
+
+.gr-open-at__hint {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	margin: 0.5rem 0 0;
+}
+
+/* Hours checked and "Are these hours right?" */
+.gr-hours__check {
+	margin-top: 0.75rem;
+	font-size: 0.95rem;
+}
+
+.gr-hours__checked {
+	color: var(--gr-muted-text);
+	margin: 0 0 0.25rem;
+}
+
+.gr-hours__ask {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 0.75rem;
+	margin: 0;
+}
+
+.gr-hours__yes {
+	font: inherit;
+	min-height: 2.75rem;
+	min-width: 2.75rem;
+	padding: 0.25rem 1rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	background: var(--gr-card);
+	color: var(--gr-text);
+	cursor: pointer;
+}
+
+.gr-hours__no {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.75rem;
+}
+
+.gr-hours__thanks {
+	margin: 0;
+}
+
+/* "Where to get it" dish pages */
+.gr-dish-page {
+	display: grid;
+	gap: 1rem;
+	margin-block: 1.5rem 3rem;
+}
+
+.gr-dish-page__title {
+	margin: 0;
+}
+
+.gr-dish-page__intro,
+.gr-dish-page__add,
+.gr-dish-page__empty {
+	color: var(--gr-muted-text);
+	max-width: 46rem;
+	margin: 0;
+}
+
+.gr-dish-page__back {
+	margin: 0;
+}
+
+.gr-dish-page__why {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	margin: 0.5rem 0 0;
+}
+
+.gr-dish-index {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+	gap: 0.5rem;
+}
+
+.gr-dish-index li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 2.75rem;
+	padding: 0.25rem 0.75rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	background: var(--gr-card);
+}
+
+.gr-dish-index a {
+	font-weight: 600;
+}
+
+.gr-dish-index__count {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	white-space: nowrap;
+}
+
+.gr-dish-index--favorites li {
+	background: var(--gr-surface);
+}
+
+.gr-dish__name a {
+	color: inherit;
 }

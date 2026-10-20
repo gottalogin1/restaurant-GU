@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Vocabulary;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,6 +25,11 @@ defined( 'ABSPATH' ) || exit;
  * - `open=now` keeps restaurants open at this minute, Guam time.
  * - `late=tonight` keeps restaurants open at 10 pm tonight, Guam time
  *   (Clock::late_minute()).
+ * - `at=sa-0730` keeps restaurants open at that day and time, Guam time.
+ *   The day is a Vocabulary::DAYS key, `today` or `tomorrow`. Without
+ *   JavaScript the form sends the two halves as `at_day` and `at_time`.
+ * - `meal=breakfast` keeps restaurants open by 8 am on at least one day,
+ *   going by their listed hours (BREAKFAST_MINUTE).
  * - `q` is a plain-language search: Query_Parser turns the phrases it
  *   knows ("cheap Korean open late in Tumon") into the filters above and
  *   leaves the other words as a keyword search. What it read is kept in
@@ -39,12 +45,28 @@ final class Filters {
 	public const AWARD  = 'award';
 	public const OPEN   = 'open';
 	public const LATE   = 'late';
+	public const AT     = 'at';
+	public const MEAL   = 'meal';
 	public const SORT   = 'sort';
 	public const WHERE  = 'where';
 
-	public const AWARD_WINNER = 'winner';
-	public const OPEN_NOW     = 'now';
-	public const LATE_TONIGHT = 'tonight';
+	public const AT_DAY  = 'at_day';
+	public const AT_TIME = 'at_time';
+
+	public const AWARD_WINNER   = 'winner';
+	public const OPEN_NOW       = 'now';
+	public const LATE_TONIGHT   = 'tonight';
+	public const MEAL_BREAKFAST = 'breakfast';
+
+	/**
+	 * "Breakfast" means open at this minute of the day (8:00 am) on at least one day.
+	 */
+	public const BREAKFAST_MINUTE = 480;
+
+	/**
+	 * Days `at` accepts besides Vocabulary::DAYS; these depend on today's date.
+	 */
+	public const RELATIVE_DAYS = array( 'today', 'tomorrow' );
 
 	/**
 	 * URL parameter => taxonomy.
@@ -64,18 +86,20 @@ final class Filters {
 	/**
 	 * Empty filters.
 	 *
-	 * @return array{q: string, facets: array<string, string[]>, award: bool, open: bool, late: bool, sort: string, page: int, read: array{text: string, matches: array<int, array{type: string, value: string, phrase: string}>}|null}
+	 * @return array{q: string, facets: array<string, string[]>, award: bool, open: bool, late: bool, at: string, breakfast: bool, sort: string, page: int, read: array{text: string, matches: array<int, array{type: string, value: string, phrase: string}>}|null}
 	 */
 	public static function defaults(): array {
 		return array(
-			'q'      => '',
-			'facets' => array_fill_keys( array_keys( self::FACETS ), array() ),
-			'award'  => false,
-			'open'   => false,
-			'late'   => false,
-			'sort'   => '',
-			'page'   => 1,
-			'read'   => null,
+			'q'         => '',
+			'facets'    => array_fill_keys( array_keys( self::FACETS ), array() ),
+			'award'     => false,
+			'open'      => false,
+			'late'      => false,
+			'at'        => '',
+			'breakfast' => false,
+			'sort'      => '',
+			'page'      => 1,
+			'read'      => null,
 		);
 	}
 
@@ -129,10 +153,17 @@ final class Filters {
 		$filters['open']  = self::OPEN_NOW === ( $params[ self::OPEN ] ?? '' ) || '1' === ( $params[ self::OPEN ] ?? '' );
 		$filters['late']  = self::LATE_TONIGHT === ( $params[ self::LATE ] ?? '' ) || '1' === ( $params[ self::LATE ] ?? '' );
 		if ( $parsed ) {
-			foreach ( array( 'award', 'open', 'late' ) as $flag ) {
+			foreach ( array( 'award', 'open', 'late', 'breakfast' ) as $flag ) {
 				$filters[ $flag ] = $filters[ $flag ] || $parsed[ $flag ];
 			}
 		}
+		$filters['breakfast'] = $filters['breakfast'] || self::MEAL_BREAKFAST === ( $params[ self::MEAL ] ?? '' );
+
+		$at = isset( $params[ self::AT ] ) && is_scalar( $params[ self::AT ] ) ? (string) $params[ self::AT ] : '';
+		if ( '' === $at && isset( $params[ self::AT_DAY ], $params[ self::AT_TIME ] ) && is_scalar( $params[ self::AT_DAY ] ) && is_scalar( $params[ self::AT_TIME ] ) ) {
+			$at = $params[ self::AT_DAY ] . '-' . $params[ self::AT_TIME ];
+		}
+		$filters['at'] = null === self::at_parts( $at ) ? '' : $at;
 
 		$sort            = isset( $params[ self::SORT ] ) && is_scalar( $params[ self::SORT ] ) ? sanitize_key( (string) $params[ self::SORT ] ) : '';
 		$filters['sort'] = in_array( $sort, self::SORTS, true ) ? $sort : '';
@@ -185,6 +216,12 @@ final class Filters {
 		if ( ! empty( $filters['late'] ) ) {
 			$params[ self::LATE ] = self::LATE_TONIGHT;
 		}
+		if ( '' !== (string) ( $filters['at'] ?? '' ) ) {
+			$params[ self::AT ] = (string) $filters['at'];
+		}
+		if ( ! empty( $filters['breakfast'] ) ) {
+			$params[ self::MEAL ] = self::MEAL_BREAKFAST;
+		}
 		if ( '' !== (string) $filters['sort'] ) {
 			$params[ self::SORT ] = (string) $filters['sort'];
 		}
@@ -192,14 +229,72 @@ final class Filters {
 	}
 
 	/**
-	 * Whether the results change by the minute ("open now", "open late"),
-	 * so they may be cached for a minute only.
+	 * Whether the results change with the clock ("open now", "open late",
+	 * "open today at..."), so they may be cached for a minute only. A fixed
+	 * day and time ("open Saturday at 7:30 am") is not timed.
 	 *
 	 * @param array<string, mixed> $filters Filters.
 	 * @return bool
 	 */
 	public static function is_timed( array $filters ): bool {
-		return ! empty( $filters['open'] ) || ! empty( $filters['late'] );
+		$at = self::at_parts( (string) ( $filters['at'] ?? '' ) );
+		return ! empty( $filters['open'] ) || ! empty( $filters['late'] ) || ( null !== $at && in_array( $at['day'], self::RELATIVE_DAYS, true ) );
+	}
+
+	/**
+	 * Day and minute of an `at` value such as "sa-0730" or "today-2000".
+	 *
+	 * @param string $at Value.
+	 * @return array{day: string, minute: int}|null Null when it is not valid.
+	 */
+	public static function at_parts( string $at ): ?array {
+		$days = implode( '|', array_merge( Vocabulary::DAYS, self::RELATIVE_DAYS ) );
+		if ( 1 !== preg_match( '/^(' . $days . ')-([01]\d|2[0-3])([0-5]\d)$/', $at, $m ) ) {
+			return null;
+		}
+		return array(
+			'day'    => $m[1],
+			'minute' => (int) $m[2] * 60 + (int) $m[3],
+		);
+	}
+
+	/**
+	 * Minute of the week an `at` value stands for, Guam time.
+	 *
+	 * @param string   $at        Value.
+	 * @param int|null $timestamp Now, for today and tomorrow; defaults to Clock::now().
+	 * @return int|null Null when it is not valid.
+	 */
+	public static function at_minute( string $at, ?int $timestamp = null ): ?int {
+		$parts = self::at_parts( $at );
+		if ( null === $parts ) {
+			return null;
+		}
+		$day = array_search( $parts['day'], Vocabulary::DAYS, true );
+		if ( false === $day ) {
+			$day = intdiv( Clock::minute_of_week( $timestamp ), Clock::MINUTES_PER_DAY ) + ( 'tomorrow' === $parts['day'] ? 1 : 0 );
+		}
+		return ( (int) $day % 7 ) * Clock::MINUTES_PER_DAY + $parts['minute'];
+	}
+
+	/**
+	 * An `at` value in words: "today at 8:00 pm", "Saturday at 7:30 am".
+	 *
+	 * @param string $at Value.
+	 * @return string '' when it is not valid.
+	 */
+	public static function at_label( string $at ): string {
+		$parts = self::at_parts( $at );
+		if ( null === $parts ) {
+			return '';
+		}
+		$days = array(
+			'today'    => __( 'today', 'guam-restaurants-core' ),
+			'tomorrow' => __( 'tomorrow', 'guam-restaurants-core' ),
+		) + Restaurant_View::day_names();
+		$time = Restaurant_View::time_label( sprintf( '%02d:%02d', intdiv( $parts['minute'], 60 ), $parts['minute'] % 60 ) );
+		/* translators: 1: day, for example "Saturday" or "today", 2: time, for example "7:30 am". */
+		return sprintf( __( '%1$s at %2$s', 'guam-restaurants-core' ), $days[ $parts['day'] ], $time );
 	}
 
 	/**

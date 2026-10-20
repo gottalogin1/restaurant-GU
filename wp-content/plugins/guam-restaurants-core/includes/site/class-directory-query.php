@@ -24,7 +24,8 @@ defined( 'ABSPATH' ) || exit;
  * endpoint the filter form calls.
  *
  * Everything is a database filter on indexed columns: taxonomy clauses use
- * the term relationship keys, "open now" the gr_open_hours index, "award
+ * the term relationship keys, "open now", "open late", "open at" and
+ * "breakfast" the gr_open_hours index, "award
  * winner" the awards table's restaurant key, and the closed check the
  * postmeta (post_id, meta_key) key. Ranking is plain (name, date, price or
  * search relevance); nothing paid takes part in it (CLAUDE.md rule 5).
@@ -169,6 +170,8 @@ final class Directory_Query {
 			'award'      => ! empty( $filters['award'] ),
 			'open_at'    => ! empty( $filters['open'] ) ? Clock::minute_of_week() : null,
 			'late_at'    => ! empty( $filters['late'] ) ? Clock::late_minute() : null,
+			'chosen_at'  => Filters::at_minute( (string) ( $filters['at'] ?? '' ) ),
+			'breakfast'  => ! empty( $filters['breakfast'] ),
 			'price_sort' => in_array( $sort, array( 'price_asc', 'price_desc' ), true ) ? $sort : '',
 		);
 
@@ -220,7 +223,7 @@ final class Directory_Query {
 	}
 
 	/**
-	 * Adds the award, open-now, open-late, closed and price conditions.
+	 * Adds the award, opening-hours, closed and price conditions.
 	 *
 	 * @param array<string, string> $clauses SQL clauses.
 	 * @param \WP_Query             $query   Query.
@@ -252,6 +255,12 @@ final class Directory_Query {
 		if ( isset( $extra['late_at'] ) && null !== $extra['late_at'] ) {
 			$clauses['where'] .= ' AND ' . Open_Hours::open_sql( (int) $extra['late_at'], $posts );
 		}
+		if ( isset( $extra['chosen_at'] ) && null !== $extra['chosen_at'] ) {
+			$clauses['where'] .= ' AND ' . Open_Hours::open_sql( (int) $extra['chosen_at'], $posts );
+		}
+		if ( ! empty( $extra['breakfast'] ) ) {
+			$clauses['where'] .= ' AND ' . Open_Hours::open_any_day_sql( Filters::BREAKFAST_MINUTE, $posts );
+		}
 		if ( ! empty( $extra['price_sort'] ) ) {
 			$rank               = $wpdb->prepare(
 				"(SELECT MIN(CAST(gr_tm.meta_value AS UNSIGNED)) FROM {$wpdb->term_relationships} gr_tr INNER JOIN {$wpdb->term_taxonomy} gr_tt ON gr_tt.term_taxonomy_id = gr_tr.term_taxonomy_id AND gr_tt.taxonomy = %s INNER JOIN {$wpdb->termmeta} gr_tm ON gr_tm.term_id = gr_tt.term_id AND gr_tm.meta_key = %s WHERE gr_tr.object_id = {$posts}.ID)",
@@ -265,7 +274,7 @@ final class Directory_Query {
 	}
 
 	/**
-	 * "Open now" and "open late" results change by the minute, so keep them out of page caches.
+	 * "Open now", "open late" and "open today at" results change with the clock, so keep them out of page caches.
 	 *
 	 * @return void
 	 */
