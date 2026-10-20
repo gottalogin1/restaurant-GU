@@ -121,7 +121,10 @@ wp-admin on the host and never committed.
 ## Security and images (production readiness, 2026-10-10)
 
 - **LoginPress Pro (owned):** use its Limit Login Attempts add-on and Turnstile on the
-  login form. Settings and the WordPress 7.1 caveat: docs/security.md §4.
+  login form. Settings and the WordPress 7.1 caveat: docs/security.md §4. Since
+  2026-10-20 its Social Login add-on also provides the Google and Facebook buttons
+  for visitor accounts (version 6.2.4 checked; needs the free LoginPress plugin).
+  Setup: docs/accounts-and-saved-lists.md §2.
 - **MalCare (owned, free tier):** firewall and malware scanning. Its backups and
   hardening are paid and not used; backups are `bin/backup.sh` (docs/backups.md).
 - **Two Factor (free, not owned):** none of the owned plugins documents two-factor sign-in.

@@ -32,6 +32,10 @@ defined( 'ABSPATH' ) || exit;
  *   cancelled takes them off again, once (_gr_premium_reversed).
  * - Owners keep their wp-admin dashboard: WooCommerce otherwise sends
  *   users without edit_posts to My Account.
+ * - WooCommerce's account and cart icons are kept out of the site header
+ *   (WooCommerce adds them to block theme headers by itself). Visitors use
+ *   Saved and Sign in there (Saved\View), and only owners buy, from My
+ *   restaurant.
  *
  * There is no automatic renewal yet; WPXPO WowSubscriptions is planned
  * for it once released (docs/billing.md §4). Owners renew by buying
@@ -67,6 +71,7 @@ final class Woo_Checkout {
 		add_action( 'woocommerce_order_status_cancelled', array( self::class, 'reversed' ), 10, 1 );
 		add_filter( 'woocommerce_prevent_admin_access', array( self::class, 'keep_owner_admin' ) );
 		add_filter( 'woocommerce_disable_admin_bar', array( self::class, 'keep_owner_admin' ) );
+		add_filter( 'hooked_block_types', array( self::class, 'no_header_icons' ), 20 );
 	}
 
 	/**
@@ -426,6 +431,16 @@ final class Woo_Checkout {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Stops WooCommerce adding its account and mini cart blocks to headers.
+	 *
+	 * @param string[] $types Block types hooked at this spot.
+	 * @return string[]
+	 */
+	public static function no_header_icons( $types ): array {
+		return array_values( array_diff( (array) $types, array( 'woocommerce/customer-account', 'woocommerce/mini-cart' ) ) );
 	}
 
 	/**

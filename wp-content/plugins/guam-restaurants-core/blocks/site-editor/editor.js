@@ -9,6 +9,7 @@
 
 	var contextual = [
 		'directory',
+		'saved-list',
 		'term-intro',
 		'restaurant-details',
 		'restaurant-map',
@@ -161,6 +162,8 @@
 		'restaurant-row',
 		'restaurant-hero',
 		'random-picker',
+		'saved-list',
+		'account-links',
 		'color-scheme-toggle',
 	];
 

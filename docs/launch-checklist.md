@@ -39,6 +39,11 @@ Guam-licensed attorney ([legal-and-policy.md](legal-and-policy.md) §7 to §9).
       ([legal-pages.md](legal-pages.md)); counsel fills the bracketed parts
       (owner, contact, host, email service, retention), then publish it from
       Settings > Privacy.
+- [ ] Privacy policy, visitor accounts: the draft now covers saved lists,
+      email accounts and Google/Facebook sign-in. If the privacy page was
+      already edited or published, copy those sections from
+      `data/legal/privacy-policy.md` by hand (the plugin never overwrites an
+      edited page). Google and Meta both need the published URL.
 - [ ] Terms of use: counsel fills the bracketed parts (refunds, DMCA agent,
       liability, disputes), then publish the "Terms of use" draft page.
 - [ ] Editorial policy: have counsel review the wording at /editorial-policy/
@@ -74,6 +79,11 @@ Install on staging first and check each against the current WordPress version
 ([plugins.md](plugins.md)).
 
 - [ ] Yoast SEO (or Squirrly). Sitemaps then come from it automatically.
+- [ ] LoginPress (free) + LoginPress Pro: license in LoginPress > License,
+      Social Login add-on on, Google and Facebook apps set up, Turnstile on
+      the registration form ([accounts-and-saved-lists.md](accounts-and-saved-lists.md) §2).
+- [ ] Settings > General: "Anyone can register" is on, new user role
+      Subscriber (a one-time migration sets this; check nobody turned it off).
 - [ ] Ads: none to install. Ads are entered under Ads in wp-admin (see
       monetization.md, "Ad serving"). If the page cache or a security plugin
       blocks REST POSTs, allow `/wp-json/guam-restaurants/v1/ads/events`.

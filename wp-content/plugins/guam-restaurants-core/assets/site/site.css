@@ -1397,3 +1397,363 @@
 .gr-picker__open-slot .gr-ad__headline {
 	margin-top: 0;
 }
+
+/* Saved lists and sign-in (Saved\View) */
+.gr-saved,
+.gr-join-dialog,
+.gr-account-links,
+.gr-saved-toast {
+	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
+	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
+	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
+	--gr-surface: var(--wp--preset--color--muted, #f4f1ec);
+	--gr-border: var(--wp--preset--color--border, #c9c3b8);
+	--gr-card: var(--wp--preset--color--base, #fff);
+	--gr-on-primary: var(--wp--preset--color--base, #fff);
+	--gr-radius: 0.5rem;
+}
+
+.gr-card,
+.gr-hero {
+	--gr-heart: #c8102e;
+}
+
+:root[data-theme="dark"] :is(.gr-card, .gr-hero) {
+	--gr-heart: #ff7a8a;
+}
+
+.gr-save {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--gr-card) 88%, transparent);
+	color: var(--gr-text);
+	box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+	cursor: pointer;
+}
+
+.gr-save[hidden] {
+	display: none;
+}
+
+.gr-save__icon {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+}
+
+.gr-save[aria-pressed="true"] .gr-save__icon {
+	fill: var(--gr-heart);
+	stroke: var(--gr-heart);
+}
+
+.gr-save:focus-visible {
+	outline: 3px solid var(--gr-primary);
+	outline-offset: 2px;
+}
+
+/* On a restaurant page the button sits in the action bar with a label. */
+.gr-save.gr-save--action {
+	position: static;
+	width: auto;
+	height: auto;
+	padding: 0 1.1rem;
+	border: 1px solid var(--gr-primary);
+	gap: 0.4rem;
+	box-shadow: none;
+	background: var(--gr-card);
+	color: var(--gr-primary);
+}
+
+.gr-save--action .gr-save__icon {
+	width: 1.15rem;
+	height: 1.15rem;
+}
+
+.gr-saved {
+	display: grid;
+	gap: 1.25rem;
+}
+
+.gr-saved__tools {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1rem;
+}
+
+.gr-saved__tools p,
+.gr-saved__intro {
+	margin: 0;
+	color: var(--gr-muted-text);
+}
+
+.gr-saved__head {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.gr-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.75rem;
+	padding: 0 1.25rem;
+	border: 1px solid var(--gr-primary);
+	border-radius: 999px;
+	background: var(--gr-primary);
+	color: var(--gr-on-primary);
+	font: inherit;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.gr-button[hidden] {
+	display: none;
+}
+
+.gr-button[disabled] {
+	opacity: 0.7;
+	cursor: default;
+}
+
+.gr-button--quiet {
+	background: var(--gr-card);
+	color: var(--gr-primary);
+}
+
+.gr-button--danger {
+	border-color: #a4161a;
+	background: var(--gr-card);
+	color: #a4161a;
+}
+
+:root[data-theme="dark"] .gr-button--danger {
+	border-color: #ff8a8a;
+	color: #ff8a8a;
+}
+
+/* The case for signing in, on the Saved page and in the prompt. */
+.gr-join {
+	display: grid;
+	gap: 0.75rem;
+	padding: 1.25rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	background: var(--gr-surface);
+	color: var(--gr-text);
+}
+
+.gr-join--dialog {
+	padding: 0;
+	border: 0;
+	background: none;
+}
+
+.gr-join__title {
+	margin: 0;
+	font-size: 1.25rem;
+}
+
+.gr-join__why,
+.gr-join__login {
+	margin: 0;
+}
+
+.gr-join__fine {
+	margin: 0;
+	color: var(--gr-muted-text);
+	font-size: 0.85rem;
+}
+
+.gr-join__options {
+	display: grid;
+	gap: 0.75rem;
+	max-width: 22rem;
+}
+
+.gr-join__social .loginpress-sl-shortcode-wrapper,
+.gr-join__social .social-networks {
+	margin: 0;
+}
+
+.gr-join__or {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0;
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+}
+
+.gr-join__or::before,
+.gr-join__or::after {
+	content: "";
+	flex: 1;
+	border-top: 1px solid var(--gr-border);
+}
+
+.gr-join-dialog {
+	width: min(26rem, calc(100vw - 2rem));
+	max-height: calc(100vh - 2rem);
+	box-sizing: border-box;
+	padding: 1.5rem;
+	border: 0;
+	border-radius: calc(var(--gr-radius) * 2);
+	background: var(--gr-card);
+	color: var(--gr-text);
+	box-shadow: 0 10px 40px rgb(0 0 0 / 30%);
+}
+
+.gr-join-dialog::backdrop {
+	background: rgb(0 0 0 / 45%);
+}
+
+.gr-join-dialog__close {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	width: 2.75rem;
+	height: 2.75rem;
+	border: 0;
+	background: none;
+	color: var(--gr-text);
+	font-size: 1.6rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.gr-join-dialog__later {
+	margin: 0.75rem 0 0;
+}
+
+.gr-join-dialog .gr-join__title {
+	padding-right: 2.5rem;
+}
+
+.gr-account {
+	padding: 1.25rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+}
+
+.gr-account h2 {
+	margin: 0 0 0.5rem;
+	font-size: 1.25rem;
+}
+
+.gr-account__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1.25rem;
+	margin: 0 0 1rem;
+	padding: 0;
+	list-style: none;
+}
+
+.gr-account__delete {
+	margin: 0;
+}
+
+/* Header: Saved (with count) and Sign in or Account. */
+.gr-account-links {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	white-space: nowrap;
+}
+
+.gr-account-links a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	min-height: 2.75rem;
+	color: inherit;
+	text-decoration: none;
+}
+
+.gr-account-links .gr-save__icon {
+	width: 1.2rem;
+	height: 1.2rem;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+}
+
+.gr-account-links__count {
+	min-width: 1.25rem;
+	padding: 0 0.35rem;
+	border-radius: 999px;
+	background: var(--gr-primary);
+	color: var(--gr-on-primary);
+	font-size: 0.75rem;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+.gr-account-links__count[hidden] {
+	display: none;
+}
+
+.gr-account-links__signin {
+	padding: 0 0.9rem;
+	border-radius: 999px;
+	background: var(--gr-primary);
+	color: var(--gr-on-primary) !important;
+	font-weight: 600;
+}
+
+@media (max-width: 40rem) {
+	.gr-account-links {
+		gap: 0.4rem;
+	}
+
+	.gr-account-links__signin {
+		padding: 0 0.7rem;
+		font-size: 0.9rem;
+	}
+
+	.gr-account-links > .gr-account-links__saved > span:not(.gr-account-links__count) {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+	}
+}
+
+.gr-saved-toast {
+	position: fixed;
+	left: 50%;
+	bottom: 1rem;
+	z-index: 100000;
+	max-width: calc(100vw - 2rem);
+	padding: 0.75rem 1rem;
+	border-radius: var(--gr-radius);
+	background: var(--gr-text);
+	color: var(--gr-card);
+	box-shadow: 0 4px 16px rgb(0 0 0 / 25%);
+	transform: translate(-50%, 200%);
+	transition: transform 0.2s ease;
+}
+
+.gr-saved-toast.is-shown {
+	transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gr-saved-toast {
+		transition: none;
+	}
+}

@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
 final class Pages {
 
 	public const OPTION  = 'guam_restaurants_legal_pages';
-	public const VERSION = '2';
+	public const VERSION = '3';
 
 	public const STATEMENT_MARKER = 'Our editorial statement';
 
