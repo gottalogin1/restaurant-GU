@@ -56,6 +56,17 @@ Guam-licensed attorney ([legal-and-policy.md](legal-and-policy.md) §7 to §9).
 - [ ] Media liability or errors-and-omissions insurance.
 - [ ] Pika's Best: wait for PDN's reply before showing award facts, and use no
       logos or badges without permission.
+- [ ] **To do (revise): photo upload agreement.** Set the company's formal
+      name in `GUAM_RESTAURANTS_LEGAL_NAME` (wp-config.php) once it is decided;
+      until then the agreement and the upload form use the site name. Have
+      counsel review /photo-upload-agreement/ (copyright transfer by a tick
+      box, the fallback license, minors) and bump `Photos\Agreement::VERSION`
+      after any change. Text: `data/legal/photo-upload-agreement.md`.
+- [ ] Register a DMCA agent: visitors can now upload photos.
+- [ ] Photos: raise PHP `upload_max_filesize` to 20M and `post_max_size` to
+      24M, and set `GUAM_RESTAURANTS_MAX_UPLOAD_MB` to 20 in wp-config.php
+      (it was 10). Run `wp guam-restaurants cuisine-photos --dry-run`, then
+      without `--dry-run`, and look at each cuisine photo.
 
 ## Plugins
 

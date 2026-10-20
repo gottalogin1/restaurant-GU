@@ -28,6 +28,8 @@ that page. Re-check before building an importer.
 | Google Places API (New) | **Use with limits** | Attorney cleared the directory-use question (2026-10-10). Store only place IDs (plus the business name an admin saves from the review queue, attorney-cleared 2026-10-20); fetch ratings live; never show Places content on or near a non-Google map. |
 | Yelp Places API | **Use with limits** (optional) | Attorney cleared the commercial-use question (2026-10-10). 24-hour cache cap; Yelp ratings may not sit alongside other user-generated content; paid plans start at $229/month. |
 | Pika's Best of Guam (PDN) | **Use with limits** | Facts only (year, category, placing) with source URL, pending PDN's reply. See §8 and `docs/awards-research.md`. |
+| Openverse (openly licensed photos) | **Use with limits** | One illustrative photo per cuisine, CC0, public domain, CC BY or CC BY-SA only, always labeled "Illustrative photo" and credited. See §8a. |
+| Restaurant websites (photos) | **Use with limits** | Only with the owner's permission, recorded on the restaurant (§8a). Photos on a website belong to whoever took them. |
 
 **Collection method (2026-10-10).** Data comes through the official APIs
 and open datasets above. Small, rate-limited fetches of other public pages
@@ -605,6 +607,22 @@ category, placing) with a source URL per fact; no copied text, images or
 logo. Hold off importing full winner lists until PDN answers the
 permission email in `docs/awards-research.md` §8.
 
+## 8a. Photos (added 2026-10-20)
+
+Sanjay asked for card photos from restaurant websites, else from an image
+search. Website and image-search photos are copyrighted by whoever took
+them, and `docs/legal-and-policy.md` promises to remove photos the site
+uploaded without a license, so neither is copied without permission.
+
+| | |
+|---|---|
+| Order on a card | Featured image (set by an editor), then the verified owner's photos (claimed listings), then the cuisine's illustrative photo, then the tinted cuisine panel (`Site\Restaurant_View::media()`) |
+| Website photo | Restaurant edit screen, box "Photo from the restaurant's website": image address, who gave permission, how and when, and a tick box. Without the note and tick nothing is downloaded. The note is kept on the image (`_gr_photo_permission`). |
+| Illustrative photo | Openverse API, <https://api.openverse.org/v1/images/>, which indexes Wikimedia Commons, Flickr and other open collections. `wp guam-restaurants cuisine-photos` searches "<cuisine> food" and keeps the first landscape photo at least 800 px wide under CC0, public domain mark, CC BY or CC BY-SA (all allow commercial use and resizing; NC and ND licenses are excluded). |
+| Label and credit | Every illustrative photo shows "Illustrative photo" (on the restaurant page: "Illustrative photo, not from this restaurant"), the author linked to the source page, and the license linked to its deed, as CC BY asks. |
+| Rate limits | Anonymous Openverse requests are rate limited; the command waits 3 seconds between cuisines and retries with backoff. Limits not checked from here: api.openverse.org, Wikimedia Commons and Flickr are blocked from the cloud environment, so run the command on the server. ⚠️ unverified |
+| Review | Look at each photo after a run. Swap one with `--cuisine=<slug> --refresh`, `--query="<words>"` or `--id=<openverse id>`; remove with `--remove`. |
+
 ## 9. Data policy table
 
 | Data | Source | Policy | Expiry / refresh |
@@ -627,6 +645,9 @@ permission email in `docs/awards-research.md` §8.
 | Map tiles | OpenFreeMap by default, or MapTiler Cloud (Flex) via `GUAM_RESTAURANTS_MAP_STYLE_URL`; Google Maps Embed on pages with Google content | **Fetched live** in the visitor's browser | n/a |
 | Corrections and owner listing requests | Visitors and owners via the correction form | Stored privately in the review queue; only verified facts are published, with a source | Kept in the queue |
 | Listing view counts | Our own site (anonymous daily counts) | Stored, aggregate only | 400 days |
+| Illustrative cuisine photo and its credit (title, author, license, source page, Openverse id) | Openverse (CC0, PDM, CC BY, CC BY-SA) | **Stored permanently** in the media library, always shown with label and credit | When an editor runs `cuisine-photos --refresh` |
+| Visitor and owner photo uploads (reduced copy, dish name, optional dish rating, display name, agreement version) | First-party, under the photo upload agreement | **Stored permanently** after approval; the full-size original is deleted after 30 days; email never stored | n/a |
+| Restaurant photo from its own website, with the permission note | Restaurant website, owner's permission | **Stored permanently** as the featured image; removed if the owner asks | n/a |
 
 ## 10. Research-only references (not data sources)
 

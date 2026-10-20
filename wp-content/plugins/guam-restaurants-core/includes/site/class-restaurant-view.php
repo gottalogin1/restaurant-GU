@@ -11,6 +11,8 @@ use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Monitoring\Queries;
 use GuamRestaurants\Core\Owners\Owner_Content;
+use GuamRestaurants\Core\Photos\Cuisine_Photos;
+use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Vocabulary;
@@ -261,7 +263,7 @@ final class Restaurant_View {
 
 	/**
 	 * Photo for cards and the page top: the featured image, else the
-	 * verified owner's first photo.
+	 * verified owner's first photo, else the newest approved upload.
 	 *
 	 * @param int $restaurant_id Restaurant.
 	 * @return int Attachment ID, 0 for none.
@@ -272,15 +274,14 @@ final class Restaurant_View {
 			return $featured;
 		}
 		// Owner photos show only while the listing is claimed, as in Owner_Content::render_block().
-		if ( (int) get_post_meta( $restaurant_id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) <= 0 ) {
-			return 0;
-		}
-		foreach ( Owner_Content::get( $restaurant_id )['photos'] as $photo ) {
-			if ( wp_attachment_is_image( $photo ) ) {
-				return $photo;
+		if ( (int) get_post_meta( $restaurant_id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0 ) {
+			$owner = Owner_Content::live_photos( Owner_Content::get( $restaurant_id )['photos'] );
+			if ( $owner ) {
+				return $owner[0];
 			}
 		}
-		return 0;
+		$uploads = Photo_Submissions::ids( Photo_Submissions::APPROVED, $restaurant_id, 1 );
+		return $uploads ? $uploads[0] : 0;
 	}
 
 	/**
@@ -332,34 +333,56 @@ final class Restaurant_View {
 	}
 
 	/**
-	 * Photo, or a tinted panel with the cuisine name when there is none.
+	 * The restaurant's photo; else its cuisine's illustrative photo, labeled
+	 * and credited; else a tinted panel with the cuisine name.
 	 *
 	 * @param int    $restaurant_id Restaurant.
 	 * @param string $size          Image size.
 	 * @param string $css_class     Wrapper class.
+	 * @param bool   $full_credit   Say in full that a cuisine photo is not from this restaurant.
 	 * @return string
 	 */
-	public static function media( int $restaurant_id, string $size, string $css_class ): string {
+	public static function media( int $restaurant_id, string $size, string $css_class, bool $full_credit = false ): string {
 		$photo = self::photo_id( $restaurant_id );
 		if ( $photo > 0 ) {
-			return '<div class="' . esc_attr( $css_class ) . '">' . wp_get_attachment_image(
-				$photo,
-				$size,
-				false,
-				array(
-					'loading' => 'lazy',
-					'alt'     => '',
-				)
-			) . '</div>';
+			return '<div class="' . esc_attr( $css_class ) . '">' . self::image( $photo, $size ) . '</div>';
 		}
 		$cuisines = self::terms( $restaurant_id, Content_Types::TAX_CUISINE );
-		$label    = $cuisines ? $cuisines[0]->name : __( 'Restaurant', 'guam-restaurants-core' );
-		$hue      = $cuisines ? crc32( $cuisines[0]->slug ) % 360 : 190;
+		$stock    = Cuisine_Photos::for_cuisines( $cuisines );
+		if ( null !== $stock ) {
+			return sprintf(
+				'<div class="%1$s %1$s--stock">%2$s%3$s</div>',
+				esc_attr( $css_class ),
+				self::image( $stock['id'], $size ),
+				Cuisine_Photos::credit_html( $stock['credit'], $full_credit )
+			);
+		}
+		$label = $cuisines ? $cuisines[0]->name : __( 'Restaurant', 'guam-restaurants-core' );
+		$hue   = $cuisines ? crc32( $cuisines[0]->slug ) % 360 : 190;
 		return sprintf(
 			'<div class="%1$s %1$s--empty" style="--gr-hue:%2$d" aria-hidden="true"><span>%3$s</span></div>',
 			esc_attr( $css_class ),
 			(int) $hue,
 			esc_html( $label )
+		);
+	}
+
+	/**
+	 * A decorative image tag (the name next to it says what it shows).
+	 *
+	 * @param int    $attachment_id Attachment.
+	 * @param string $size          Image size.
+	 * @return string
+	 */
+	private static function image( int $attachment_id, string $size ): string {
+		return wp_get_attachment_image(
+			$attachment_id,
+			$size,
+			false,
+			array(
+				'loading' => 'lazy',
+				'alt'     => '',
+			)
 		);
 	}
 

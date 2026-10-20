@@ -62,7 +62,8 @@ define( 'GUAM_RESTAURANTS_HSTS', false );           // true once HTTPS works eve
 define( 'GUAM_RESTAURANTS_CSP', 'report-only' );     // 'enforce' after a clean week
 define( 'GUAM_RESTAURANTS_CLIENT_IP_HEADER', '' );   // 'HTTP_CF_CONNECTING_IP' behind Cloudflare
 define( 'GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA', false ); // true once admins enrolled
-define( 'GUAM_RESTAURANTS_MAX_UPLOAD_MB', 10 );
+define( 'GUAM_RESTAURANTS_MAX_UPLOAD_MB', 20 );
+define( 'GUAM_RESTAURANTS_LEGAL_NAME', '' ); // TO DO: formal company name for the photo upload agreement.
 
 // API keys and budgets (docs/data-sources.md, .env.example has the full list).
 define( 'GUAM_RESTAURANTS_GOOGLE_PLACES_KEY', '<key>' );
@@ -194,5 +195,5 @@ rolled-back release for long.
   Apache and nginx do this by default; check with
   `curl -I https://<site>/wp-content/plugins/guam-restaurants-core/assets/vendor/maplibre-gl/maplibre-gl.mjs`.
 - Headers and the `xmlrpc.php` block: docs/security.md §3.
-- PHP: `upload_max_filesize` and `post_max_size` at least 10M; `memory_limit` 256M;
+- PHP: `upload_max_filesize` at least 20M and `post_max_size` at least 24M (visitor photos); `memory_limit` 256M;
   `expose_php = Off`.

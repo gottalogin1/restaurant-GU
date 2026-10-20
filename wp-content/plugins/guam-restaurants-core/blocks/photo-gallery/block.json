@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/photo-gallery",
+	"version": "0.1.0",
+	"title": "Restaurant photos",
+	"category": "widgets",
+	"icon": "format-gallery",
+	"description": "Photos visitors and owners uploaded and an administrator approved, with dish names and ratings, and the upload form.",
+	"keywords": [ "photos", "gallery", "upload", "dish" ],
+	"textdomain": "guam-restaurants-core",
+	"attributes": {
+		"restaurantId": {
+			"type": "integer",
+			"default": 0
+		},
+		"showForm": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./editor.js"
+}

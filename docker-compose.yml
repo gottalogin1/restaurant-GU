@@ -44,7 +44,8 @@ x-wp-env: &wp-env
   GUAM_RESTAURANTS_CSP: ${GUAM_RESTAURANTS_CSP:-report-only}
   GUAM_RESTAURANTS_CLIENT_IP_HEADER: ${GUAM_RESTAURANTS_CLIENT_IP_HEADER:-}
   GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA: ${GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA:-0}
-  GUAM_RESTAURANTS_MAX_UPLOAD_MB: ${GUAM_RESTAURANTS_MAX_UPLOAD_MB:-10}
+  GUAM_RESTAURANTS_MAX_UPLOAD_MB: ${GUAM_RESTAURANTS_MAX_UPLOAD_MB:-20}
+  GUAM_RESTAURANTS_LEGAL_NAME: ${GUAM_RESTAURANTS_LEGAL_NAME:-}
   GUAM_RESTAURANTS_ALLOW_XMLRPC: ${GUAM_RESTAURANTS_ALLOW_XMLRPC:-0}
   GUAM_RESTAURANTS_DB_UPGRADE: ${GUAM_RESTAURANTS_DB_UPGRADE:-auto}
   WORDPRESS_CONFIG_EXTRA: |
@@ -95,6 +96,7 @@ services:
       # WooCommerce (premium profile checkout), downloaded by `make woocommerce`.
       - ./.cache/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce
       - ./docker/apache/compression.conf:/etc/apache2/conf-enabled/zz-guam-restaurants-compression.conf:ro
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/zz-guam-restaurants-uploads.ini:ro
       - ./docker/apache/local-https.conf:/etc/apache2/conf-enabled/zz-guam-restaurants-https.conf:ro
       - ./.cache/certs:/etc/guam-restaurants-certs:ro
 

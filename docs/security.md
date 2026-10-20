@@ -48,10 +48,17 @@ Reviewed every request handler, REST route, query and template in the plugin
 - No user enumeration: `/wp-json/wp/v2/users` needs a signed-in user, `?author=N` and
   author archives return 404 to visitors, and the core sitemap has no users list.
 - No WordPress version in the page head or feeds.
-- Uploads: one cap for everyone, `GUAM_RESTAURANTS_MAX_UPLOAD_MB` (default 10, the
+- Uploads: one cap for everyone, `GUAM_RESTAURANTS_MAX_UPLOAD_MB` (default 20, the
   server's `upload_max_filesize` still applies when lower); images over 40 megapixels
   are refused before thumbnails are made; people without `manage_options` can upload
   only JPEG, PNG, GIF, WebP, AVIF and PDF.
+- Visitor photo uploads (`Photos\Photo_Submissions`): REST, multipart, JPEG/PNG/WebP
+  only (checked from the file's bytes), up to 20 MB and 40 megapixels. Honeypot,
+  3-second minimum fill, 5 uploads per hour per hashed IP and per email.
+  Visitors who are not logged in confirm by email first. The original is stored
+  under a random name and deleted after 30 days. The public copy has its
+  camera and location data removed. Owners' photos also wait for approval unless the
+  owner has the "Restaurant owner (trusted)" role.
 
 **`wp-config.php` settings** (in docs/deployment.md §2): `DISALLOW_FILE_EDIT`,
 `WP_DEBUG_DISPLAY` false, `FORCE_SSL_ADMIN`, fresh salts, and `WP_ENVIRONMENT_TYPE`.

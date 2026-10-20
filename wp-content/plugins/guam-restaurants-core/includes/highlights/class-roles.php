@@ -45,9 +45,17 @@ final class Roles {
 	public const OWNER_ROLE = 'gr_restaurant_owner';
 
 	/**
+	 * Owners an administrator trusts: their photos go live without approval
+	 * (Sanjay, 2026-10-20). Otherwise the same as OWNER_ROLE, so they can
+	 * still change only the restaurants linked to them.
+	 */
+	public const TRUSTED_OWNER_ROLE = 'gr_restaurant_owner_trusted';
+	public const PUBLISH_PHOTOS     = 'gr_publish_own_photos';
+
+	/**
 	 * Bump when capabilities change so maybe_install() runs again.
 	 */
-	public const VERSION        = '4';
+	public const VERSION        = '5';
 	public const VERSION_OPTION = 'guam_restaurants_core_roles_version';
 
 	/**
@@ -80,8 +88,19 @@ final class Roles {
 				)
 			);
 		}
+		if ( null === get_role( self::TRUSTED_OWNER_ROLE ) ) {
+			add_role(
+				self::TRUSTED_OWNER_ROLE,
+				'Restaurant owner (trusted)',
+				array(
+					'read'               => true,
+					self::OWNER          => true,
+					self::PUBLISH_PHOTOS => true,
+				)
+			);
+		}
 		$grants = array(
-			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER, Leads::CAP, Ads::CAP, Claims::CAP ),
+			'administrator' => array( self::MODERATE, self::EDITOR, self::OWNER, self::PUBLISH_PHOTOS, Leads::CAP, Ads::CAP, Claims::CAP ),
 			'editor'        => array( self::EDITOR ),
 		);
 		foreach ( $grants as $role_name => $caps ) {

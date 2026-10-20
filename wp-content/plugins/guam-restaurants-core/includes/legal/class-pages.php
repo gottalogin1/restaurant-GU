@@ -9,6 +9,7 @@
 namespace GuamRestaurants\Core\Legal;
 
 use GuamRestaurants\Core\Highlights\Policy_Page;
+use GuamRestaurants\Core\Photos\Agreement;
 use GuamRestaurants\Core\Site\Pages as Site_Pages;
 
 defined( 'ABSPATH' ) || exit;
@@ -24,8 +25,8 @@ defined( 'ABSPATH' ) || exit;
  *   publishes it.
  * - terms: the Site\Pages terms draft, filled while it still holds the
  *   placeholder. Stays a draft for counsel.
- * - disclosure (/advertising-disclosure/) and sources (/data-sources/):
- *   published. They describe what the site already does.
+ * - disclosure (/advertising-disclosure/), sources (/data-sources/) and
+ *   photos (/photo-upload-agreement/): published. They describe what the site already does.
  * - editorial policy: the editorial statement, corrections and sponsored
  *   feature sections are added above the highlights rules, once.
  *
@@ -35,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
 final class Pages {
 
 	public const OPTION  = 'guam_restaurants_legal_pages';
-	public const VERSION = '1';
+	public const VERSION = '2';
 
 	public const STATEMENT_MARKER = 'Our editorial statement';
 
@@ -66,6 +67,12 @@ final class Pages {
 				'title'   => __( 'Data sources and credits', 'guam-restaurants-core' ),
 				'file'    => 'data-attributions.md',
 				'excerpt' => __( 'Where the directory\'s restaurant details, maps, ratings and award results come from, and their licences.', 'guam-restaurants-core' ),
+			),
+			'photos'     => array(
+				'slug'    => Agreement::SLUG,
+				'title'   => __( 'Photo upload agreement', 'guam-restaurants-core' ),
+				'file'    => 'photo-upload-agreement.md',
+				'excerpt' => __( 'What you confirm and agree to when you upload a photo, including the transfer of the photo to us.', 'guam-restaurants-core' ),
 			),
 		);
 	}
@@ -164,6 +171,7 @@ final class Pages {
 			'correction_url' => $page( 'suggest-a-correction' ),
 			'advertise_url'  => $page( 'advertise' ),
 			'disclosure_url' => $page( 'advertising-disclosure' ),
+			'contact_url'    => $page( 'contact-the-owner' ),
 		);
 	}
 

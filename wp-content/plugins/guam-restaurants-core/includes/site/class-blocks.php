@@ -482,7 +482,7 @@ final class Blocks {
 			'section',
 			sprintf(
 				'%1$s<div class="gr-hero__summary">%2$s<h1 class="gr-hero__name">%7$s</h1>%3$s%4$s<nav class="gr-hero__actions" aria-label="%5$s">%6$s</nav></div>',
-				Restaurant_View::media( $id, 'large', 'gr-hero__media' ),
+				Restaurant_View::media( $id, 'large', 'gr-hero__media', true ),
 				Restaurant_View::badges( $id ),
 				$meta ? '<p class="gr-hero__meta">' . implode( ' <span aria-hidden="true">·</span> ', $meta ) . '</p>' : '',
 				'' !== $status
@@ -820,6 +820,7 @@ final class Blocks {
 			__( 'Terms of use', 'guam-restaurants-core' ) => Pages::url( 'terms' ),
 			__( 'Advertising disclosure', 'guam-restaurants-core' ) => Legal_Pages::url( 'disclosure' ),
 			__( 'Data sources', 'guam-restaurants-core' ) => Legal_Pages::url( 'sources' ),
+			__( 'Photo upload agreement', 'guam-restaurants-core' ) => Legal_Pages::url( 'photos' ),
 			__( 'Advertise with us', 'guam-restaurants-core' ) => Pages::url( 'advertise' ),
 		);
 		$items  = '';

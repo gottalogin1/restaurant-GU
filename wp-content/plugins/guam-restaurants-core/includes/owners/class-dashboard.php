@@ -14,6 +14,7 @@ use GuamRestaurants\Core\Ads\Stats;
 use GuamRestaurants\Core\Commerce\Woo_Checkout;
 use GuamRestaurants\Core\Highlights\Roles;
 use GuamRestaurants\Core\Highlights\Submit_Screen;
+use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Restaurant_View;
@@ -167,12 +168,16 @@ final class Dashboard {
 		}
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$result = Owner_Content::apply( $user_id, $restaurant, $input );
-		self::back(
-			$restaurant,
-			is_wp_error( $result )
-				? array( 'error', implode( ' ', $result->get_error_messages() ) )
-				: array( 'success', $result['changed'] ? __( 'Saved. The change is live on your listing.', 'guam-restaurants-core' ) : __( 'Nothing changed.', 'guam-restaurants-core' ) )
-		);
+		if ( is_wp_error( $result ) ) {
+			self::back( $restaurant, array( 'error', implode( ' ', $result->get_error_messages() ) ) );
+		}
+		$message = __( 'Nothing changed.', 'guam-restaurants-core' );
+		if ( ! empty( $new ) && ! Photo_Submissions::is_live( (int) $new ) ) {
+			$message = __( 'Saved. Your new photo will appear on your listing after an administrator approves it.', 'guam-restaurants-core' );
+		} elseif ( $result['changed'] ) {
+			$message = __( 'Saved. The change is live on your listing.', 'guam-restaurants-core' );
+		}
+		self::back( $restaurant, array( 'success', $message ) );
 	}
 
 	/**
@@ -222,6 +227,7 @@ final class Dashboard {
 			return $id;
 		}
 		update_post_meta( (int) $id, '_wp_attachment_image_alt', mb_substr( $alt, 0, 150 ) );
+		Photo_Submissions::hold_owner_photo( (int) $id, $user_id );
 		return (int) $id;
 	}
 
@@ -445,7 +451,13 @@ final class Dashboard {
 		self::form_open( $restaurant, 'photos', __( 'Photos', 'guam-restaurants-core' ), true );
 		echo '<div style="display:flex;flex-wrap:wrap;gap:1rem">';
 		foreach ( $photos as $photo ) {
-			printf( '<label style="text-align:center">%1$s<br><input type="checkbox" name="keep[]" value="%2$d" checked> %3$s</label>', wp_get_attachment_image( $photo, 'thumbnail' ), (int) $photo, esc_html__( 'Keep', 'guam-restaurants-core' ) );
+			printf(
+				'<label style="text-align:center">%1$s<br><input type="checkbox" name="keep[]" value="%2$d" checked> %3$s%4$s</label>',
+				wp_get_attachment_image( $photo, 'thumbnail' ),
+				(int) $photo,
+				esc_html__( 'Keep', 'guam-restaurants-core' ),
+				Photo_Submissions::is_live( $photo ) ? '' : '<br><em>' . esc_html__( 'Waiting for approval', 'guam-restaurants-core' ) . '</em>'
+			);
 		}
 		echo '</div>';
 		if ( count( $photos ) < Premium::max_photos( $restaurant ) ) {
