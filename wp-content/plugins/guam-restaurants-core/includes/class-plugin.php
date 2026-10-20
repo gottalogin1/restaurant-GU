@@ -113,6 +113,7 @@ final class Plugin {
 		Admin\Review_Queue_Screen::register();
 		Admin\Website_Followup_Screen::register();
 		Admin\Tag_Origins_Box::register();
+		Photos\Website_Photo_Box::register();
 		Admin\No_Cuisine_Filter::register();
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -122,6 +123,7 @@ final class Plugin {
 			Cli\Awards_Commands::register();
 			Cli\Monitoring_Commands::register();
 			Cli\Site_Commands::register();
+			Cli\Photo_Commands::register();
 			Cli\Premium_Commands::register();
 			Cli\Operations_Commands::register();
 		}
