@@ -11,17 +11,18 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * English is the original. Japanese and Korean pages are machine translated
- * by TranslatePress (docs/translation.md), which this class reads through
- * its public function trp_custom_language_switcher() and its
- * $TRP_LANGUAGE global. Without TranslatePress the site has English only
- * and nothing here changes a page.
+ * by Autoglot (docs/translation.md), which serves them under /ja/ and /ko/.
+ * This class reads the language from that address prefix, so it needs
+ * nothing from Autoglot except knowing it is active (its [ag_switcher]
+ * shortcode exists). Without it the site has English only and nothing here
+ * changes a page.
  *
  * Text that must stay as written (restaurant names, addresses, village and
  * mall names, other sites' ratings and reviews, photo credits) is wrapped
- * with keep(). The marker is the `notranslate` class plus translate="no"
- * (the HTML standard, honored by browsers' own translators) and
- * TranslatePress's data-no-translation attribute; Integration adds the
- * class to TranslatePress's exclusion lists too.
+ * with keep(). The marker is the `notranslate` class (honored by Autoglot,
+ * Google Translate and most other translators), translate="no" (the HTML
+ * standard, honored by browsers' own translators) and data-no-translation
+ * (TranslatePress's attribute, in case the site ever switches back).
  */
 final class Languages {
 
@@ -31,71 +32,40 @@ final class Languages {
 	public const ORIGINAL = 'en';
 
 	/**
+	 * Machine-translated languages, by their address prefix.
+	 */
+	public const TRANSLATED = array( 'ja', 'ko' );
+
+	/**
 	 * Class that marks text kept in the original wording.
 	 */
 	public const KEEP_CLASS = 'notranslate';
 
 	/**
-	 * Filter for the language list (tests use it).
+	 * Autoglot's language switcher shortcode; its presence means Autoglot is active.
 	 */
-	public const FILTER = 'guam_restaurants_languages';
+	public const SWITCHER_SHORTCODE = 'ag_switcher';
 
 	/**
-	 * Language names written in their own language, for the switcher.
-	 */
-	public const NATIVE_NAMES = array(
-		'en' => 'English',
-		'ja' => '日本語',
-		'ko' => '한국어',
-	);
-
-	/**
-	 * Published languages, in the switcher's order.
+	 * Whether a translation plugin serves the /ja/ and /ko/ pages.
 	 *
-	 * Each has: code (en, ja, ko), locale (TranslatePress's code, e.g.
-	 * ko_KR), name (in its own language), url (this page in that language)
-	 * and current.
-	 *
-	 * @return array<int, array{code: string, locale: string, name: string, url: string, current: bool}>
+	 * @return bool
 	 */
-	public static function all(): array {
-		$list = array();
-		if ( function_exists( 'trp_custom_language_switcher' ) ) {
-			$current = (string) ( $GLOBALS['TRP_LANGUAGE'] ?? '' );
-			foreach ( (array) trp_custom_language_switcher() as $key => $item ) {
-				$locale = (string) ( $item['language_code'] ?? $key );
-				$code   = self::short( $locale );
-				$list[] = array(
-					'code'    => $code,
-					'locale'  => $locale,
-					'name'    => self::NATIVE_NAMES[ $code ] ?? (string) ( $item['language_name'] ?? $code ),
-					'url'     => (string) ( $item['current_page_url'] ?? '' ),
-					'current' => $locale === $current,
-				);
-			}
-		}
-
-		/**
-		 * Filters the published languages.
-		 *
-		 * @param array<int, array<string, mixed>> $list Languages.
-		 */
-		$list = apply_filters( 'guam_restaurants_languages', $list );
-		return is_array( $list ) ? array_values( $list ) : array();
+	public static function active(): bool {
+		return shortcode_exists( self::SWITCHER_SHORTCODE );
 	}
 
 	/**
 	 * Short code of the language this page is shown in.
 	 *
-	 * @return string en, ja, ko, ...
+	 * @return string en, ja or ko.
 	 */
 	public static function current(): string {
-		foreach ( self::all() as $language ) {
-			if ( ! empty( $language['current'] ) ) {
-				return (string) $language['code'];
-			}
+		if ( ! self::active() ) {
+			return self::ORIGINAL;
 		}
-		return self::ORIGINAL;
+		$parts = explode( '/', ltrim( self::request_path(), '/' ), 2 );
+		return in_array( $parts[0], self::TRANSLATED, true ) ? $parts[0] : self::ORIGINAL;
 	}
 
 	/**
@@ -108,35 +78,25 @@ final class Languages {
 	}
 
 	/**
-	 * This page in the original language, or '' when unknown.
+	 * This page in the original language, or '' on an original page.
 	 *
 	 * @return string
 	 */
 	public static function original_url(): string {
-		foreach ( self::all() as $language ) {
-			if ( self::ORIGINAL === $language['code'] ) {
-				return (string) $language['url'];
-			}
+		$code = self::current();
+		if ( self::ORIGINAL === $code ) {
+			return '';
 		}
-		return '';
-	}
-
-	/**
-	 * Short code of a locale: ko_KR and ko-KR give ko.
-	 *
-	 * @param string $locale Locale or language code.
-	 * @return string
-	 */
-	public static function short( string $locale ): string {
-		$parts = preg_split( '/[_-]/', strtolower( $locale ) );
-		return sanitize_key( (string) ( $parts[0] ?? '' ) );
+		$path  = substr( ltrim( self::request_path(), '/' ), strlen( $code ) );
+		$query = (string) wp_parse_url( self::request_uri(), PHP_URL_QUERY );
+		return untrailingslashit( (string) get_option( 'home' ) ) . '/' . ltrim( $path, '/' ) . ( '' !== $query ? '?' . $query : '' );
 	}
 
 	/**
 	 * Plain or already escaped text wrapped so translators leave it as written.
 	 *
-	 * Wrap the text inside a link, not the link itself, so TranslatePress
-	 * still points the link at the page in the visitor's language.
+	 * Wrap the text inside a link, not the link itself, so the translation
+	 * plugin still points the link at the page in the visitor's language.
 	 *
 	 * @param string $html Escaped text or inline HTML.
 	 * @return string
@@ -160,8 +120,8 @@ final class Languages {
 	/**
 	 * A URL on this site without the language prefix of a translated page.
 	 *
-	 * Translation plugins put the language in home_url() (/ja/, /ko/); the
-	 * saved home option never has it.
+	 * Some translation plugins put the language in home_url() (/ja/, /ko/);
+	 * the saved home option never has it.
 	 *
 	 * @param string $url URL.
 	 * @return string
@@ -178,5 +138,28 @@ final class Languages {
 			return $url;
 		}
 		return ( '' !== $scheme ? $scheme . ':' : '' ) . $original . substr( $rest, strlen( $shown ) );
+	}
+
+	/**
+	 * The requested address, as the visitor typed it.
+	 *
+	 * @return string
+	 */
+	private static function request_uri(): string {
+		return isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+	}
+
+	/**
+	 * The requested path below the site's home path (for sites in a subfolder).
+	 *
+	 * @return string Starts with /.
+	 */
+	private static function request_path(): string {
+		$path = (string) wp_parse_url( self::request_uri(), PHP_URL_PATH );
+		$base = untrailingslashit( (string) wp_parse_url( (string) get_option( 'home' ), PHP_URL_PATH ) );
+		if ( '' !== $base && 0 === strpos( $path, $base . '/' ) ) {
+			$path = substr( $path, strlen( $base ) );
+		}
+		return '/' . ltrim( $path, '/' );
 	}
 }

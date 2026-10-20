@@ -1920,16 +1920,23 @@
 	--gr-border: var(--wp--preset--color--border, #c9c3b8);
 }
 
-/* Header: a thin row above the site title, English · 日本語 · 한국어 at the right. */
-.gr-languages__list {
+/* Header: a thin row above the site title with Autoglot's switcher at the right. */
+.gr-languages {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: flex-end;
 	gap: 0.25rem;
-	margin: -0.5rem 0 0;
+	margin-top: -0.5rem;
+	font-size: 0.875rem;
+}
+
+.gr-languages ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	margin: 0;
 	padding: 0;
 	list-style: none;
-	font-size: 0.875rem;
 }
 
 .gr-languages a {
@@ -1974,18 +1981,4 @@
 	align-items: center;
 	gap: 0.25rem 0.5rem;
 	margin-top: 0.25rem !important;
-}
-
-.gr-translated__badge {
-	display: inline-flex;
-	align-items: center;
-	margin-left: auto;
-	color: var(--gr-muted-text);
-	font-size: 0.8125rem;
-}
-
-.gr-translated__badge img {
-	display: block;
-	height: 16px;
-	width: auto;
 }

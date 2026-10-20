@@ -17,8 +17,8 @@ use GuamRestaurants\Core\Translation\Integration;
 use GuamRestaurants\Core\Translation\Languages;
 
 /**
- * TranslatePress is not installed in tests; the languages filter and a
- * home_url filter stand in for what it does on a /ja/ page.
+ * Autoglot is not installed in tests; a stand-in [ag_switcher] shortcode and
+ * the request address stand in for what it does on a /ja/ page.
  *
  * @covers \GuamRestaurants\Core\Translation\Languages
  * @covers \GuamRestaurants\Core\Translation\Integration
@@ -28,64 +28,54 @@ class Translation_Test extends Test_Case {
 	private const KEEP = '<span class="notranslate" translate="no" data-no-translation>';
 
 	/**
-	 * Stand-in filters added by show_in(), as hook => callback.
+	 * Request address before the test.
 	 *
-	 * @var array<int, array{0: string, 1: callable}>
+	 * @var string|null
 	 */
-	private array $stand_ins = array();
+	private $request_uri;
 
 	/**
-	 * Removes the stand-ins and the badge setting.
+	 * Remembers the request address.
+	 */
+	public function set_up() {
+		parent::set_up();
+		$this->request_uri = $_SERVER['REQUEST_URI'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Restored in tear_down.
+	}
+
+	/**
+	 * Removes the stand-in and restores the request address.
 	 */
 	public function tear_down() {
-		foreach ( $this->stand_ins as $stand_in ) {
-			remove_filter( $stand_in[0], $stand_in[1] );
+		remove_shortcode( Languages::SWITCHER_SHORTCODE );
+		if ( null === $this->request_uri ) {
+			unset( $_SERVER['REQUEST_URI'] );
+		} else {
+			$_SERVER['REQUEST_URI'] = $this->request_uri;
 		}
-		$this->stand_ins = array();
-		putenv( 'GUAM_RESTAURANTS_GOOGLE_TRANSLATE_BADGE_URL' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Config reads the environment.
 		parent::tear_down();
 	}
 
 	/**
-	 * Pretends the page is shown in a language, the way TranslatePress does it.
+	 * Pretends Autoglot is active and the visitor opened a page.
 	 *
-	 * @param string $current en, ja or ko.
+	 * @param string $uri Requested address, e.g. /ja/restaurants/test/.
 	 */
-	private function show_in( string $current ): void {
-		$home      = untrailingslashit( (string) get_option( 'home' ) );
-		$languages = static function () use ( $current, $home ) {
-				$list = array();
-			foreach ( array(
-				'en' => 'en_US',
-				'ja' => 'ja',
-				'ko' => 'ko_KR',
-			) as $code => $locale ) {
-				$list[] = array(
-					'code'    => $code,
-					'locale'  => $locale,
-					'name'    => Languages::NATIVE_NAMES[ $code ],
-					'url'     => $home . ( 'en' === $code ? '' : '/' . $code ) . '/restaurants/test/',
-					'current' => $code === $current,
-				);
+	private function open( string $uri ): void {
+		add_shortcode(
+			Languages::SWITCHER_SHORTCODE,
+			static function () {
+				return '<ul class="ag-switcher"><li><a href="/restaurants/test/">English</a></li><li><a href="/ja/restaurants/test/">日本語</a></li></ul>';
 			}
-				return $list;
-		};
-		add_filter( Languages::FILTER, $languages );
-		$this->stand_ins[] = array( Languages::FILTER, $languages );
-		if ( 'en' !== $current ) {
-			$prefix = static function ( $url ) use ( $home, $current ) {
-				return 0 === strpos( $url, $home ) ? $home . '/' . $current . substr( $url, strlen( $home ) ) : $url;
-			};
-			add_filter( 'home_url', $prefix );
-			$this->stand_ins[] = array( 'home_url', $prefix );
-		}
+		);
+		$_SERVER['REQUEST_URI'] = $uri;
 	}
 
 	/**
 	 * Without a translation plugin the site is English and nothing is added.
 	 */
 	public function test_english_only_without_a_translation_plugin() {
-		$this->assertSame( array(), Languages::all() );
+		$_SERVER['REQUEST_URI'] = '/ja/restaurants/test/';
+		$this->assertFalse( Languages::active() );
 		$this->assertSame( 'en', Languages::current() );
 		$this->assertFalse( Languages::is_translated() );
 		$this->assertSame( '', Integration::notice() );
@@ -93,12 +83,23 @@ class Translation_Test extends Test_Case {
 	}
 
 	/**
-	 * Locale codes shorten to the language.
+	 * The language comes from the address prefix; other first segments are English.
 	 */
-	public function test_short_codes() {
-		$this->assertSame( 'ko', Languages::short( 'ko_KR' ) );
-		$this->assertSame( 'ja', Languages::short( 'ja' ) );
-		$this->assertSame( 'en', Languages::short( 'en-US' ) );
+	public function test_language_from_the_address() {
+		$home = untrailingslashit( (string) get_option( 'home' ) );
+
+		$this->open( '/ko/villages/yona/?page=2' );
+		$this->assertSame( 'ko', Languages::current() );
+		$this->assertTrue( Languages::is_translated() );
+		$this->assertSame( $home . '/villages/yona/?page=2', Languages::original_url() );
+
+		$this->open( '/ja' );
+		$this->assertSame( 'ja', Languages::current() );
+		$this->assertSame( $home . '/', Languages::original_url() );
+
+		$this->open( '/japanese-food/' );
+		$this->assertSame( 'en', Languages::current() );
+		$this->assertSame( '', Languages::original_url() );
 	}
 
 	/**
@@ -107,18 +108,17 @@ class Translation_Test extends Test_Case {
 	public function test_keep_marks_text() {
 		$this->assertSame( self::KEEP . 'Hagåtña</span>', Languages::keep( 'Hagåtña' ) );
 		$this->assertSame( '', Languages::keep( '' ) );
-
-		$selectors = Integration::add_keep_selector( array( '#wpadminbar' ) );
-		$this->assertSame( array( '#wpadminbar', '.notranslate' ), $selectors );
-		$this->assertSame( $selectors, Integration::add_keep_selector( $selectors ) );
 	}
 
 	/**
-	 * Our REST URLs drop the /ja/ prefix, so TranslatePress never translates or stores the JSON; others keep it.
+	 * If the translation plugin puts /ja/ in home_url(), our REST URLs still drop it, so it never translates or stores the JSON; others keep it.
 	 */
 	public function test_rest_urls_stay_in_the_original_language() {
-		$home = untrailingslashit( (string) get_option( 'home' ) );
-		$this->show_in( 'ja' );
+		$home   = untrailingslashit( (string) get_option( 'home' ) );
+		$prefix = static function ( $url ) use ( $home ) {
+			return 0 === strpos( $url, $home ) ? $home . '/ja' . substr( $url, strlen( $home ) ) : $url;
+		};
+		add_filter( 'home_url', $prefix );
 
 		$this->assertSame( $home . '/ja/about/', home_url( '/about/' ) );
 		$this->assertSame( $home . '/about/', Languages::untranslated_url( home_url( '/about/' ) ) );
@@ -128,6 +128,8 @@ class Translation_Test extends Test_Case {
 		$this->assertStringNotContainsString( '/ja/', $ours );
 		$this->assertStringContainsString( 'guam-restaurants/v1/map', $ours );
 		$this->assertStringContainsString( '/ja/', rest_url( 'wp/v2/posts' ) );
+
+		remove_filter( 'home_url', $prefix );
 	}
 
 	/**
@@ -135,58 +137,47 @@ class Translation_Test extends Test_Case {
 	 */
 	public function test_ratings_url_carries_the_language() {
 		$this->assertStringNotContainsString( 'lang=', Ratings_Rest::url( 5 ) );
-		$this->show_in( 'ko' );
+		$this->open( '/ko/restaurants/test/' );
 		$url = Ratings_Rest::url( 5 );
 		$this->assertStringContainsString( 'lang=ko', $url );
 		$this->assertStringNotContainsString( '/ko/', $url );
 	}
 
 	/**
-	 * Translated pages say they are Google machine translations, link the original and the disclaimer, and show the badge.
+	 * Translated pages say they are machine translations and link the original and the disclaimer.
 	 */
 	public function test_notice_on_translated_pages() {
 		Legal_Pages::ensure();
-		$this->show_in( 'ja' );
+		$this->open( '/ja/restaurants/test/' );
 
 		$notice = Integration::notice();
 		$this->assertStringContainsString( 'lang="ja"', $notice );
-		$this->assertStringContainsString( 'data-no-translation', $notice );
-		$this->assertStringContainsString( 'Google 翻訳による機械翻訳', $notice );
-		$this->assertStringContainsString( '/restaurants/test/" hreflang="en"', $notice );
+		$this->assertStringContainsString( 'class="gr-translated notranslate" translate="no" data-no-translation', $notice );
+		$this->assertStringContainsString( '英語から自動で機械翻訳', $notice );
+		$this->assertStringContainsString( 'href="' . untrailingslashit( (string) get_option( 'home' ) ) . '/restaurants/test/" hreflang="en"', $notice );
 		$this->assertStringContainsString( '/data-sources/#translations', $notice );
 		$this->assertStringNotContainsString( '/ja/data-sources/', $notice );
-		$this->assertStringContainsString( 'href="https://translate.google.com/"', $notice );
-		$this->assertStringContainsString( '>powered by Google Translate</a>', $notice );
-
-		putenv( 'GUAM_RESTAURANTS_GOOGLE_TRANSLATE_BADGE_URL=https://cdn.example.com/badge.png' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Config reads the environment.
-		$this->assertStringContainsString( '<img src="https://cdn.example.com/badge.png" alt="powered by Google Translate"', Integration::notice() );
-
-		ob_start();
-		Integration::machine_translation_link();
-		$this->assertStringContainsString( 'rel="alternate machine-translated-from" hreflang="en"', (string) ob_get_clean() );
+		$this->assertStringNotContainsString( 'Google', $notice );
 	}
 
 	/**
 	 * Korean pages get the Korean notice.
 	 */
 	public function test_korean_notice() {
-		$this->show_in( 'ko' );
+		$this->open( '/ko/restaurants/test/' );
 		$notice = Integration::notice();
 		$this->assertStringContainsString( 'lang="ko"', $notice );
-		$this->assertStringContainsString( 'Google 번역으로 기계 번역', $notice );
+		$this->assertStringContainsString( '영어에서 자동으로 기계 번역', $notice );
 	}
 
 	/**
-	 * The switcher lists every language in its own name and marks the current one.
+	 * The header block shows Autoglot's switcher in our row.
 	 */
 	public function test_language_switcher() {
-		$this->show_in( 'ja' );
+		$this->open( '/ja/restaurants/test/' );
 		$html = do_blocks( '<!-- wp:guam-restaurants/language-switcher /-->' );
 
-		$this->assertStringContainsString( 'gr-languages notranslate', $html );
-		$this->assertStringContainsString( '>English</a>', $html );
-		$this->assertStringContainsString( 'hreflang="ja" lang="ja" aria-current="true">日本語</a>', $html );
-		$this->assertStringContainsString( 'hreflang="ko" lang="ko">한국어</a>', $html );
+		$this->assertStringContainsString( '<nav class="gr-languages wp-block-guam-restaurants-language-switcher" aria-label="Language / 言語 / 언어"><ul class="ag-switcher">', $html );
 	}
 
 	/**
@@ -246,14 +237,14 @@ class Translation_Test extends Test_Case {
 	}
 
 	/**
-	 * The Data sources page gets the Translations section with Google's disclaimer, once.
+	 * The Data sources page gets the Translations section with the disclaimer, once.
 	 */
 	public function test_translations_section_on_data_sources_page() {
 		Legal_Pages::ensure();
 		$page = get_page_by_path( 'data-sources', OBJECT, 'page' );
 		$this->assertInstanceOf( \WP_Post::class, $page );
 		$this->assertStringContainsString( 'id="translations"', $page->post_content );
-		$this->assertStringContainsString( 'GOOGLE DISCLAIMS ALL WARRANTIES RELATED TO THE TRANSLATIONS', $page->post_content );
+		$this->assertStringContainsString( 'the English page applies', $page->post_content );
 		$this->assertLessThan( strpos( $page->post_content, 'Report a problem' ), strpos( $page->post_content, 'id="translations"' ) );
 
 		$this->assertSame( 'kept (already there)', Legal_Pages::add_translations_section() );

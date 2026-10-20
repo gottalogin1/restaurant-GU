@@ -29,8 +29,8 @@ defined( 'ABSPATH' ) || exit;
  *   photos (/photo-upload-agreement/): published. They describe what the site already does.
  * - editorial policy: the editorial statement, corrections and sponsored
  *   feature sections are added above the highlights rules, once.
- * - translations: the machine-translation section with Google's disclaimer
- *   is added to the Data sources page, once.
+ * - translations: the machine-translation section and its disclaimer are
+ *   added to the Data sources page, once.
  *
  * The cookie notice is a section of the privacy policy. The site sets no
  * analytics or advertising cookies, so it needs no consent banner.
@@ -288,7 +288,7 @@ final class Pages {
 	}
 
 	/**
-	 * Adds the Translations section (machine translation and Google's
+	 * Adds the Translations section (machine translation and its
 	 * disclaimer) to the Data sources page, before "Report a problem", once.
 	 *
 	 * @return string What was done.
