@@ -137,6 +137,7 @@ final class Plugin {
 			Cli\Photo_Commands::register();
 			Cli\Premium_Commands::register();
 			Cli\Operations_Commands::register();
+			Cli\Translation_Commands::register();
 		}
 	}
 

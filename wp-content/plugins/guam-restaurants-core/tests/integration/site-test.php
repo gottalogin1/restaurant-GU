@@ -689,7 +689,7 @@ class Site_Test extends Guam_Test_Case {
 		update_post_meta( $this->r['meskla'], Restaurant_Meta::PHONE, '+16714771234' );
 		$this->go_to( get_permalink( $this->r['meskla'] ) );
 		$html = do_blocks( '<!-- wp:guam-restaurants/restaurant-hero /-->' );
-		$this->assertStringContainsString( '<h1 class="gr-hero__name"><span class="notranslate" translate="no" data-no-translation>Meskla Chamoru Fusion</span></h1>', $html );
+		$this->assertStringContainsString( '<h1 class="gr-hero__name"><span class="notranslate" translate="no">Meskla Chamoru Fusion</span></h1>', $html );
 		$this->assertStringContainsString( 'href="tel:+16714771234"', $html );
 		$this->assertStringContainsString( 'Award winner 2025', $html );
 		$this->assertStringNotContainsString( '>Website<', $html );

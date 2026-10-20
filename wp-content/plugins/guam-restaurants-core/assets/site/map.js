@@ -78,7 +78,7 @@
 	}
 
 	function keep( text ) {
-		return '<span class="notranslate" translate="no" data-no-translation>' + escapeHtml( text ) + '</span>';
+		return '<span class="notranslate" translate="no">' + escapeHtml( text ) + '</span>';
 	}
 
 	function initExplorer( container ) {

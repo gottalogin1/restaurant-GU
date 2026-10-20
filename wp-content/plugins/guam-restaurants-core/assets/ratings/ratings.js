@@ -50,7 +50,6 @@
 	function keep( node ) {
 		node.classList.add( 'notranslate' );
 		node.setAttribute( 'translate', 'no' );
-		node.setAttribute( 'data-no-translation', '' );
 		return node;
 	}
 

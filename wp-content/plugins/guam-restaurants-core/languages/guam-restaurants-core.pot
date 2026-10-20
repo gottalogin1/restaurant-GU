@@ -1,0 +1,6581 @@
+# Copyright (C) 2026 Guam Restaurants
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Guam Restaurants Core 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/guam-restaurants-core\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-20T23:36:40+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: guam-restaurants-core\n"
+
+#. Plugin Name of the plugin
+#: guam-restaurants-core.php
+msgid "Guam Restaurants Core"
+msgstr ""
+
+#. Description of the plugin
+#: guam-restaurants-core.php
+msgid "Business logic for the Guam restaurant directory: restaurant listings, village, mall and cuisine tagging, imports and ad serving."
+msgstr ""
+
+#. Author of the plugin
+#: guam-restaurants-core.php
+msgid "Guam Restaurants"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:42
+#: includes/admin/class-ingestion-runs-screen.php:43
+#: includes/admin/class-ingestion-runs-screen.php:68
+msgid "Import runs"
+msgstr ""
+
+#. translators: %s: link to the Scheduled jobs screen.
+#: includes/admin/class-ingestion-runs-screen.php:70
+#, php-format
+msgid "Last and next runs of each job, and controls to turn a job off or run it now: %s."
+msgstr ""
+
+#. translators: %s: link to the Scheduled jobs screen.
+#: includes/admin/class-ingestion-runs-screen.php:70
+#: includes/admin/class-scheduled-jobs-screen.php:45
+#: includes/admin/class-scheduled-jobs-screen.php:46
+#: includes/admin/class-scheduled-jobs-screen.php:135
+msgid "Scheduled jobs"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:72
+#: includes/admin/class-scheduled-jobs-screen.php:154
+#: includes/ads/class-admin.php:56
+#: includes/billing/class-admin.php:245
+#: includes/owners/class-dashboard.php:302
+msgid "Runs"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:74
+#: includes/admin/class-ingestion-runs-screen.php:88
+#: includes/awards/class-pages.php:500
+#: includes/awards/class-policy.php:104
+msgid "Source"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:74
+#: includes/admin/class-review-queue-screen.php:646
+#: includes/admin/class-website-followup-screen.php:251
+msgid "All"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:79
+msgid "Filter"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:87
+msgid "Run"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:89
+msgid "Started (UTC)"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:90
+msgid "Duration"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:91
+msgid "Created"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:92
+msgid "Updated"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:93
+msgid "Unchanged"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:94
+msgid "Failed"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:95
+msgid "Retried requests"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:96
+msgid "Notes and errors"
+msgstr ""
+
+#: includes/admin/class-ingestion-runs-screen.php:103
+msgid "No runs yet."
+msgstr ""
+
+#. translators: %d: number of errors.
+#: includes/admin/class-ingestion-runs-screen.php:119
+#, php-format
+msgid "%d error"
+msgid_plural "%d errors"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin/class-ingestion-runs-screen.php:155
+msgid "running or stopped"
+msgstr ""
+
+#: includes/admin/class-no-cuisine-filter.php:104
+msgid "No cuisine"
+msgstr ""
+
+#: includes/admin/class-no-cuisine-filter.php:141
+msgid "OSM cuisine tag"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:132
+#: includes/admin/class-review-queue-screen.php:641
+msgid "Review queue"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:153
+msgid "Only administrators can decide review items."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:480
+msgid "No Google Places key is set, so Google names cannot be shown."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:491
+msgid "Stopped showing Google names: this month's free Google Place Details calls are used up."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:499
+msgid "Stopped showing Google names: Google did not answer."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:643
+msgid "A restaurant is marked permanently closed only when you approve it here, after two checks in a row reported it closed. Closures are shown to visitors as a plain status."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:657
+#: includes/claims/class-admin.php:102
+msgid "Nothing to review."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:690
+msgid "Select all"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:690
+msgid "Item"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:690
+#: includes/site/class-blocks.php:617
+msgid "Details"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:690
+#: includes/claims/class-admin.php:104
+#: includes/highlights/class-moderation-screen.php:165
+#: includes/photos/class-moderation-screen.php:146
+msgid "Decision"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:695
+msgid "Select"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:717
+msgid "Item updated."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:719
+msgid "The item could not be updated. It may already have been decided."
+msgstr ""
+
+#. translators: 1: places added, 2: items skipped.
+#: includes/admin/class-review-queue-screen.php:734
+#, php-format
+msgid "Added %1$d as draft restaurants; skipped %2$d."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:740
+msgid "See the drafts"
+msgstr ""
+
+#. translators: %d: number of restaurants.
+#: includes/admin/class-review-queue-screen.php:746
+#, php-format
+msgid "%d restaurant changed."
+msgid_plural "%d restaurants changed."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of pairs.
+#: includes/admin/class-review-queue-screen.php:748
+#, php-format
+msgid "%d pair merged."
+msgid_plural "%d pairs merged."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of pairs.
+#: includes/admin/class-review-queue-screen.php:750
+#, php-format
+msgid "%d pair marked not the same place."
+msgid_plural "%d pairs marked not the same place."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of restaurants.
+#: includes/admin/class-review-queue-screen.php:752
+#, php-format
+msgid "%d deleted (moved to the Trash)."
+msgid_plural "%d deleted (moved to the Trash)."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of items.
+#: includes/admin/class-review-queue-screen.php:768
+#, php-format
+msgid "%d item could not be saved. It may already have been decided."
+msgid_plural "%d items could not be saved. They may already have been decided."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin/class-review-queue-screen.php:782
+msgid "For each new place, type its name (and change its village or mall if the search got it wrong), or tick its box to skip it, then press Enter or \"Save this page\". Named places become draft restaurants with their Google place ID and village; you can fill in the details later from the drafts list. A name another listing already has gets its village added (McDonald's, Mangilao), and so do the other branches."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:784
+msgid "The name boxes are filled in with Google Maps names. Check them, fix or clear any you do not want, then save the page. Places Google lists as permanently closed are left blank and ticked to skip."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:784
+msgid "Stop showing Google names"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:789
+msgid "Fill in Google names on this page"
+msgstr ""
+
+#. translators: 1: places on the page, 2: free calls left.
+#: includes/admin/class-review-queue-screen.php:793
+#, php-format
+msgid "Uses one Google Place Details call per new place (%1$d on this page) each time the page loads; %2$s free calls left this month. It stops when they run out, so it never costs money. Loading can take up to a minute."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:817
+msgid "With ticked rows: do nothing"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:818
+msgid "Skip / mark handled"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:819
+msgid "Merge (possible duplicates)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:820
+msgid "Not the same place (possible duplicates)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:821
+msgid "Delete restaurant (moves to the Trash)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:824
+msgid "Action for ticked rows"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:830
+msgid "Save this page"
+msgstr ""
+
+#. translators: %s: number of items.
+#: includes/admin/class-review-queue-screen.php:831
+#, php-format
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin/class-review-queue-screen.php:835
+msgid "First page"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:836
+msgid "Previous page"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:838
+msgid "Next page"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:839
+msgid "Last page"
+msgstr ""
+
+#. translators: 1: current page, 2: total pages.
+#: includes/admin/class-review-queue-screen.php:844
+#, php-format
+msgid "Page %1$s of %2$s"
+msgstr ""
+
+#. translators: 1: confidence, 2: name similarity, 3: phone match, 4: distance.
+#: includes/admin/class-review-queue-screen.php:882
+#, php-format
+msgid "Confidence %1$s · name similarity %2$s · phone %3$s · distance %4$s"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:885
+#: includes/admin/class-review-queue-screen.php:886
+msgid "unknown"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:885
+msgid "same"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:885
+msgid "different"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:895
+msgid "Not linked to a restaurant. Set the village on the restaurant itself, then tick this row to mark it handled."
+msgstr ""
+
+#. translators: 1: number of checks, 2: source, 3: first date, 4: last date.
+#: includes/admin/class-review-queue-screen.php:903
+#, php-format
+msgid "%1$d checks in a row from %2$s reported it permanently closed (%3$s to %4$s UTC)."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:922
+#: includes/admin/class-website-followup-screen.php:242
+msgid "Open"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:940
+msgid "(no name from Google)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:945
+msgid "Permanently closed on Google"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:947
+msgid "Temporarily closed on Google"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:949
+#: includes/admin/class-website-followup-screen.php:369
+msgid "Google Maps"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:953
+msgid "Found by:"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:956
+msgid "A restaurant with this name is listed in another village or mall (could be a new branch)."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:962
+msgid "Open in Google Maps"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:981
+msgid "Where to check:"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:986
+msgid "From:"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:987
+#: includes/admin/class-website-followup-screen.php:346
+msgid "(no name)"
+msgstr ""
+
+#. translators: %s: date.
+#: includes/admin/class-review-queue-screen.php:996
+#, php-format
+msgid "Reply was due %s (overdue)."
+msgstr ""
+
+#. translators: %s: date.
+#: includes/admin/class-review-queue-screen.php:996
+#, php-format
+msgid "Reply by %s."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:999
+msgid "If you agree to remove it, set the restaurant to Draft. Do not add any note about the removal to the listing."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1001
+msgid "Check the fact against a source, then edit the restaurant. The change history records the edit."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1017
+msgid "(restaurant no longer exists)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1024
+msgid "(in trash)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1029
+msgid "kept if merged"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1040
+msgid "Shown above; change it there."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1045
+#: includes/advertising/class-admin.php:347
+#: includes/advertising/class-admin.php:446
+#: includes/advertising/class-leads.php:500
+msgid "Name"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/admin/class-review-queue-screen.php:1054
+#, php-format
+msgid "Delete \"%s\"? It moves to the Trash, where you can restore it."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1055
+msgid "Delete"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1073
+#: includes/class-content-types.php:51
+#: includes/site/class-directory-view.php:323
+#: includes/site/class-picker.php:261
+#: includes/site/class-related-links.php:128
+msgid "Village"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1073
+msgid "(unknown)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1074
+#: includes/admin/class-tag-origins-box.php:59
+#: includes/class-content-types.php:57
+#: includes/site/class-directory-view.php:324
+#: includes/site/class-picker.php:262
+msgid "Mall"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1074
+msgid "(not in a mall)"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1208
+msgid "Name, as shown on Google Maps"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1218
+msgid "Approve: permanently closed"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1219
+msgid "Reject: still open"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1224
+msgid "Merge"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1225
+msgid "Not the same place"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1231
+msgid "Done: change made"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1232
+msgid "Decline"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1237
+msgid "Tick the box to mark it handled."
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1242
+msgid "Private note: what you checked, or why you declined"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1257
+msgid "New place"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1258
+msgid "Match to check"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1259
+msgid "Village unknown"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1260
+msgid "Mall unknown"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1261
+msgid "Closure to approve"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1262
+msgid "Owner submission"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1263
+msgid "Possible duplicate"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1264
+msgid "Correction"
+msgstr ""
+
+#: includes/admin/class-review-queue-screen.php:1265
+msgid "Owner listing request"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:100
+msgid "Only administrators can change scheduled jobs."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:140
+msgid "Jobs run from the server crontab (wp guam-restaurants run-job). The daily health check also runs on WP-Cron as a backstop, and the ratings refresh runs on WP-Cron."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:141
+msgid "Jobs run on WP-Cron, which runs when the site gets visits. A server cron is more reliable: see docs/scheduling.md."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:143
+msgid "Turning a job off stops its regular runs (WP-Cron and the server crontab) and its missed-window emails until you turn it back on. Run now queues one extra run in the background, also for a job that is off; the regular schedule stays as it is."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:145
+msgid "WP-Cron is disabled here (DISABLE_WP_CRON), so Run now waits for the crontab line that runs wp cron event run --due-now (docs/scheduling.md, step 3)."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:148
+msgid "The health check is off, so nobody is emailed when a job misses its window or an import source keeps failing."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:153
+msgid "Job"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:155
+msgid "Last success"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:156
+msgid "Next run"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:157
+#: includes/ads/class-admin.php:211
+#: includes/advertising/class-admin.php:70
+#: includes/advertising/class-admin.php:346
+#: includes/advertising/class-admin.php:499
+msgid "Status"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:158
+msgid "On / off"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:159
+msgid "Extra run"
+msgstr ""
+
+#. translators: %s: timezone name.
+#: includes/admin/class-scheduled-jobs-screen.php:170
+#, php-format
+msgid "Times are in the site timezone (%s)."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:195
+msgid "crontab"
+msgstr ""
+
+#. translators: %s: time.
+#: includes/admin/class-scheduled-jobs-screen.php:200
+#, php-format
+msgid "Running since %s"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:202
+msgid "Extra run queued"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:206
+msgid "Per the server crontab"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:209
+msgid "Not scheduled yet"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:213
+msgid "Off (needs an API key or setting)"
+msgstr ""
+
+#. translators: %s: time.
+#: includes/admin/class-scheduled-jobs-screen.php:216
+#, php-format
+msgid "Turned off %s"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:218
+msgid "Missed its window"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:220
+msgid "OK"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:223
+msgid "last attempt failed:"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:229
+msgid "never"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:234
+msgid "Turn on"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:234
+msgid "Turn off"
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:239
+msgid "Run now"
+msgstr ""
+
+#. translators: %s: job name.
+#: includes/admin/class-scheduled-jobs-screen.php:274
+#, php-format
+msgid "%s: one extra run is queued for the next WP-Cron run from the crontab."
+msgstr ""
+
+#. translators: %s: job name.
+#: includes/admin/class-scheduled-jobs-screen.php:274
+#, php-format
+msgid "%s: one extra run is queued and starting in the background. Reload this page to see when it finishes."
+msgstr ""
+
+#. translators: %s: job name.
+#: includes/admin/class-scheduled-jobs-screen.php:276
+#, php-format
+msgid "%s already has an extra run queued."
+msgstr ""
+
+#. translators: %s: job name.
+#: includes/admin/class-scheduled-jobs-screen.php:278
+#, php-format
+msgid "%s is running now; try again when it finishes."
+msgstr ""
+
+#. translators: %s: job name.
+#: includes/admin/class-scheduled-jobs-screen.php:280
+#, php-format
+msgid "%s cannot run here: it needs an API key or setting first."
+msgstr ""
+
+#. translators: %s: job name.
+#: includes/admin/class-scheduled-jobs-screen.php:282
+#, php-format
+msgid "%s is off. Its regular runs and missed-window emails stop until you turn it back on."
+msgstr ""
+
+#. translators: %s: job name.
+#: includes/admin/class-scheduled-jobs-screen.php:284
+#, php-format
+msgid "%s is on again."
+msgstr ""
+
+#: includes/admin/class-scheduled-jobs-screen.php:285
+msgid "That job was not found."
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:41
+msgid "Tag sources"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:52
+msgid "from data source"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:53
+msgid "from a rule"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:54
+msgid "set by hand"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:58
+#: includes/ads/class-admin.php:229
+#: includes/class-content-types.php:62
+#: blocks/site-editor/editor.js:72
+msgid "Cuisines"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:63
+msgid "Not in a mall (set by hand)"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:63
+msgid "None recorded"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:72
+msgid "Removed by hand (imports will not add back):"
+msgstr ""
+
+#: includes/admin/class-tag-origins-box.php:75
+msgid "Clear hand-set tags so the next import or `wp guam-restaurants retag` sets them automatically"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:54
+msgid "To contact"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:55
+#: includes/advertising/class-leads.php:173
+msgid "Contacted"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:56
+#: includes/advertising/class-leads.php:174
+msgid "Proposal sent"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:57
+msgid "Signed up"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:58
+msgid "Not interested"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:70
+#: includes/admin/class-website-followup-screen.php:71
+#: includes/admin/class-website-followup-screen.php:233
+msgid "Website follow-up"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:185
+msgid "Only administrators can update website follow-ups."
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:235
+msgid "Saved."
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:237
+#: includes/highlights/class-submit-screen.php:291
+msgid "That could not be saved."
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:239
+msgid "Restaurants with no website of their own: none on file, or only a Facebook or Instagram page. Before offering a website, check the Google Maps link in case they have one we have not recorded; if they do, add it to the listing and the restaurant leaves this list."
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:277
+#: includes/ads/class-admin.php:167
+#: includes/advertising/class-admin.php:71
+#: includes/advertising/class-admin.php:349
+#: includes/advertising/class-leads.php:502
+#: includes/awards/class-pages.php:391
+#: includes/awards/class-pages.php:499
+#: includes/class-content-types.php:35
+#: includes/commerce/class-woo-checkout.php:314
+#: includes/commerce/class-woo-checkout.php:360
+#: includes/corrections/class-corrections.php:365
+#: includes/highlights/class-moderation-screen.php:165
+#: includes/highlights/class-submit-screen.php:145
+#: includes/highlights/class-submit-screen.php:216
+#: includes/site/class-restaurant-view.php:387
+#: assets/advertising/inquiry.js:218
+#: assets/corrections/corrections.js:276
+msgid "Restaurant"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:278
+#: includes/advertising/class-admin.php:352
+#: includes/advertising/class-admin.php:449
+#: includes/advertising/class-leads.php:504
+#: includes/site/class-blocks.php:584
+#: assets/advertising/inquiry.js:220
+#: assets/ratings/ratings.js:154
+msgid "Phone"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:279
+#: includes/advertising/class-admin.php:351
+#: includes/advertising/class-admin.php:448
+#: includes/advertising/class-leads.php:503
+#: includes/claims/class-admin.php:134
+#: assets/advertising/inquiry.js:219
+#: assets/corrections/corrections.js:284
+msgid "Email"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:280
+msgid "Social pages"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:281
+#: includes/site/class-blocks.php:571
+msgid "Address"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:282
+msgid "Check online"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:283
+#: includes/advertising/class-admin.php:431
+msgid "Follow-up"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:290
+msgid "No restaurants here."
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:370
+msgid "Web search"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:378
+msgid "Follow-up status"
+msgstr ""
+
+#. translators: 1: minimum characters, 2: maximum characters.
+#: includes/admin/class-website-followup-screen.php:384
+#: includes/highlights/class-submit-screen.php:218
+msgid "Note"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:385
+msgid "Note (only admins see this)"
+msgstr ""
+
+#: includes/admin/class-website-followup-screen.php:386
+#: includes/saved/class-view.php:165
+msgid "Save"
+msgstr ""
+
+#. translators: 1: date, 2: user name.
+#: includes/admin/class-website-followup-screen.php:391
+#, php-format
+msgid "Updated %1$s by %2$s"
+msgstr ""
+
+#: includes/ads/class-admin.php:53
+#: includes/ads/class-admin.php:133
+#: includes/ads/class-ads.php:178
+#: includes/billing/class-admin.php:220
+#: includes/billing/class-admin.php:238
+#: includes/billing/class-admin.php:245
+msgid "Ad"
+msgstr ""
+
+#: includes/ads/class-admin.php:54
+#: includes/ads/class-admin.php:150
+#: includes/ads/class-report.php:196
+#: includes/billing/class-admin.php:220
+#: includes/billing/class-admin.php:238
+#: includes/billing/class-admin.php:245
+msgid "Advertiser"
+msgstr ""
+
+#: includes/ads/class-admin.php:55
+#: includes/ads/class-admin.php:173
+#: includes/advertising/class-page-content.php:127
+msgid "Product"
+msgstr ""
+
+#: includes/ads/class-admin.php:57
+#: includes/ads/class-admin.php:206
+msgid "Priority"
+msgstr ""
+
+#: includes/ads/class-admin.php:58
+msgid "Serving today"
+msgstr ""
+
+#: includes/ads/class-admin.php:82
+#: includes/owners/class-dashboard.php:307
+msgid "open-ended"
+msgstr ""
+
+#: includes/ads/class-admin.php:89
+msgid "Yes"
+msgstr ""
+
+#: includes/ads/class-admin.php:90
+msgid "(outside its dates)"
+msgstr ""
+
+#: includes/ads/class-admin.php:134
+msgid "Where it shows"
+msgstr ""
+
+#: includes/ads/class-admin.php:147
+msgid "Every ad is shown with the label \"Sponsored\", in its own box outside the regular results. Ads never change ratings, awards or the order of restaurants. Do not use \"Featured\", \"Top pick\", \"Recommended\" or awards in the creative."
+msgstr ""
+
+#: includes/ads/class-admin.php:163
+msgid "None"
+msgstr ""
+
+#: includes/ads/class-admin.php:167
+msgid "Optional. Used as the headline and link when those are empty."
+msgstr ""
+
+#: includes/ads/class-admin.php:169
+msgid "Choose…"
+msgstr ""
+
+#: includes/ads/class-admin.php:177
+msgid "Creative"
+msgstr ""
+
+#: includes/ads/class-admin.php:179
+#: includes/ads/class-admin.php:198
+msgid "Text"
+msgstr ""
+
+#: includes/ads/class-admin.php:180
+msgid "Image and link"
+msgstr ""
+
+#: includes/ads/class-admin.php:188
+msgid "Image"
+msgstr ""
+
+#: includes/ads/class-admin.php:190
+msgid "Choose image"
+msgstr ""
+
+#: includes/ads/class-admin.php:193
+msgid "Image description (alt text)"
+msgstr ""
+
+#: includes/ads/class-admin.php:194
+#: includes/owners/class-dashboard.php:361
+msgid "Link"
+msgstr ""
+
+#: includes/ads/class-admin.php:195
+msgid "Headline"
+msgstr ""
+
+#: includes/ads/class-admin.php:202
+msgid "Start date"
+msgstr ""
+
+#: includes/ads/class-admin.php:203
+msgid "End date"
+msgstr ""
+
+#: includes/ads/class-admin.php:203
+msgid "Inclusive, Guam time. Leave empty for no end date."
+msgstr ""
+
+#: includes/ads/class-admin.php:209
+msgid "Higher shows first. Ads with the same priority rotate: the one with the fewest impressions today goes first."
+msgstr ""
+
+#: includes/ads/class-admin.php:223
+msgid "Leave a list empty to show the ad anywhere its slot appears. Choosing several values in one list matches any of them; the lists together must all match."
+msgstr ""
+
+#: includes/ads/class-admin.php:225
+msgid "Page types"
+msgstr ""
+
+#: includes/ads/class-admin.php:227
+#: includes/class-content-types.php:50
+#: includes/site/class-blocks.php:147
+#: blocks/site-editor/editor.js:70
+msgid "Villages"
+msgstr ""
+
+#: includes/ads/class-admin.php:228
+#: includes/class-content-types.php:56
+#: includes/site/class-blocks.php:148
+#: blocks/site-editor/editor.js:71
+msgid "Malls"
+msgstr ""
+
+#: includes/ads/class-admin.php:278
+msgid "You are not allowed to edit this ad."
+msgstr ""
+
+#: includes/ads/class-admin.php:287
+msgid "The ad was saved as paused until these are fixed."
+msgstr ""
+
+#. translators: 1: other ad's title, 2: its ID.
+#: includes/ads/class-admin.php:296
+#, php-format
+msgid "This exclusive ad can land on the same page and day as \"%1$s\" (ID %2$d). Only one is shown per page: the higher priority, then the one with fewer impressions today."
+msgstr ""
+
+#: includes/ads/class-admin.php:316
+msgid "Check this ad:"
+msgstr ""
+
+#: includes/ads/class-ads.php:81
+msgid "Featured listing (shown as \"Sponsored\")"
+msgstr ""
+
+#: includes/ads/class-ads.php:85
+#: blocks/site-editor/editor.js:131
+msgid "Category sponsor (one per page)"
+msgstr ""
+
+#: includes/ads/class-ads.php:89
+#: blocks/site-editor/editor.js:129
+msgid "Banner (rotating)"
+msgstr ""
+
+#: includes/ads/class-ads.php:93
+msgid "Homepage leaderboard (exclusive)"
+msgstr ""
+
+#: includes/ads/class-ads.php:97
+msgid "Pick for me sponsor (one above each pick)"
+msgstr ""
+
+#: includes/ads/class-ads.php:101
+msgid "Popular dishes sponsor (restaurant pages, sponsors take turns)"
+msgstr ""
+
+#: includes/ads/class-ads.php:135
+msgid "Home page"
+msgstr ""
+
+#: includes/ads/class-ads.php:136
+msgid "Village pages"
+msgstr ""
+
+#: includes/ads/class-ads.php:137
+msgid "Mall pages"
+msgstr ""
+
+#: includes/ads/class-ads.php:138
+msgid "Cuisine pages"
+msgstr ""
+
+#: includes/ads/class-ads.php:139
+msgid "Restaurant directory"
+msgstr ""
+
+#: includes/ads/class-ads.php:140
+msgid "Restaurant pages"
+msgstr ""
+
+#: includes/ads/class-ads.php:141
+msgid "Pick for me (random place picker)"
+msgstr ""
+
+#: includes/ads/class-ads.php:142
+msgid "Other pages"
+msgstr ""
+
+#: includes/ads/class-ads.php:153
+msgid "Active"
+msgstr ""
+
+#: includes/ads/class-ads.php:154
+msgid "Paused"
+msgstr ""
+
+#: includes/ads/class-ads.php:177
+#: includes/ads/class-ads.php:179
+msgid "Ads"
+msgstr ""
+
+#: includes/ads/class-ads.php:180
+msgid "Add ad"
+msgstr ""
+
+#: includes/ads/class-ads.php:181
+msgid "Edit ad"
+msgstr ""
+
+#: includes/ads/class-ads.php:182
+msgid "Search ads"
+msgstr ""
+
+#: includes/ads/class-ads.php:183
+msgid "No ads found."
+msgstr ""
+
+#: includes/ads/class-ads.php:184
+msgid "No ads found in the trash."
+msgstr ""
+
+#: includes/ads/class-ads.php:278
+msgid "Enter the advertiser."
+msgstr ""
+
+#: includes/ads/class-ads.php:281
+msgid "Choose a product."
+msgstr ""
+
+#: includes/ads/class-ads.php:284
+msgid "An image ad needs an image."
+msgstr ""
+
+#: includes/ads/class-ads.php:287
+msgid "A text ad needs a headline or a restaurant."
+msgstr ""
+
+#: includes/ads/class-ads.php:290
+msgid "Add a link, or choose the restaurant to link to."
+msgstr ""
+
+#: includes/ads/class-ads.php:293
+msgid "Enter a start date."
+msgstr ""
+
+#: includes/ads/class-ads.php:295
+msgid "The end date is before the start date."
+msgstr ""
+
+#: includes/ads/class-guard.php:50
+msgid "Ads may not say \"Featured\". Paid placements are labeled \"Sponsored\" only."
+msgstr ""
+
+#: includes/ads/class-guard.php:51
+msgid "Ads may not say \"Top pick\"."
+msgstr ""
+
+#: includes/ads/class-guard.php:52
+msgid "Ads may not claim an editor's or staff pick."
+msgstr ""
+
+#: includes/ads/class-guard.php:53
+msgid "Ads may not say \"Recommended\"."
+msgstr ""
+
+#: includes/ads/class-guard.php:54
+msgid "Ads may not mention awards."
+msgstr ""
+
+#: includes/ads/class-report.php:46
+#: includes/ads/class-report.php:190
+msgid "Ad reports"
+msgstr ""
+
+#: includes/ads/class-report.php:47
+msgid "Reports"
+msgstr ""
+
+#: includes/ads/class-report.php:94
+msgid "(deleted ad)"
+msgstr ""
+
+#: includes/ads/class-report.php:185
+msgid "You are not allowed to view ad reports."
+msgstr ""
+
+#: includes/ads/class-report.php:191
+msgid "Impressions are counted when at least half of an ad is on screen; clicks when its link is followed. Bots are not counted, and no visitor data is stored. Use your browser's Print command to save this table as a PDF."
+msgstr ""
+
+#: includes/ads/class-report.php:195
+#: assets/reviews/reviews.js:176
+msgid "Month"
+msgstr ""
+
+#: includes/ads/class-report.php:196
+msgid "All advertisers"
+msgstr ""
+
+#: includes/ads/class-report.php:201
+#: includes/awards/class-pages.php:371
+#: includes/awards/class-pages.php:466
+#: blocks/site-editor/editor.js:97
+#: blocks/site-editor/editor.js:112
+msgid "Show"
+msgstr ""
+
+#: includes/ads/class-report.php:217
+msgid "Download CSV"
+msgstr ""
+
+#: includes/ads/class-report.php:244
+msgid "You are not allowed to download ad reports."
+msgstr ""
+
+#: includes/ads/class-slot.php:77
+#: includes/ads/class-slot.php:131
+#: includes/newsletter/class-renderer.php:159
+msgid "Sponsored"
+msgstr ""
+
+#: includes/advertising/class-admin.php:69
+msgid "Lead"
+msgstr ""
+
+#: includes/advertising/class-admin.php:72
+#: includes/advertising/class-admin.php:353
+#: includes/advertising/class-admin.php:471
+#: includes/advertising/class-leads.php:505
+msgid "Package"
+msgstr ""
+
+#: includes/advertising/class-admin.php:73
+#: includes/advertising/class-admin.php:354
+#: includes/advertising/class-admin.php:472
+#: includes/advertising/class-leads.php:506
+msgid "Budget"
+msgstr ""
+
+#: includes/advertising/class-admin.php:74
+#: includes/advertising/class-page-content.php:169
+msgid "Contact"
+msgstr ""
+
+#: includes/advertising/class-admin.php:75
+#: includes/advertising/class-admin.php:356
+#: includes/advertising/class-admin.php:505
+msgid "Assigned to"
+msgstr ""
+
+#: includes/advertising/class-admin.php:76
+#: includes/advertising/class-admin.php:345
+msgid "Received"
+msgstr ""
+
+#: includes/advertising/class-admin.php:229
+msgid "Unassigned"
+msgstr ""
+
+#: includes/advertising/class-admin.php:234
+msgid "All statuses"
+msgstr ""
+
+#: includes/advertising/class-admin.php:235
+msgid "All packages"
+msgstr ""
+
+#: includes/advertising/class-admin.php:236
+msgid "All budgets"
+msgstr ""
+
+#: includes/advertising/class-admin.php:237
+msgid "Anyone"
+msgstr ""
+
+#: includes/advertising/class-admin.php:243
+msgid "Export CSV"
+msgstr ""
+
+#: includes/advertising/class-admin.php:304
+msgid "You are not allowed to export advertiser leads."
+msgstr ""
+
+#: includes/advertising/class-admin.php:307
+msgid "The export link has expired. Reload the list and try again."
+msgstr ""
+
+#: includes/advertising/class-admin.php:348
+#: includes/advertising/class-admin.php:447
+#: includes/advertising/class-leads.php:501
+msgid "Business"
+msgstr ""
+
+#: includes/advertising/class-admin.php:350
+#: includes/advertising/class-admin.php:464
+msgid "Restaurant ID"
+msgstr ""
+
+#: includes/advertising/class-admin.php:355
+#: includes/advertising/class-admin.php:483
+#: includes/newsletter/class-admin.php:196
+#: assets/advertising/inquiry.js:223
+msgid "Message"
+msgstr ""
+
+#: includes/advertising/class-admin.php:357
+#: includes/advertising/class-admin.php:513
+msgid "Notes"
+msgstr ""
+
+#: includes/advertising/class-admin.php:430
+msgid "Inquiry"
+msgstr ""
+
+#: includes/advertising/class-admin.php:467
+msgid "Leave empty when the lead is not about a listed restaurant."
+msgstr ""
+
+#: includes/advertising/class-admin.php:505
+msgid "Nobody"
+msgstr ""
+
+#: includes/advertising/class-admin.php:515
+msgid "Private. Only administrators see leads."
+msgstr ""
+
+#: includes/advertising/class-admin.php:559
+msgid "You are not allowed to edit this lead."
+msgstr ""
+
+#: includes/advertising/class-admin.php:601
+msgid "Some lead details were not saved:"
+msgstr ""
+
+#: includes/advertising/class-display.php:71
+#: includes/corrections/class-display.php:86
+msgid "Loading the form…"
+msgstr ""
+
+#: includes/advertising/class-display.php:72
+msgid "The inquiry form needs JavaScript."
+msgstr ""
+
+#: includes/advertising/class-leads.php:103
+#: includes/advertising/class-leads.php:105
+msgid "Advertiser leads"
+msgstr ""
+
+#: includes/advertising/class-leads.php:104
+msgid "Advertiser lead"
+msgstr ""
+
+#: includes/advertising/class-leads.php:106
+msgid "Add advertiser lead"
+msgstr ""
+
+#: includes/advertising/class-leads.php:107
+msgid "Edit advertiser lead"
+msgstr ""
+
+#: includes/advertising/class-leads.php:108
+msgid "Search leads"
+msgstr ""
+
+#: includes/advertising/class-leads.php:109
+msgid "No leads found."
+msgstr ""
+
+#: includes/advertising/class-leads.php:110
+msgid "No leads found in the trash."
+msgstr ""
+
+#: includes/advertising/class-leads.php:172
+#: includes/site/class-restaurant-view.php:357
+msgid "New"
+msgstr ""
+
+#: includes/advertising/class-leads.php:175
+msgid "Won"
+msgstr ""
+
+#: includes/advertising/class-leads.php:176
+msgid "Lost"
+msgstr ""
+
+#: includes/advertising/class-leads.php:191
+#: includes/advertising/class-page-content.php:129
+#: includes/owners/class-dashboard.php:323
+#: includes/premium/class-admin.php:43
+msgid "Premium profile"
+msgstr ""
+
+#: includes/advertising/class-leads.php:192
+msgid "Sponsored listing on a village, mall or cuisine page"
+msgstr ""
+
+#: includes/advertising/class-leads.php:193
+msgid "Page sponsorship (village, mall or cuisine)"
+msgstr ""
+
+#: includes/advertising/class-leads.php:194
+msgid "Banner ads"
+msgstr ""
+
+#: includes/advertising/class-leads.php:195
+#: includes/advertising/class-page-content.php:133
+msgid "Deal or event post"
+msgstr ""
+
+#: includes/advertising/class-leads.php:196
+#: includes/advertising/class-page-content.php:134
+msgid "Newsletter sponsorship"
+msgstr ""
+
+#: includes/advertising/class-leads.php:197
+#: includes/advertising/class-page-content.php:135
+msgid "Sponsored article"
+msgstr ""
+
+#: includes/advertising/class-leads.php:198
+#: includes/advertising/class-leads.php:214
+msgid "Not sure yet"
+msgstr ""
+
+#: includes/advertising/class-leads.php:209
+msgid "Under $100 a month"
+msgstr ""
+
+#: includes/advertising/class-leads.php:210
+msgid "$100 to $250 a month"
+msgstr ""
+
+#: includes/advertising/class-leads.php:211
+msgid "$250 to $500 a month"
+msgstr ""
+
+#: includes/advertising/class-leads.php:212
+msgid "$500 to $1,000 a month"
+msgstr ""
+
+#: includes/advertising/class-leads.php:213
+msgid "Over $1,000 a month"
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/advertising/class-leads.php:249
+#: includes/corrections/class-corrections.php:218
+#, php-format
+msgid "Enter your name (up to %d characters)."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/advertising/class-leads.php:253
+#, php-format
+msgid "Enter your business name (up to %d characters)."
+msgstr ""
+
+#: includes/advertising/class-leads.php:256
+msgid "Choose a restaurant from the list, or leave it empty."
+msgstr ""
+
+#: includes/advertising/class-leads.php:259
+msgid "Enter a valid email address."
+msgstr ""
+
+#: includes/advertising/class-leads.php:262
+msgid "Enter a phone number using digits, spaces, +, - and brackets, or leave it empty."
+msgstr ""
+
+#: includes/advertising/class-leads.php:265
+msgid "Choose the package you are interested in."
+msgstr ""
+
+#: includes/advertising/class-leads.php:268
+msgid "Choose a budget range."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/advertising/class-leads.php:272
+#, php-format
+msgid "Keep your message under %d characters."
+msgstr ""
+
+#: includes/advertising/class-leads.php:293
+msgid "Your message could not be sent. Please try again."
+msgstr ""
+
+#: includes/advertising/class-leads.php:304
+msgid "You have sent several messages recently. Please try again later."
+msgstr ""
+
+#. translators: 1: business name, 2: contact name.
+#: includes/advertising/class-leads.php:378
+#, php-format
+msgid "%1$s (%2$s)"
+msgstr ""
+
+#: includes/advertising/class-leads.php:419
+msgid "Lead not found."
+msgstr ""
+
+#: includes/advertising/class-leads.php:424
+msgid "Unknown lead status."
+msgstr ""
+
+#: includes/advertising/class-leads.php:428
+msgid "Leads can only be assigned to users who can manage them."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/advertising/class-leads.php:433
+#, php-format
+msgid "Keep notes under %d characters."
+msgstr ""
+
+#: includes/advertising/class-leads.php:497
+msgid "None chosen"
+msgstr ""
+
+#: includes/advertising/class-leads.php:512
+msgid "Message:"
+msgstr ""
+
+#. translators: %s: link to the lead in wp-admin.
+#: includes/advertising/class-leads.php:514
+#, php-format
+msgid "Open the lead: %s"
+msgstr ""
+
+#. translators: %s: business name.
+#: includes/advertising/class-leads.php:519
+#, php-format
+msgid "New advertiser inquiry: %s"
+msgstr ""
+
+#. translators: %s: site name.
+#: includes/advertising/class-leads.php:540
+#, php-format
+msgid "We received your advertising inquiry - %s"
+msgstr ""
+
+#. translators: 1: site name, 2: editorial policy URL.
+#: includes/advertising/class-leads.php:543
+#, php-format
+msgid ""
+"Thank you for asking about advertising on %1$s. We have received your message and will reply by email.\n"
+"\n"
+"This is an automatic confirmation. It is not an offer or a quote: prices, availability and placements are confirmed only in a written proposal.\n"
+"\n"
+"Advertising on %1$s never affects ratings, awards, rankings, reviews or which restaurants we list. Our editorial policy explains how we keep them separate:\n"
+"%2$s\n"
+"\n"
+"If you did not send this inquiry, you can ignore this email."
+msgstr ""
+
+#. translators: %s: site name.
+#: includes/advertising/class-page-content.php:42
+#, php-format
+msgid "People use %s to decide where to eat on Guam, by village, mall and cuisine. Advertising puts your restaurant or business in front of them, in clearly labeled places."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:47
+msgid "How advertising works here"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:50
+msgid "Every paid placement is labeled \"Sponsored\" and sits apart from the regular results."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:51
+msgid "Advertising never changes ratings, awards, rankings, reviews, or which restaurants we list. A restaurant that advertises keeps its normal place in the results, with no boost."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:52
+msgid "Claiming your listing is free, and so are corrections, owner quotes and replies to reviews."
+msgstr ""
+
+#. translators: %s: link to the editorial policy.
+#: includes/advertising/class-page-content.php:55
+#, php-format
+msgid "Read how we keep advertising separate in our %s."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:56
+#: includes/advertising/class-page-content.php:155
+#: assets/advertising/inquiry.js:211
+msgid "editorial policy"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:60
+msgid "What you can buy"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:63
+msgid "Premium profile:"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:63
+msgid "a richer presentation of your restaurant's own page, such as extra photos and menu, ordering and reservation links, with a monthly report of views and clicks."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:64
+msgid "Sponsored listing:"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:64
+msgid "a labeled card in the sponsored area of a village, mall or cuisine page, shared in rotation by up to three advertisers."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:65
+msgid "More to come:"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:65
+msgid "page sponsorships, banners, deal and event posts, newsletter sponsorships and sponsored articles will open as the site grows. Ask us about them."
+msgstr ""
+
+#. translators: %s: link to the media kit.
+#: includes/advertising/class-page-content.php:71
+#, php-format
+msgid "Rates, audience figures and ad specifications are in our %s."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:72
+msgid "media kit"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:75
+msgid "Ask about advertising"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:76
+msgid "Tell us about your business and what you have in mind. We reply by email."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:89
+msgid "Not yet published"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:90
+msgid "Now"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:91
+msgid "Coming soon"
+msgstr ""
+
+#. translators: 1: site name, 2: month and year.
+#: includes/advertising/class-page-content.php:100
+#, php-format
+msgid "%1$s is the Guam restaurant directory organized by village, mall and cuisine. This media kit covers who uses the site, what you can advertise and what it costs. Updated %2$s."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:106
+msgid "Who uses the site"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:107
+msgid "Residents looking for a place to eat, and visitors planning meals around their hotel or tour. Every restaurant is listed by village, mall and cuisine; ratings are shown from their sources; awards are recorded with links to the published results; and sponsored placements are clearly labeled."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:108
+msgid "Audience"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:109
+msgid "We publish audience figures once our analytics have 90 days of data, and we do not estimate them before then."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:111
+msgid "Measure"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:111
+msgid "Value"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:113
+msgid "Monthly page views"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:114
+msgid "Monthly unique visitors"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:115
+msgid "Visitors on mobile"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:116
+msgid "Visitors in Guam and off-island"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:117
+msgid "Top visitor countries"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:118
+msgid "Top village, mall and cuisine pages"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:119
+msgid "Listed restaurants"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:120
+msgid "Claimed listings"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:121
+msgid "Newsletter subscribers and open rate"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:124
+msgid "Ad products and rates"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:125
+msgid "Prices are in US dollars. Every paid placement is labeled \"Sponsored\" and appears outside the regular order of results."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:127
+msgid "What you get"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:127
+#: includes/owners/class-dashboard.php:434
+#: includes/site/class-blocks.php:580
+#: includes/site/class-directory-view.php:326
+msgid "Price"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:127
+msgid "Term"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:127
+msgid "Available"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:129
+msgid "A richer presentation of your restaurant's own page and a monthly report of views and clicks."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:129
+msgid "$39 a month or $390 a year"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:129
+msgid "Monthly or annual"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:130
+msgid "Sponsored listing"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:130
+msgid "A labeled card on one village, mall or cuisine page, shared in rotation by up to three advertisers."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:130
+msgid "$75 a month per page"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:130
+#: includes/advertising/class-page-content.php:132
+#: includes/monitoring/class-job-controls.php:59
+msgid "Monthly"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:131
+msgid "Page sponsorship"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:131
+msgid "The only sponsor unit near the top of a village, mall or cuisine page."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:131
+msgid "$150 a month (village or mall page), $250 a month (top cuisine page)"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:131
+msgid "6 or 12 months"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:132
+msgid "Banner"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:132
+msgid "A display ad, sold by impressions."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:132
+msgid "$20 per 1,000 impressions, $100 monthly minimum"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:133
+msgid "A short offer or event on your page and in the sponsored deals list."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:133
+msgid "$25 for 7 days, $60 for 30 days"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:133
+msgid "Per post"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:134
+msgid "One labeled sponsor block in an issue."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:134
+msgid "From $40 an issue, by list size"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:134
+msgid "Per issue"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:135
+msgid "An article about your restaurant or event, written by our staff and labeled \"Sponsored\"."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:135
+msgid "$200"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:135
+msgid "Per article"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:138
+msgid "Founding advertisers get 30 percent off premium profiles, sponsored listings, page sponsorships and banners for six months when they sign a six-month term during our launch period."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:139
+msgid "Hotels, resorts and tour operators pay 1.5 times these rates. A restaurant inside a hotel pays the restaurant rate for its own premium profile."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:140
+msgid "Awards are never part of an advertising package, and owner quotes, editor's notes and reviews cannot be bought."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:141
+msgid "What advertisers get"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:144
+msgid "A monthly report of impressions and clicks for each placement, by day."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:145
+msgid "Average click-through rates by product, published once we have 90 days of data."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:146
+msgid "No promises about ratings, rankings or reviews, because advertising never affects them."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:149
+msgid "Our editorial statement"
+msgstr ""
+
+#. translators: %s: link to the editorial policy.
+#: includes/advertising/class-page-content.php:154
+#, php-format
+msgid "Read the full %s."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:158
+msgid "Ad specifications"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:161
+msgid "Banner sizes and file formats: confirmed in your proposal."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:162
+msgid "Sponsored listings and deal posts: one photo, a headline and a short text."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:163
+msgid "Sponsored articles: you supply facts, photos and quotes; we check the facts and write the article."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:164
+msgid "Creative rules: no awards programs' names, logos or badges, no claims we cannot verify, and links marked as sponsored."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:167
+msgid "Terms"
+msgstr ""
+
+#: includes/advertising/class-page-content.php:168
+msgid "Payment, cancellation and refund terms are set out in your written proposal and advertising agreement."
+msgstr ""
+
+#. translators: %s: link to the advertise page.
+#: includes/advertising/class-page-content.php:173
+#, php-format
+msgid "Ask about advertising on our %s."
+msgstr ""
+
+#: includes/advertising/class-page-content.php:174
+msgid "Advertise with us page"
+msgstr ""
+
+#. translators: %s: site name.
+#: includes/advertising/class-page-content.php:190
+#, php-format
+msgid "Advertising on %s never affects ratings, awards, rankings, or which restaurants we list or remove. Star ratings come from the third-party sources shown beside them and from our users. Awards are recorded from published results, with a link to the original source. Sponsored placements are labeled 'Sponsored' and appear outside the organic order of results. Advertisers cannot review, edit, or remove user reviews, and they cannot pay to change the facts on a listing. We accept corrections from owners and publish them when verified."
+msgstr ""
+
+#: includes/advertising/class-rest-controller.php:161
+#: includes/corrections/class-rest-controller.php:135
+msgid "This form has expired. Reload the page and try again."
+msgstr ""
+
+#: includes/advertising/class-rest-controller.php:233
+msgid "Thank you. We have received your inquiry and sent a confirmation to your email address. We will reply by email."
+msgstr ""
+
+#: includes/appearance/class-color-scheme.php:60
+msgid "Light"
+msgstr ""
+
+#: includes/appearance/class-color-scheme.php:61
+msgid "Dark"
+msgstr ""
+
+#: includes/appearance/class-color-scheme.php:62
+msgid "System"
+msgstr ""
+
+#. translators: %s: Light, Dark or System.
+#: includes/appearance/class-color-scheme.php:130
+#, php-format
+msgid "Theme: %s"
+msgstr ""
+
+#: includes/appearance/class-color-scheme.php:161
+msgid "Match my device"
+msgstr ""
+
+#: includes/awards/class-display.php:115
+msgid "Awards"
+msgstr ""
+
+#: includes/awards/class-display.php:118
+#: includes/site/class-blocks.php:430
+msgid "All award results"
+msgstr ""
+
+#: includes/awards/class-display.php:133
+msgid "source:"
+msgstr ""
+
+#. translators: %s: category name, for example "Best Burger".
+#: includes/awards/class-pages.php:226
+msgid "Award category"
+msgstr ""
+
+#. translators: %s: category name, for example "Best Burger".
+#: includes/awards/class-pages.php:226
+#, php-format
+msgid "%s: results by year"
+msgstr ""
+
+#. translators: %s: category name.
+#: includes/awards/class-pages.php:229
+msgid "Most-awarded restaurants"
+msgstr ""
+
+#. translators: %s: category name.
+#: includes/awards/class-pages.php:229
+#, php-format
+msgid "Most-awarded restaurants: %s"
+msgstr ""
+
+#: includes/awards/class-pages.php:231
+msgid "Restaurant awards"
+msgstr ""
+
+#: includes/awards/class-pages.php:270
+#: includes/awards/class-pages.php:356
+msgid "No award results are recorded yet."
+msgstr ""
+
+#: includes/awards/class-pages.php:286
+msgid "No results match these choices."
+msgstr ""
+
+#. translators: %d: year.
+#: includes/awards/class-pages.php:300
+#, php-format
+msgid "Results recorded for %d"
+msgstr ""
+
+#: includes/awards/class-pages.php:319
+msgid "No results are recorded for this category."
+msgstr ""
+
+#. translators: %s: category name.
+#: includes/awards/class-pages.php:336
+#, php-format
+msgid "%s, every year recorded"
+msgstr ""
+
+#: includes/awards/class-pages.php:338
+msgid "Most-awarded restaurants in this category"
+msgstr ""
+
+#: includes/awards/class-pages.php:359
+msgid "Counted only from the results recorded on this site, ordered by wins, then finalist placings, then all results. Restaurants with the same counts share a rank."
+msgstr ""
+
+#: includes/awards/class-pages.php:361
+#: includes/awards/class-pages.php:389
+#: includes/awards/class-pages.php:444
+msgid "All categories"
+msgstr ""
+
+#: includes/awards/class-pages.php:369
+#: includes/awards/class-pages.php:464
+#: includes/awards/class-pages.php:497
+msgid "Category"
+msgstr ""
+
+#: includes/awards/class-pages.php:390
+msgid "Rank"
+msgstr ""
+
+#: includes/awards/class-pages.php:392
+msgid "Wins"
+msgstr ""
+
+#: includes/awards/class-pages.php:393
+#: includes/awards/class-policy.php:70
+msgid "Finalist"
+msgstr ""
+
+#: includes/awards/class-pages.php:394
+#: includes/corrections/class-corrections.php:136
+msgid "Other"
+msgstr ""
+
+#: includes/awards/class-pages.php:395
+msgid "Total"
+msgstr ""
+
+#: includes/awards/class-pages.php:420
+msgid "Awards pages"
+msgstr ""
+
+#: includes/awards/class-pages.php:422
+msgid "Results by year"
+msgstr ""
+
+#: includes/awards/class-pages.php:424
+msgid "Most awarded"
+msgstr ""
+
+#: includes/awards/class-pages.php:440
+msgid "All years"
+msgstr ""
+
+#: includes/awards/class-pages.php:450
+msgid "All programs"
+msgstr ""
+
+#: includes/awards/class-pages.php:454
+#: includes/awards/class-pages.php:496
+msgid "Program"
+msgstr ""
+
+#: includes/awards/class-pages.php:462
+#: includes/awards/class-pages.php:495
+msgid "Year"
+msgstr ""
+
+#: includes/awards/class-pages.php:498
+#: includes/owners/class-dashboard.php:302
+msgid "Placement"
+msgstr ""
+
+#. translators: %s: publisher name or names, for example "Pacific Daily News".
+#: includes/awards/class-policy.php:54
+#, php-format
+msgid "This site is not affiliated with %s. Results are listed with links to the original publication."
+msgstr ""
+
+#: includes/awards/class-policy.php:68
+msgid "Winner"
+msgstr ""
+
+#: includes/awards/class-policy.php:72
+msgid "Other placing"
+msgstr ""
+
+#. translators: 1: program name, 2: year, 3: placement.
+#: includes/awards/class-policy.php:86
+#, php-format
+msgid "%1$s %2$s: %3$s"
+msgstr ""
+
+#. translators: 1: program name, 2: year, 3: category, 4: placement.
+#: includes/awards/class-policy.php:89
+#, php-format
+msgid "%1$s %2$s, %3$s: %4$s"
+msgstr ""
+
+#: includes/billing/class-admin.php:51
+#: includes/billing/class-admin.php:182
+#: includes/billing/class-admin.php:183
+#: includes/billing/class-admin.php:204
+msgid "Billing"
+msgstr ""
+
+#: includes/billing/class-admin.php:65
+msgid "No invoice number yet."
+msgstr ""
+
+#: includes/billing/class-admin.php:66
+msgid "Issue the next invoice number when saving"
+msgstr ""
+
+#: includes/billing/class-admin.php:68
+#: includes/billing/class-admin.php:145
+#: includes/billing/class-admin.php:150
+#: includes/billing/class-admin.php:220
+#: includes/billing/class-admin.php:238
+msgid "Invoice"
+msgstr ""
+
+#: includes/billing/class-admin.php:80
+msgid "Amount (USD)"
+msgstr ""
+
+#: includes/billing/class-admin.php:81
+#: includes/billing/class-admin.php:220
+msgid "Invoice date"
+msgstr ""
+
+#. translators: %d: number of days.
+#: includes/billing/class-admin.php:83
+#, php-format
+msgid "Due date (default: invoice date + %d days)"
+msgstr ""
+
+#: includes/billing/class-admin.php:84
+msgid "Payment"
+msgstr ""
+
+#: includes/billing/class-admin.php:84
+#: includes/billing/class-admin.php:235
+msgid "Not invoiced"
+msgstr ""
+
+#: includes/billing/class-admin.php:89
+msgid "Paid on (default: today when marked paid)"
+msgstr ""
+
+#: includes/billing/class-admin.php:90
+msgid "Billing email (gets renewal reminders)"
+msgstr ""
+
+#: includes/billing/class-admin.php:91
+msgid "Note, e.g. check or transfer reference"
+msgstr ""
+
+#. translators: %s: list such as "14, 3".
+#: includes/billing/class-admin.php:95
+#, php-format
+msgid "Renewal reminders sent for this end date: %s days before."
+msgstr ""
+
+#: includes/billing/class-admin.php:197
+msgid "You are not allowed to view billing."
+msgstr ""
+
+#: includes/billing/class-admin.php:205
+msgid "Invoices are written and sent outside this site; each ad records its invoice number, amount and whether it is paid. Before the first invoice, check the questions in docs/billing.md with the Department of Revenue and Taxation and an accountant."
+msgstr ""
+
+#: includes/billing/class-admin.php:207
+msgid "Unpaid invoices"
+msgstr ""
+
+#: includes/billing/class-admin.php:217
+msgid "Not yet due"
+msgstr ""
+
+#: includes/billing/class-admin.php:220
+msgid "Amount"
+msgstr ""
+
+#: includes/billing/class-admin.php:220
+msgid "Due"
+msgstr ""
+
+#: includes/billing/class-admin.php:220
+msgid "Days overdue"
+msgstr ""
+
+#: includes/billing/class-admin.php:220
+msgid "No unpaid invoices."
+msgstr ""
+
+#. translators: %d: number of days.
+#: includes/billing/class-admin.php:223
+#, php-format
+msgid "Ending in the next %d days"
+msgstr ""
+
+#: includes/billing/class-admin.php:224
+msgid "Renewal reminders go to the billing email 14 and 3 days before the end date, from the daily renewal-reminders job."
+msgstr ""
+
+#: includes/billing/class-admin.php:233
+msgid "None: no reminders"
+msgstr ""
+
+#: includes/billing/class-admin.php:238
+msgid "Ends"
+msgstr ""
+
+#: includes/billing/class-admin.php:238
+msgid "Days left"
+msgstr ""
+
+#: includes/billing/class-admin.php:238
+msgid "Billing email"
+msgstr ""
+
+#: includes/billing/class-admin.php:238
+msgid "Reminders sent (days before)"
+msgstr ""
+
+#: includes/billing/class-admin.php:238
+msgid "No ads end soon."
+msgstr ""
+
+#: includes/billing/class-admin.php:240
+msgid "Serving today with no invoice number"
+msgstr ""
+
+#: includes/billing/class-admin.php:245
+msgid "Every serving ad has an invoice number."
+msgstr ""
+
+#: includes/billing/class-invoices.php:52
+msgid "Unpaid"
+msgstr ""
+
+#: includes/billing/class-invoices.php:53
+msgid "Paid"
+msgstr ""
+
+#: includes/billing/class-invoices.php:54
+msgid "Void"
+msgstr ""
+
+#: includes/billing/class-invoices.php:98
+msgid "Invoices are issued on ads only."
+msgstr ""
+
+#. translators: 1: site name, 2: restaurant, 3: end date.
+#: includes/billing/class-reminders.php:185
+#, php-format
+msgid "[%1$s] The premium profile for %2$s ends on %3$s"
+msgstr ""
+
+#. translators: %s: owner's name.
+#. translators: %s: advertiser name.
+#: includes/billing/class-reminders.php:188
+#: includes/billing/class-reminders.php:240
+#, php-format
+msgid "Hello %s,"
+msgstr ""
+
+#. translators: 1: restaurant, 2: end date, 3: number of days.
+#: includes/billing/class-reminders.php:192
+#, php-format
+msgid "The premium profile for %1$s ends on %2$s, in %3$d day. It does not renew by itself."
+msgid_plural "The premium profile for %1$s ends on %2$s, in %3$d days. It does not renew by itself."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/billing/class-reminders.php:197
+msgid "To keep it, log in and choose a plan under My restaurant. New time starts the day after the current end date, so nothing you paid for is lost:"
+msgstr ""
+
+#: includes/billing/class-reminders.php:200
+msgid "If you do not renew, your listing stays as it is without the button, the extra photos and the ad-free page."
+msgstr ""
+
+#. translators: 1: site name, 2: end date.
+#: includes/billing/class-reminders.php:237
+#, php-format
+msgid "[%1$s] Your Sponsored placement ends on %2$s"
+msgstr ""
+
+#. translators: 1: ad name, 2: product, 3: end date, 4: number of days.
+#: includes/billing/class-reminders.php:244
+#, php-format
+msgid "Your placement \"%1$s\" (%2$s) ends on %3$s, in %4$d day."
+msgid_plural "Your placement \"%1$s\" (%2$s) ends on %3$s, in %4$d days."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/billing/class-reminders.php:250
+msgid "To renew it, reply to this email and we will send the details. If you do not want to renew, no action is needed; the placement simply stops on its end date."
+msgstr ""
+
+#. translators: %s: invoice number.
+#: includes/billing/class-reminders.php:254
+#, php-format
+msgid "Current invoice: %s"
+msgstr ""
+
+#: includes/claims/class-admin.php:43
+#: includes/claims/class-admin.php:88
+msgid "Listing claims"
+msgstr ""
+
+#: includes/claims/class-admin.php:44
+msgid "Claims"
+msgstr ""
+
+#: includes/claims/class-admin.php:58
+msgid "You are not allowed to decide claims."
+msgstr ""
+
+#: includes/claims/class-admin.php:86
+msgid "You are not allowed to see claims."
+msgstr ""
+
+#: includes/claims/class-admin.php:94
+msgid "Claim approved. The account is now linked to the listing as its owner."
+msgstr ""
+
+#: includes/claims/class-admin.php:94
+msgid "Claim rejected."
+msgstr ""
+
+#: includes/claims/class-admin.php:97
+msgid "Approve a claim only when the address or phone the code went to clearly belongs to the restaurant. Approval lets the account edit hours, menu links, photos and specials and reply to reviews; it never lets them change ratings, awards, status history or reviews."
+msgstr ""
+
+#: includes/claims/class-admin.php:99
+msgid "Confirmed, waiting for review"
+msgstr ""
+
+#: includes/claims/class-admin.php:104
+#: includes/claims/class-admin.php:116
+msgid "Listing"
+msgstr ""
+
+#: includes/claims/class-admin.php:104
+#: includes/claims/class-admin.php:116
+#: includes/saved/class-view.php:451
+msgid "Account"
+msgstr ""
+
+#: includes/claims/class-admin.php:104
+msgid "Confirmed with"
+msgstr ""
+
+#: includes/claims/class-admin.php:104
+msgid "Confirmed (UTC)"
+msgstr ""
+
+#: includes/claims/class-admin.php:111
+msgid "Waiting for the code"
+msgstr ""
+
+#: includes/claims/class-admin.php:114
+msgid "None."
+msgstr ""
+
+#: includes/claims/class-admin.php:116
+msgid "Code sent to"
+msgstr ""
+
+#: includes/claims/class-admin.php:116
+msgid "Requested (UTC)"
+msgstr ""
+
+#: includes/claims/class-admin.php:134
+msgid "Text to listed phone"
+msgstr ""
+
+#: includes/claims/class-admin.php:137
+msgid "(deleted account)"
+msgstr ""
+
+#: includes/claims/class-admin.php:146
+#: includes/highlights/class-moderation-screen.php:234
+#: includes/photos/class-moderation-screen.php:209
+msgid "Approve"
+msgstr ""
+
+#: includes/claims/class-admin.php:148
+msgid "Reason (sent to them)"
+msgstr ""
+
+#: includes/claims/class-admin.php:148
+#: includes/highlights/class-moderation-screen.php:242
+msgid "Reject"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:70
+msgid "We emailed you a code. Enter it below."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:70
+msgid "We texted a code to the restaurant's listed phone. Enter it below."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:87
+msgid "Thanks, that code is right. We will review your claim and email you when it is approved."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:110
+msgid "Log in"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:112
+#: includes/saved/class-view.php:371
+msgid "or"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:112
+msgid "create an account"
+msgstr ""
+
+#. translators: %s: log in / register links.
+#: includes/claims/class-claim-form.php:115
+#, php-format
+msgid "%s to claim this listing. The account you use will be the one that manages the listing."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:119
+msgid "To claim a restaurant, open its page in the directory and follow \"Claim this listing\"."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:124
+msgid "This listing is linked to your account."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:124
+msgid "Open your owner dashboard"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:127
+#: includes/claims/class-claims.php:185
+msgid "This listing has already been claimed. If you manage this restaurant, contact us and we will look into it."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:138
+msgid "Your claim is confirmed and waiting for review. We will email you when it is approved."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:156
+msgid "This listing has no website domain or phone we can send a code to. Contact us and we will confirm your claim another way."
+msgstr ""
+
+#: includes/claims/class-claim-form.php:162
+msgid "Need a new code?"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:162
+msgid "How should we confirm you manage this restaurant?"
+msgstr ""
+
+#. translators: %s: domain.
+#: includes/claims/class-claim-form.php:166
+#, php-format
+msgid "Email a code to my address at %s"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:167
+msgid "Text a code to the phone number on this listing"
+msgstr ""
+
+#. translators: %s: domain.
+#: includes/claims/class-claim-form.php:172
+#, php-format
+msgid "Your email at %s"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:174
+msgid "Send code"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:188
+msgid "Six-digit code"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:189
+msgid "Confirm"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:205
+msgid "Waiting for your code"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:206
+msgid "Waiting for review"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:207
+#: includes/highlights/class-moderation-screen.php:140
+#: includes/photos/class-moderation-screen.php:137
+msgid "Approved"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:208
+msgid "Not approved"
+msgstr ""
+
+#. translators: %s: date, for example "March 2024".
+#: includes/claims/class-claim-form.php:209
+#: includes/newsletter/class-renderer.php:82
+#: includes/site/class-blocks.php:640
+#: includes/site/class-pages.php:103
+#: includes/site/class-restaurant-view.php:203
+msgid "Closed"
+msgstr ""
+
+#: includes/claims/class-claim-form.php:215
+msgid "Your claims"
+msgstr ""
+
+#: includes/claims/class-claims.php:175
+msgid "Log in or create an account to claim a listing."
+msgstr ""
+
+#: includes/claims/class-claims.php:178
+msgid "That listing was not found."
+msgstr ""
+
+#: includes/claims/class-claims.php:182
+msgid "This listing is already linked to your account."
+msgstr ""
+
+#: includes/claims/class-claims.php:188
+msgid "That way of confirming is not available for this listing. Contact us and we will confirm it another way."
+msgstr ""
+
+#. translators: %s: domain such as example.com.
+#: includes/claims/class-claims.php:197
+#, php-format
+msgid "Use an email address at %s, the restaurant's website."
+msgstr ""
+
+#: includes/claims/class-claims.php:209
+msgid "Your claim on this listing is confirmed and waiting for review."
+msgstr ""
+
+#: includes/claims/class-claims.php:219
+msgid "You have several claims waiting already. Finish or wait for those first."
+msgstr ""
+
+#: includes/claims/class-claims.php:222
+msgid "Too many codes were requested. Try again in an hour."
+msgstr ""
+
+#: includes/claims/class-claims.php:249
+msgid "The claim could not be saved. Please try again."
+msgstr ""
+
+#: includes/claims/class-claims.php:257
+msgid "The code could not be sent. Please try again later or contact us."
+msgstr ""
+
+#: includes/claims/class-claims.php:275
+#: includes/claims/class-claims.php:322
+msgid "Claim not found."
+msgstr ""
+
+#: includes/claims/class-claims.php:278
+msgid "This claim is not waiting for a code."
+msgstr ""
+
+#: includes/claims/class-claims.php:282
+msgid "The code has expired. Request a new one."
+msgstr ""
+
+#: includes/claims/class-claims.php:290
+msgid "Too many wrong codes. Request a new one."
+msgstr ""
+
+#: includes/claims/class-claims.php:292
+msgid "That code is not right. Check it and try again."
+msgstr ""
+
+#: includes/claims/class-claims.php:318
+msgid "You are not allowed to approve claims."
+msgstr ""
+
+#: includes/claims/class-claims.php:325
+msgid "Only a claim whose code was confirmed can be approved."
+msgstr ""
+
+#: includes/claims/class-claims.php:330
+msgid "Another administrator must approve your own claim."
+msgstr ""
+
+#: includes/claims/class-claims.php:334
+msgid "The listing is already linked to another account. Remove that link on the user's profile first."
+msgstr ""
+
+#: includes/claims/class-claims.php:338
+msgid "The claimant's account no longer exists."
+msgstr ""
+
+#: includes/claims/class-claims.php:364
+msgid "You are not allowed to reject claims."
+msgstr ""
+
+#: includes/claims/class-claims.php:368
+msgid "Only an open claim can be rejected."
+msgstr ""
+
+#. translators: 1: site name, 2: restaurant name.
+#: includes/claims/class-claims.php:522
+#, php-format
+msgid "[%1$s] Your code to claim %2$s"
+msgstr ""
+
+#. translators: 1: code, 2: restaurant name.
+#: includes/claims/class-claims.php:527
+#, php-format
+msgid "Your code is %1$s. Enter it on the claim page to confirm you manage %2$s."
+msgstr ""
+
+#: includes/claims/class-claims.php:528
+msgid "The code works for 30 minutes. If you did not ask to claim this listing, ignore this email."
+msgstr ""
+
+#. translators: 1: code, 2: site name.
+#: includes/claims/class-claims.php:547
+#, php-format
+msgid "%1$s is your code to claim this restaurant on %2$s. It works for 30 minutes."
+msgstr ""
+
+#. translators: 1: site name, 2: restaurant name.
+#: includes/claims/class-claims.php:576
+#, php-format
+msgid "[%1$s] Listing claim to review: %2$s"
+msgstr ""
+
+#: includes/claims/class-claims.php:580
+msgid "A listing claim was confirmed and is waiting for approval."
+msgstr ""
+
+#. translators: %s: method.
+#: includes/claims/class-claims.php:582
+#, php-format
+msgid "Confirmed by: %s"
+msgstr ""
+
+#. translators: %s: method.
+#: includes/claims/class-claims.php:582
+msgid "code sent to an email at the restaurant's website domain"
+msgstr ""
+
+#. translators: %s: method.
+#: includes/claims/class-claims.php:582
+msgid "code texted to the listed phone"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/claims/class-claims.php:608
+#, php-format
+msgid "Your claim on %s was approved."
+msgstr ""
+
+#: includes/claims/class-claims.php:609
+msgid "Log in to update hours, menu links, photos and specials, see how your listing is doing, and reply to reviews:"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/claims/class-claims.php:614
+#, php-format
+msgid "Your claim on %s was not approved."
+msgstr ""
+
+#. translators: %s: reason.
+#: includes/claims/class-claims.php:615
+#, php-format
+msgid "Reason: %s"
+msgstr ""
+
+#. translators: %s: reason.
+#: includes/claims/class-claims.php:616
+msgid "If you manage this restaurant, reply to this email and we will look into it."
+msgstr ""
+
+#. translators: 1: site name, 2: restaurant name.
+#: includes/claims/class-claims.php:619
+#, php-format
+msgid "[%1$s] Your claim on %2$s"
+msgstr ""
+
+#. translators: 1: minimum PHP version, 2: minimum WordPress version.
+#: includes/class-activator.php:32
+#, php-format
+msgid "Guam Restaurants Core needs PHP %1$s and WordPress %2$s or newer."
+msgstr ""
+
+#: includes/class-content-types.php:34
+#: includes/saved/class-members.php:257
+msgid "Restaurants"
+msgstr ""
+
+#: includes/class-content-types.php:36
+msgid "Add New Restaurant"
+msgstr ""
+
+#: includes/class-content-types.php:37
+msgid "Edit Restaurant"
+msgstr ""
+
+#: includes/class-content-types.php:63
+#: includes/site/class-blocks.php:575
+#: includes/site/class-directory-view.php:325
+msgid "Cuisine"
+msgstr ""
+
+#: includes/class-content-types.php:68
+msgid "Price Levels"
+msgstr ""
+
+#: includes/class-content-types.php:69
+msgid "Price Level"
+msgstr ""
+
+#: includes/class-mall-verification.php:141
+msgid "Verified"
+msgstr ""
+
+#: includes/class-mall-verification.php:146
+msgid "This mall is confirmed and may be shown to visitors."
+msgstr ""
+
+#. translators: 1: user display name, 2: date.
+#: includes/class-mall-verification.php:153
+#, php-format
+msgid "Verified by %1$s on %2$s."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:119
+msgid "Street address line; the village comes from the village taxonomy."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:126
+msgid "Latitude (WGS84)."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:136
+msgid "Longitude (WGS84)."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:146
+msgid "Where the coordinates came from."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:154
+msgid "Phone number, stored as E.164 (+1671XXXXXXX)."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:161
+msgid "Website URL."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:168
+msgid "Business email address, for administrators following up with the restaurant; not shown on the site."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:176
+msgid "Facebook page URL."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:183
+msgid "Instagram profile URL."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:190
+msgid "Structured weekly opening hours."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:197
+msgid "Business status."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:204
+msgid "Opening date: YYYY, YYYY-MM or YYYY-MM-DD."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:211
+msgid "Closing date: YYYY, YYYY-MM or YYYY-MM-DD."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:218
+msgid "User who claimed this listing; 0 when unclaimed."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:226
+msgid "Google place ID, the only Google value that may be stored (docs/data-sources.md §2)."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:234
+msgid "Yelp business ID, for back-end matching only (Yelp API Terms §5(a))."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:242
+msgid "Foursquare place ID (shared by Open Source Places and the Places API)."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:249
+msgid "OpenStreetMap element, for example node/123."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:256
+msgid "OpenStreetMap cuisine tag as of the last import, unmapped (for checking the cuisine map; not shown on the site)."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:264
+msgid "Earlier names of the restaurant, one per line. Award imports match these as well as the current name."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:271
+msgid "Confidence (0 to 1) of the Google match, from name similarity and distance."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:282
+msgid "Confidence (0 to 1) of the Yelp match, from name similarity and distance."
+msgstr ""
+
+#: includes/class-restaurant-meta.php:293
+msgid "Confidence (0 to 1) of the Foursquare match, from name similarity and distance."
+msgstr ""
+
+#: includes/class-structured-data.php:95
+msgid "Restaurants on Guam"
+msgstr ""
+
+#: includes/class-term-meta.php:59
+msgid "US Census GEOID of the village boundary."
+msgstr ""
+
+#: includes/class-term-meta.php:60
+msgid "Other names that should find this village in search."
+msgstr ""
+
+#: includes/class-term-meta.php:61
+msgid "Official Chamorro name."
+msgstr ""
+
+#: includes/class-term-meta.php:71
+msgid "Whether an editor has confirmed this mall. Unverified malls are hidden from the public."
+msgstr ""
+
+#: includes/class-term-meta.php:95
+msgid "Village term the mall is in."
+msgstr ""
+
+#: includes/class-term-meta.php:104
+msgid "OpenStreetMap cuisine or amenity values that map to this cuisine."
+msgstr ""
+
+#: includes/class-term-meta.php:115
+msgid "Sort order, 1 (cheapest) to 4."
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:162
+msgid "Premium profile, 1 month"
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:163
+msgid "Premium profile, 12 months"
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:180
+msgid "A premium profile for the restaurant you manage: a call-to-action button, up to 20 photos, and no other restaurant's Sponsored placements on your page. It does not change ratings, awards or where your restaurant appears in lists. Buy it from My restaurant in your account so it is linked to your listing. It does not renew automatically."
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:228
+msgid "Premium profile days"
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:229
+msgid "Set this only on premium profile products: the days a paid order adds to the buyer's listing (30 for monthly, 365 for annual). Leave empty for any other product."
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:278
+msgid "That link has expired. Open My restaurant in your account and choose the plan again."
+msgstr ""
+
+#. translators: %s: order number.
+#: includes/commerce/class-woo-checkout.php:383
+#, php-format
+msgid "Order #%s paid"
+msgstr ""
+
+#. translators: %d: restaurant ID.
+#: includes/commerce/class-woo-checkout.php:386
+#, php-format
+msgid "Premium profile not added: restaurant %d was not found."
+msgstr ""
+
+#. translators: 1: restaurant, 2: number of days, 3: end date.
+#: includes/commerce/class-woo-checkout.php:395
+#, php-format
+msgid "Premium profile for %1$s: %2$d days added; it now runs until %3$s."
+msgstr ""
+
+#. translators: 1: order number, 2: order status.
+#: includes/commerce/class-woo-checkout.php:421
+#, php-format
+msgid "Order #%1$s %2$s"
+msgstr ""
+
+#. translators: 1: restaurant, 2: number of days, 3: end date.
+#: includes/commerce/class-woo-checkout.php:427
+#, php-format
+msgid "Premium profile for %1$s: %2$d days taken off; it now ends %3$s."
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:470
+msgid "Log in with the account linked to your restaurant, then buy the premium profile from My restaurant."
+msgstr ""
+
+#: includes/commerce/class-woo-checkout.php:473
+msgid "A premium profile can only be bought by the verified owner of the restaurant, from My restaurant. Claim your listing first."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:85
+msgid "Report a wrong or missing fact"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:86
+msgid "Owner or manager: change how this restaurant is listed"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:87
+msgid "Owner or manager: remove this listing"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:98
+#: includes/owners/class-dashboard.php:378
+#: includes/site/class-blocks.php:646
+msgid "Opening hours"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:99
+msgid "Phone number"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:100
+msgid "Address or map location"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:101
+msgid "Website or menu link"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:102
+msgid "Restaurant name"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:103
+msgid "Cuisine, village or mall"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:104
+msgid "Closed, reopened or moved"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:105
+msgid "Something else"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:118
+msgid "It shows personal information, such as a home address or personal phone"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:119
+msgid "It is not open to the public (for example, private catering only)"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:120
+msgid "It is a duplicate of another listing"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:121
+msgid "This place never existed or is not a restaurant"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:122
+msgid "Another reason"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:133
+msgid "Customer or visitor"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:134
+msgid "Owner"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:135
+msgid "Manager or staff"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:192
+#: assets/corrections/corrections.js:309
+msgid "Choose the restaurant from the list."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:195
+msgid "Choose what you would like to do."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:202
+msgid "Choose the reason for removal."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:203
+msgid "Choose what needs changing."
+msgstr ""
+
+#. translators: 1: minimum characters, 2: maximum characters.
+#: includes/corrections/class-corrections.php:210
+#, php-format
+msgid "Describe the change in %1$d to %2$d characters."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/corrections/class-corrections.php:214
+#, php-format
+msgid "Keep the source under %d characters."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:221
+msgid "Enter a valid email address so we can reply."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:224
+msgid "Tell us how you are connected to the restaurant."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:226
+msgid "Only the owner or a manager can ask to change or remove a listing. To report a wrong fact, choose \"Report a wrong or missing fact\"."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:247
+#: assets/corrections/corrections.js:350
+msgid "Your request could not be sent. Please try again."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:258
+msgid "You have sent several requests recently. Please try again later."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:267
+msgid "Your request could not be saved. Please try again."
+msgstr ""
+
+#: includes/corrections/class-corrections.php:364
+msgid "Request"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:366
+msgid "About"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:367
+msgid "From"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:368
+msgid "Connection"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:369
+msgid "Reply by"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:370
+msgid "Where to check"
+msgstr ""
+
+#: includes/corrections/class-corrections.php:376
+msgid "Details:"
+msgstr ""
+
+#. translators: %s: link to the review queue.
+#: includes/corrections/class-corrections.php:378
+#, php-format
+msgid "Open the review queue: %s"
+msgstr ""
+
+#. translators: 1: request kind, 2: restaurant name.
+#: includes/corrections/class-corrections.php:383
+#: assets/reviews/reviews.js:142
+#, php-format,js-format
+msgid "%1$s: %2$s"
+msgstr ""
+
+#. translators: 1: request kind, 2: restaurant name.
+#: includes/corrections/class-corrections.php:383
+msgid "New correction"
+msgstr ""
+
+#. translators: 1: request kind, 2: restaurant name.
+#: includes/corrections/class-corrections.php:383
+msgid "New listing request"
+msgstr ""
+
+#. translators: %s: site name.
+#: includes/corrections/class-corrections.php:408
+#, php-format
+msgid "We received your request - %s"
+msgstr ""
+
+#. translators: 1: site name, 2: restaurant name, 3: number of days, 4: editorial policy URL.
+#: includes/corrections/class-corrections.php:411
+#, php-format
+msgid ""
+"Thank you for writing to %1$s about the listing for %2$s. We have received your request and will reply by email within %3$d days.\n"
+"\n"
+"We check every change against a source, such as the restaurant's own website or signage, before we make it. How we handle corrections and listing requests is explained in our editorial policy:\n"
+"%4$s\n"
+"\n"
+"This is an automatic confirmation. If you did not send this request, you can ignore this email."
+msgstr ""
+
+#: includes/corrections/class-display.php:87
+msgid "The correction form needs JavaScript."
+msgstr ""
+
+#. translators: %d: number of days.
+#: includes/corrections/class-display.php:104
+#, php-format
+msgid "Corrections to facts (hours, phone, address, website, cuisine, closed or moved): we reply within %d days."
+msgstr ""
+
+#. translators: %d: number of days.
+#: includes/corrections/class-display.php:109
+#, php-format
+msgid "Owners and managers asking to change or remove a listing: we reply within %d days."
+msgstr ""
+
+#: includes/corrections/class-display.php:112
+msgid "We check every change against a source, such as the restaurant's website or signage, before making it. A note on where to check helps us act faster."
+msgstr ""
+
+#: includes/corrections/class-display.php:113
+msgid "We remove a listing that shows personal information, is not open to the public, is a duplicate or is not a real restaurant. A closed restaurant is marked closed rather than removed."
+msgstr ""
+
+#: includes/corrections/class-display.php:114
+msgid "Ratings, reviews and award results are not changed on request, and advertising never affects what we list."
+msgstr ""
+
+#: includes/corrections/class-display.php:123
+msgid "Spotted wrong hours, a new phone number or a closure? Own this restaurant and want its listing changed or removed? Tell us here."
+msgstr ""
+
+#: includes/corrections/class-display.php:124
+msgid "How we handle requests"
+msgstr ""
+
+#. translators: %d: number of days.
+#: includes/corrections/class-rest-controller.php:191
+#, php-format
+msgid "Thank you. We have received your request and sent a confirmation to your email address. We will reply within %d day."
+msgid_plural "Thank you. We have received your request and sent a confirmation to your email address. We will reply within %d days."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of errors not shown.
+#: includes/database/class-ingestion-runs.php:284
+#, php-format
+msgid "…and %d more."
+msgstr ""
+
+#. translators: 1: stored version, 2: code version.
+#: includes/database/class-schema.php:145
+#, php-format
+msgid "Guam Restaurants database tables are at version %1$s but the plugin needs %2$s. Run: wp guam-restaurants db upgrade"
+msgstr ""
+
+#: includes/dishes/class-display.php:87
+msgid "No dishes yet. Tell others what you ordered: add a photo of a dish, or name the dishes you tried when you write a review."
+msgstr ""
+
+#: includes/dishes/class-display.php:92
+msgid "Popular dishes"
+msgstr ""
+
+#: includes/dishes/class-display.php:93
+msgid "Ordered by how many visitors photographed each dish or named it in an approved review. Dishes the owner listed come next. Owners and staff cannot rate dishes, and sponsors cannot change this list."
+msgstr ""
+
+#: includes/dishes/class-display.php:95
+msgid "Add a dish photo"
+msgstr ""
+
+#: includes/dishes/class-display.php:96
+#: assets/reviews/reviews.js:288
+msgid "Write a review"
+msgstr ""
+
+#. translators: %s: number of visitors.
+#: includes/dishes/class-display.php:123
+#, php-format
+msgid "%s visitor"
+msgid_plural "%s visitors"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: number of photos.
+#: includes/dishes/class-display.php:127
+#, php-format
+msgid "%s photo"
+msgid_plural "%s photos"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: number of reviews.
+#: includes/dishes/class-display.php:131
+#, php-format
+msgid "%s review"
+msgid_plural "%s reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/dishes/class-display.php:138
+msgid "Visitors' average dish rating:"
+msgstr ""
+
+#. translators: 1: average stars, e.g. 4.5, 2: number of ratings.
+#: includes/dishes/class-display.php:142
+#, php-format
+msgid "%1$s/5 · %2$s rating"
+msgid_plural "%1$s/5 · %2$s ratings"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/dishes/class-display.php:152
+msgid "On the menu"
+msgstr ""
+
+#: includes/dishes/class-display.php:184
+#: includes/site/class-picker.php:396
+msgid "Advertising space"
+msgstr ""
+
+#: includes/dishes/class-display.php:185
+#: includes/site/class-picker.php:397
+msgid "Advertise here"
+msgstr ""
+
+#: includes/dishes/class-display.php:187
+msgid "Your restaurant could be here, before Popular dishes"
+msgstr ""
+
+#: includes/dishes/class-display.php:188
+msgid "People read this section when they are choosing what to eat. Sponsors take turns in this labeled spot on restaurant pages, chosen by village, mall or food type."
+msgstr ""
+
+#: includes/highlights/class-display.php:175
+#: includes/highlights/class-moderation-screen.php:60
+#: blocks/highlights/editor.js:30
+msgid "Highlights"
+msgstr ""
+
+#: includes/highlights/class-display.php:179
+msgid "How we choose and moderate highlights"
+msgstr ""
+
+#: includes/highlights/class-display.php:193
+#: includes/highlights/class-submit-screen.php:148
+msgid "Signature dishes"
+msgstr ""
+
+#. translators: %s: name of the owner or manager.
+#: includes/highlights/class-display.php:205
+#, php-format
+msgid "%s, for the restaurant"
+msgstr ""
+
+#. translators: %s: staff member's name.
+#: includes/highlights/class-display.php:224
+#, php-format
+msgid "%s, staff writer ·"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/highlights/class-email-verification.php:67
+#, php-format
+msgid "Confirm your review of %s"
+msgstr ""
+
+#. translators: 1: confirmation URL, 2: hours the link works.
+#: includes/highlights/class-email-verification.php:70
+#, php-format
+msgid ""
+"Please confirm your email address by opening this link:\n"
+"\n"
+"%1$s\n"
+"\n"
+"The link works once, for %2$d hours. After you confirm, a moderator checks your review against our published rules before it appears. Your review will show a \"Verified email\" badge, which means only that you confirmed this address.\n"
+"\n"
+"We do not keep your email address. If you did not write a review, ignore this message."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:89
+msgid "Only an owner linked to this restaurant can write its owner quote."
+msgstr ""
+
+#. translators: %d: maximum number of dishes.
+#: includes/highlights/class-highlights.php:100
+#, php-format
+msgid "List up to %d signature dishes."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/highlights/class-highlights.php:105
+#: includes/reviews/class-visitor-reviews.php:147
+#, php-format
+msgid "Keep each dish name to %d characters."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:144
+msgid "Only staff can write editor's notes."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:148
+msgid "You are linked to this restaurant as an owner, so you cannot write its editor's note."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/highlights/class-highlights.php:159
+#, php-format
+msgid "Keep the disclosure to %d characters."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:191
+msgid "Owners can respond only to published reviews."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:195
+msgid "Only an owner linked to this restaurant can respond to its reviews."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:198
+msgid "This review already has a response from the owner."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:238
+#: includes/highlights/class-moderation-screen.php:84
+msgid "You are not allowed to moderate highlights."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:241
+msgid "Unknown status."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:244
+msgid "Choose the published rule this highlight breaks."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:248
+msgid "Highlight not found."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:251
+#: includes/highlights/class-moderation-screen.php:127
+msgid "You are linked to this restaurant, so another administrator must moderate its reviews."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:421
+msgid "This could not be saved. Please try again later."
+msgstr ""
+
+#. translators: 1: kind of highlight, for example "User review", 2: restaurant name.
+#: includes/highlights/class-highlights.php:451
+#, php-format
+msgid "Waiting for approval (%1$s): %2$s"
+msgstr ""
+
+#. translators: %s: moderation screen URL.
+#: includes/highlights/class-highlights.php:454
+#, php-format
+msgid ""
+"A highlight is waiting for moderation.\n"
+"\n"
+"Review it here: %s"
+msgstr ""
+
+#. translators: 1: minimum characters, 2: maximum characters.
+#: includes/highlights/class-highlights.php:488
+#: includes/reviews/class-visitor-reviews.php:131
+#, php-format
+msgid "Write between %1$d and %2$d characters."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/highlights/class-highlights.php:502
+#: includes/photos/class-photo-submissions.php:156
+#: includes/reviews/class-visitor-reviews.php:135
+#, php-format
+msgid "Enter a display name of up to %d characters."
+msgstr ""
+
+#: includes/highlights/class-highlights.php:512
+#: includes/photos/class-photo-submissions.php:126
+#: includes/ratings/class-rest-controller.php:99
+#: includes/reviews/class-rest-controller.php:180
+#: includes/reviews/class-visitor-reviews.php:101
+#: includes/reviews/class-visitor-reviews.php:241
+msgid "Unknown restaurant."
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:65
+#: includes/highlights/class-moderation-screen.php:122
+msgid "Moderate highlights"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:65
+msgid "Moderate"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:66
+#: includes/highlights/class-submit-screen.php:115
+msgid "Write a highlight"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:66
+msgid "Write"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:125
+msgid "Highlight updated."
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:126
+msgid "Choose the published rule this highlight breaks before rejecting it."
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:132
+msgid "The highlight could not be updated."
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:135
+msgid "Approve everything that follows the rules, positive or negative. Reject only under a published rule, never because a restaurant or advertiser asks, and never because a review is critical. Highlights are never sold and never change ratings or the order of lists."
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:135
+#: includes/highlights/class-policy-page.php:80
+#: includes/highlights/class-submit-screen.php:117
+#: includes/site/class-blocks.php:867
+msgid "Editorial policy"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:139
+msgid "Pending"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:141
+msgid "Rejected"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:153
+msgid "All types"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:160
+#: includes/photos/class-moderation-screen.php:143
+msgid "Nothing here."
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:165
+msgid "Type"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:165
+msgid "Content"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:165
+msgid "Submitted"
+msgstr ""
+
+#. translators: %d: star rating.
+#: includes/highlights/class-moderation-screen.php:190
+#, php-format
+msgid "%d of 5"
+msgstr ""
+
+#. translators: %s: writer's own disclosure.
+#: includes/highlights/class-moderation-screen.php:207
+#, php-format
+msgid "Disclosure: %s"
+msgstr ""
+
+#. translators: 1: reviewer name, 2: review text.
+#: includes/highlights/class-moderation-screen.php:213
+#, php-format
+msgid "In reply to %1$s: %2$s"
+msgstr ""
+
+#. translators: %s: comma-separated dishes.
+#: includes/highlights/class-moderation-screen.php:219
+#, php-format
+msgid "Signature dishes: %s"
+msgstr ""
+
+#. translators: %s: rule text.
+#: includes/highlights/class-moderation-screen.php:223
+#, php-format
+msgid "Rejected: %s"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:237
+msgid "Rule broken"
+msgstr ""
+
+#: includes/highlights/class-moderation-screen.php:238
+msgid "Rule broken…"
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:81
+msgid "How we decide what appears on restaurant pages, and how we keep it independent of advertising."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:131
+msgid "Highlights and reviews"
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:132
+msgid "Each restaurant page has a Highlights section. Every highlight is labeled with who wrote it:"
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:135
+msgid "a short description and signature dishes written by the restaurant's owner or manager. We check that the account belongs to the restaurant before it can post."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:136
+msgid "a short note written by our staff in their own words. Staff do not write about restaurants they or their families are connected to, and say so if a restaurant paid for a meal or gave them anything."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:137
+#: includes/reviews/class-display.php:132
+msgid "User reviews"
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:137
+msgid "a star rating and comment from a visitor to this site, shown separately from the owner's and editor's words."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:138
+msgid "an owner may post one public response to each review. Owners cannot edit, hide or delete reviews."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:142
+msgid "Moderation"
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:143
+msgid "Every highlight, review and response waits for an administrator before it appears. We publish positive and critical reviews alike. We reject something only when its content breaks one of these rules, and we apply them the same way whatever the rating:"
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:147
+msgid "We never remove or hide a review because a restaurant, advertiser or prospective advertiser asks, or because it is negative."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:148
+msgid "Highlights are free. They cannot be bought, are not part of any advertising package, and never change ratings, awards or the order of any list or search result."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:149
+msgid "We never pay for reviews or reward reviewers for what they say."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:150
+msgid "Anyone connected to a restaurant (owner, staff, relative) or to a competitor must say so in their review. People linked to a restaurant's account cannot review it."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:154
+msgid "Writing a review"
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:157
+msgid "Log in, or give an email address. We email a link, and your review goes to a moderator once you open it. We use the address only to send that link and do not keep it."
+msgstr ""
+
+#. translators: %d: reviews per hour.
+#: includes/highlights/class-policy-page.php:159
+#, php-format
+msgid "To stop spam we use a hidden form field, a minimum time to fill in the form, and a limit of %d reviews an hour and one review of each restaurant a day per visitor and per email address. These limits use scrambled (hashed) copies of your IP address and email that expire within a day; neither is stored with your review."
+msgstr ""
+
+#: includes/highlights/class-policy-page.php:164
+msgid "Reviews sent by email always confirm an address; logged-in reviewers can choose to confirm their account email. The badge does not mean we checked a visit, a receipt or a purchase."
+msgstr ""
+
+#: includes/highlights/class-policy.php:47
+msgid "Spam: advertising, links to other sites, or the same text posted again and again."
+msgstr ""
+
+#: includes/highlights/class-policy.php:48
+msgid "Profanity or obscene language."
+msgstr ""
+
+#: includes/highlights/class-policy.php:49
+msgid "A personal attack: insults aimed at a person (staff, the owner or another reviewer) instead of describing the visit."
+msgstr ""
+
+#: includes/highlights/class-policy.php:50
+msgid "Hate speech, threats or harassment."
+msgstr ""
+
+#: includes/highlights/class-policy.php:51
+msgid "Personal information about someone, such as a phone number or home address."
+msgstr ""
+
+#: includes/highlights/class-policy.php:52
+msgid "Conflict of interest: written by someone connected to the restaurant (owner, staff, relative) or to a competitor without saying so."
+msgstr ""
+
+#: includes/highlights/class-policy.php:53
+msgid "Clear signs of being fake, paid for, or written in return for a discount or gift."
+msgstr ""
+
+#: includes/highlights/class-policy.php:54
+msgid "Not about this restaurant or a visit to it (off topic)."
+msgstr ""
+
+#: includes/highlights/class-policy.php:55
+msgid "About a different business."
+msgstr ""
+
+#: includes/highlights/class-policy.php:80
+#: includes/owners/class-owner-content.php:457
+#: includes/photos/class-photo-gallery.php:101
+msgid "From the owner"
+msgstr ""
+
+#: includes/highlights/class-policy.php:82
+msgid "Editor's note"
+msgstr ""
+
+#: includes/highlights/class-policy.php:84
+#: assets/reviews/reviews.js:215
+msgid "Response from the owner"
+msgstr ""
+
+#: includes/highlights/class-policy.php:86
+msgid "User review"
+msgstr ""
+
+#: includes/highlights/class-policy.php:99
+msgid "Verified email"
+msgstr ""
+
+#: includes/highlights/class-policy.php:108
+msgid "The writer confirmed an email address by clicking a link we sent. We have not checked that they ate here."
+msgstr ""
+
+#: includes/highlights/class-roles.php:210
+msgid "Restaurants you manage"
+msgstr ""
+
+#: includes/highlights/class-roles.php:219
+msgid "Restaurant owner"
+msgstr ""
+
+#: includes/highlights/class-roles.php:219
+msgid "Restaurant IDs this user manages"
+msgstr ""
+
+#: includes/highlights/class-roles.php:221
+msgid "Comma-separated. Link a user only after checking they own or manage the restaurant; a restaurant has one owner account, so this replaces any other. Give them the Restaurant owner role so they can write owner quotes and reply to reviews."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:117
+msgid "Everything you send waits for an administrator, who checks it against our published rules. Highlights cannot be bought and never change ratings or the order of lists."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:123
+msgid "Your account is not linked to a restaurant yet. Contact us to confirm that you own or manage it."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:141
+msgid "A short description of your restaurant and up to five signature dishes, shown on its page labeled \"From the owner\"."
+msgstr ""
+
+#. translators: 1: minimum characters, 2: maximum characters.
+#: includes/highlights/class-submit-screen.php:147
+msgid "Description"
+msgstr ""
+
+#. translators: 1: minimum characters, 2: maximum characters.
+#: includes/highlights/class-submit-screen.php:147
+#: includes/highlights/class-submit-screen.php:218
+#, php-format
+msgid "%1$d to %2$d characters."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:148
+msgid "One per line, up to five."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:149
+msgid "Name shown"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:151
+#: includes/highlights/class-submit-screen.php:221
+#: includes/photos/class-photo-gallery.php:184
+msgid "Send for approval"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:154
+msgid "Reviews of your restaurants"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:155
+msgid "You can post one public response to each published review. You cannot edit, hide or delete reviews. If you think a review breaks one of our published rules, contact us and say which rule."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:164
+msgid "No published reviews yet."
+msgstr ""
+
+#. translators: 1: star rating, 2: reviewer name, 3: date.
+#: includes/highlights/class-submit-screen.php:178
+#, php-format
+msgid "%1$d of 5 by %2$s, %3$s"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:183
+msgid "Your published response"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:183
+msgid "Your response, waiting for approval"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:190
+msgid "Public response"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:191
+msgid "Send response for approval"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:212
+msgid "A short note in your own words. Do not write about a restaurant you or your family are connected to. If the restaurant paid for your meal or gave you anything, say so in the disclosure."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:219
+msgid "Disclosure (optional)"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:219
+msgid "For example: The restaurant paid for this meal. Shown with the note."
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:240
+#: includes/owners/class-dashboard.php:494
+msgid "Waiting for approval"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:241
+msgid "Published"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:242
+msgid "Not published"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:244
+msgid "Your recent submissions"
+msgstr ""
+
+#: includes/highlights/class-submit-screen.php:289
+msgid "Sent. An administrator will check it before it appears."
+msgstr ""
+
+#: includes/legal/class-pages.php:69
+#: includes/site/class-blocks.php:870
+msgid "Advertising disclosure"
+msgstr ""
+
+#: includes/legal/class-pages.php:71
+msgid "How the directory makes money, how sponsored placements are labeled, and what advertising can never buy."
+msgstr ""
+
+#: includes/legal/class-pages.php:75
+msgid "Data sources and credits"
+msgstr ""
+
+#: includes/legal/class-pages.php:77
+msgid "Where the directory's restaurant details, maps, ratings and award results come from, and their licences."
+msgstr ""
+
+#: includes/legal/class-pages.php:81
+#: includes/site/class-blocks.php:872
+msgid "Photo upload agreement"
+msgstr ""
+
+#: includes/legal/class-pages.php:83
+msgid "What you confirm and agree to when you upload a photo, including the transfer of the photo to us."
+msgstr ""
+
+#: includes/legal/class-pages.php:217
+#: includes/saved/class-view.php:385
+#: includes/site/class-blocks.php:868
+#: assets/advertising/inquiry.js:206
+#: assets/corrections/corrections.js:229
+msgid "Privacy policy"
+msgstr ""
+
+#: includes/legal/class-pages.php:307
+msgid "Translations"
+msgstr ""
+
+#: includes/monitoring/class-job-controls.php:57
+msgid "Daily"
+msgstr ""
+
+#: includes/monitoring/class-job-controls.php:58
+msgid "Weekly"
+msgstr ""
+
+#: includes/monitoring/class-job-controls.php:70
+msgid "Twice a day"
+msgstr ""
+
+#: includes/monitoring/class-jobs.php:174
+msgid "Once a month"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:62
+#: includes/newsletter/class-admin.php:63
+#: includes/newsletter/class-admin.php:123
+msgid "Newsletter"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:77
+#: includes/newsletter/class-admin.php:98
+msgid "Only administrators can change the newsletter."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:117
+msgid "Sponsor saved. It appears in the next draft only."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:118
+msgid "The sponsor needs a name and a message within the length limits."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:119
+msgid "Draft created in SendFox. It has not been sent."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:120
+msgid "Draft assembled. Copy the HTML below into SendFox."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:127
+msgid "Every week a draft is assembled from the last seven days: new and reopened restaurants, the most viewed listings, new award results and closures. With a SendFox token the draft is created in SendFox; it is never sent automatically."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:130
+msgid "SendFox token: set."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:131
+msgid "SendFox token: not set. Drafts are kept here as HTML to paste into SendFox."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:136
+msgid "Latest draft"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:140
+msgid "Assemble a draft now"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:145
+msgid "No draft yet."
+msgstr ""
+
+#. translators: 1: start date, 2: end date, 3: date and time assembled.
+#: includes/newsletter/class-admin.php:154
+#, php-format
+msgid "Covers %1$s to %2$s. Assembled %3$s."
+msgstr ""
+
+#. translators: %d: SendFox campaign ID.
+#: includes/newsletter/class-admin.php:163
+#, php-format
+msgid "SendFox draft #%d created. Review it in SendFox, choose the list and send it there."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:168
+msgid "Subject"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:169
+msgid "Preview text"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:170
+msgid "HTML"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:170
+msgid "In SendFox, create a campaign, choose the HTML editor and paste this."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:172
+msgid "Preview"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:174
+msgid "Newsletter preview"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:189
+msgid "Sponsor for the next issue"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:190
+msgid "Shown after the issue's own content in a box labeled \"Sponsored\". It cannot mention ratings, rankings or awards (docs/editorial-policy.md). It is cleared once a draft uses it. Leave name and message empty for no sponsor."
+msgstr ""
+
+#: includes/newsletter/class-admin.php:195
+msgid "Sponsor name"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:197
+msgid "Link (optional)"
+msgstr ""
+
+#: includes/newsletter/class-admin.php:199
+msgid "Save sponsor"
+msgstr ""
+
+#: includes/newsletter/class-issue.php:50
+#: includes/site/class-history.php:49
+#: includes/site/class-pages.php:101
+msgid "Reopened"
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/newsletter/class-newsletter.php:78
+#, php-format
+msgid "Enter the sponsor's name (up to %d characters)."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/newsletter/class-newsletter.php:82
+#, php-format
+msgid "Enter the sponsor's message (up to %d characters)."
+msgstr ""
+
+#: includes/newsletter/class-newsletter.php:137
+msgid "No SendFox token is set, so no draft was created in SendFox. Copy the HTML below into a new SendFox campaign."
+msgstr ""
+
+#. translators: %d: SendFox campaign ID.
+#: includes/newsletter/class-newsletter.php:206
+#, php-format
+msgid "A draft campaign (#%d) is waiting in SendFox. It has not been sent: review it, choose the list and press Send there."
+msgstr ""
+
+#. translators: %s: subject line.
+#: includes/newsletter/class-newsletter.php:210
+#, php-format
+msgid "Subject: %s"
+msgstr ""
+
+#. translators: %s: sponsor name.
+#: includes/newsletter/class-newsletter.php:212
+#, php-format
+msgid "Sponsor: %s"
+msgstr ""
+
+#. translators: %s: sponsor name.
+#: includes/newsletter/class-newsletter.php:212
+msgid "Sponsor: none"
+msgstr ""
+
+#: includes/newsletter/class-newsletter.php:213
+msgid "Nothing changed in the directory this week; consider skipping this issue."
+msgstr ""
+
+#. translators: %s: link to the Newsletter screen.
+#: includes/newsletter/class-newsletter.php:216
+#, php-format
+msgid "Preview and HTML: %s"
+msgstr ""
+
+#. translators: %s: site name.
+#: includes/newsletter/class-newsletter.php:221
+#, php-format
+msgid "[%s] Newsletter draft ready to review"
+msgstr ""
+
+#. translators: 1: site name, 2: date of the issue.
+#: includes/newsletter/class-renderer.php:37
+#, php-format
+msgid "%1$s: this week in Guam restaurants (%2$s)"
+msgstr ""
+
+#. translators: %d: number of restaurants.
+#: includes/newsletter/class-renderer.php:50
+#, php-format
+msgid "%d new or reopened restaurant"
+msgid_plural "%d new or reopened restaurants"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of award results.
+#: includes/newsletter/class-renderer.php:54
+#, php-format
+msgid "%d new award result"
+msgid_plural "%d new award results"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/newsletter/class-renderer.php:57
+msgid "the most viewed places this week"
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:59
+msgid "What changed this week in the directory."
+msgstr ""
+
+#. translators: 1: start date, 2: end date.
+#: includes/newsletter/class-renderer.php:73
+#, php-format
+msgid "What changed in the directory from %1$s to %2$s."
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:79
+msgid "New and reopened"
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:80
+msgid "Most viewed this week"
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:84
+msgid "No openings, closures or new award results were recorded this week."
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:89
+msgid "Facts come from our directory records. Spotted a mistake?"
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:91
+#: includes/site/class-blocks.php:739
+#: includes/site/class-pages.php:114
+msgid "Suggest a correction"
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:136
+msgid "New award results"
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:151
+msgid "Want to reach people choosing where to eat on Guam?"
+msgstr ""
+
+#: includes/newsletter/class-renderer.php:151
+msgid "Sponsor an issue"
+msgstr ""
+
+#: includes/newsletter/class-sendfox-client.php:107
+msgid "SendFox rejected the token. Create a new personal access token in SendFox and update GUAM_RESTAURANTS_SENDFOX_TOKEN."
+msgstr ""
+
+#: includes/newsletter/class-sendfox-client.php:109
+msgid "SendFox's API needs a paid SendFox plan. Copy the HTML below into a new SendFox campaign instead."
+msgstr ""
+
+#: includes/newsletter/class-sendfox-client.php:111
+msgid "SendFox is rate limiting requests. Try again in a minute."
+msgstr ""
+
+#. translators: 1: HTTP status code, 2: message from SendFox.
+#: includes/newsletter/class-sendfox-client.php:115
+#, php-format
+msgid "SendFox returned HTTP %1$d. %2$s"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:70
+#: includes/saved/class-view.php:405
+msgid "My restaurant"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:140
+#: includes/owners/class-owner-content.php:102
+msgid "Only the verified owner of this restaurant can change it."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:177
+msgid "Nothing changed."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:179
+msgid "Saved. Your new photo will appear on your listing after an administrator approves it."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:181
+msgid "Saved. The change is live on your listing."
+msgstr ""
+
+#. translators: %d: maximum.
+#: includes/owners/class-dashboard.php:201
+#, php-format
+msgid "You can have up to %d photos. Remove one first."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:204
+msgid "Photos must be 5 MB or smaller."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:208
+msgid "Upload a JPEG, PNG or WebP image."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:211
+msgid "Describe the photo in a few words, for people who cannot see it."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:246
+msgid "No restaurant is linked to your account yet."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:262
+msgid "View your listing"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:262
+msgid "Reply to reviews or add an owner quote"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:272
+msgid "You can change your hours, menu links, menu dishes, specials and photos here. Ratings, awards, the listing's open or closed history and reviews are not editable by owners; to report a mistake in them, contact us."
+msgstr ""
+
+#. translators: 1: start date, 2: end date.
+#: includes/owners/class-dashboard.php:285
+#, php-format
+msgid "Last 30 days (%1$s to %2$s, Guam time)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:286
+msgid "Last 30 days"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:286
+msgid "The 30 days before"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:288
+msgid "Listing views"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:289
+msgid "Clicks to your website"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:290
+msgid "Taps on your phone number"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:295
+msgid "Counted in visitors' browsers; bots are left out and nothing about visitors is stored. Counting started when this feature was installed."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:297
+msgid "Your Sponsored placements"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:299
+msgid "No Sponsored placements are linked to this restaurant."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:302
+msgid "Impressions (30 days)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:302
+msgid "Clicks (30 days)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:302
+msgid "Click-through rate"
+msgstr ""
+
+#. translators: %s: date.
+#: includes/owners/class-dashboard.php:327
+#, php-format
+msgid "Active until %s."
+msgstr ""
+
+#. translators: %s: date.
+#: includes/owners/class-dashboard.php:327
+msgid "It does not renew by itself; we email you 14 and 3 days before it ends."
+msgstr ""
+
+#. translators: %d: number of photos.
+#: includes/owners/class-dashboard.php:330
+#, php-format
+msgid "A premium profile adds a call-to-action button (such as \"Order online\" or \"Reserve a table\"), up to %d photos, and keeps other restaurants' Sponsored placements off your page. It does not change ratings, awards or where your restaurant appears in lists."
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/owners/class-dashboard.php:340
+#, php-format
+msgid "Add time: %s"
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/owners/class-dashboard.php:340
+#, php-format
+msgid "Buy: %s"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:344
+msgid "You pay on the checkout page. New time starts the day after your current end date."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:346
+msgid "Your orders and receipts"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:350
+msgid "Premium profiles are not on sale online yet. Reply to any email from us to ask about one."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:356
+msgid "Call-to-action button"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:357
+msgid "Button"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:357
+msgid "No button"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:362
+msgid "Save button"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:379
+msgid "24-hour clock, Guam time. Separate split shifts with a comma, e.g. 11:00-14:00, 17:00-21:00. Leave a day empty when closed."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:383
+#: includes/site/class-blocks.php:639
+#: assets/site/hours.js:63
+msgid "Open 24 hours"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:383
+msgid "Open every day, all day"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:384
+msgid "Note (e.g. holiday hours)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:386
+msgid "Save hours"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:397
+msgid "Menu links"
+msgstr ""
+
+#. translators: %d: row number.
+#: includes/owners/class-dashboard.php:403
+#, php-format
+msgid "Link %d"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:405
+msgid "Label, e.g. Lunch menu"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:412
+msgid "Save menu links"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:423
+msgid "Menu dishes"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:424
+msgid "Dishes from your menu, shown under \"Popular dishes\" on your listing as \"On the menu\". Dishes that visitors photograph or name in their reviews are listed first, by how many visitors did; you can list dishes but not rate them, and the order is not for sale. Do not call anything \"Featured\", \"Top pick\" or \"Recommended\"."
+msgstr ""
+
+#. translators: %d: row number.
+#: includes/owners/class-dashboard.php:429
+#, php-format
+msgid "Dish %d"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:431
+msgid "Name, e.g. Chicken kelaguen"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:437
+msgid "Short description (optional)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:443
+msgid "Save menu dishes"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:454
+#: includes/owners/class-owner-content.php:469
+msgid "Specials"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:455
+msgid "Shown on your listing as \"From the owner\" until the end date. Do not mention awards or call anything \"Featured\", \"Top pick\" or \"Recommended\"."
+msgstr ""
+
+#. translators: %d: row number.
+#: includes/owners/class-dashboard.php:460
+#, php-format
+msgid "Special %d"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:462
+msgid "Title, e.g. Weekday lunch set"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:466
+msgid "Details (optional)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:468
+msgid "Ends (optional)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:473
+msgid "Save specials"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:486
+#: includes/photos/class-photo-gallery.php:85
+msgid "Photos"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:493
+msgid "Keep"
+msgstr ""
+
+#. translators: %d: maximum photos.
+#: includes/owners/class-dashboard.php:502
+#, php-format
+msgid "Add a photo (JPEG, PNG or WebP, up to 5 MB; %d photos at most). Use only photos you took or have the right to use."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:503
+msgid "Describe the photo (alt text)"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:506
+msgid "Save photos"
+msgstr ""
+
+#: includes/owners/class-owner-content.php:207
+msgid "Write hours like 11:00-14:00, 17:00-21:00 (24-hour clock), or leave a day empty for closed."
+msgstr ""
+
+#: includes/owners/class-owner-content.php:238
+#: includes/site/class-blocks.php:519
+msgid "Menu"
+msgstr ""
+
+#. translators: %d: maximum.
+#: includes/owners/class-owner-content.php:244
+#, php-format
+msgid "Add at most %d menu links."
+msgstr ""
+
+#. translators: %d: maximum.
+#: includes/owners/class-owner-content.php:286
+#, php-format
+msgid "Add at most %d dishes."
+msgstr ""
+
+#: includes/owners/class-owner-content.php:311
+msgid "Use a valid end date for each special, or leave it empty."
+msgstr ""
+
+#. translators: %d: maximum.
+#: includes/owners/class-owner-content.php:330
+#, php-format
+msgid "Add at most %d specials."
+msgstr ""
+
+#: includes/owners/class-owner-content.php:345
+msgid "The call-to-action button is part of a premium profile."
+msgstr ""
+
+#: includes/owners/class-owner-content.php:353
+msgid "Choose a button label and enter a web address starting with https://."
+msgstr ""
+
+#. translators: %s: date.
+#: includes/owners/class-owner-content.php:473
+#, php-format
+msgid "Until %s"
+msgstr ""
+
+#: includes/owners/class-owner-content.php:488
+msgid "Added by the restaurant's verified owner. This restaurant pays for a premium profile, which adds this section's button and extra photos. It does not change ratings, awards or where the restaurant appears in lists."
+msgstr ""
+
+#: includes/owners/class-owner-content.php:489
+msgid "Added by the restaurant's verified owner. It does not change ratings, awards or where the restaurant appears in lists."
+msgstr ""
+
+#: includes/photos/class-cuisine-photos.php:112
+msgid "Public domain"
+msgstr ""
+
+#: includes/photos/class-cuisine-photos.php:128
+msgid "Illustrative photo, not from this restaurant"
+msgstr ""
+
+#: includes/photos/class-cuisine-photos.php:128
+msgid "Illustrative photo"
+msgstr ""
+
+#: includes/photos/class-cuisine-photos.php:129
+msgid "Unknown author"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:45
+#: includes/photos/class-moderation-screen.php:46
+#: includes/photos/class-moderation-screen.php:108
+msgid "Photo submissions"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:75
+msgid "You cannot moderate photos."
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:111
+msgid "Owners' photos wait here too. To let an owner publish photos without approval, edit their user and set the role to \"Restaurant owner (trusted)\". They can still change only their own restaurant."
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:116
+msgid "To do: the photo upload agreement uses the site name until the company's formal name is set (GUAM_RESTAURANTS_LEGAL_NAME in wp-config.php). Have counsel review the agreement page before launch."
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:120
+msgid "Photo approved. It now shows on the restaurant page."
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:121
+msgid "Photo declined and deleted."
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:122
+msgid "That did not work. Pick a rule when declining, and try again."
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:130
+msgid "Check each photo against the published photo rules. Ratings are never a reason to decline. Photos uploaded by visitors who are not logged in appear here after they confirm their email."
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:133
+msgid "Waiting"
+msgstr ""
+
+#. translators: %s: size such as "20 MB".
+#: includes/photos/class-moderation-screen.php:146
+#: includes/photos/class-photo-gallery.php:156
+msgid "Photo"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:146
+msgid "Restaurant and dish"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:146
+msgid "Uploaded by"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:166
+msgid "(owner, from the owner dashboard; the dish field shows their photo description)"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:168
+msgid "(owner)"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:170
+msgid "(says they are connected to the restaurant)"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:173
+msgid "Rule…"
+msgstr ""
+
+#. translators: 1: upload date, 2: agreement version.
+#: includes/photos/class-moderation-screen.php:204
+#, php-format
+msgid "%1$s, accepted agreement version %2$s"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:210
+msgid "Decline and delete"
+msgstr ""
+
+#: includes/photos/class-moderation-screen.php:210
+msgid "Remove and delete"
+msgstr ""
+
+#: includes/photos/class-openverse-importer.php:106
+msgid "no suitable openly licensed photo found"
+msgstr ""
+
+#: includes/photos/class-photo-download.php:41
+msgid "The photo address is not a public http or https URL."
+msgstr ""
+
+#: includes/photos/class-photo-download.php:59
+msgid "The photo is larger than 10 MB."
+msgstr ""
+
+#: includes/photos/class-photo-download.php:68
+msgid "Could not write a temporary file."
+msgstr ""
+
+#: includes/photos/class-photo-download.php:73
+msgid "The address did not return a JPEG, PNG or WebP image."
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:81
+msgid "No photos yet. Be the first to add one."
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:86
+msgid "Uploaded by visitors and the restaurant, and approved by an administrator before they appear."
+msgstr ""
+
+#. translators: %s: uploader's display name.
+#: includes/photos/class-photo-gallery.php:103
+#, php-format
+msgid "by %s"
+msgstr ""
+
+#. translators: %d: stars from 1 to 5.
+#: includes/photos/class-photo-gallery.php:133
+#, php-format
+msgid "%d out of 5 stars"
+msgid_plural "%d out of 5 stars"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: size such as "20 MB".
+#: includes/photos/class-photo-gallery.php:156
+#, php-format
+msgid "JPEG, PNG or WebP, up to %s."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/photos/class-photo-gallery.php:158
+msgid "Dish name (required)"
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/photos/class-photo-gallery.php:158
+msgid "For example: chicken kelaguen"
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:163
+msgid "Your display name"
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:164
+msgid "Email (for a confirmation link; not stored)"
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:167
+msgid "You manage this restaurant, so your photos show as \"From the owner\" and have no rating."
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:169
+msgid "I own, work at, or am related to someone at this restaurant (you can add photos, but not ratings)"
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:172
+#: includes/photos/class-photo-gallery.php:173
+msgid "photo upload agreement"
+msgstr ""
+
+#. translators: 1: link to the photo upload agreement, 2: company name.
+#: includes/photos/class-photo-gallery.php:178
+#, php-format
+msgid "I took this photo and accept the %1$s. The photo becomes the property of %2$s."
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:189
+msgid "Add a photo"
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:202
+msgid "No rating"
+msgstr ""
+
+#. translators: %d: number of stars.
+#: includes/photos/class-photo-gallery.php:208
+#, php-format
+msgid "%d star"
+msgid_plural "%d stars"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/photos/class-photo-gallery.php:211
+msgid "How was the dish? (optional)"
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:234
+msgid "Thanks, your email is confirmed. Your photo will appear after an administrator approves it."
+msgstr ""
+
+#: includes/photos/class-photo-gallery.php:237
+msgid "That link has expired or was already used. Please upload the photo again."
+msgstr ""
+
+#: includes/photos/class-photo-rest-controller.php:157
+msgid "Almost done: we sent you an email. Open the link in it within 24 hours, and your photo will go to an administrator for approval."
+msgstr ""
+
+#: includes/photos/class-photo-rest-controller.php:158
+msgid "Thanks! Your photo will appear after an administrator approves it."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:86
+msgid "Does not show food, drink, the menu or the restaurant."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:87
+msgid "Taken at a different restaurant."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:88
+msgid "Not taken by the person who uploaded it (for example, copied from a website or another app)."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:89
+msgid "Shows people's faces up close, or personal information such as a receipt with a card number."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:90
+msgid "Offensive, explicit or illegal content."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:91
+msgid "Too dark or blurry to see the dish, or a duplicate of a photo already shown."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:92
+msgid "The dish name is not a dish name (for example, advertising or a comment about someone)."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:129
+#: assets/site/photos.js:24
+msgid "Your photo could not be sent. Please try again."
+msgstr ""
+
+#. translators: %d: maximum characters.
+#: includes/photos/class-photo-submissions.php:146
+#, php-format
+msgid "Enter the dish name, up to %d characters."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:149
+msgid "Choose a rating from 1 to 5 stars, or leave it empty."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:152
+msgid "Owners, staff and family of the restaurant can add photos but not ratings."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:159
+#: includes/reviews/class-visitor-reviews.php:152
+msgid "Enter your email address so we can send you a confirmation link, or log in."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:162
+msgid "Read and accept the photo upload agreement."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:176
+msgid "You have sent several photos recently. Please try again later."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:216
+#: includes/reviews/class-visitor-reviews.php:184
+msgid "We could not send the confirmation email. Please try again later."
+msgstr ""
+
+#. translators: %s: size such as "20 MB".
+#: includes/photos/class-photo-submissions.php:236
+#, php-format
+msgid "Photos can be at most %s."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:239
+msgid "Choose a photo to upload."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:242
+msgid "Photos must be JPEG, PNG or WebP images."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:283
+msgid "That image could not be read. Try a different photo."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:291
+msgid "That image could not be processed. Try a different photo."
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/photos/class-photo-submissions.php:383
+#, php-format
+msgid "Confirm your photo of %s"
+msgstr ""
+
+#. translators: %s: confirmation URL.
+#: includes/photos/class-photo-submissions.php:386
+#, php-format
+msgid ""
+"Please confirm your email address by opening this link:\n"
+"\n"
+"%s\n"
+"\n"
+"The link works once, for 24 hours. After you confirm, an administrator checks your photo before it appears. If you do not confirm, the photo is deleted.\n"
+"\n"
+"We do not keep your email address. If you did not upload a photo, ignore this message."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:403
+#: includes/reviews/class-visitor-reviews.php:224
+msgid "This link has expired or was already used."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:464
+msgid "Photo not found."
+msgstr ""
+
+#: includes/photos/class-photo-submissions.php:478
+msgid "Choose one of the published photo rules."
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:50
+msgid "Photo from the restaurant's website"
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:65
+msgid "The featured image came from the website with permission:"
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:70
+msgid "Use only when the owner has said we may use the photo. Without permission, leave it empty: the card shows a labeled cuisine photo instead."
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:72
+msgid "Open the website"
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:78
+msgid "Image address (right-click the photo, Copy image address)"
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:83
+msgid "Who said yes, how and when (for example: owner Maria by email, 2026-10-21)"
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:88
+msgid "The owner gave us permission to use this photo"
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:90
+msgid "On Update, the photo is downloaded and set as the featured image."
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:108
+msgid "Tick \"The owner gave us permission\" to use a website photo."
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:113
+msgid "Website photo not saved:"
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:114
+msgid "Website photo saved as the featured image."
+msgstr ""
+
+#: includes/photos/class-website-photo-box.php:130
+msgid "Write down who gave permission, how and when."
+msgstr ""
+
+#. translators: %s: date.
+#: includes/premium/class-admin.php:59
+#, php-format
+msgid "Running until %s (Guam)."
+msgstr ""
+
+#: includes/premium/class-admin.php:61
+msgid "No premium profile."
+msgstr ""
+
+#: includes/premium/class-admin.php:61
+msgid "Ended."
+msgstr ""
+
+#: includes/premium/class-admin.php:65
+msgid "Last day (empty: none)"
+msgstr ""
+
+#: includes/premium/class-admin.php:67
+msgid "Reason for a change, e.g. invoice number"
+msgstr ""
+
+#: includes/premium/class-admin.php:69
+msgid "Paid WooCommerce orders add time here by themselves. A premium profile never changes ratings, awards or list position."
+msgstr ""
+
+#. translators: %s: today's date.
+#: includes/premium/class-admin.php:112
+#, php-format
+msgid "Set by an administrator on %s"
+msgstr ""
+
+#: includes/premium/class-premium.php:67
+msgid "Order online"
+msgstr ""
+
+#: includes/premium/class-premium.php:68
+msgid "Reserve a table"
+msgstr ""
+
+#: includes/premium/class-premium.php:69
+msgid "See the full menu"
+msgstr ""
+
+#: includes/premium/class-premium.php:70
+msgid "Ask about catering"
+msgstr ""
+
+#: includes/premium/class-premium.php:71
+msgid "Book an event"
+msgstr ""
+
+#: includes/ratings/class-display.php:136
+msgid "Loading ratings…"
+msgstr ""
+
+#: includes/ratings/class-foursquare-provider.php:167
+msgid "Tips from Foursquare users, as Foursquare returns them, without changes."
+msgstr ""
+
+#: includes/ratings/class-google-provider.php:209
+msgid "Reviews from Google Maps, shown in the order Google returns them (most relevant first), without changes."
+msgstr ""
+
+#: includes/ratings/class-rest-controller.php:62
+msgid "Comma-separated sources: google, yelp, foursquare. Yelp is returned only on its own."
+msgstr ""
+
+#: includes/ratings/class-rest-controller.php:72
+msgid "Language of the page showing the ratings (ja, ko). Google then writes its own text in it."
+msgstr ""
+
+#: includes/ratings/class-yelp-provider.php:188
+msgid "Review excerpts as Yelp selects and returns them, without changes."
+msgstr ""
+
+#: includes/reviews/class-display.php:133
+msgid "Loading reviews…"
+msgstr ""
+
+#: includes/reviews/class-display.php:137
+msgid "Written by visitors to this site and checked by a moderator before they appear."
+msgstr ""
+
+#: includes/reviews/class-rest-controller.php:257
+msgid "Almost done: we sent you an email. Open the link in it to confirm your address, and your review will go to a moderator."
+msgstr ""
+
+#: includes/reviews/class-rest-controller.php:258
+msgid "Thanks! Your review will appear after a moderator checks it against our review rules."
+msgstr ""
+
+#: includes/reviews/class-visitor-reviews.php:106
+#: assets/reviews/reviews.js:341
+#: assets/reviews/reviews.js:346
+msgid "Your review could not be sent. Please try again."
+msgstr ""
+
+#: includes/reviews/class-visitor-reviews.php:111
+msgid "You manage this restaurant, so you cannot review it. You can reply to reviews instead."
+msgstr ""
+
+#: includes/reviews/class-visitor-reviews.php:127
+msgid "Choose a rating from 1 to 5 stars."
+msgstr ""
+
+#: includes/reviews/class-visitor-reviews.php:138
+msgid "Say how you are connected to the restaurant."
+msgstr ""
+
+#. translators: %d: maximum number of dishes.
+#: includes/reviews/class-visitor-reviews.php:142
+#, php-format
+msgid "Name up to %d dishes."
+msgstr ""
+
+#: includes/reviews/class-visitor-reviews.php:230
+#: includes/reviews/class-visitor-reviews.php:265
+msgid "Review not found."
+msgstr ""
+
+#: includes/reviews/class-visitor-reviews.php:451
+msgid "You have sent several reviews recently. Please try again later."
+msgstr ""
+
+#: includes/reviews/class-visitor-reviews.php:454
+msgid "You have already reviewed this restaurant today."
+msgstr ""
+
+#: includes/saved/class-members.php:172
+msgid "Accounts linked to a restaurant or used by our staff cannot be deleted here. Write to us and we will help."
+msgstr ""
+
+#: includes/saved/class-members.php:208
+#: includes/saved/class-members.php:223
+#: includes/saved/class-members.php:253
+msgid "Saved restaurants"
+msgstr ""
+
+#: includes/saved/class-rest-controller.php:85
+msgid "Sign in to keep a list on your account."
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/saved/class-view.php:147
+#, php-format
+msgid "Save %s"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/saved/class-view.php:149
+#, php-format
+msgid "Saved: %s. Remove from your list"
+msgstr ""
+
+#: includes/saved/class-view.php:166
+#: includes/saved/class-view.php:463
+#: includes/site/class-pages.php:88
+msgid "Saved"
+msgstr ""
+
+#: includes/saved/class-view.php:183
+msgid "None of the restaurants in this link are listed any more."
+msgstr ""
+
+#: includes/saved/class-view.php:186
+msgid "Nothing saved yet."
+msgstr ""
+
+#. translators: %s: "Browse restaurants" link.
+#: includes/saved/class-view.php:189
+#, php-format
+msgid "Tap the heart on any restaurant to keep it here. %s"
+msgstr ""
+
+#: includes/saved/class-view.php:190
+msgid "Browse restaurants"
+msgstr ""
+
+#. translators: %s: number of restaurants.
+#: includes/saved/class-view.php:205
+#, php-format
+msgid "%s restaurant in this list"
+msgid_plural "%s restaurants in this list"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: number of restaurants.
+#: includes/saved/class-view.php:207
+#, php-format
+msgid "%s saved restaurant"
+msgid_plural "%s saved restaurants"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/saved/class-view.php:228
+msgid "Someone shared this list of restaurants with you. The link holds only the restaurants, nothing about the person who shared it."
+msgstr ""
+
+#: includes/saved/class-view.php:232
+msgid "Added to your list"
+msgstr ""
+
+#: includes/saved/class-view.php:233
+msgid "Save all to my list"
+msgstr ""
+
+#: includes/saved/class-view.php:235
+msgid "Go to my list"
+msgstr ""
+
+#: includes/saved/class-view.php:251
+msgid "Loading your saved restaurants…"
+msgstr ""
+
+#: includes/saved/class-view.php:252
+msgid "Saved restaurants are kept in your browser, which needs JavaScript. Sign in to keep a list on your account."
+msgstr ""
+
+#: includes/saved/class-view.php:274
+msgid "My saved restaurants"
+msgstr ""
+
+#: includes/saved/class-view.php:275
+#: includes/site/class-blocks.php:526
+msgid "Link copied"
+msgstr ""
+
+#: includes/saved/class-view.php:276
+msgid "Share my list"
+msgstr ""
+
+#. translators: %s: most restaurants in a shared link.
+#: includes/saved/class-view.php:280
+#, php-format
+msgid "The link shows your newest %s saved restaurants and nothing else about you."
+msgstr ""
+
+#: includes/saved/class-view.php:297
+msgid "Show the list as"
+msgstr ""
+
+#: includes/saved/class-view.php:298
+#: includes/site/class-directory-view.php:120
+#: blocks/site-editor/editor.js:69
+#: blocks/site-editor/editor.js:121
+msgid "List"
+msgstr ""
+
+#: includes/saved/class-view.php:299
+#: includes/site/class-directory-view.php:121
+#: includes/site/class-pages.php:73
+msgid "Map"
+msgstr ""
+
+#: includes/saved/class-view.php:303
+msgid "Map of these restaurants"
+msgstr ""
+
+#: includes/saved/class-view.php:350
+msgid "Saved. Keep your list on every device"
+msgstr ""
+
+#: includes/saved/class-view.php:350
+msgid "Keep your list on every device"
+msgstr ""
+
+#: includes/saved/class-view.php:354
+msgid "Sign up with email"
+msgstr ""
+
+#: includes/saved/class-view.php:358
+msgid "Already have an account?"
+msgstr ""
+
+#: includes/saved/class-view.php:360
+#: includes/saved/class-view.php:452
+msgid "Sign in"
+msgstr ""
+
+#: includes/saved/class-view.php:369
+msgid "Right now your list lives only in this browser. Sign in free to see it on your phone and computer, keep it if you clear your browser, and share it with friends."
+msgstr ""
+
+#: includes/saved/class-view.php:384
+msgid "We use your account only to keep your list. With Google or Facebook we receive just your name, email address and profile picture, and we never post anything for you."
+msgstr ""
+
+#: includes/saved/class-view.php:401
+msgid "Sign out"
+msgstr ""
+
+#: includes/saved/class-view.php:402
+msgid "Set or change your password"
+msgstr ""
+
+#: includes/saved/class-view.php:417
+msgid "Yes, delete my account and my saved list for good."
+msgstr ""
+
+#: includes/saved/class-view.php:419
+msgid "Delete my account now"
+msgstr ""
+
+#: includes/saved/class-view.php:419
+msgid "Delete my account"
+msgstr ""
+
+#: includes/saved/class-view.php:424
+msgid "Your account"
+msgstr ""
+
+#. translators: 1: display name, 2: email address.
+#: includes/saved/class-view.php:428
+#, php-format
+msgid "Signed in as %1$s (%2$s). Your saved list is kept on this account."
+msgstr ""
+
+#: includes/saved/class-view.php:458
+msgid "Saved and account"
+msgstr ""
+
+#: includes/saved/class-view.php:481
+msgid "Close"
+msgstr ""
+
+#: includes/saved/class-view.php:483
+msgid "Not now"
+msgstr ""
+
+#: includes/security/class-hardening.php:83
+msgid "Sign in to list users."
+msgstr ""
+
+#. translators: %s: size such as "10 MB".
+#: includes/security/class-hardening.php:176
+#, php-format
+msgid "Files must be %s or smaller."
+msgstr ""
+
+#. translators: %d: megapixels.
+#: includes/security/class-hardening.php:186
+#, php-format
+msgid "Images can be at most %d megapixels. Resize it and try again."
+msgstr ""
+
+#: includes/security/class-two-factor-policy.php:96
+msgid "Administrators must turn on two-factor sign-in. Choose a method under Two-Factor Options below (an authenticator app plus backup codes is recommended), save your profile, and the rest of wp-admin opens again."
+msgstr ""
+
+#: includes/site/class-blocks.php:161
+msgid "What"
+msgstr ""
+
+#: includes/site/class-blocks.php:164
+msgid "Name, dish, or “cheap Korean in Tumon”"
+msgstr ""
+
+#: includes/site/class-blocks.php:165
+msgid "Search"
+msgstr ""
+
+#: includes/site/class-blocks.php:169
+msgid "Where"
+msgstr ""
+
+#: includes/site/class-blocks.php:171
+#: includes/site/class-picker.php:261
+msgid "Anywhere on Guam"
+msgstr ""
+
+#. translators: %s: number of restaurants.
+#: includes/site/class-blocks.php:267
+#: includes/site/class-directory-view.php:155
+#, php-format
+msgid "%s restaurant"
+msgid_plural "%s restaurants"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-blocks.php:328
+msgid "See all"
+msgstr ""
+
+#. translators: %d: number of days.
+#: includes/site/class-blocks.php:368
+#, php-format
+msgid "No new restaurants recorded in the last %d day."
+msgid_plural "No new restaurants recorded in the last %d days."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of days.
+#: includes/site/class-blocks.php:370
+#, php-format
+msgid "No reopenings recorded in the last %d day."
+msgid_plural "No reopenings recorded in the last %d days."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of days.
+#: includes/site/class-blocks.php:372
+#, php-format
+msgid "No closures recorded in the last %d day."
+msgid_plural "No closures recorded in the last %d days."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-blocks.php:432
+msgid "Award results have not been added yet. When they are, winners appear here with a link to where each result was published."
+msgstr ""
+
+#: includes/site/class-blocks.php:506
+msgid "Call"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/site/class-blocks.php:510
+#: includes/site/class-blocks.php:602
+msgid "Directions"
+msgstr ""
+
+#: includes/site/class-blocks.php:514
+#: includes/site/class-blocks.php:588
+#: assets/ratings/ratings.js:160
+msgid "Website"
+msgstr ""
+
+#: includes/site/class-blocks.php:527
+msgid "Share"
+msgstr ""
+
+#: includes/site/class-blocks.php:540
+msgid "Restaurant actions"
+msgstr ""
+
+#: includes/site/class-blocks.php:591
+msgid "Facebook"
+msgstr ""
+
+#: includes/site/class-blocks.php:592
+msgid "Instagram"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/site/class-blocks.php:602
+msgid "Get directions in Google Maps"
+msgstr ""
+
+#: includes/site/class-blocks.php:635
+msgid "Opening hours are not listed yet. Please check with the restaurant."
+msgstr ""
+
+#: includes/site/class-blocks.php:648
+msgid "Opening hours, Guam time"
+msgstr ""
+
+#. translators: %s: restaurant name.
+#: includes/site/class-blocks.php:672
+#, php-format
+msgid "Map showing %s"
+msgstr ""
+
+#: includes/site/class-blocks.php:691
+msgid "The map needs JavaScript. Use the directions link above instead."
+msgstr ""
+
+#: includes/site/class-blocks.php:719
+msgid "History"
+msgstr ""
+
+#: includes/site/class-blocks.php:738
+msgid "Own this restaurant? Claim this listing"
+msgstr ""
+
+#: includes/site/class-blocks.php:740
+#: includes/site/class-pages.php:121
+msgid "Contact the owner"
+msgstr ""
+
+#: includes/site/class-blocks.php:741
+msgid "Advertise on this page"
+msgstr ""
+
+#: includes/site/class-blocks.php:757
+msgid "About this listing"
+msgstr ""
+
+#. translators: %s: restaurant name, linked.
+#: includes/site/class-blocks.php:778
+#, php-format
+msgid "Listing: %s"
+msgstr ""
+
+#: includes/site/class-blocks.php:801
+msgid "Loading the map…"
+msgstr ""
+
+#: includes/site/class-blocks.php:802
+msgid "Map of restaurants"
+msgstr ""
+
+#: includes/site/class-blocks.php:803
+msgid "The map needs JavaScript. The list view shows the same restaurants."
+msgstr ""
+
+#: includes/site/class-blocks.php:805
+msgid "Show these restaurants as a list"
+msgstr ""
+
+#. translators: 1: "© OpenStreetMap contributors" link, 2: licence link.
+#: includes/site/class-blocks.php:820
+#, php-format
+msgid "Restaurant details include data %1$s, available under the %2$s."
+msgstr ""
+
+#: includes/site/class-blocks.php:821
+msgid "© OpenStreetMap contributors"
+msgstr ""
+
+#: includes/site/class-blocks.php:822
+msgid "Open Database License"
+msgstr ""
+
+#. translators: 1: OpenFreeMap link, 2: OpenMapTiles link.
+#: includes/site/class-blocks.php:827
+#, php-format
+msgid "Maps: %1$s, %2$s, with OpenStreetMap data."
+msgstr ""
+
+#. translators: %s: Census link.
+#: includes/site/class-blocks.php:834
+#, php-format
+msgid "Village boundaries: %s."
+msgstr ""
+
+#: includes/site/class-blocks.php:835
+msgid "U.S. Census Bureau TIGER/Line"
+msgstr ""
+
+#. translators: %s: Foursquare Open Source Places link.
+#: includes/site/class-blocks.php:840
+#, php-format
+msgid "Some business details: %s, © Foursquare Labs, Inc., Apache License 2.0."
+msgstr ""
+
+#: includes/site/class-blocks.php:844
+msgid "Ratings from other sites are shown as each site provides them, with its own credit."
+msgstr ""
+
+#: includes/site/class-blocks.php:869
+#: includes/site/class-pages.php:127
+msgid "Terms of use"
+msgstr ""
+
+#: includes/site/class-blocks.php:871
+msgid "Data sources"
+msgstr ""
+
+#: includes/site/class-blocks.php:873
+#: includes/site/class-pages.php:140
+msgid "Advertise with us"
+msgstr ""
+
+#: includes/site/class-blocks.php:900
+msgid "Color theme"
+msgstr ""
+
+#: includes/site/class-directory-view.php:119
+msgid "Show results as"
+msgstr ""
+
+#: includes/site/class-directory-view.php:122
+msgid "Map of these results"
+msgstr ""
+
+#: includes/site/class-directory-view.php:140
+msgid "No restaurants match these filters."
+msgstr ""
+
+#. translators: 1: first result number, 2: last result number, 3: total.
+#: includes/site/class-directory-view.php:147
+#, php-format
+msgid "Showing %1$s–%2$s of %3$s restaurant"
+msgid_plural "Showing %1$s–%2$s of %3$s restaurants"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-directory-view.php:172
+msgid "Open now uses Guam time and lists only restaurants whose hours we have."
+msgstr ""
+
+#: includes/site/class-directory-view.php:175
+msgid "Open late means open at 10 pm tonight, Guam time, and lists only restaurants whose hours we have."
+msgstr ""
+
+#: includes/site/class-directory-view.php:180
+msgid "Clear all filters"
+msgstr ""
+
+#: includes/site/class-directory-view.php:207
+msgid "(remove)"
+msgstr ""
+
+#. translators: %s: the words the visitor typed, for example "Tumon".
+#: includes/site/class-directory-view.php:226
+#, php-format
+msgid "(%s)"
+msgstr ""
+
+#: includes/site/class-directory-view.php:234
+#: includes/site/class-directory-view.php:339
+#: includes/site/class-picker.php:308
+msgid "Open now"
+msgstr ""
+
+#: includes/site/class-directory-view.php:235
+#: includes/site/class-directory-view.php:340
+msgid "Open late"
+msgstr ""
+
+#: includes/site/class-directory-view.php:236
+#: includes/site/class-directory-view.php:341
+msgid "Award winners"
+msgstr ""
+
+#. translators: %s: keywords searched for.
+#: includes/site/class-directory-view.php:245
+#, php-format
+msgid "Words: “%s”"
+msgstr ""
+
+#. translators: %s: what the visitor typed.
+#: includes/site/class-directory-view.php:255
+#, php-format
+msgid "We read “%s” as:"
+msgstr ""
+
+#: includes/site/class-directory-view.php:259
+msgid "Search the exact words instead"
+msgstr ""
+
+#: includes/site/class-directory-view.php:262
+msgid "Filters:"
+msgstr ""
+
+#: includes/site/class-directory-view.php:266
+msgid "Filters in use"
+msgstr ""
+
+#: includes/site/class-directory-view.php:271
+msgid "Clear all"
+msgstr ""
+
+#: includes/site/class-directory-view.php:290
+msgid "Previous"
+msgstr ""
+
+#. translators: %s: page number.
+#: includes/site/class-directory-view.php:302
+#, php-format
+msgid "Page %s"
+msgstr ""
+
+#: includes/site/class-directory-view.php:306
+msgid "Next"
+msgstr ""
+
+#: includes/site/class-directory-view.php:308
+msgid "Results pages"
+msgstr ""
+
+#. translators: 1: price level, 2: highest level.
+#: includes/site/class-directory-view.php:350
+#: includes/site/class-picker.php:272
+#: includes/site/class-restaurant-view.php:133
+#, php-format
+msgid "Price level %1$d of %2$d"
+msgstr ""
+
+#: includes/site/class-directory-view.php:374
+msgid "Name (A to Z)"
+msgstr ""
+
+#: includes/site/class-directory-view.php:375
+#: blocks/site-editor/editor.js:99
+msgid "Newest listings"
+msgstr ""
+
+#: includes/site/class-directory-view.php:376
+msgid "Price (low to high)"
+msgstr ""
+
+#: includes/site/class-directory-view.php:377
+msgid "Price (high to low)"
+msgstr ""
+
+#: includes/site/class-directory-view.php:380
+msgid "Best match"
+msgstr ""
+
+#: includes/site/class-directory-view.php:389
+msgid "Sort by"
+msgstr ""
+
+#: includes/site/class-directory-view.php:406
+msgid "Filter restaurants"
+msgstr ""
+
+#: includes/site/class-directory-view.php:407
+msgid "Search by name, dish or what you feel like"
+msgstr ""
+
+#: includes/site/class-directory-view.php:414
+msgid "More filters"
+msgstr ""
+
+#: includes/site/class-directory-view.php:417
+msgid "Quick filters"
+msgstr ""
+
+#: includes/site/class-directory-view.php:420
+msgid "Show results"
+msgstr ""
+
+#: includes/site/class-directory-view.php:422
+msgid "Clear filters"
+msgstr ""
+
+#: includes/site/class-directory-view.php:423
+msgid "Try “cheap Korean open late in Tumon”"
+msgstr ""
+
+#. translators: %d: number of selected options.
+#: includes/site/class-directory-view.php:477
+#: includes/site/class-picker.php:300
+#: assets/site/directory.js:109
+#: assets/site/picker.js:53
+#, php-format,js-format
+msgid " (%d selected)"
+msgid_plural " (%d selected)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-history.php:35
+#: includes/site/class-pages.php:99
+msgid "Opened"
+msgstr ""
+
+#: includes/site/class-history.php:58
+msgid "First listed here"
+msgstr ""
+
+#. translators: 1: number, 2: cuisine.
+#: includes/site/class-intro.php:54
+#, php-format
+msgid "%1$s %2$s restaurant on Guam."
+msgid_plural "%1$s %2$s restaurants on Guam."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: list of villages.
+#: includes/site/class-intro.php:56
+#, php-format
+msgid "Most are in %s."
+msgstr ""
+
+#. translators: 1: number, 2: price level.
+#: includes/site/class-intro.php:59
+#, php-format
+msgid "%1$s restaurant at price level %2$s."
+msgid_plural "%1$s restaurants at price level %2$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number, 2: village or mall.
+#: includes/site/class-intro.php:63
+#, php-format
+msgid "%1$s restaurant in %2$s."
+msgid_plural "%1$s restaurants in %2$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: list of cuisines.
+#: includes/site/class-intro.php:65
+#, php-format
+msgid "The most common cuisines here are %s."
+msgstr ""
+
+#. translators: 1: mall, 2: village.
+#: includes/site/class-intro.php:82
+#, php-format
+msgid "%1$s, %2$s"
+msgstr ""
+
+#: includes/site/class-pages.php:76
+msgid "Map of restaurants on Guam. Filter by village, mall, cuisine, price, awards and opening hours."
+msgstr ""
+
+#: includes/site/class-pages.php:80
+msgid "What should I eat?"
+msgstr ""
+
+#: includes/site/class-pages.php:82
+msgid "Can't decide? Choose a village, food type, price or anything else that matters, and we pick a restaurant at random from the places that match. Every match has the same chance. Ads appear only in the box marked Sponsored, above the pick."
+msgstr ""
+
+#: includes/site/class-pages.php:84
+msgid "Can't decide where to eat on Guam? Pick a village, food type and price, and get a random restaurant that matches."
+msgstr ""
+
+#: includes/site/class-pages.php:90
+msgid "Restaurants you saved with the heart. Without an account they stay in this browser; sign in to keep them on every device. To delete your account and list, sign in and use Delete my account below."
+msgstr ""
+
+#: includes/site/class-pages.php:92
+msgid "Your saved restaurants on Guam, with a map and a link to share them."
+msgstr ""
+
+#: includes/site/class-pages.php:96
+msgid "Recently opened and closed"
+msgstr ""
+
+#: includes/site/class-pages.php:98
+msgid "Restaurants that opened, reopened or closed recently, as recorded in this directory."
+msgstr ""
+
+#: includes/site/class-pages.php:108
+msgid "Claim this listing"
+msgstr ""
+
+#: includes/site/class-pages.php:117
+msgid "Report a wrong fact on a restaurant listing, or ask as the owner to change or remove it. We reply within 7 to 14 days."
+msgstr ""
+
+#: includes/site/class-pages.php:123
+msgid "Send a message to the owner of this listing. We pass it on and do not share your email address."
+msgstr ""
+
+#: includes/site/class-pages.php:123
+msgid "[Editor: add the contact form here, then publish this page.]"
+msgstr ""
+
+#: includes/site/class-pages.php:129
+msgid "[Draft: write the terms of use with counsel (docs/legal-and-policy.md section 7), then publish this page.]"
+msgstr ""
+
+#: includes/site/class-pages.php:133
+msgid "Media kit"
+msgstr ""
+
+#: includes/site/class-pages.php:136
+msgid "Audience, advertising products, rates and ad specifications for restaurants and businesses on Guam."
+msgstr ""
+
+#: includes/site/class-pages.php:143
+msgid "Reach people choosing where to eat on Guam. Ask about premium profiles and sponsored listings."
+msgstr ""
+
+#: includes/site/class-pages.php:172
+msgid "Own or manage this restaurant? Claim the listing to keep its hours, menu links, photos and specials up to date, see how many people view it and click through, and reply to reviews."
+msgstr ""
+
+#: includes/site/class-pages.php:173
+msgid "We send a code to an email address at the restaurant's own website domain to confirm you work there, then a person reviews the claim. Claiming is free. Owners cannot change ratings, awards or reviews."
+msgstr ""
+
+#: includes/site/class-picker.php:262
+msgid "Any, in a mall or not"
+msgstr ""
+
+#: includes/site/class-picker.php:278
+msgid "Price (any you tick)"
+msgstr ""
+
+#: includes/site/class-picker.php:298
+msgid "Food type (any you tick)"
+msgstr ""
+
+#: includes/site/class-picker.php:307
+msgid "More choices"
+msgstr ""
+
+#: includes/site/class-picker.php:309
+msgid "Award winners only"
+msgstr ""
+
+#: includes/site/class-picker.php:315
+msgid "Choices for a random pick"
+msgstr ""
+
+#: includes/site/class-picker.php:318
+msgid "Pick a place for me"
+msgstr ""
+
+#: includes/site/class-picker.php:319
+#: includes/site/class-picker.php:337
+msgid "Clear choices"
+msgstr ""
+
+#: includes/site/class-picker.php:335
+msgid "Nothing matches all of these choices. Try fewer of them."
+msgstr ""
+
+#: includes/site/class-picker.php:343
+msgid "Only one place matches your choices:"
+msgstr ""
+
+#. translators: %s: number of matching restaurants.
+#: includes/site/class-picker.php:346
+#, php-format
+msgid "Picked at random from %s place that matches:"
+msgid_plural "Picked at random from %s places that match:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-picker.php:355
+msgid "Pick again"
+msgstr ""
+
+#: includes/site/class-picker.php:358
+msgid "That was the last one you had not seen. Picking again starts over."
+msgstr ""
+
+#: includes/site/class-picker.php:361
+msgid "Open now uses Guam time and counts only restaurants whose hours we have."
+msgstr ""
+
+#. translators: %s: number of matching restaurants.
+#: includes/site/class-picker.php:373
+#, php-format
+msgid "See the %s match"
+msgid_plural "See all %s matches"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-picker.php:399
+msgid "Your restaurant could be here, above every pick"
+msgstr ""
+
+#: includes/site/class-picker.php:400
+msgid "People use this page when they are deciding where to eat right now. Put your restaurant in front of them with a sponsored spot, shown by village or food type."
+msgstr ""
+
+#: includes/site/class-related-links.php:95
+msgid "Related pages"
+msgstr ""
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:122
+#, php-format
+msgid "Malls in %s"
+msgstr ""
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:124
+#, php-format
+msgid "Popular cuisines in %s"
+msgstr ""
+
+#. translators: %s: mall.
+#: includes/site/class-related-links.php:130
+#, php-format
+msgid "Cuisines at %s"
+msgstr ""
+
+#. translators: %s: cuisine.
+#: includes/site/class-related-links.php:134
+#, php-format
+msgid "Where to find %s food"
+msgstr ""
+
+#: includes/site/class-related-links.php:135
+msgid "Related cuisines"
+msgstr ""
+
+#. translators: 1: cuisine, 2: village.
+#: includes/site/class-related-links.php:160
+#, php-format
+msgid "More %1$s restaurants in %2$s"
+msgstr ""
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:162
+#, php-format
+msgid "More restaurants in %s"
+msgstr ""
+
+#: includes/site/class-related-links.php:177
+msgid "Browse"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:199
+msgid "Temporarily closed"
+msgstr ""
+
+#. translators: %s: date, for example "March 2024".
+#: includes/site/class-restaurant-view.php:203
+#, php-format
+msgid "Closed in %s"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:260
+msgid "Monday"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:261
+msgid "Tuesday"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:262
+msgid "Wednesday"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:263
+msgid "Thursday"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:264
+msgid "Friday"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:265
+msgid "Saturday"
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:266
+msgid "Sunday"
+msgstr ""
+
+#. translators: %d: year.
+#: includes/site/class-restaurant-view.php:354
+#, php-format
+msgid "Award winner %d"
+msgstr ""
+
+#. translators: %s: village.
+#: includes/site/class-seo.php:71
+#, php-format
+msgid "Restaurants in %s, Guam"
+msgstr ""
+
+#. translators: 1: mall, 2: village.
+#: includes/site/class-seo.php:76
+#, php-format
+msgid "Restaurants at %1$s, %2$s, Guam"
+msgstr ""
+
+#. translators: %s: mall.
+#: includes/site/class-seo.php:78
+#, php-format
+msgid "Restaurants at %s, Guam"
+msgstr ""
+
+#. translators: %s: cuisine.
+#: includes/site/class-seo.php:81
+#, php-format
+msgid "%s Restaurants on Guam"
+msgstr ""
+
+#. translators: %s: price level, for example $$.
+#: includes/site/class-seo.php:84
+#, php-format
+msgid "%s Restaurants on Guam by Price"
+msgstr ""
+
+#: includes/site/class-seo.php:102
+msgid "See hours, maps, awards and reviews for each."
+msgstr ""
+
+#. translators: %d: page number.
+#: includes/site/class-seo.php:147
+#, php-format
+msgid "Page %d"
+msgstr ""
+
+#. translators: 1: restaurant name, 2: cuisine and place.
+#: includes/site/class-seo.php:291
+#, php-format
+msgid "%1$s: %2$s, Guam. Hours, map, awards and reviews."
+msgstr ""
+
+#. translators: 1: restaurant name, 2: cuisine and place.
+#: includes/site/class-seo.php:291
+#, php-format
+msgid "%1$s, Guam. Hours, map, awards and reviews."
+msgstr ""
+
+#: includes/site/class-seo.php:299
+msgid "Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews."
+msgstr ""
+
+#: includes/site/class-seo.php:302
+msgid "Restaurant award results recorded on this site, each with a link to where it was published."
+msgstr ""
+
+#: includes/site/class-seo.php:306
+msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
+msgstr ""
+
+#: includes/tagging/class-branch-names.php:200
+msgid "Another listing has the same name. Set this one's village in the editor and its name becomes \"Name, Village\"."
+msgstr ""
+
+#: assets/ads/rotation.js:47
+msgid "Next sponsor"
+msgstr ""
+
+#: assets/ads/rotation.js:61
+#, js-format
+msgid "Sponsor %1$d of %2$d"
+msgstr ""
+
+#: assets/ads/rotation.js:70
+msgid "Play"
+msgstr ""
+
+#: assets/ads/rotation.js:70
+msgid "Pause"
+msgstr ""
+
+#: assets/advertising/inquiry.js:57
+#: assets/corrections/corrections.js:60
+#: assets/corrections/corrections.js:245
+msgid "(required)"
+msgstr ""
+
+#: assets/advertising/inquiry.js:125
+msgid "No restaurant with that name. You can leave this empty."
+msgstr ""
+
+#: assets/advertising/inquiry.js:198
+msgid "Choose a package"
+msgstr ""
+
+#: assets/advertising/inquiry.js:199
+msgid "Choose a range"
+msgstr ""
+
+#: assets/advertising/inquiry.js:202
+msgid "Send inquiry"
+msgstr ""
+
+#: assets/advertising/inquiry.js:204
+msgid "We use these details only to reply to your inquiry."
+msgstr ""
+
+#: assets/advertising/inquiry.js:210
+msgid "Advertising never affects ratings, awards, rankings or reviews:"
+msgstr ""
+
+#: assets/advertising/inquiry.js:216
+#: assets/corrections/corrections.js:222
+#: assets/corrections/corrections.js:261
+msgid "Your name"
+msgstr ""
+
+#: assets/advertising/inquiry.js:217
+msgid "Business name"
+msgstr ""
+
+#: assets/advertising/inquiry.js:218
+msgid "Type at least two letters of a listed restaurant and pick it from the list. Leave empty if your business is not listed."
+msgstr ""
+
+#: assets/advertising/inquiry.js:221
+msgid "Package you are interested in"
+msgstr ""
+
+#: assets/advertising/inquiry.js:222
+msgid "Monthly budget"
+msgstr ""
+
+#: assets/advertising/inquiry.js:284
+msgid "Your inquiry could not be sent. Please try again."
+msgstr ""
+
+#: assets/advertising/inquiry.js:288
+msgid "Your inquiry could not be sent. Please check your connection and try again."
+msgstr ""
+
+#: assets/advertising/inquiry.js:309
+#: assets/corrections/corrections.js:375
+msgid "The form could not be loaded. Please reload the page."
+msgstr ""
+
+#: assets/corrections/corrections.js:130
+msgid "No restaurant with that name."
+msgstr ""
+
+#: assets/corrections/corrections.js:201
+msgid "What would you like to do?"
+msgstr ""
+
+#: assets/corrections/corrections.js:220
+#: assets/corrections/corrections.js:258
+msgid "Choose one"
+msgstr ""
+
+#: assets/corrections/corrections.js:225
+msgid "Send request"
+msgstr ""
+
+#: assets/corrections/corrections.js:227
+msgid "We use your email address only to reply to this request. Nothing you send here is published."
+msgstr ""
+
+#: assets/corrections/corrections.js:233
+msgid "How we handle corrections"
+msgstr ""
+
+#: assets/corrections/corrections.js:253
+msgid "Reason for removal"
+msgstr ""
+
+#: assets/corrections/corrections.js:254
+msgid "Choose a reason"
+msgstr ""
+
+#: assets/corrections/corrections.js:255
+msgid "Tell us more"
+msgstr ""
+
+#: assets/corrections/corrections.js:257
+msgid "What needs changing?"
+msgstr ""
+
+#: assets/corrections/corrections.js:259
+msgid "What should the listing say?"
+msgstr ""
+
+#: assets/corrections/corrections.js:259
+msgid "What is wrong, and what is correct?"
+msgstr ""
+
+#. translators: %d: number of days.
+#: assets/corrections/corrections.js:265
+#, js-format
+msgid "We reply within %d days."
+msgstr ""
+
+#: assets/corrections/corrections.js:270
+msgid "A closed restaurant is marked closed rather than removed. Removing a listing never adds any note to the site."
+msgstr ""
+
+#: assets/corrections/corrections.js:276
+msgid "Type at least two letters of the restaurant name and pick it from the list."
+msgstr ""
+
+#: assets/corrections/corrections.js:281
+msgid "Where can we confirm this?"
+msgstr ""
+
+#: assets/corrections/corrections.js:281
+msgid "For example, a link to the restaurant's website or social media page, or \"sign on the door\"."
+msgstr ""
+
+#: assets/corrections/corrections.js:282
+msgid "Your connection to the restaurant"
+msgstr ""
+
+#: assets/corrections/corrections.js:354
+msgid "Your request could not be sent. Please check your connection and try again."
+msgstr ""
+
+#: assets/ratings/ratings.js:73
+#: assets/reviews/reviews.js:61
+#, js-format
+msgid "Rated %1$s out of %2$s"
+msgstr ""
+
+#: assets/ratings/ratings.js:84
+#: assets/ratings/ratings.js:128
+#, js-format
+msgid "%s star rating"
+msgstr ""
+
+#: assets/ratings/ratings.js:88
+#, js-format
+msgid "%s/10"
+msgstr ""
+
+#: assets/ratings/ratings.js:97
+#, js-format
+msgid "%s ratings"
+msgstr ""
+
+#: assets/ratings/ratings.js:97
+#, js-format
+msgid "%s reviews"
+msgstr ""
+
+#: assets/ratings/ratings.js:121
+#, js-format
+msgid "%s user"
+msgstr ""
+
+#: assets/ratings/ratings.js:136
+#, js-format
+msgid "Read on %s"
+msgstr ""
+
+#: assets/ratings/ratings.js:138
+msgid "Report review"
+msgstr ""
+
+#: assets/ratings/ratings.js:166
+msgid "Hours"
+msgstr ""
+
+#: assets/ratings/ratings.js:176
+#, js-format
+msgid "Contact and hours from %s"
+msgstr ""
+
+#: assets/reviews/reviews.js:95
+msgid "Monthly average visitor rating, 1 to 5 stars"
+msgstr ""
+
+#: assets/reviews/reviews.js:126
+#, js-format
+msgid "%1$s: %2$s average from %3$s review"
+msgid_plural "%1$s: %2$s average from %3$s reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/reviews/reviews.js:173
+msgid "Show as a table"
+msgstr ""
+
+#: assets/reviews/reviews.js:177
+msgid "Average rating"
+msgstr ""
+
+#: assets/reviews/reviews.js:178
+msgid "Reviews"
+msgstr ""
+
+#: assets/reviews/reviews.js:188
+msgid "Visitor rating by month (average of approved reviews written that month)"
+msgstr ""
+
+#: assets/reviews/reviews.js:206
+#, js-format
+msgid "The reviewer says they are connected to this restaurant: %s"
+msgstr ""
+
+#: assets/reviews/reviews.js:210
+#, js-format
+msgid "Dishes tried: %s"
+msgstr ""
+
+#: assets/reviews/reviews.js:229
+msgid "Our review rules"
+msgstr ""
+
+#: assets/reviews/reviews.js:230
+msgid "We publish positive and critical reviews alike. An administrator checks each review first and rejects it only if its content breaks one of these rules, which apply the same way whatever the rating. Owners can reply but cannot remove reviews, we never remove a review because a restaurant or advertiser asks, and we never pay for reviews."
+msgstr ""
+
+#: assets/reviews/reviews.js:234
+msgid "Read our editorial policy"
+msgstr ""
+
+#: assets/reviews/reviews.js:254
+msgid "Your rating"
+msgstr ""
+
+#: assets/reviews/reviews.js:258
+#, js-format
+msgid "%s star"
+msgid_plural "%s stars"
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/reviews/reviews.js:269
+msgid "Email me a link to confirm my account email and show the \"Verified email\" badge. It shows only that I confirmed an email address."
+msgstr ""
+
+#: assets/reviews/reviews.js:271
+msgid "Email address"
+msgstr ""
+
+#: assets/reviews/reviews.js:271
+msgid "We email you a link to confirm your review. We do not show or keep your address. Or log in to skip this step."
+msgstr ""
+
+#: assets/reviews/reviews.js:274
+msgid "How are you connected?"
+msgstr ""
+
+#: assets/reviews/reviews.js:274
+msgid "For example: I work there, or the owner is my cousin. This is shown with your review."
+msgstr ""
+
+#: assets/reviews/reviews.js:286
+msgid "Send review"
+msgstr ""
+
+#: assets/reviews/reviews.js:290
+msgid "Your review"
+msgstr ""
+
+#: assets/reviews/reviews.js:290
+msgid "At least 20 characters. Shown as you write it."
+msgstr ""
+
+#: assets/reviews/reviews.js:291
+msgid "Dishes you tried (optional)"
+msgstr ""
+
+#: assets/reviews/reviews.js:291
+msgid "Up to 3, separated by commas, for example: Chicken kelaguen, Red rice. They help others find this restaurant's popular dishes."
+msgstr ""
+
+#: assets/reviews/reviews.js:292
+msgid "Display name"
+msgstr ""
+
+#: assets/reviews/reviews.js:292
+msgid "Shown with your review. Please do not use your full name."
+msgstr ""
+
+#: assets/reviews/reviews.js:295
+msgid "I own, work for, or am related to someone at this restaurant, or I work for a competitor."
+msgstr ""
+
+#: assets/reviews/reviews.js:307
+msgid "Sending…"
+msgstr ""
+
+#: assets/reviews/reviews.js:375
+msgid "Thanks, your email is confirmed. Your review will appear after an administrator checks it against our rules."
+msgstr ""
+
+#: assets/reviews/reviews.js:376
+msgid "That confirmation link has expired or was already used. Please send your review again."
+msgstr ""
+
+#: assets/reviews/reviews.js:387
+#, js-format
+msgid "%s out of 5"
+msgstr ""
+
+#: assets/reviews/reviews.js:388
+#, js-format
+msgid "Average of %s approved visitor review on this site. Reviews from other sites are not included."
+msgid_plural "Average of %s approved visitor reviews on this site. Reviews from other sites are not included."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/reviews/reviews.js:391
+msgid "No visitor reviews yet."
+msgstr ""
+
+#: assets/reviews/reviews.js:403
+msgid "Newest first. All approved reviews are shown, positive and critical."
+msgstr ""
+
+#: assets/reviews/reviews.js:414
+msgid "Show more reviews"
+msgstr ""
+
+#: assets/reviews/reviews.js:435
+msgid "Reviews could not be loaded."
+msgstr ""
+
+#. translators: %s: closing time.
+#: assets/site/hours.js:66
+#, js-format
+msgid "Open now, until %s"
+msgstr ""
+
+#: assets/site/hours.js:69
+msgid "Closed now"
+msgstr ""
+
+#: assets/site/hours.js:93
+msgid "(today)"
+msgstr ""
+
+#: assets/site/map.js:56
+#: assets/site/map.js:70
+#: assets/site/map.js:243
+msgid "The map could not load right now."
+msgstr ""
+
+#: assets/site/map.js:111
+#, js-format
+msgid "%d restaurant on the map."
+msgid_plural "%d restaurants on the map."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/site/map.js:187
+msgid "The map could not load right now. The list view shows the same restaurants."
+msgstr ""
+
+#: assets/site/map.js:192
+msgid "Updating the map…"
+msgstr ""
+
+#: assets/site/map.js:196
+msgid "The map could not be updated."
+msgstr ""
+
+#: assets/site/photos.js:61
+msgid "That photo is too large. Check the size limit under the Photo field."
+msgstr ""
+
+#: assets/site/photos.js:73
+msgid "Uploading…"
+msgstr ""
+
+#: assets/site/photos.js:84
+msgid "That photo is too large for the server."
+msgstr ""
+
+#: assets/site/photos.js:95
+msgid "Your photo could not be sent. Check your connection and try again."
+msgstr ""
+
+#: assets/site/saved.js:174
+msgid "That did not save. Check your connection and try again."
+msgstr ""
+
+#: assets/site/saved.js:181
+msgid "This browser is not letting us save. Sign in to keep a list on your account."
+msgstr ""
+
+#: assets/site/saved.js:195
+msgid "Removed from your saved list."
+msgstr ""
+
+#: assets/site/saved.js:200
+msgid "Saved to your list."
+msgstr ""
+
+#. translators: %d: number of restaurants.
+#: assets/site/saved.js:211
+#, js-format
+msgid "%d restaurant added to your list."
+msgid_plural "%d restaurants added to your list."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/site/saved.js:260
+msgid "Your saved restaurants could not load right now. Try again in a moment."
+msgstr ""
+
+#. translators: %d: number of restaurants.
+#: assets/site/saved.js:278
+#, js-format
+msgid "We added %d place you saved in this browser to your account."
+msgid_plural "We added the %d places you saved in this browser to your account."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/site/saved.js:288
+msgid "Your account and saved list were deleted."
+msgstr ""
+
+#: assets/site/saved.js:355
+msgid "Your saved list could not load right now."
+msgstr ""
+
+#: blocks/highlights/editor.js:32
+#: blocks/photo-gallery/editor.js:21
+#: blocks/ratings/editor.js:22
+#: blocks/visitor-reviews/editor.js:21
+msgid "Restaurant ID (0 = this restaurant)"
+msgstr ""
+
+#: blocks/highlights/editor.js:39
+msgid "Show user reviews"
+msgstr ""
+
+#: blocks/highlights/editor.js:40
+#: blocks/visitor-reviews/editor.js:29
+msgid "Show the review form"
+msgstr ""
+
+#: blocks/highlights/editor.js:41
+#: blocks/visitor-reviews/editor.js:36
+msgid "Show the monthly trend chart"
+msgstr ""
+
+#: blocks/highlights/editor.js:47
+msgid "Approved owner quotes, editor's notes and user reviews appear here on the live page. Do not place this block in a section that shows Yelp ratings."
+msgstr ""
+
+#: blocks/photo-gallery/editor.js:19
+msgid "Restaurant photos"
+msgstr ""
+
+#: blocks/photo-gallery/editor.js:29
+msgid "Show the upload form"
+msgstr ""
+
+#: blocks/photo-gallery/editor.js:40
+msgid "Approved photos and the upload form show here on the live page."
+msgstr ""
+
+#: blocks/ratings/editor.js:20
+msgid "Ratings"
+msgstr ""
+
+#: blocks/ratings/editor.js:30
+msgid "Sources"
+msgstr ""
+
+#: blocks/ratings/editor.js:31
+msgid "Yelp ratings may not appear next to other ratings or visitor content, so Yelp has its own option. Put it in a separate page section."
+msgstr ""
+
+#: blocks/ratings/editor.js:34
+msgid "Google and Foursquare"
+msgstr ""
+
+#: blocks/ratings/editor.js:35
+msgid "Google only"
+msgstr ""
+
+#: blocks/ratings/editor.js:36
+msgid "Foursquare only"
+msgstr ""
+
+#: blocks/ratings/editor.js:37
+msgid "Yelp only"
+msgstr ""
+
+#: blocks/ratings/editor.js:44
+msgid "Show review text"
+msgstr ""
+
+#: blocks/ratings/editor.js:55
+msgid "Restaurant ratings load here on the live page."
+msgstr ""
+
+#: blocks/site-editor/editor.js:63
+msgid "Heading (hidden with the list when empty)"
+msgstr ""
+
+#: blocks/site-editor/editor.js:73
+msgid "Price levels"
+msgstr ""
+
+#: blocks/site-editor/editor.js:76
+msgid "Show counts"
+msgstr ""
+
+#: blocks/site-editor/editor.js:82
+msgid "Most listed only (0 = all)"
+msgstr ""
+
+#: blocks/site-editor/editor.js:83
+msgid "Style"
+msgstr ""
+
+#: blocks/site-editor/editor.js:84
+msgid "Chips"
+msgstr ""
+
+#: blocks/site-editor/editor.js:85
+msgid "Tiles"
+msgstr ""
+
+#: blocks/site-editor/editor.js:91
+msgid "Heading"
+msgstr ""
+
+#: blocks/site-editor/editor.js:98
+msgid "Restaurants matching a filter"
+msgstr ""
+
+#: blocks/site-editor/editor.js:102
+msgid "Filter, as in the list page address (for example award=winner or village=dededo&price=p1)"
+msgstr ""
+
+#: blocks/site-editor/editor.js:108
+#: blocks/site-editor/editor.js:118
+#: blocks/site-editor/editor.js:125
+msgid "Most shown"
+msgstr ""
+
+#: blocks/site-editor/editor.js:113
+msgid "Openings"
+msgstr ""
+
+#: blocks/site-editor/editor.js:114
+msgid "Reopenings"
+msgstr ""
+
+#: blocks/site-editor/editor.js:115
+msgid "Closures"
+msgstr ""
+
+#: blocks/site-editor/editor.js:117
+msgid "Days back"
+msgstr ""
+
+#: blocks/site-editor/editor.js:119
+msgid "Layout"
+msgstr ""
+
+#: blocks/site-editor/editor.js:120
+msgid "Strip"
+msgstr ""
+
+#: blocks/site-editor/editor.js:128
+msgid "Ad product"
+msgstr ""
+
+#: blocks/site-editor/editor.js:130
+msgid "Sponsored listings (rotating)"
+msgstr ""
+
+#: blocks/site-editor/editor.js:132
+msgid "Homepage leaderboard (one per page)"
+msgstr ""
+
+#: blocks/site-editor/editor.js:134
+msgid "Most ads shown (exclusive products show one)"
+msgstr ""
+
+#: blocks/visitor-reviews/editor.js:19
+msgid "Visitor reviews"
+msgstr ""
+
+#: blocks/visitor-reviews/editor.js:47
+msgid "Visitor reviews load here on the live page. Do not place this block in a section that shows Yelp ratings."
+msgstr ""

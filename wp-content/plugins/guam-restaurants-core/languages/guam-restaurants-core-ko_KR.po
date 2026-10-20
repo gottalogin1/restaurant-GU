@@ -1,0 +1,2296 @@
+# Korean translation of Guam Restaurants Core. Written with AI (docs/translation.md).
+msgid ""
+msgstr ""
+"Project-Id-Version: Guam Restaurants Core\n"
+"Language: ko_KR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: guam-restaurants-core\n"
+
+#: includes/admin/class-ingestion-runs-screen.php:74 includes/admin/class-ingestion-runs-screen.php:88 includes/awards/class-pages.php:500 includes/awards/class-policy.php:104
+msgid "Source"
+msgstr "출처"
+
+#: includes/admin/class-review-queue-screen.php:690 includes/site/class-blocks.php:617
+msgid "Details"
+msgstr "상세 정보"
+
+#: includes/admin/class-review-queue-screen.php:1073 includes/class-content-types.php:51 includes/site/class-directory-view.php:323 includes/site/class-picker.php:261 includes/site/class-related-links.php:128
+msgid "Village"
+msgstr "마을"
+
+#: includes/admin/class-review-queue-screen.php:1074 includes/admin/class-tag-origins-box.php:59 includes/class-content-types.php:57 includes/site/class-directory-view.php:324 includes/site/class-picker.php:262
+msgid "Mall"
+msgstr "몰"
+
+#: includes/admin/class-website-followup-screen.php:277 includes/ads/class-admin.php:167 includes/advertising/class-admin.php:71 includes/advertising/class-admin.php:349 includes/advertising/class-leads.php:502 includes/awards/class-pages.php:391 includes/awards/class-pages.php:499 includes/class-content-types.php:35 includes/commerce/class-woo-checkout.php:314 includes/commerce/class-woo-checkout.php:360 includes/corrections/class-corrections.php:365 includes/highlights/class-moderation-screen.php:165 includes/highlights/class-submit-screen.php:145 includes/highlights/class-submit-screen.php:216 includes/site/class-restaurant-view.php:387 assets/advertising/inquiry.js:218 assets/corrections/corrections.js:276
+msgid "Restaurant"
+msgstr "식당"
+
+#: includes/admin/class-website-followup-screen.php:278 includes/advertising/class-admin.php:352 includes/advertising/class-admin.php:449 includes/advertising/class-leads.php:504 includes/site/class-blocks.php:584 assets/advertising/inquiry.js:220 assets/ratings/ratings.js:155
+msgid "Phone"
+msgstr "전화"
+
+#: includes/admin/class-website-followup-screen.php:279 includes/advertising/class-admin.php:351 includes/advertising/class-admin.php:448 includes/advertising/class-leads.php:503 includes/claims/class-admin.php:134 assets/advertising/inquiry.js:219 assets/corrections/corrections.js:284
+msgid "Email"
+msgstr "이메일"
+
+#: includes/admin/class-website-followup-screen.php:281 includes/site/class-blocks.php:571
+msgid "Address"
+msgstr "주소"
+
+#: includes/admin/class-website-followup-screen.php:386 includes/saved/class-view.php:165
+msgid "Save"
+msgstr "저장"
+
+#: includes/ads/class-admin.php:227 includes/class-content-types.php:50 includes/site/class-blocks.php:147 blocks/site-editor/editor.js:70
+msgid "Villages"
+msgstr "마을"
+
+#: includes/ads/class-admin.php:228 includes/class-content-types.php:56 includes/site/class-blocks.php:148 blocks/site-editor/editor.js:71
+msgid "Malls"
+msgstr "몰"
+
+#: includes/ads/class-report.php:195 assets/reviews/reviews.js:176
+msgid "Month"
+msgstr "월"
+
+#: includes/ads/class-report.php:201 includes/awards/class-pages.php:371 includes/awards/class-pages.php:466 blocks/site-editor/editor.js:97 blocks/site-editor/editor.js:112
+msgid "Show"
+msgstr "보기"
+
+#: includes/ads/class-slot.php:77 includes/ads/class-slot.php:131 includes/newsletter/class-renderer.php:159
+msgid "Sponsored"
+msgstr "스폰서"
+
+#: includes/advertising/class-display.php:71 includes/corrections/class-display.php:86
+msgid "Loading the form…"
+msgstr "양식을 불러오는 중…"
+
+#: includes/advertising/class-leads.php:172 includes/site/class-restaurant-view.php:357
+msgid "New"
+msgstr "신규"
+
+#: includes/advertising/class-leads.php:191 includes/advertising/class-page-content.php:129 includes/owners/class-dashboard.php:323 includes/premium/class-admin.php:43
+msgid "Premium profile"
+msgstr "프리미엄 프로필"
+
+#: includes/advertising/class-page-content.php:127 includes/owners/class-dashboard.php:434 includes/site/class-blocks.php:580 includes/site/class-directory-view.php:326
+msgid "Price"
+msgstr "가격"
+
+#: includes/advertising/class-rest-controller.php:161 includes/corrections/class-rest-controller.php:135
+msgid "This form has expired. Reload the page and try again."
+msgstr "이 양식의 유효 시간이 지났습니다. 페이지를 새로 고친 뒤 다시 시도해 주세요."
+
+#: includes/appearance/class-color-scheme.php:60
+msgid "Light"
+msgstr "라이트"
+
+#: includes/appearance/class-color-scheme.php:61
+msgid "Dark"
+msgstr "다크"
+
+#: includes/appearance/class-color-scheme.php:62
+msgid "System"
+msgstr "시스템"
+
+#. translators: %s: Light, Dark or System.
+#: includes/appearance/class-color-scheme.php:130
+msgid "Theme: %s"
+msgstr "테마: %s"
+
+#: includes/appearance/class-color-scheme.php:161
+msgid "Match my device"
+msgstr "기기 설정에 맞추기"
+
+#: includes/awards/class-display.php:115
+msgid "Awards"
+msgstr "수상 내역"
+
+#: includes/awards/class-display.php:118 includes/site/class-blocks.php:430
+msgid "All award results"
+msgstr "모든 수상 결과"
+
+#: includes/awards/class-display.php:133
+msgid "source:"
+msgstr "출처:"
+
+#. translators: %s: category name, for example "Best Burger".
+#: includes/awards/class-pages.php:226
+msgid "Award category"
+msgstr "수상 부문"
+
+#. translators: %s: category name, for example "Best Burger".
+#: includes/awards/class-pages.php:226
+msgid "%s: results by year"
+msgstr "%s: 연도별 결과"
+
+#. translators: %s: category name.
+#: includes/awards/class-pages.php:229
+msgid "Most-awarded restaurants"
+msgstr "수상이 많은 식당"
+
+#. translators: %s: category name.
+#: includes/awards/class-pages.php:229
+msgid "Most-awarded restaurants: %s"
+msgstr "수상이 많은 식당: %s"
+
+#: includes/awards/class-pages.php:231
+msgid "Restaurant awards"
+msgstr "식당 수상 내역"
+
+#: includes/awards/class-pages.php:270 includes/awards/class-pages.php:356
+msgid "No award results are recorded yet."
+msgstr "아직 등록된 수상 결과가 없습니다."
+
+#: includes/awards/class-pages.php:286
+msgid "No results match these choices."
+msgstr "이 조건에 맞는 결과가 없습니다."
+
+#. translators: %d: year.
+#: includes/awards/class-pages.php:300
+msgid "Results recorded for %d"
+msgstr "%d년 결과"
+
+#: includes/awards/class-pages.php:319
+msgid "No results are recorded for this category."
+msgstr "이 부문에 등록된 결과가 없습니다."
+
+#. translators: %s: category name.
+#: includes/awards/class-pages.php:336
+msgid "%s, every year recorded"
+msgstr "%s, 전체 연도"
+
+#: includes/awards/class-pages.php:338
+msgid "Most-awarded restaurants in this category"
+msgstr "이 부문에서 수상이 많은 식당"
+
+#: includes/awards/class-pages.php:359
+msgid "Counted only from the results recorded on this site, ordered by wins, then finalist placings, then all results. Restaurants with the same counts share a rank."
+msgstr "이 사이트에 등록된 결과만 집계하며, 수상 횟수, 결선 진출 횟수, 전체 결과 수 순으로 정렬합니다. 횟수가 같은 식당은 같은 순위입니다."
+
+#: includes/awards/class-pages.php:361 includes/awards/class-pages.php:389 includes/awards/class-pages.php:444
+msgid "All categories"
+msgstr "모든 부문"
+
+#: includes/awards/class-pages.php:369 includes/awards/class-pages.php:464 includes/awards/class-pages.php:497
+msgid "Category"
+msgstr "부문"
+
+#: includes/awards/class-pages.php:390
+msgid "Rank"
+msgstr "순위"
+
+#: includes/awards/class-pages.php:392
+msgid "Wins"
+msgstr "수상"
+
+#: includes/awards/class-pages.php:393 includes/awards/class-policy.php:70
+msgid "Finalist"
+msgstr "결선 진출"
+
+#: includes/awards/class-pages.php:394 includes/corrections/class-corrections.php:136
+msgid "Other"
+msgstr "기타"
+
+#: includes/awards/class-pages.php:395
+msgid "Total"
+msgstr "합계"
+
+#: includes/awards/class-pages.php:420
+msgid "Awards pages"
+msgstr "수상 페이지"
+
+#: includes/awards/class-pages.php:422
+msgid "Results by year"
+msgstr "연도별 결과"
+
+#: includes/awards/class-pages.php:424
+msgid "Most awarded"
+msgstr "수상 많은 순"
+
+#: includes/awards/class-pages.php:440
+msgid "All years"
+msgstr "모든 연도"
+
+#: includes/awards/class-pages.php:450
+msgid "All programs"
+msgstr "모든 시상"
+
+#: includes/awards/class-pages.php:454 includes/awards/class-pages.php:496
+msgid "Program"
+msgstr "시상"
+
+#: includes/awards/class-pages.php:462 includes/awards/class-pages.php:495
+msgid "Year"
+msgstr "연도"
+
+#: includes/awards/class-pages.php:498 includes/owners/class-dashboard.php:302
+msgid "Placement"
+msgstr "순위·결과"
+
+#. translators: %s: publisher name or names, for example "Pacific Daily News".
+#: includes/awards/class-policy.php:54
+msgid "This site is not affiliated with %s. Results are listed with links to the original publication."
+msgstr "이 사이트는 %s와(과) 관련이 없습니다. 결과는 원래 발표 링크와 함께 게재합니다."
+
+#: includes/awards/class-policy.php:68
+msgid "Winner"
+msgstr "수상"
+
+#: includes/awards/class-policy.php:72
+msgid "Other placing"
+msgstr "기타 입상"
+
+#. translators: 1: program name, 2: year, 3: placement.
+#: includes/awards/class-policy.php:86
+msgid "%1$s %2$s: %3$s"
+msgstr "%1$s %2$s: %3$s"
+
+#. translators: 1: program name, 2: year, 3: category, 4: placement.
+#: includes/awards/class-policy.php:89
+msgid "%1$s %2$s, %3$s: %4$s"
+msgstr "%1$s %2$s, %3$s: %4$s"
+
+#: includes/claims/class-admin.php:104 includes/claims/class-admin.php:116 includes/saved/class-view.php:451
+msgid "Account"
+msgstr "계정"
+
+#: includes/claims/class-claim-form.php:112 includes/saved/class-view.php:371
+msgid "or"
+msgstr "또는"
+
+#. translators: %s: date, for example "March 2024".
+#: includes/claims/class-claim-form.php:209 includes/newsletter/class-renderer.php:82 includes/site/class-blocks.php:640 includes/site/class-pages.php:103 includes/site/class-restaurant-view.php:203
+msgid "Closed"
+msgstr "폐업"
+
+#: includes/class-content-types.php:34 includes/saved/class-members.php:257
+msgid "Restaurants"
+msgstr "식당"
+
+#: includes/class-content-types.php:63 includes/site/class-blocks.php:575 includes/site/class-directory-view.php:325
+msgid "Cuisine"
+msgstr "요리"
+
+#: includes/class-structured-data.php:95
+msgid "Restaurants on Guam"
+msgstr "괌의 식당"
+
+#: includes/corrections/class-corrections.php:85
+msgid "Report a wrong or missing fact"
+msgstr "잘못되거나 빠진 정보 신고"
+
+#: includes/corrections/class-corrections.php:86
+msgid "Owner or manager: change how this restaurant is listed"
+msgstr "소유자 또는 관리자: 등록 정보 변경"
+
+#: includes/corrections/class-corrections.php:87
+msgid "Owner or manager: remove this listing"
+msgstr "소유자 또는 관리자: 등록 삭제"
+
+#: includes/corrections/class-corrections.php:98 includes/owners/class-dashboard.php:378 includes/site/class-blocks.php:646
+msgid "Opening hours"
+msgstr "영업시간"
+
+#: includes/corrections/class-corrections.php:99
+msgid "Phone number"
+msgstr "전화번호"
+
+#: includes/corrections/class-corrections.php:100
+msgid "Address or map location"
+msgstr "주소 또는 지도 위치"
+
+#: includes/corrections/class-corrections.php:101
+msgid "Website or menu link"
+msgstr "웹사이트 또는 메뉴 링크"
+
+#: includes/corrections/class-corrections.php:102
+msgid "Restaurant name"
+msgstr "식당 이름"
+
+#: includes/corrections/class-corrections.php:103
+msgid "Cuisine, village or mall"
+msgstr "요리, 마을 또는 몰"
+
+#: includes/corrections/class-corrections.php:104
+msgid "Closed, reopened or moved"
+msgstr "폐업, 재개업 또는 이전"
+
+#: includes/corrections/class-corrections.php:105
+msgid "Something else"
+msgstr "기타"
+
+#: includes/corrections/class-corrections.php:118
+msgid "It shows personal information, such as a home address or personal phone"
+msgstr "집 주소나 개인 전화번호 같은 개인 정보가 표시됨"
+
+#: includes/corrections/class-corrections.php:119
+msgid "It is not open to the public (for example, private catering only)"
+msgstr "일반에 공개되지 않음(예: 개인 출장 요리만 운영)"
+
+#: includes/corrections/class-corrections.php:120
+msgid "It is a duplicate of another listing"
+msgstr "다른 등록과 중복됨"
+
+#: includes/corrections/class-corrections.php:121
+msgid "This place never existed or is not a restaurant"
+msgstr "존재하지 않거나 식당이 아님"
+
+#: includes/corrections/class-corrections.php:122
+msgid "Another reason"
+msgstr "기타 사유"
+
+#: includes/corrections/class-corrections.php:133
+msgid "Customer or visitor"
+msgstr "손님 또는 방문객"
+
+#: includes/corrections/class-corrections.php:134
+msgid "Owner"
+msgstr "소유자"
+
+#: includes/corrections/class-corrections.php:135
+msgid "Manager or staff"
+msgstr "관리자 또는 직원"
+
+#: includes/corrections/class-corrections.php:192 assets/corrections/corrections.js:309
+msgid "Choose the restaurant from the list."
+msgstr "목록에서 식당을 선택해 주세요."
+
+#: includes/corrections/class-corrections.php:195
+msgid "Choose what you would like to do."
+msgstr "원하시는 작업을 선택해 주세요."
+
+#: includes/corrections/class-corrections.php:202
+msgid "Choose the reason for removal."
+msgstr "삭제 사유를 선택해 주세요."
+
+#: includes/corrections/class-corrections.php:203
+msgid "Choose what needs changing."
+msgstr "변경이 필요한 항목을 선택해 주세요."
+
+#. translators: 1: minimum characters, 2: maximum characters.
+#: includes/corrections/class-corrections.php:210
+msgid "Describe the change in %1$d to %2$d characters."
+msgstr "변경 내용을 %1$d~%2$d자로 입력해 주세요."
+
+#. translators: %d: maximum characters.
+#: includes/corrections/class-corrections.php:214
+msgid "Keep the source under %d characters."
+msgstr "출처는 %d자 이내로 입력해 주세요."
+
+#: includes/corrections/class-corrections.php:221
+msgid "Enter a valid email address so we can reply."
+msgstr "답변을 드릴 수 있도록 올바른 이메일 주소를 입력해 주세요."
+
+#: includes/corrections/class-corrections.php:224
+msgid "Tell us how you are connected to the restaurant."
+msgstr "식당과의 관계를 알려 주세요."
+
+#: includes/corrections/class-corrections.php:226
+msgid "Only the owner or a manager can ask to change or remove a listing. To report a wrong fact, choose \"Report a wrong or missing fact\"."
+msgstr "등록 정보의 변경이나 삭제는 소유자 또는 관리자만 요청할 수 있습니다. 잘못된 정보를 신고하려면 \"잘못되거나 빠진 정보 신고\"를 선택해 주세요."
+
+#: includes/corrections/class-corrections.php:247 assets/corrections/corrections.js:350
+msgid "Your request could not be sent. Please try again."
+msgstr "요청을 보내지 못했습니다. 다시 시도해 주세요."
+
+#: includes/corrections/class-corrections.php:258
+msgid "You have sent several requests recently. Please try again later."
+msgstr "최근에 요청을 여러 번 보내셨습니다. 잠시 후 다시 시도해 주세요."
+
+#: includes/corrections/class-corrections.php:267
+msgid "Your request could not be saved. Please try again."
+msgstr "요청을 저장하지 못했습니다. 다시 시도해 주세요."
+
+#. translators: 1: request kind, 2: restaurant name.
+#: includes/corrections/class-corrections.php:383 assets/reviews/reviews.js:142
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#. translators: %s: site name.
+#: includes/corrections/class-corrections.php:408
+msgid "We received your request - %s"
+msgstr "요청이 접수되었습니다 - %s"
+
+#. translators: 1: site name, 2: restaurant name, 3: number of days, 4: editorial policy URL.
+#: includes/corrections/class-corrections.php:411
+msgid "Thank you for writing to %1$s about the listing for %2$s. We have received your request and will reply by email within %3$d days.\n\nWe check every change against a source, such as the restaurant's own website or signage, before we make it. How we handle corrections and listing requests is explained in our editorial policy:\n%4$s\n\nThis is an automatic confirmation. If you did not send this request, you can ignore this email."
+msgstr "%2$s 등록 정보에 관해 %1$s에 연락해 주셔서 감사합니다. 요청이 접수되었으며 %3$d일 이내에 이메일로 답변드리겠습니다.\n\n모든 변경 사항은 식당 웹사이트나 간판 같은 출처로 확인한 뒤 반영합니다. 정정 및 등록 요청 처리 방법은 편집 정책에서 확인하실 수 있습니다(영문):\n%4$s\n\n이 메일은 자동 발송되는 확인 메일입니다. 요청하신 적이 없다면 이 메일을 무시하셔도 됩니다."
+
+#: includes/corrections/class-display.php:87
+msgid "The correction form needs JavaScript."
+msgstr "정정 양식을 사용하려면 JavaScript가 필요합니다."
+
+#. translators: %d: number of days.
+#: includes/corrections/class-display.php:104
+msgid "Corrections to facts (hours, phone, address, website, cuisine, closed or moved): we reply within %d days."
+msgstr "정보 정정(영업시간, 전화, 주소, 웹사이트, 요리, 폐업 또는 이전): %d일 이내에 답변드립니다."
+
+#. translators: %d: number of days.
+#: includes/corrections/class-display.php:109
+msgid "Owners and managers asking to change or remove a listing: we reply within %d days."
+msgstr "소유자 또는 관리자의 등록 변경·삭제 요청: %d일 이내에 답변드립니다."
+
+#: includes/corrections/class-display.php:112
+msgid "We check every change against a source, such as the restaurant's website or signage, before making it. A note on where to check helps us act faster."
+msgstr "모든 변경 사항은 식당 웹사이트나 간판 같은 출처로 확인한 뒤 반영합니다. 확인할 곳을 알려 주시면 더 빨리 처리할 수 있습니다."
+
+#: includes/corrections/class-display.php:113
+msgid "We remove a listing that shows personal information, is not open to the public, is a duplicate or is not a real restaurant. A closed restaurant is marked closed rather than removed."
+msgstr "개인 정보가 표시되거나, 일반에 공개되지 않거나, 중복되거나, 실제 식당이 아닌 등록은 삭제합니다. 폐업한 식당은 삭제하지 않고 폐업으로 표시합니다."
+
+#: includes/corrections/class-display.php:114
+msgid "Ratings, reviews and award results are not changed on request, and advertising never affects what we list."
+msgstr "평점, 리뷰, 수상 결과는 요청에 따라 변경하지 않으며, 광고는 등록 내용에 영향을 주지 않습니다."
+
+#: includes/corrections/class-display.php:123
+msgid "Spotted wrong hours, a new phone number or a closure? Own this restaurant and want its listing changed or removed? Tell us here."
+msgstr "영업시간 오류, 새 전화번호, 폐업을 발견하셨나요? 이 식당의 소유자로서 등록 정보를 변경하거나 삭제하고 싶으신가요? 여기에서 알려 주세요."
+
+#: includes/corrections/class-display.php:124
+msgid "How we handle requests"
+msgstr "요청 처리 방법"
+
+#. translators: %d: number of days.
+#: includes/corrections/class-rest-controller.php:191
+msgid "Thank you. We have received your request and sent a confirmation to your email address. We will reply within %d day."
+msgid_plural "Thank you. We have received your request and sent a confirmation to your email address. We will reply within %d days."
+msgstr[0] "감사합니다. 요청이 접수되었으며 확인 메일을 보내 드렸습니다. %d일 이내에 답변드리겠습니다."
+
+#: includes/dishes/class-display.php:87
+msgid "No dishes yet. Tell others what you ordered: add a photo of a dish, or name the dishes you tried when you write a review."
+msgstr "아직 등록된 요리가 없습니다. 주문한 요리를 알려 주세요. 요리 사진을 올리거나 리뷰에 드신 요리를 적어 주세요."
+
+#: includes/dishes/class-display.php:92
+msgid "Popular dishes"
+msgstr "인기 요리"
+
+#: includes/dishes/class-display.php:93
+msgid "Ordered by how many visitors photographed each dish or named it in an approved review. Dishes the owner listed come next. Owners and staff cannot rate dishes, and sponsors cannot change this list."
+msgstr "요리별로 사진을 올리거나 승인된 리뷰에서 언급한 방문자 수 순으로 정렬합니다. 소유자가 등록한 요리는 그다음입니다. 소유자와 직원은 요리를 평가할 수 없으며, 스폰서도 이 목록을 바꿀 수 없습니다."
+
+#: includes/dishes/class-display.php:95
+msgid "Add a dish photo"
+msgstr "요리 사진 추가"
+
+#: includes/dishes/class-display.php:96 assets/reviews/reviews.js:288
+msgid "Write a review"
+msgstr "리뷰 쓰기"
+
+#. translators: %s: number of visitors.
+#: includes/dishes/class-display.php:123
+msgid "%s visitor"
+msgid_plural "%s visitors"
+msgstr[0] "%s명"
+
+#. translators: %s: number of photos.
+#: includes/dishes/class-display.php:127
+msgid "%s photo"
+msgid_plural "%s photos"
+msgstr[0] "사진 %s장"
+
+#. translators: %s: number of reviews.
+#: includes/dishes/class-display.php:131
+msgid "%s review"
+msgid_plural "%s reviews"
+msgstr[0] "리뷰 %s개"
+
+#: includes/dishes/class-display.php:138
+msgid "Visitors' average dish rating:"
+msgstr "방문자 요리 평균 평점:"
+
+#. translators: 1: average stars, e.g. 4.5, 2: number of ratings.
+#: includes/dishes/class-display.php:142
+msgid "%1$s/5 · %2$s rating"
+msgid_plural "%1$s/5 · %2$s ratings"
+msgstr[0] "%1$s/5 · 평가 %2$s개"
+
+#: includes/dishes/class-display.php:152
+msgid "On the menu"
+msgstr "메뉴에 있는 요리"
+
+#: includes/dishes/class-display.php:184 includes/site/class-picker.php:396
+msgid "Advertising space"
+msgstr "광고 공간"
+
+#: includes/dishes/class-display.php:185 includes/site/class-picker.php:397
+msgid "Advertise here"
+msgstr "여기에 광고하기"
+
+#: includes/dishes/class-display.php:187
+msgid "Your restaurant could be here, before Popular dishes"
+msgstr "\"인기 요리\" 앞에 귀하의 식당을 소개할 수 있습니다"
+
+#: includes/dishes/class-display.php:188
+msgid "People read this section when they are choosing what to eat. Sponsors take turns in this labeled spot on restaurant pages, chosen by village, mall or food type."
+msgstr "이 섹션은 무엇을 먹을지 고를 때 많이 읽힙니다. 스폰서는 마을, 몰, 음식 종류별로 식당 페이지의 표시된 자리에 번갈아 게재됩니다."
+
+#: includes/highlights/class-display.php:175 includes/highlights/class-moderation-screen.php:60 blocks/highlights/editor.js:30
+msgid "Highlights"
+msgstr "하이라이트"
+
+#: includes/highlights/class-display.php:179
+msgid "How we choose and moderate highlights"
+msgstr "하이라이트 선정 및 관리 방법"
+
+#: includes/highlights/class-display.php:193 includes/highlights/class-submit-screen.php:148
+msgid "Signature dishes"
+msgstr "대표 요리"
+
+#. translators: %s: name of the owner or manager.
+#: includes/highlights/class-display.php:205
+msgid "%s, for the restaurant"
+msgstr "%s, 식당 측"
+
+#. translators: %s: staff member's name.
+#: includes/highlights/class-display.php:224
+msgid "%s, staff writer ·"
+msgstr "%s, 스태프 작가 ·"
+
+#. translators: %d: maximum characters.
+#: includes/highlights/class-highlights.php:105 includes/reviews/class-visitor-reviews.php:147
+msgid "Keep each dish name to %d characters."
+msgstr "요리 이름은 각각 %d자 이내로 입력해 주세요."
+
+#. translators: 1: minimum characters, 2: maximum characters.
+#: includes/highlights/class-highlights.php:488 includes/reviews/class-visitor-reviews.php:131
+msgid "Write between %1$d and %2$d characters."
+msgstr "%1$d~%2$d자로 입력해 주세요."
+
+#. translators: %d: maximum characters.
+#: includes/highlights/class-highlights.php:502 includes/photos/class-photo-submissions.php:156 includes/reviews/class-visitor-reviews.php:135
+msgid "Enter a display name of up to %d characters."
+msgstr "%d자 이내로 표시 이름을 입력해 주세요."
+
+#: includes/highlights/class-highlights.php:512 includes/photos/class-photo-submissions.php:126 includes/ratings/class-rest-controller.php:99 includes/reviews/class-rest-controller.php:180 includes/reviews/class-visitor-reviews.php:101 includes/reviews/class-visitor-reviews.php:241
+msgid "Unknown restaurant."
+msgstr "알 수 없는 식당입니다."
+
+#: includes/highlights/class-moderation-screen.php:135 includes/highlights/class-policy-page.php:80 includes/highlights/class-submit-screen.php:117 includes/site/class-blocks.php:867
+msgid "Editorial policy"
+msgstr "편집 정책"
+
+#: includes/highlights/class-policy-page.php:81
+msgid "How we decide what appears on restaurant pages, and how we keep it independent of advertising."
+msgstr "식당 페이지에 무엇을 게재할지, 그리고 광고로부터 독립성을 어떻게 지키는지에 대한 안내입니다."
+
+#: includes/highlights/class-policy-page.php:131
+msgid "Highlights and reviews"
+msgstr "하이라이트와 리뷰"
+
+#: includes/highlights/class-policy-page.php:132
+msgid "Each restaurant page has a Highlights section. Every highlight is labeled with who wrote it:"
+msgstr "각 식당 페이지에는 하이라이트 섹션이 있습니다. 모든 하이라이트에는 작성자가 표시됩니다:"
+
+#: includes/highlights/class-policy-page.php:135
+msgid "a short description and signature dishes written by the restaurant's owner or manager. We check that the account belongs to the restaurant before it can post."
+msgstr "식당 소유자 또는 관리자가 작성한 짧은 소개와 대표 요리. 게시하기 전에 계정이 해당 식당의 것인지 확인합니다."
+
+#: includes/highlights/class-policy-page.php:136
+msgid "a short note written by our staff in their own words. Staff do not write about restaurants they or their families are connected to, and say so if a restaurant paid for a meal or gave them anything."
+msgstr "스태프가 직접 작성한 짧은 메모. 스태프는 본인이나 가족과 관련된 식당에 대해서는 쓰지 않으며, 식당이 식사비를 내거나 무언가를 제공한 경우 그 사실을 밝힙니다."
+
+#: includes/highlights/class-policy-page.php:137 includes/reviews/class-display.php:132
+msgid "User reviews"
+msgstr "이용자 리뷰"
+
+#: includes/highlights/class-policy-page.php:137
+msgid "a star rating and comment from a visitor to this site, shown separately from the owner's and editor's words."
+msgstr "이 사이트 방문자가 남긴 별점과 의견. 소유자 및 편집자의 글과 구분해 표시합니다."
+
+#: includes/highlights/class-policy-page.php:138
+msgid "an owner may post one public response to each review. Owners cannot edit, hide or delete reviews."
+msgstr "소유자는 리뷰마다 공개 답글을 한 번 게시할 수 있습니다. 소유자는 리뷰를 수정, 숨김, 삭제할 수 없습니다."
+
+#: includes/highlights/class-policy-page.php:142
+msgid "Moderation"
+msgstr "관리"
+
+#: includes/highlights/class-policy-page.php:143
+msgid "Every highlight, review and response waits for an administrator before it appears. We publish positive and critical reviews alike. We reject something only when its content breaks one of these rules, and we apply them the same way whatever the rating:"
+msgstr "모든 하이라이트, 리뷰, 답글은 관리자가 확인한 뒤에 표시됩니다. 긍정적인 리뷰와 비판적인 리뷰를 똑같이 게재합니다. 내용이 아래 규칙에 어긋날 때만 게재하지 않으며, 평점과 관계없이 같은 기준을 적용합니다:"
+
+#: includes/highlights/class-policy-page.php:147
+msgid "We never remove or hide a review because a restaurant, advertiser or prospective advertiser asks, or because it is negative."
+msgstr "식당, 광고주 또는 잠재 광고주가 요청했다는 이유나 부정적인 내용이라는 이유로 리뷰를 삭제하거나 숨기지 않습니다."
+
+#: includes/highlights/class-policy-page.php:148
+msgid "Highlights are free. They cannot be bought, are not part of any advertising package, and never change ratings, awards or the order of any list or search result."
+msgstr "하이라이트는 무료입니다. 구매할 수 없고, 광고 패키지에 포함되지 않으며, 평점, 수상 내역, 목록이나 검색 결과의 순서를 바꾸지 않습니다."
+
+#: includes/highlights/class-policy-page.php:149
+msgid "We never pay for reviews or reward reviewers for what they say."
+msgstr "리뷰에 대가를 지불하거나 내용에 따라 작성자에게 보상하지 않습니다."
+
+#: includes/highlights/class-policy-page.php:150
+msgid "Anyone connected to a restaurant (owner, staff, relative) or to a competitor must say so in their review. People linked to a restaurant's account cannot review it."
+msgstr "식당(소유자, 직원, 친척)이나 경쟁 업체와 관련된 사람은 리뷰에 그 사실을 밝혀야 합니다. 식당 계정에 연결된 사람은 그 식당의 리뷰를 쓸 수 없습니다."
+
+#: includes/highlights/class-policy-page.php:154
+msgid "Writing a review"
+msgstr "리뷰 작성 방법"
+
+#: includes/highlights/class-policy-page.php:157
+msgid "Log in, or give an email address. We email a link, and your review goes to a moderator once you open it. We use the address only to send that link and do not keep it."
+msgstr "로그인하거나 이메일 주소를 입력해 주세요. 링크를 이메일로 보내 드리며, 링크를 열면 리뷰가 관리자에게 전달됩니다. 이메일 주소는 링크 발송에만 사용하며 보관하지 않습니다."
+
+#. translators: %d: reviews per hour.
+#: includes/highlights/class-policy-page.php:159
+msgid "To stop spam we use a hidden form field, a minimum time to fill in the form, and a limit of %d reviews an hour and one review of each restaurant a day per visitor and per email address. These limits use scrambled (hashed) copies of your IP address and email that expire within a day; neither is stored with your review."
+msgstr "스팸을 막기 위해 숨겨진 양식 항목, 양식 작성 최소 시간, 방문자와 이메일 주소별로 시간당 리뷰 %d개 및 식당별 하루 1개 제한을 사용합니다. 이 제한에는 하루 안에 사라지는 IP 주소와 이메일의 암호화(해시) 사본을 사용하며, 어느 것도 리뷰와 함께 저장하지 않습니다."
+
+#: includes/highlights/class-policy-page.php:164
+msgid "Reviews sent by email always confirm an address; logged-in reviewers can choose to confirm their account email. The badge does not mean we checked a visit, a receipt or a purchase."
+msgstr "이메일로 보낸 리뷰는 항상 주소가 확인됩니다. 로그인한 작성자는 계정 이메일 확인 여부를 선택할 수 있습니다. 이 배지는 방문, 영수증 또는 구매를 확인했다는 뜻이 아닙니다."
+
+#: includes/highlights/class-policy.php:47
+msgid "Spam: advertising, links to other sites, or the same text posted again and again."
+msgstr "스팸: 광고, 다른 사이트 링크, 같은 내용의 반복 게시."
+
+#: includes/highlights/class-policy.php:48
+msgid "Profanity or obscene language."
+msgstr "욕설 또는 음란한 표현."
+
+#: includes/highlights/class-policy.php:49
+msgid "A personal attack: insults aimed at a person (staff, the owner or another reviewer) instead of describing the visit."
+msgstr "인신공격: 방문 경험이 아닌 사람(직원, 소유자, 다른 작성자)을 향한 모욕."
+
+#: includes/highlights/class-policy.php:50
+msgid "Hate speech, threats or harassment."
+msgstr "혐오 발언, 협박 또는 괴롭힘."
+
+#: includes/highlights/class-policy.php:51
+msgid "Personal information about someone, such as a phone number or home address."
+msgstr "전화번호나 집 주소 같은 타인의 개인 정보."
+
+#: includes/highlights/class-policy.php:52
+msgid "Conflict of interest: written by someone connected to the restaurant (owner, staff, relative) or to a competitor without saying so."
+msgstr "이해 충돌: 식당(소유자, 직원, 친척)이나 경쟁 업체와 관련된 사람이 그 사실을 밝히지 않고 쓴 글."
+
+#: includes/highlights/class-policy.php:53
+msgid "Clear signs of being fake, paid for, or written in return for a discount or gift."
+msgstr "가짜이거나, 대가를 받았거나, 할인이나 선물의 대가로 작성된 것이 분명한 글."
+
+#: includes/highlights/class-policy.php:54
+msgid "Not about this restaurant or a visit to it (off topic)."
+msgstr "이 식당이나 방문과 관계없는 내용(주제 벗어남)."
+
+#: includes/highlights/class-policy.php:55
+msgid "About a different business."
+msgstr "다른 업체에 관한 내용."
+
+#: includes/highlights/class-policy.php:80 includes/owners/class-owner-content.php:457 includes/photos/class-photo-gallery.php:101
+msgid "From the owner"
+msgstr "소유자 소개"
+
+#: includes/highlights/class-policy.php:82
+msgid "Editor's note"
+msgstr "편집자 메모"
+
+#: includes/highlights/class-policy.php:84 assets/reviews/reviews.js:215
+msgid "Response from the owner"
+msgstr "소유자 답글"
+
+#: includes/highlights/class-policy.php:86
+msgid "User review"
+msgstr "이용자 리뷰"
+
+#: includes/highlights/class-policy.php:99
+msgid "Verified email"
+msgstr "이메일 확인됨"
+
+#: includes/highlights/class-policy.php:108
+msgid "The writer confirmed an email address by clicking a link we sent. We have not checked that they ate here."
+msgstr "작성자가 저희가 보낸 링크를 눌러 이메일 주소를 확인했습니다. 실제로 이곳에서 식사했는지는 확인하지 않았습니다."
+
+#: includes/highlights/class-submit-screen.php:151 includes/highlights/class-submit-screen.php:221 includes/photos/class-photo-gallery.php:184
+msgid "Send for approval"
+msgstr "승인 요청"
+
+#: includes/legal/class-pages.php:69 includes/site/class-blocks.php:870
+msgid "Advertising disclosure"
+msgstr "광고 고지"
+
+#: includes/legal/class-pages.php:71
+msgid "How the directory makes money, how sponsored placements are labeled, and what advertising can never buy."
+msgstr "이 디렉터리의 수익 구조, 스폰서 게재 표시 방법, 그리고 광고로 절대 살 수 없는 것."
+
+#: includes/legal/class-pages.php:75
+msgid "Data sources and credits"
+msgstr "데이터 출처 및 저작권 표시"
+
+#: includes/legal/class-pages.php:77
+msgid "Where the directory's restaurant details, maps, ratings and award results come from, and their licences."
+msgstr "이 디렉터리의 식당 정보, 지도, 평점, 수상 결과의 출처와 라이선스."
+
+#: includes/legal/class-pages.php:81 includes/site/class-blocks.php:872
+msgid "Photo upload agreement"
+msgstr "사진 업로드 동의서"
+
+#: includes/legal/class-pages.php:83
+msgid "What you confirm and agree to when you upload a photo, including the transfer of the photo to us."
+msgstr "사진을 올릴 때 확인하고 동의하는 내용(사진 권리 양도 포함)."
+
+#: includes/legal/class-pages.php:217 includes/saved/class-view.php:385 includes/site/class-blocks.php:868 assets/advertising/inquiry.js:206 assets/corrections/corrections.js:229
+msgid "Privacy policy"
+msgstr "개인정보 처리방침"
+
+#: includes/legal/class-pages.php:307
+msgid "Translations"
+msgstr "번역 안내"
+
+#: includes/newsletter/class-issue.php:50 includes/site/class-history.php:49 includes/site/class-pages.php:101
+msgid "Reopened"
+msgstr "영업 재개"
+
+#: includes/newsletter/class-renderer.php:91 includes/site/class-blocks.php:739 includes/site/class-pages.php:114
+msgid "Suggest a correction"
+msgstr "정정 제안"
+
+#: includes/owners/class-dashboard.php:70 includes/saved/class-view.php:405
+msgid "My restaurant"
+msgstr "내 식당"
+
+#: includes/owners/class-dashboard.php:383 includes/site/class-blocks.php:639 assets/site/hours.js:63
+msgid "Open 24 hours"
+msgstr "24시간 영업"
+
+#: includes/owners/class-dashboard.php:486 includes/photos/class-photo-gallery.php:85
+msgid "Photos"
+msgstr "사진"
+
+#: includes/owners/class-owner-content.php:238 includes/site/class-blocks.php:519
+msgid "Menu"
+msgstr "메뉴"
+
+#: includes/photos/class-cuisine-photos.php:112
+msgid "Public domain"
+msgstr "퍼블릭 도메인"
+
+#: includes/photos/class-cuisine-photos.php:128
+msgid "Illustrative photo, not from this restaurant"
+msgstr "예시 사진(이 식당의 사진이 아님)"
+
+#: includes/photos/class-cuisine-photos.php:128
+msgid "Illustrative photo"
+msgstr "예시 사진"
+
+#: includes/photos/class-cuisine-photos.php:129
+msgid "Unknown author"
+msgstr "작자 미상"
+
+#. translators: %s: size such as "20 MB".
+#: includes/photos/class-moderation-screen.php:146 includes/photos/class-photo-gallery.php:156
+msgid "Photo"
+msgstr "사진"
+
+#: includes/photos/class-photo-gallery.php:81
+msgid "No photos yet. Be the first to add one."
+msgstr "아직 사진이 없습니다. 첫 사진을 올려 주세요."
+
+#: includes/photos/class-photo-gallery.php:86
+msgid "Uploaded by visitors and the restaurant, and approved by an administrator before they appear."
+msgstr "방문자와 식당이 올린 사진이며, 관리자 승인 후 표시됩니다."
+
+#. translators: %s: uploader's display name.
+#: includes/photos/class-photo-gallery.php:103
+msgid "by %s"
+msgstr "올린 사람: %s"
+
+#. translators: %d: stars from 1 to 5.
+#: includes/photos/class-photo-gallery.php:133
+msgid "%d out of 5 stars"
+msgid_plural "%d out of 5 stars"
+msgstr[0] "별 5개 중 %d개"
+
+#. translators: %s: size such as "20 MB".
+#: includes/photos/class-photo-gallery.php:156
+msgid "JPEG, PNG or WebP, up to %s."
+msgstr "JPEG, PNG 또는 WebP, 최대 %s."
+
+#. translators: %d: maximum characters.
+#: includes/photos/class-photo-gallery.php:158
+msgid "Dish name (required)"
+msgstr "요리 이름(필수)"
+
+#. translators: %d: maximum characters.
+#: includes/photos/class-photo-gallery.php:158
+msgid "For example: chicken kelaguen"
+msgstr "예: chicken kelaguen"
+
+#: includes/photos/class-photo-gallery.php:163
+msgid "Your display name"
+msgstr "표시 이름"
+
+#: includes/photos/class-photo-gallery.php:164
+msgid "Email (for a confirmation link; not stored)"
+msgstr "이메일(확인 링크용, 저장하지 않음)"
+
+#: includes/photos/class-photo-gallery.php:167
+msgid "You manage this restaurant, so your photos show as \"From the owner\" and have no rating."
+msgstr "이 식당을 관리하고 계시므로 사진은 \"소유자 제공\"으로 표시되며 평점이 없습니다."
+
+#: includes/photos/class-photo-gallery.php:169
+msgid "I own, work at, or am related to someone at this restaurant (you can add photos, but not ratings)"
+msgstr "이 식당의 소유자, 직원이거나 그 친척입니다(사진은 올릴 수 있지만 평가는 할 수 없습니다)"
+
+#: includes/photos/class-photo-gallery.php:172 includes/photos/class-photo-gallery.php:173
+msgid "photo upload agreement"
+msgstr "사진 업로드 동의서"
+
+#. translators: 1: link to the photo upload agreement, 2: company name.
+#: includes/photos/class-photo-gallery.php:178
+msgid "I took this photo and accept the %1$s. The photo becomes the property of %2$s."
+msgstr "이 사진은 제가 직접 찍었으며 %1$s에 동의합니다. 사진의 소유권은 %2$s에 귀속됩니다."
+
+#: includes/photos/class-photo-gallery.php:189
+msgid "Add a photo"
+msgstr "사진 추가"
+
+#: includes/photos/class-photo-gallery.php:202
+msgid "No rating"
+msgstr "평가 없음"
+
+#. translators: %d: number of stars.
+#: includes/photos/class-photo-gallery.php:208
+msgid "%d star"
+msgid_plural "%d stars"
+msgstr[0] "별 %d개"
+
+#: includes/photos/class-photo-gallery.php:211
+msgid "How was the dish? (optional)"
+msgstr "요리는 어떠셨나요? (선택)"
+
+#: includes/photos/class-photo-gallery.php:234
+msgid "Thanks, your email is confirmed. Your photo will appear after an administrator approves it."
+msgstr "감사합니다. 이메일이 확인되었습니다. 사진은 관리자 승인 후 표시됩니다."
+
+#: includes/photos/class-photo-gallery.php:237
+msgid "That link has expired or was already used. Please upload the photo again."
+msgstr "이 링크는 만료되었거나 이미 사용되었습니다. 사진을 다시 올려 주세요."
+
+#: includes/photos/class-photo-rest-controller.php:157
+msgid "Almost done: we sent you an email. Open the link in it within 24 hours, and your photo will go to an administrator for approval."
+msgstr "거의 다 되었습니다. 이메일을 보내 드렸습니다. 24시간 안에 메일의 링크를 열면 사진이 관리자 승인 대기로 넘어갑니다."
+
+#: includes/photos/class-photo-rest-controller.php:158
+msgid "Thanks! Your photo will appear after an administrator approves it."
+msgstr "감사합니다! 사진은 관리자 승인 후 표시됩니다."
+
+#: includes/photos/class-photo-submissions.php:86
+msgid "Does not show food, drink, the menu or the restaurant."
+msgstr "음식, 음료, 메뉴 또는 식당이 보이지 않음."
+
+#: includes/photos/class-photo-submissions.php:87
+msgid "Taken at a different restaurant."
+msgstr "다른 식당에서 찍은 사진."
+
+#: includes/photos/class-photo-submissions.php:88
+msgid "Not taken by the person who uploaded it (for example, copied from a website or another app)."
+msgstr "올린 사람이 직접 찍지 않음(예: 웹사이트나 다른 앱에서 복사)."
+
+#: includes/photos/class-photo-submissions.php:89
+msgid "Shows people's faces up close, or personal information such as a receipt with a card number."
+msgstr "사람 얼굴이 가까이 찍혔거나 카드 번호가 있는 영수증 같은 개인 정보가 보임."
+
+#: includes/photos/class-photo-submissions.php:90
+msgid "Offensive, explicit or illegal content."
+msgstr "불쾌하거나 노골적이거나 불법적인 내용."
+
+#: includes/photos/class-photo-submissions.php:91
+msgid "Too dark or blurry to see the dish, or a duplicate of a photo already shown."
+msgstr "너무 어둡거나 흐려서 요리가 보이지 않거나, 이미 게재된 사진과 중복됨."
+
+#: includes/photos/class-photo-submissions.php:92
+msgid "The dish name is not a dish name (for example, advertising or a comment about someone)."
+msgstr "요리 이름이 요리 이름이 아님(예: 광고나 누군가에 대한 의견)."
+
+#: includes/photos/class-photo-submissions.php:129 assets/site/photos.js:24
+msgid "Your photo could not be sent. Please try again."
+msgstr "사진을 보내지 못했습니다. 다시 시도해 주세요."
+
+#. translators: %d: maximum characters.
+#: includes/photos/class-photo-submissions.php:146
+msgid "Enter the dish name, up to %d characters."
+msgstr "요리 이름을 %d자 이내로 입력해 주세요."
+
+#: includes/photos/class-photo-submissions.php:149
+msgid "Choose a rating from 1 to 5 stars, or leave it empty."
+msgstr "별 1~5개 중 평점을 선택하거나 비워 두세요."
+
+#: includes/photos/class-photo-submissions.php:152
+msgid "Owners, staff and family of the restaurant can add photos but not ratings."
+msgstr "식당의 소유자, 직원, 가족은 사진을 올릴 수 있지만 평가는 할 수 없습니다."
+
+#: includes/photos/class-photo-submissions.php:159 includes/reviews/class-visitor-reviews.php:152
+msgid "Enter your email address so we can send you a confirmation link, or log in."
+msgstr "확인 링크를 보내 드릴 수 있도록 이메일 주소를 입력하거나 로그인해 주세요."
+
+#: includes/photos/class-photo-submissions.php:162
+msgid "Read and accept the photo upload agreement."
+msgstr "사진 업로드 동의서를 읽고 동의해 주세요."
+
+#: includes/photos/class-photo-submissions.php:176
+msgid "You have sent several photos recently. Please try again later."
+msgstr "최근에 사진을 여러 장 보내셨습니다. 잠시 후 다시 시도해 주세요."
+
+#: includes/photos/class-photo-submissions.php:216 includes/reviews/class-visitor-reviews.php:184
+msgid "We could not send the confirmation email. Please try again later."
+msgstr "확인 메일을 보내지 못했습니다. 잠시 후 다시 시도해 주세요."
+
+#. translators: %s: size such as "20 MB".
+#: includes/photos/class-photo-submissions.php:236
+msgid "Photos can be at most %s."
+msgstr "사진은 최대 %s까지 가능합니다."
+
+#: includes/photos/class-photo-submissions.php:239
+msgid "Choose a photo to upload."
+msgstr "올릴 사진을 선택해 주세요."
+
+#: includes/photos/class-photo-submissions.php:242
+msgid "Photos must be JPEG, PNG or WebP images."
+msgstr "사진은 JPEG, PNG 또는 WebP 이미지여야 합니다."
+
+#: includes/photos/class-photo-submissions.php:283
+msgid "That image could not be read. Try a different photo."
+msgstr "이미지를 읽을 수 없습니다. 다른 사진으로 시도해 주세요."
+
+#: includes/photos/class-photo-submissions.php:291
+msgid "That image could not be processed. Try a different photo."
+msgstr "이미지를 처리할 수 없습니다. 다른 사진으로 시도해 주세요."
+
+#. translators: %s: restaurant name.
+#: includes/photos/class-photo-submissions.php:383
+msgid "Confirm your photo of %s"
+msgstr "%s 사진을 확인해 주세요"
+
+#. translators: %s: confirmation URL.
+#: includes/photos/class-photo-submissions.php:386
+msgid "Please confirm your email address by opening this link:\n\n%s\n\nThe link works once, for 24 hours. After you confirm, an administrator checks your photo before it appears. If you do not confirm, the photo is deleted.\n\nWe do not keep your email address. If you did not upload a photo, ignore this message."
+msgstr "다음 링크를 열어 이메일 주소를 확인해 주세요:\n\n%s\n\n링크는 24시간 동안 한 번만 사용할 수 있습니다. 확인하시면 관리자가 사진을 검토한 뒤 게재합니다. 확인하지 않으면 사진은 삭제됩니다.\n\n이메일 주소는 보관하지 않습니다. 사진을 올린 적이 없다면 이 메시지를 무시하세요."
+
+#: includes/photos/class-photo-submissions.php:403 includes/reviews/class-visitor-reviews.php:224
+msgid "This link has expired or was already used."
+msgstr "이 링크는 만료되었거나 이미 사용되었습니다."
+
+#: includes/photos/class-photo-submissions.php:464
+msgid "Photo not found."
+msgstr "사진을 찾을 수 없습니다."
+
+#: includes/premium/class-premium.php:67
+msgid "Order online"
+msgstr "온라인 주문"
+
+#: includes/premium/class-premium.php:68
+msgid "Reserve a table"
+msgstr "테이블 예약"
+
+#: includes/premium/class-premium.php:69
+msgid "See the full menu"
+msgstr "전체 메뉴 보기"
+
+#: includes/premium/class-premium.php:70
+msgid "Ask about catering"
+msgstr "출장 요리 문의"
+
+#: includes/premium/class-premium.php:71
+msgid "Book an event"
+msgstr "행사 예약"
+
+#: includes/ratings/class-display.php:136
+msgid "Loading ratings…"
+msgstr "평점을 불러오는 중…"
+
+#: includes/ratings/class-foursquare-provider.php:167
+msgid "Tips from Foursquare users, as Foursquare returns them, without changes."
+msgstr "Foursquare 사용자의 팁. Foursquare가 제공한 그대로, 변경 없이 표시합니다."
+
+#: includes/ratings/class-google-provider.php:209
+msgid "Reviews from Google Maps, shown in the order Google returns them (most relevant first), without changes."
+msgstr "Google 지도 리뷰. Google이 제공한 순서(관련성 높은 순)대로, 변경 없이 표시합니다."
+
+#: includes/ratings/class-yelp-provider.php:188
+msgid "Review excerpts as Yelp selects and returns them, without changes."
+msgstr "Yelp가 선택해 제공한 리뷰 발췌. 변경 없이 표시합니다."
+
+#: includes/reviews/class-display.php:133
+msgid "Loading reviews…"
+msgstr "리뷰를 불러오는 중…"
+
+#: includes/reviews/class-display.php:137
+msgid "Written by visitors to this site and checked by a moderator before they appear."
+msgstr "이 사이트 방문자가 작성했으며, 관리자가 확인한 뒤 표시됩니다."
+
+#: includes/reviews/class-rest-controller.php:257
+msgid "Almost done: we sent you an email. Open the link in it to confirm your address, and your review will go to a moderator."
+msgstr "거의 다 되었습니다. 이메일을 보내 드렸습니다. 메일의 링크를 열어 주소를 확인하면 리뷰가 관리자에게 전달됩니다."
+
+#: includes/reviews/class-rest-controller.php:258
+msgid "Thanks! Your review will appear after a moderator checks it against our review rules."
+msgstr "감사합니다! 리뷰는 관리자가 리뷰 규칙에 따라 확인한 뒤 표시됩니다."
+
+#: includes/reviews/class-visitor-reviews.php:106 assets/reviews/reviews.js:341 assets/reviews/reviews.js:346
+msgid "Your review could not be sent. Please try again."
+msgstr "리뷰를 보내지 못했습니다. 다시 시도해 주세요."
+
+#: includes/reviews/class-visitor-reviews.php:111
+msgid "You manage this restaurant, so you cannot review it. You can reply to reviews instead."
+msgstr "이 식당을 관리하고 계시므로 리뷰를 쓸 수 없습니다. 대신 리뷰에 답글을 달 수 있습니다."
+
+#: includes/reviews/class-visitor-reviews.php:127
+msgid "Choose a rating from 1 to 5 stars."
+msgstr "별 1~5개 중 평점을 선택해 주세요."
+
+#: includes/reviews/class-visitor-reviews.php:138
+msgid "Say how you are connected to the restaurant."
+msgstr "식당과의 관계를 적어 주세요."
+
+#. translators: %d: maximum number of dishes.
+#: includes/reviews/class-visitor-reviews.php:142
+msgid "Name up to %d dishes."
+msgstr "요리는 %d개까지 적을 수 있습니다."
+
+#: includes/reviews/class-visitor-reviews.php:230 includes/reviews/class-visitor-reviews.php:265
+msgid "Review not found."
+msgstr "리뷰를 찾을 수 없습니다."
+
+#: includes/reviews/class-visitor-reviews.php:451
+msgid "You have sent several reviews recently. Please try again later."
+msgstr "최근에 리뷰를 여러 개 보내셨습니다. 잠시 후 다시 시도해 주세요."
+
+#: includes/reviews/class-visitor-reviews.php:454
+msgid "You have already reviewed this restaurant today."
+msgstr "오늘 이미 이 식당의 리뷰를 작성하셨습니다."
+
+#: includes/saved/class-members.php:172
+msgid "Accounts linked to a restaurant or used by our staff cannot be deleted here. Write to us and we will help."
+msgstr "식당에 연결된 계정이나 스태프 계정은 여기에서 삭제할 수 없습니다. 연락 주시면 도와드리겠습니다."
+
+#: includes/saved/class-members.php:208 includes/saved/class-members.php:223 includes/saved/class-members.php:253
+msgid "Saved restaurants"
+msgstr "저장한 식당"
+
+#: includes/saved/class-rest-controller.php:85
+msgid "Sign in to keep a list on your account."
+msgstr "로그인하면 목록을 계정에 보관할 수 있습니다."
+
+#. translators: %s: restaurant name.
+#: includes/saved/class-view.php:147
+msgid "Save %s"
+msgstr "%s 저장"
+
+#. translators: %s: restaurant name.
+#: includes/saved/class-view.php:149
+msgid "Saved: %s. Remove from your list"
+msgstr "저장됨: %s. 목록에서 삭제"
+
+#: includes/saved/class-view.php:166 includes/saved/class-view.php:463 includes/site/class-pages.php:88
+msgid "Saved"
+msgstr "저장됨"
+
+#: includes/saved/class-view.php:183
+msgid "None of the restaurants in this link are listed any more."
+msgstr "이 링크의 식당은 더 이상 등록되어 있지 않습니다."
+
+#: includes/saved/class-view.php:186
+msgid "Nothing saved yet."
+msgstr "아직 저장한 식당이 없습니다."
+
+#. translators: %s: "Browse restaurants" link.
+#: includes/saved/class-view.php:189
+msgid "Tap the heart on any restaurant to keep it here. %s"
+msgstr "식당의 하트를 누르면 여기에 저장됩니다. %s"
+
+#: includes/saved/class-view.php:190
+msgid "Browse restaurants"
+msgstr "식당 둘러보기"
+
+#. translators: %s: number of restaurants.
+#: includes/saved/class-view.php:205
+msgid "%s restaurant in this list"
+msgid_plural "%s restaurants in this list"
+msgstr[0] "이 목록의 식당 %s곳"
+
+#. translators: %s: number of restaurants.
+#: includes/saved/class-view.php:207
+msgid "%s saved restaurant"
+msgid_plural "%s saved restaurants"
+msgstr[0] "저장한 식당 %s곳"
+
+#: includes/saved/class-view.php:228
+msgid "Someone shared this list of restaurants with you. The link holds only the restaurants, nothing about the person who shared it."
+msgstr "누군가 이 식당 목록을 공유했습니다. 링크에는 식당만 담겨 있으며, 공유한 사람에 대한 정보는 없습니다."
+
+#: includes/saved/class-view.php:232
+msgid "Added to your list"
+msgstr "목록에 추가했습니다"
+
+#: includes/saved/class-view.php:233
+msgid "Save all to my list"
+msgstr "모두 내 목록에 저장"
+
+#: includes/saved/class-view.php:235
+msgid "Go to my list"
+msgstr "내 목록으로 이동"
+
+#: includes/saved/class-view.php:251
+msgid "Loading your saved restaurants…"
+msgstr "저장한 식당을 불러오는 중…"
+
+#: includes/saved/class-view.php:252
+msgid "Saved restaurants are kept in your browser, which needs JavaScript. Sign in to keep a list on your account."
+msgstr "저장한 식당은 브라우저에 보관되므로 JavaScript가 필요합니다. 로그인하면 목록을 계정에 보관할 수 있습니다."
+
+#: includes/saved/class-view.php:274
+msgid "My saved restaurants"
+msgstr "내가 저장한 식당"
+
+#: includes/saved/class-view.php:275 includes/site/class-blocks.php:526
+msgid "Link copied"
+msgstr "링크를 복사했습니다"
+
+#: includes/saved/class-view.php:276
+msgid "Share my list"
+msgstr "내 목록 공유"
+
+#. translators: %s: most restaurants in a shared link.
+#: includes/saved/class-view.php:280
+msgid "The link shows your newest %s saved restaurants and nothing else about you."
+msgstr "링크에는 최근 저장한 식당 %s곳만 표시되며, 회원님에 대한 다른 정보는 담기지 않습니다."
+
+#: includes/saved/class-view.php:297
+msgid "Show the list as"
+msgstr "목록 보기 방식"
+
+#: includes/saved/class-view.php:298 includes/site/class-directory-view.php:120 blocks/site-editor/editor.js:69 blocks/site-editor/editor.js:121
+msgid "List"
+msgstr "목록"
+
+#: includes/saved/class-view.php:299 includes/site/class-directory-view.php:121 includes/site/class-pages.php:73
+msgid "Map"
+msgstr "지도"
+
+#: includes/saved/class-view.php:303
+msgid "Map of these restaurants"
+msgstr "이 식당들의 지도"
+
+#: includes/saved/class-view.php:350
+msgid "Saved. Keep your list on every device"
+msgstr "저장했습니다. 모든 기기에서 목록을 이용하세요"
+
+#: includes/saved/class-view.php:350
+msgid "Keep your list on every device"
+msgstr "모든 기기에서 목록 이용하기"
+
+#: includes/saved/class-view.php:354
+msgid "Sign up with email"
+msgstr "이메일로 가입"
+
+#: includes/saved/class-view.php:358
+msgid "Already have an account?"
+msgstr "이미 계정이 있으신가요?"
+
+#: includes/saved/class-view.php:360 includes/saved/class-view.php:452
+msgid "Sign in"
+msgstr "로그인"
+
+#: includes/saved/class-view.php:369
+msgid "Right now your list lives only in this browser. Sign in free to see it on your phone and computer, keep it if you clear your browser, and share it with friends."
+msgstr "지금은 목록이 이 브라우저에만 저장되어 있습니다. 무료로 로그인하면 휴대폰과 컴퓨터에서 목록을 볼 수 있고, 브라우저 기록을 지워도 남아 있으며, 친구와 공유할 수도 있습니다."
+
+#: includes/saved/class-view.php:384
+msgid "We use your account only to keep your list. With Google or Facebook we receive just your name, email address and profile picture, and we never post anything for you."
+msgstr "계정은 목록 보관에만 사용합니다. Google이나 Facebook을 이용하면 이름, 이메일 주소, 프로필 사진만 받으며, 회원님 대신 무엇도 게시하지 않습니다."
+
+#: includes/saved/class-view.php:401
+msgid "Sign out"
+msgstr "로그아웃"
+
+#: includes/saved/class-view.php:402
+msgid "Set or change your password"
+msgstr "비밀번호 설정 또는 변경"
+
+#: includes/saved/class-view.php:417
+msgid "Yes, delete my account and my saved list for good."
+msgstr "네, 계정과 저장한 목록을 완전히 삭제합니다."
+
+#: includes/saved/class-view.php:419
+msgid "Delete my account now"
+msgstr "지금 계정 삭제"
+
+#: includes/saved/class-view.php:419
+msgid "Delete my account"
+msgstr "계정 삭제"
+
+#: includes/saved/class-view.php:424
+msgid "Your account"
+msgstr "내 계정"
+
+#. translators: 1: display name, 2: email address.
+#: includes/saved/class-view.php:428
+msgid "Signed in as %1$s (%2$s). Your saved list is kept on this account."
+msgstr "%1$s(%2$s)(으)로 로그인됨. 저장한 목록은 이 계정에 보관됩니다."
+
+#: includes/saved/class-view.php:458
+msgid "Saved and account"
+msgstr "저장 및 계정"
+
+#: includes/saved/class-view.php:481
+msgid "Close"
+msgstr "닫기"
+
+#: includes/saved/class-view.php:483
+msgid "Not now"
+msgstr "나중에"
+
+#: includes/site/class-blocks.php:161
+msgid "What"
+msgstr "무엇을"
+
+#: includes/site/class-blocks.php:164
+msgid "Name, dish, or “cheap Korean in Tumon”"
+msgstr "식당 이름, 요리 또는 \"cheap Korean in Tumon\"(영어)"
+
+#: includes/site/class-blocks.php:165
+msgid "Search"
+msgstr "검색"
+
+#: includes/site/class-blocks.php:169
+msgid "Where"
+msgstr "어디서"
+
+#: includes/site/class-blocks.php:171 includes/site/class-picker.php:261
+msgid "Anywhere on Guam"
+msgstr "괌 전체"
+
+#. translators: %s: number of restaurants.
+#: includes/site/class-blocks.php:267 includes/site/class-directory-view.php:155
+msgid "%s restaurant"
+msgid_plural "%s restaurants"
+msgstr[0] "식당 %s곳"
+
+#: includes/site/class-blocks.php:328
+msgid "See all"
+msgstr "모두 보기"
+
+#. translators: %d: number of days.
+#: includes/site/class-blocks.php:368
+msgid "No new restaurants recorded in the last %d day."
+msgid_plural "No new restaurants recorded in the last %d days."
+msgstr[0] "최근 %d일 동안 기록된 새 식당이 없습니다."
+
+#. translators: %d: number of days.
+#: includes/site/class-blocks.php:370
+msgid "No reopenings recorded in the last %d day."
+msgid_plural "No reopenings recorded in the last %d days."
+msgstr[0] "최근 %d일 동안 기록된 영업 재개가 없습니다."
+
+#. translators: %d: number of days.
+#: includes/site/class-blocks.php:372
+msgid "No closures recorded in the last %d day."
+msgid_plural "No closures recorded in the last %d days."
+msgstr[0] "최근 %d일 동안 기록된 폐업이 없습니다."
+
+#: includes/site/class-blocks.php:432
+msgid "Award results have not been added yet. When they are, winners appear here with a link to where each result was published."
+msgstr "수상 결과가 아직 추가되지 않았습니다. 추가되면 각 결과가 발표된 곳의 링크와 함께 수상 식당이 여기에 표시됩니다."
+
+#: includes/site/class-blocks.php:506
+msgid "Call"
+msgstr "전화"
+
+#. translators: %s: restaurant name.
+#: includes/site/class-blocks.php:510 includes/site/class-blocks.php:602
+msgid "Directions"
+msgstr "길찾기"
+
+#: includes/site/class-blocks.php:514 includes/site/class-blocks.php:588 assets/ratings/ratings.js:161
+msgid "Website"
+msgstr "웹사이트"
+
+#: includes/site/class-blocks.php:527
+msgid "Share"
+msgstr "공유"
+
+#: includes/site/class-blocks.php:540
+msgid "Restaurant actions"
+msgstr "식당 메뉴"
+
+#: includes/site/class-blocks.php:591
+msgid "Facebook"
+msgstr "Facebook"
+
+#: includes/site/class-blocks.php:592
+msgid "Instagram"
+msgstr "Instagram"
+
+#. translators: %s: restaurant name.
+#: includes/site/class-blocks.php:602
+msgid "Get directions in Google Maps"
+msgstr "Google 지도에서 길찾기"
+
+#: includes/site/class-blocks.php:635
+msgid "Opening hours are not listed yet. Please check with the restaurant."
+msgstr "영업시간이 아직 등록되지 않았습니다. 식당에 확인해 주세요."
+
+#: includes/site/class-blocks.php:648
+msgid "Opening hours, Guam time"
+msgstr "영업시간(괌 시간)"
+
+#. translators: %s: restaurant name.
+#: includes/site/class-blocks.php:672
+msgid "Map showing %s"
+msgstr "%s 지도"
+
+#: includes/site/class-blocks.php:691
+msgid "The map needs JavaScript. Use the directions link above instead."
+msgstr "지도를 보려면 JavaScript가 필요합니다. 위의 길찾기 링크를 이용해 주세요."
+
+#: includes/site/class-blocks.php:719
+msgid "History"
+msgstr "이력"
+
+#: includes/site/class-blocks.php:738
+msgid "Own this restaurant? Claim this listing"
+msgstr "이 식당의 소유자이신가요? 등록 정보 관리 신청"
+
+#: includes/site/class-blocks.php:740 includes/site/class-pages.php:121
+msgid "Contact the owner"
+msgstr "소유자에게 연락"
+
+#: includes/site/class-blocks.php:741
+msgid "Advertise on this page"
+msgstr "이 페이지에 광고하기"
+
+#: includes/site/class-blocks.php:757
+msgid "About this listing"
+msgstr "이 등록 정보에 관하여"
+
+#. translators: %s: restaurant name, linked.
+#: includes/site/class-blocks.php:778
+msgid "Listing: %s"
+msgstr "등록: %s"
+
+#: includes/site/class-blocks.php:801
+msgid "Loading the map…"
+msgstr "지도를 불러오는 중…"
+
+#: includes/site/class-blocks.php:802
+msgid "Map of restaurants"
+msgstr "식당 지도"
+
+#: includes/site/class-blocks.php:803
+msgid "The map needs JavaScript. The list view shows the same restaurants."
+msgstr "지도를 보려면 JavaScript가 필요합니다. 목록 보기에서도 같은 식당을 볼 수 있습니다."
+
+#: includes/site/class-blocks.php:805
+msgid "Show these restaurants as a list"
+msgstr "이 식당들을 목록으로 보기"
+
+#. translators: 1: "© OpenStreetMap contributors" link, 2: licence link.
+#: includes/site/class-blocks.php:820
+msgid "Restaurant details include data %1$s, available under the %2$s."
+msgstr "식당 정보에는 %1$s의 데이터가 포함되어 있으며 %2$s에 따라 이용할 수 있습니다."
+
+#: includes/site/class-blocks.php:821
+msgid "© OpenStreetMap contributors"
+msgstr "© OpenStreetMap contributors"
+
+#: includes/site/class-blocks.php:822
+msgid "Open Database License"
+msgstr "Open Database License"
+
+#. translators: 1: OpenFreeMap link, 2: OpenMapTiles link.
+#: includes/site/class-blocks.php:827
+msgid "Maps: %1$s, %2$s, with OpenStreetMap data."
+msgstr "지도: %1$s, %2$s, OpenStreetMap 데이터 사용."
+
+#. translators: %s: Census link.
+#: includes/site/class-blocks.php:834
+msgid "Village boundaries: %s."
+msgstr "마을 경계: %s."
+
+#: includes/site/class-blocks.php:835
+msgid "U.S. Census Bureau TIGER/Line"
+msgstr "U.S. Census Bureau TIGER/Line"
+
+#. translators: %s: Foursquare Open Source Places link.
+#: includes/site/class-blocks.php:840
+msgid "Some business details: %s, © Foursquare Labs, Inc., Apache License 2.0."
+msgstr "일부 업체 정보: %s, © Foursquare Labs, Inc., Apache License 2.0."
+
+#: includes/site/class-blocks.php:844
+msgid "Ratings from other sites are shown as each site provides them, with its own credit."
+msgstr "다른 사이트의 평점은 각 사이트가 제공하는 그대로, 해당 사이트의 출처 표시와 함께 보여 드립니다."
+
+#: includes/site/class-blocks.php:869 includes/site/class-pages.php:127
+msgid "Terms of use"
+msgstr "이용약관"
+
+#: includes/site/class-blocks.php:871
+msgid "Data sources"
+msgstr "데이터 출처"
+
+#: includes/site/class-blocks.php:873 includes/site/class-pages.php:140
+msgid "Advertise with us"
+msgstr "광고 문의"
+
+#: includes/site/class-blocks.php:900
+msgid "Color theme"
+msgstr "색상 테마"
+
+#: includes/site/class-directory-view.php:119
+msgid "Show results as"
+msgstr "결과 보기 방식"
+
+#: includes/site/class-directory-view.php:122
+msgid "Map of these results"
+msgstr "이 결과의 지도"
+
+#: includes/site/class-directory-view.php:140
+msgid "No restaurants match these filters."
+msgstr "이 조건에 맞는 식당이 없습니다."
+
+#. translators: 1: first result number, 2: last result number, 3: total.
+#: includes/site/class-directory-view.php:147
+msgid "Showing %1$s–%2$s of %3$s restaurant"
+msgid_plural "Showing %1$s–%2$s of %3$s restaurants"
+msgstr[0] "%3$s곳 중 %1$s~%2$s곳 표시"
+
+#: includes/site/class-directory-view.php:172
+msgid "Open now uses Guam time and lists only restaurants whose hours we have."
+msgstr "\"영업 중\"은 괌 시간 기준이며, 영업시간을 알고 있는 식당만 표시합니다."
+
+#: includes/site/class-directory-view.php:175
+msgid "Open late means open at 10 pm tonight, Guam time, and lists only restaurants whose hours we have."
+msgstr "\"늦게까지 영업\"은 오늘 밤 10시(괌 시간)에 영업 중이라는 뜻이며, 영업시간을 알고 있는 식당만 표시합니다."
+
+#: includes/site/class-directory-view.php:180
+msgid "Clear all filters"
+msgstr "모든 필터 지우기"
+
+#: includes/site/class-directory-view.php:207
+msgid "(remove)"
+msgstr "(삭제)"
+
+#. translators: %s: the words the visitor typed, for example "Tumon".
+#: includes/site/class-directory-view.php:226
+msgid "(%s)"
+msgstr "(%s)"
+
+#: includes/site/class-directory-view.php:234 includes/site/class-directory-view.php:339 includes/site/class-picker.php:308
+msgid "Open now"
+msgstr "영업 중"
+
+#: includes/site/class-directory-view.php:235 includes/site/class-directory-view.php:340
+msgid "Open late"
+msgstr "늦게까지 영업"
+
+#: includes/site/class-directory-view.php:236 includes/site/class-directory-view.php:341
+msgid "Award winners"
+msgstr "수상 식당"
+
+#. translators: %s: keywords searched for.
+#: includes/site/class-directory-view.php:245
+msgid "Words: “%s”"
+msgstr "검색어: \"%s\""
+
+#. translators: %s: what the visitor typed.
+#: includes/site/class-directory-view.php:255
+msgid "We read “%s” as:"
+msgstr "\"%s\"을(를) 다음과 같이 해석했습니다:"
+
+#: includes/site/class-directory-view.php:259
+msgid "Search the exact words instead"
+msgstr "입력한 단어 그대로 검색"
+
+#: includes/site/class-directory-view.php:262
+msgid "Filters:"
+msgstr "필터:"
+
+#: includes/site/class-directory-view.php:266
+msgid "Filters in use"
+msgstr "사용 중인 필터"
+
+#: includes/site/class-directory-view.php:271
+msgid "Clear all"
+msgstr "모두 지우기"
+
+#: includes/site/class-directory-view.php:290
+msgid "Previous"
+msgstr "이전"
+
+#. translators: %s: page number.
+#: includes/site/class-directory-view.php:302
+msgid "Page %s"
+msgstr "%s페이지"
+
+#: includes/site/class-directory-view.php:306
+msgid "Next"
+msgstr "다음"
+
+#: includes/site/class-directory-view.php:308
+msgid "Results pages"
+msgstr "결과 페이지"
+
+#. translators: 1: price level, 2: highest level.
+#: includes/site/class-directory-view.php:350 includes/site/class-picker.php:272 includes/site/class-restaurant-view.php:133
+msgid "Price level %1$d of %2$d"
+msgstr "가격대 %1$d/%2$d"
+
+#: includes/site/class-directory-view.php:374
+msgid "Name (A to Z)"
+msgstr "이름(A~Z)"
+
+#: includes/site/class-directory-view.php:375 blocks/site-editor/editor.js:99
+msgid "Newest listings"
+msgstr "최신 등록순"
+
+#: includes/site/class-directory-view.php:376
+msgid "Price (low to high)"
+msgstr "가격(낮은 순)"
+
+#: includes/site/class-directory-view.php:377
+msgid "Price (high to low)"
+msgstr "가격(높은 순)"
+
+#: includes/site/class-directory-view.php:380
+msgid "Best match"
+msgstr "관련도순"
+
+#: includes/site/class-directory-view.php:389
+msgid "Sort by"
+msgstr "정렬"
+
+#: includes/site/class-directory-view.php:406
+msgid "Filter restaurants"
+msgstr "식당 필터"
+
+#: includes/site/class-directory-view.php:407
+msgid "Search by name, dish or what you feel like"
+msgstr "식당 이름, 요리, 먹고 싶은 것으로 검색(영어)"
+
+#: includes/site/class-directory-view.php:414
+msgid "More filters"
+msgstr "필터 더 보기"
+
+#: includes/site/class-directory-view.php:417
+msgid "Quick filters"
+msgstr "빠른 필터"
+
+#: includes/site/class-directory-view.php:420
+msgid "Show results"
+msgstr "결과 보기"
+
+#: includes/site/class-directory-view.php:422
+msgid "Clear filters"
+msgstr "필터 지우기"
+
+#: includes/site/class-directory-view.php:423
+msgid "Try “cheap Korean open late in Tumon”"
+msgstr "예: \"cheap Korean open late in Tumon\"(영어)"
+
+#. translators: %d: number of selected options.
+#: includes/site/class-directory-view.php:477 includes/site/class-picker.php:300 assets/site/directory.js:109 assets/site/picker.js:53
+msgid " (%d selected)"
+msgid_plural " (%d selected)"
+msgstr[0] " (%d개 선택)"
+
+#: includes/site/class-history.php:35 includes/site/class-pages.php:99
+msgid "Opened"
+msgstr "개업"
+
+#: includes/site/class-history.php:58
+msgid "First listed here"
+msgstr "이 사이트 첫 등록"
+
+#. translators: 1: number, 2: cuisine.
+#: includes/site/class-intro.php:53
+msgid "%1$s %2$s restaurant on Guam."
+msgid_plural "%1$s %2$s restaurants on Guam."
+msgstr[0] "괌의 %2$s 식당 %1$s곳."
+
+#. translators: %s: list of villages.
+#: includes/site/class-intro.php:55
+msgid "Most are in %s."
+msgstr "대부분 %s에 있습니다."
+
+#. translators: 1: number, 2: price level.
+#: includes/site/class-intro.php:58
+msgid "%1$s restaurant at price level %2$s."
+msgid_plural "%1$s restaurants at price level %2$s."
+msgstr[0] "가격대 %2$s 식당 %1$s곳."
+
+#. translators: 1: number, 2: village or mall.
+#: includes/site/class-intro.php:62
+msgid "%1$s restaurant in %2$s."
+msgid_plural "%1$s restaurants in %2$s."
+msgstr[0] "%2$s의 식당 %1$s곳."
+
+#. translators: %s: list of cuisines.
+#: includes/site/class-intro.php:64
+msgid "The most common cuisines here are %s."
+msgstr "이곳에서 많은 요리는 %s입니다."
+
+#. translators: 1: mall, 2: village.
+#: includes/site/class-intro.php:81
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#: includes/site/class-pages.php:76
+msgid "Map of restaurants on Guam. Filter by village, mall, cuisine, price, awards and opening hours."
+msgstr "괌 식당 지도. 마을, 몰, 요리, 가격, 수상, 영업시간으로 찾아보세요."
+
+#: includes/site/class-pages.php:80
+msgid "What should I eat?"
+msgstr "뭐 먹지?"
+
+#: includes/site/class-pages.php:82
+msgid "Can't decide? Choose a village, food type, price or anything else that matters, and we pick a restaurant at random from the places that match. Every match has the same chance. Ads appear only in the box marked Sponsored, above the pick."
+msgstr "고르기 어려우신가요? 마을, 음식 종류, 가격 등 원하는 조건을 고르면 조건에 맞는 곳 중에서 무작위로 식당을 골라 드립니다. 모든 곳이 뽑힐 확률은 같습니다. 광고는 추천 위의 \"스폰서\" 표시 상자에만 나타납니다."
+
+#: includes/site/class-pages.php:84
+msgid "Can't decide where to eat on Guam? Pick a village, food type and price, and get a random restaurant that matches."
+msgstr "괌에서 어디서 먹을지 고민되시나요? 마을, 음식 종류, 가격을 고르면 조건에 맞는 식당을 무작위로 추천해 드립니다."
+
+#: includes/site/class-pages.php:90
+msgid "Restaurants you saved with the heart. Without an account they stay in this browser; sign in to keep them on every device. To delete your account and list, sign in and use Delete my account below."
+msgstr "하트로 저장한 식당입니다. 계정이 없으면 이 브라우저에 보관되며, 로그인하면 모든 기기에서 볼 수 있습니다. 계정과 목록을 삭제하려면 로그인한 뒤 아래의 \"계정 삭제\"를 이용하세요."
+
+#: includes/site/class-pages.php:92
+msgid "Your saved restaurants on Guam, with a map and a link to share them."
+msgstr "저장한 괌 식당 목록. 지도와 공유 링크 포함."
+
+#: includes/site/class-pages.php:96
+msgid "Recently opened and closed"
+msgstr "최근 개업 및 폐업"
+
+#: includes/site/class-pages.php:98
+msgid "Restaurants that opened, reopened or closed recently, as recorded in this directory."
+msgstr "이 디렉터리에 기록된 최근 개업, 영업 재개, 폐업 식당."
+
+#: includes/site/class-pages.php:108
+msgid "Claim this listing"
+msgstr "이 등록 정보 관리 신청"
+
+#: includes/site/class-pages.php:117
+msgid "Report a wrong fact on a restaurant listing, or ask as the owner to change or remove it. We reply within 7 to 14 days."
+msgstr "식당 등록 정보의 잘못을 신고하거나, 소유자로서 변경 또는 삭제를 요청할 수 있습니다. 7~14일 이내에 답변드립니다."
+
+#: includes/site/class-pages.php:123
+msgid "Send a message to the owner of this listing. We pass it on and do not share your email address."
+msgstr "이 등록 정보의 소유자에게 메시지를 보냅니다. 저희가 전달하며 이메일 주소는 공유하지 않습니다."
+
+#: includes/site/class-pages.php:133
+msgid "Media kit"
+msgstr "미디어 키트"
+
+#: includes/site/class-pages.php:136
+msgid "Audience, advertising products, rates and ad specifications for restaurants and businesses on Guam."
+msgstr "괌 식당과 업체를 위한 이용자층, 광고 상품, 요금 및 광고 사양."
+
+#: includes/site/class-pages.php:143
+msgid "Reach people choosing where to eat on Guam. Ask about premium profiles and sponsored listings."
+msgstr "괌에서 식당을 고르는 사람들에게 다가가세요. 프리미엄 프로필과 스폰서 등록에 대해 문의해 주세요."
+
+#: includes/site/class-pages.php:172
+msgid "Own or manage this restaurant? Claim the listing to keep its hours, menu links, photos and specials up to date, see how many people view it and click through, and reply to reviews."
+msgstr "이 식당의 소유자나 관리자이신가요? 등록 정보 관리를 신청하면 영업시간, 메뉴 링크, 사진, 특별 메뉴를 최신으로 유지하고, 조회 수와 클릭 수를 확인하고, 리뷰에 답글을 달 수 있습니다."
+
+#: includes/site/class-pages.php:173
+msgid "We send a code to an email address at the restaurant's own website domain to confirm you work there, then a person reviews the claim. Claiming is free. Owners cannot change ratings, awards or reviews."
+msgstr "식당 웹사이트 도메인의 이메일 주소로 코드를 보내 근무 여부를 확인한 뒤, 담당자가 신청을 검토합니다. 신청은 무료입니다. 소유자는 평점, 수상 내역, 리뷰를 변경할 수 없습니다."
+
+#: includes/site/class-picker.php:262
+msgid "Any, in a mall or not"
+msgstr "상관없음(몰 안팎 모두)"
+
+#: includes/site/class-picker.php:278
+msgid "Price (any you tick)"
+msgstr "가격(선택한 항목 중 아무거나)"
+
+#: includes/site/class-picker.php:298
+msgid "Food type (any you tick)"
+msgstr "음식 종류(선택한 항목 중 아무거나)"
+
+#: includes/site/class-picker.php:307
+msgid "More choices"
+msgstr "더 많은 선택"
+
+#: includes/site/class-picker.php:309
+msgid "Award winners only"
+msgstr "수상 식당만"
+
+#: includes/site/class-picker.php:315
+msgid "Choices for a random pick"
+msgstr "무작위 추천 조건"
+
+#: includes/site/class-picker.php:318
+msgid "Pick a place for me"
+msgstr "식당 골라 줘"
+
+#: includes/site/class-picker.php:319 includes/site/class-picker.php:337
+msgid "Clear choices"
+msgstr "선택 지우기"
+
+#: includes/site/class-picker.php:335
+msgid "Nothing matches all of these choices. Try fewer of them."
+msgstr "모든 조건에 맞는 곳이 없습니다. 조건을 줄여 보세요."
+
+#: includes/site/class-picker.php:343
+msgid "Only one place matches your choices:"
+msgstr "조건에 맞는 곳은 한 곳뿐입니다:"
+
+#. translators: %s: number of matching restaurants.
+#: includes/site/class-picker.php:346
+msgid "Picked at random from %s place that matches:"
+msgid_plural "Picked at random from %s places that match:"
+msgstr[0] "조건에 맞는 %s곳 중에서 무작위로 골랐습니다:"
+
+#: includes/site/class-picker.php:355
+msgid "Pick again"
+msgstr "다시 고르기"
+
+#: includes/site/class-picker.php:358
+msgid "That was the last one you had not seen. Picking again starts over."
+msgstr "아직 보지 않은 곳은 이곳이 마지막이었습니다. 다시 고르면 처음부터 시작합니다."
+
+#: includes/site/class-picker.php:361
+msgid "Open now uses Guam time and counts only restaurants whose hours we have."
+msgstr "\"영업 중\"은 괌 시간 기준이며, 영업시간을 알고 있는 식당만 포함합니다."
+
+#. translators: %s: number of matching restaurants.
+#: includes/site/class-picker.php:373
+msgid "See the %s match"
+msgid_plural "See all %s matches"
+msgstr[0] "조건에 맞는 %s곳 모두 보기"
+
+#: includes/site/class-picker.php:399
+msgid "Your restaurant could be here, above every pick"
+msgstr "모든 추천 위에 귀하의 식당을 소개할 수 있습니다"
+
+#: includes/site/class-picker.php:400
+msgid "People use this page when they are deciding where to eat right now. Put your restaurant in front of them with a sponsored spot, shown by village or food type."
+msgstr "이 페이지는 지금 어디서 먹을지 정할 때 이용됩니다. 마을이나 음식 종류별로 표시되는 스폰서 자리로 식당을 알리세요."
+
+#: includes/site/class-related-links.php:95
+msgid "Related pages"
+msgstr "관련 페이지"
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:122
+msgid "Malls in %s"
+msgstr "%s의 몰"
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:124
+msgid "Popular cuisines in %s"
+msgstr "%s의 인기 요리"
+
+#. translators: %s: mall.
+#: includes/site/class-related-links.php:130
+msgid "Cuisines at %s"
+msgstr "%s의 요리"
+
+#. translators: %s: cuisine.
+#: includes/site/class-related-links.php:134
+msgid "Where to find %s food"
+msgstr "%s 맛집"
+
+#: includes/site/class-related-links.php:135
+msgid "Related cuisines"
+msgstr "관련 요리"
+
+#. translators: 1: cuisine, 2: village.
+#: includes/site/class-related-links.php:160
+msgid "More %1$s restaurants in %2$s"
+msgstr "%2$s의 다른 %1$s 식당"
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:162
+msgid "More restaurants in %s"
+msgstr "%s의 다른 식당"
+
+#: includes/site/class-related-links.php:177
+msgid "Browse"
+msgstr "둘러보기"
+
+#: includes/site/class-restaurant-view.php:199
+msgid "Temporarily closed"
+msgstr "임시 휴업"
+
+#. translators: %s: date, for example "March 2024".
+#: includes/site/class-restaurant-view.php:203
+msgid "Closed in %s"
+msgstr "%s 폐업"
+
+#: includes/site/class-restaurant-view.php:260
+msgid "Monday"
+msgstr "월요일"
+
+#: includes/site/class-restaurant-view.php:261
+msgid "Tuesday"
+msgstr "화요일"
+
+#: includes/site/class-restaurant-view.php:262
+msgid "Wednesday"
+msgstr "수요일"
+
+#: includes/site/class-restaurant-view.php:263
+msgid "Thursday"
+msgstr "목요일"
+
+#: includes/site/class-restaurant-view.php:264
+msgid "Friday"
+msgstr "금요일"
+
+#: includes/site/class-restaurant-view.php:265
+msgid "Saturday"
+msgstr "토요일"
+
+#: includes/site/class-restaurant-view.php:266
+msgid "Sunday"
+msgstr "일요일"
+
+#. translators: %d: year.
+#: includes/site/class-restaurant-view.php:354
+msgid "Award winner %d"
+msgstr "%d년 수상"
+
+#. translators: %s: village.
+#: includes/site/class-seo.php:71
+msgid "Restaurants in %s, Guam"
+msgstr "괌 %s의 식당"
+
+#. translators: 1: mall, 2: village.
+#: includes/site/class-seo.php:76
+msgid "Restaurants at %1$s, %2$s, Guam"
+msgstr "괌 %2$s, %1$s의 식당"
+
+#. translators: %s: mall.
+#: includes/site/class-seo.php:78
+msgid "Restaurants at %s, Guam"
+msgstr "괌 %s의 식당"
+
+#. translators: %s: cuisine.
+#: includes/site/class-seo.php:81
+msgid "%s Restaurants on Guam"
+msgstr "괌의 %s 식당"
+
+#. translators: %s: price level, for example $$.
+#: includes/site/class-seo.php:84
+msgid "%s Restaurants on Guam by Price"
+msgstr "가격대별 괌의 %s 식당"
+
+#: includes/site/class-seo.php:102
+msgid "See hours, maps, awards and reviews for each."
+msgstr "각 식당의 영업시간, 지도, 수상 내역, 리뷰를 확인하세요."
+
+#. translators: %d: page number.
+#: includes/site/class-seo.php:147
+msgid "Page %d"
+msgstr "%d페이지"
+
+#. translators: 1: restaurant name, 2: cuisine and place.
+#: includes/site/class-seo.php:291
+msgid "%1$s: %2$s, Guam. Hours, map, awards and reviews."
+msgstr "%1$s: %2$s, 괌. 영업시간, 지도, 수상 내역, 리뷰."
+
+#. translators: 1: restaurant name, 2: cuisine and place.
+#: includes/site/class-seo.php:291
+msgid "%1$s, Guam. Hours, map, awards and reviews."
+msgstr "%1$s, 괌. 영업시간, 지도, 수상 내역, 리뷰."
+
+#: includes/site/class-seo.php:299
+msgid "Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews."
+msgstr "마을, 몰, 요리, 가격으로 괌 전역의 식당을 찾아보세요. 영업시간, 수상 내역, 리뷰 포함."
+
+#: includes/site/class-seo.php:302
+msgid "Restaurant award results recorded on this site, each with a link to where it was published."
+msgstr "이 사이트에 기록된 식당 수상 결과. 각 결과의 발표처 링크 포함."
+
+#: includes/site/class-seo.php:306
+msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
+msgstr "괌에서 식당 찾기: 이름이나 요리로 검색하거나 마을, 몰, 요리별로 둘러보세요."
+
+#: assets/ads/rotation.js:47
+msgid "Next sponsor"
+msgstr "다음 스폰서"
+
+#: assets/ads/rotation.js:61
+msgid "Sponsor %1$d of %2$d"
+msgstr "스폰서 %1$d/%2$d"
+
+#: assets/ads/rotation.js:70
+msgid "Play"
+msgstr "재생"
+
+#: assets/ads/rotation.js:70
+msgid "Pause"
+msgstr "일시 정지"
+
+#: assets/advertising/inquiry.js:57 assets/corrections/corrections.js:60 assets/corrections/corrections.js:245
+msgid "(required)"
+msgstr "(필수)"
+
+#: assets/advertising/inquiry.js:216 assets/corrections/corrections.js:222 assets/corrections/corrections.js:261
+msgid "Your name"
+msgstr "이름"
+
+#: assets/advertising/inquiry.js:309 assets/corrections/corrections.js:375
+msgid "The form could not be loaded. Please reload the page."
+msgstr "양식을 불러오지 못했습니다. 페이지를 새로 고쳐 주세요."
+
+#: assets/corrections/corrections.js:130
+msgid "No restaurant with that name."
+msgstr "그 이름의 식당이 없습니다."
+
+#: assets/corrections/corrections.js:201
+msgid "What would you like to do?"
+msgstr "무엇을 하시겠어요?"
+
+#: assets/corrections/corrections.js:220 assets/corrections/corrections.js:258
+msgid "Choose one"
+msgstr "하나를 선택하세요"
+
+#: assets/corrections/corrections.js:225
+msgid "Send request"
+msgstr "요청 보내기"
+
+#: assets/corrections/corrections.js:227
+msgid "We use your email address only to reply to this request. Nothing you send here is published."
+msgstr "이메일 주소는 이 요청에 답변할 때만 사용합니다. 여기에서 보낸 내용은 공개되지 않습니다."
+
+#: assets/corrections/corrections.js:233
+msgid "How we handle corrections"
+msgstr "정정 처리 방법"
+
+#: assets/corrections/corrections.js:253
+msgid "Reason for removal"
+msgstr "삭제 사유"
+
+#: assets/corrections/corrections.js:254
+msgid "Choose a reason"
+msgstr "사유를 선택하세요"
+
+#: assets/corrections/corrections.js:255
+msgid "Tell us more"
+msgstr "자세히 알려 주세요"
+
+#: assets/corrections/corrections.js:257
+msgid "What needs changing?"
+msgstr "무엇을 바꿔야 하나요?"
+
+#: assets/corrections/corrections.js:259
+msgid "What should the listing say?"
+msgstr "등록 정보를 어떻게 바꿔야 하나요?"
+
+#: assets/corrections/corrections.js:259
+msgid "What is wrong, and what is correct?"
+msgstr "무엇이 잘못되었고, 무엇이 맞나요?"
+
+#. translators: %d: number of days.
+#: assets/corrections/corrections.js:265
+msgid "We reply within %d days."
+msgstr "%d일 이내에 답변드립니다."
+
+#: assets/corrections/corrections.js:270
+msgid "A closed restaurant is marked closed rather than removed. Removing a listing never adds any note to the site."
+msgstr "폐업한 식당은 삭제하지 않고 폐업으로 표시합니다. 등록을 삭제해도 사이트에 별도 안내가 남지 않습니다."
+
+#: assets/corrections/corrections.js:276
+msgid "Type at least two letters of the restaurant name and pick it from the list."
+msgstr "식당 이름을 두 글자 이상 입력하고 목록에서 선택해 주세요."
+
+#: assets/corrections/corrections.js:281
+msgid "Where can we confirm this?"
+msgstr "어디에서 확인할 수 있나요?"
+
+#: assets/corrections/corrections.js:281
+msgid "For example, a link to the restaurant's website or social media page, or \"sign on the door\"."
+msgstr "예: 식당 웹사이트나 소셜 미디어 페이지 링크, 또는 \"문에 붙은 안내문\"."
+
+#: assets/corrections/corrections.js:282
+msgid "Your connection to the restaurant"
+msgstr "식당과의 관계"
+
+#: assets/corrections/corrections.js:354
+msgid "Your request could not be sent. Please check your connection and try again."
+msgstr "요청을 보내지 못했습니다. 연결을 확인한 뒤 다시 시도해 주세요."
+
+#: assets/ratings/ratings.js:74 assets/reviews/reviews.js:61
+msgid "Rated %1$s out of %2$s"
+msgstr "%2$s점 만점에 %1$s점"
+
+#: assets/ratings/ratings.js:85 assets/ratings/ratings.js:129
+msgid "%s star rating"
+msgstr "별점 %s"
+
+#: assets/ratings/ratings.js:89
+msgid "%s/10"
+msgstr "%s/10"
+
+#: assets/ratings/ratings.js:98
+msgid "%s ratings"
+msgstr "평가 %s개"
+
+#: assets/ratings/ratings.js:98
+msgid "%s reviews"
+msgstr "리뷰 %s개"
+
+#: assets/ratings/ratings.js:122
+msgid "%s user"
+msgstr "%s 사용자"
+
+#: assets/ratings/ratings.js:137
+msgid "Read on %s"
+msgstr "%s에서 읽기"
+
+#: assets/ratings/ratings.js:139
+msgid "Report review"
+msgstr "리뷰 신고"
+
+#: assets/ratings/ratings.js:167
+msgid "Hours"
+msgstr "영업시간"
+
+#: assets/ratings/ratings.js:177
+msgid "Contact and hours from %s"
+msgstr "연락처 및 영업시간 출처: %s"
+
+#: assets/reviews/reviews.js:95
+msgid "Monthly average visitor rating, 1 to 5 stars"
+msgstr "월별 방문자 평균 평점(별 1~5개)"
+
+#: assets/reviews/reviews.js:126
+msgid "%1$s: %2$s average from %3$s review"
+msgid_plural "%1$s: %2$s average from %3$s reviews"
+msgstr[0] "%1$s: 평균 %2$s(리뷰 %3$s개)"
+
+#: assets/reviews/reviews.js:173
+msgid "Show as a table"
+msgstr "표로 보기"
+
+#: assets/reviews/reviews.js:177
+msgid "Average rating"
+msgstr "평균 평점"
+
+#: assets/reviews/reviews.js:178
+msgid "Reviews"
+msgstr "리뷰"
+
+#: assets/reviews/reviews.js:188
+msgid "Visitor rating by month (average of approved reviews written that month)"
+msgstr "월별 방문자 평점(해당 월에 작성된 승인 리뷰의 평균)"
+
+#: assets/reviews/reviews.js:206
+msgid "The reviewer says they are connected to this restaurant: %s"
+msgstr "작성자가 이 식당과 관련이 있다고 밝혔습니다: %s"
+
+#: assets/reviews/reviews.js:210
+msgid "Dishes tried: %s"
+msgstr "먹어 본 요리: %s"
+
+#: assets/reviews/reviews.js:229
+msgid "Our review rules"
+msgstr "리뷰 규칙"
+
+#: assets/reviews/reviews.js:230
+msgid "We publish positive and critical reviews alike. An administrator checks each review first and rejects it only if its content breaks one of these rules, which apply the same way whatever the rating. Owners can reply but cannot remove reviews, we never remove a review because a restaurant or advertiser asks, and we never pay for reviews."
+msgstr "긍정적인 리뷰와 비판적인 리뷰를 똑같이 게재합니다. 관리자가 각 리뷰를 먼저 확인하며, 내용이 이 규칙에 어긋날 때만 게재하지 않습니다. 규칙은 평점과 관계없이 똑같이 적용됩니다. 소유자는 답글을 달 수 있지만 리뷰를 삭제할 수 없고, 식당이나 광고주가 요청해도 리뷰를 삭제하지 않으며, 리뷰에 대가를 지불하지 않습니다."
+
+#: assets/reviews/reviews.js:234
+msgid "Read our editorial policy"
+msgstr "편집 정책 읽기"
+
+#: assets/reviews/reviews.js:254
+msgid "Your rating"
+msgstr "내 평점"
+
+#: assets/reviews/reviews.js:258
+msgid "%s star"
+msgid_plural "%s stars"
+msgstr[0] "별 %s개"
+
+#: assets/reviews/reviews.js:269
+msgid "Email me a link to confirm my account email and show the \"Verified email\" badge. It shows only that I confirmed an email address."
+msgstr "계정 이메일을 확인하는 링크를 받고 \"이메일 확인됨\" 배지를 표시합니다. 이 배지는 이메일 주소를 확인했다는 사실만 나타냅니다."
+
+#: assets/reviews/reviews.js:271
+msgid "Email address"
+msgstr "이메일 주소"
+
+#: assets/reviews/reviews.js:271
+msgid "We email you a link to confirm your review. We do not show or keep your address. Or log in to skip this step."
+msgstr "리뷰를 확인하는 링크를 이메일로 보내 드립니다. 주소는 표시하거나 보관하지 않습니다. 로그인하면 이 단계를 건너뛸 수 있습니다."
+
+#: assets/reviews/reviews.js:274
+msgid "How are you connected?"
+msgstr "어떤 관계이신가요?"
+
+#: assets/reviews/reviews.js:274
+msgid "For example: I work there, or the owner is my cousin. This is shown with your review."
+msgstr "예: 그곳에서 일함, 소유자가 사촌임. 이 내용은 리뷰와 함께 표시됩니다."
+
+#: assets/reviews/reviews.js:286
+msgid "Send review"
+msgstr "리뷰 보내기"
+
+#: assets/reviews/reviews.js:290
+msgid "Your review"
+msgstr "리뷰 내용"
+
+#: assets/reviews/reviews.js:290
+msgid "At least 20 characters. Shown as you write it."
+msgstr "20자 이상. 작성한 그대로 표시됩니다."
+
+#: assets/reviews/reviews.js:291
+msgid "Dishes you tried (optional)"
+msgstr "먹어 본 요리(선택)"
+
+#: assets/reviews/reviews.js:291
+msgid "Up to 3, separated by commas, for example: Chicken kelaguen, Red rice. They help others find this restaurant's popular dishes."
+msgstr "최대 3개, 쉼표로 구분. 예: Chicken kelaguen, Red rice. 이 식당의 인기 요리를 찾는 데 도움이 됩니다."
+
+#: assets/reviews/reviews.js:292
+msgid "Display name"
+msgstr "표시 이름"
+
+#: assets/reviews/reviews.js:292
+msgid "Shown with your review. Please do not use your full name."
+msgstr "리뷰와 함께 표시됩니다. 실명 전체는 사용하지 마세요."
+
+#: assets/reviews/reviews.js:295
+msgid "I own, work for, or am related to someone at this restaurant, or I work for a competitor."
+msgstr "이 식당의 소유자, 직원이거나 그 친척이거나, 경쟁 업체에서 일합니다."
+
+#: assets/reviews/reviews.js:307
+msgid "Sending…"
+msgstr "보내는 중…"
+
+#: assets/reviews/reviews.js:375
+msgid "Thanks, your email is confirmed. Your review will appear after an administrator checks it against our rules."
+msgstr "감사합니다. 이메일이 확인되었습니다. 리뷰는 관리자가 규칙에 따라 확인한 뒤 표시됩니다."
+
+#: assets/reviews/reviews.js:376
+msgid "That confirmation link has expired or was already used. Please send your review again."
+msgstr "이 확인 링크는 만료되었거나 이미 사용되었습니다. 리뷰를 다시 보내 주세요."
+
+#: assets/reviews/reviews.js:387
+msgid "%s out of 5"
+msgstr "5점 만점에 %s점"
+
+#: assets/reviews/reviews.js:388
+msgid "Average of %s approved visitor review on this site. Reviews from other sites are not included."
+msgid_plural "Average of %s approved visitor reviews on this site. Reviews from other sites are not included."
+msgstr[0] "이 사이트의 승인된 방문자 리뷰 %s개의 평균입니다. 다른 사이트의 리뷰는 포함하지 않습니다."
+
+#: assets/reviews/reviews.js:391
+msgid "No visitor reviews yet."
+msgstr "아직 방문자 리뷰가 없습니다."
+
+#: assets/reviews/reviews.js:403
+msgid "Newest first. All approved reviews are shown, positive and critical."
+msgstr "최신순. 승인된 리뷰는 긍정적이든 비판적이든 모두 표시합니다."
+
+#: assets/reviews/reviews.js:414
+msgid "Show more reviews"
+msgstr "리뷰 더 보기"
+
+#: assets/reviews/reviews.js:435
+msgid "Reviews could not be loaded."
+msgstr "리뷰를 불러오지 못했습니다."
+
+#. translators: %s: closing time.
+#: assets/site/hours.js:66
+msgid "Open now, until %s"
+msgstr "영업 중, %s까지"
+
+#: assets/site/hours.js:69
+msgid "Closed now"
+msgstr "영업 종료"
+
+#: assets/site/hours.js:93
+msgid "(today)"
+msgstr "(오늘)"
+
+#: assets/site/map.js:56 assets/site/map.js:70 assets/site/map.js:243
+msgid "The map could not load right now."
+msgstr "지금은 지도를 불러올 수 없습니다."
+
+#: assets/site/map.js:111
+msgid "%d restaurant on the map."
+msgid_plural "%d restaurants on the map."
+msgstr[0] "지도에 식당 %d곳"
+
+#: assets/site/map.js:187
+msgid "The map could not load right now. The list view shows the same restaurants."
+msgstr "지금은 지도를 불러올 수 없습니다. 목록 보기에서도 같은 식당을 볼 수 있습니다."
+
+#: assets/site/map.js:192
+msgid "Updating the map…"
+msgstr "지도 업데이트 중…"
+
+#: assets/site/map.js:196
+msgid "The map could not be updated."
+msgstr "지도를 업데이트하지 못했습니다."
+
+#: assets/site/photos.js:61
+msgid "That photo is too large. Check the size limit under the Photo field."
+msgstr "사진이 너무 큽니다. 사진 항목 아래의 크기 제한을 확인해 주세요."
+
+#: assets/site/photos.js:73
+msgid "Uploading…"
+msgstr "업로드 중…"
+
+#: assets/site/photos.js:84
+msgid "That photo is too large for the server."
+msgstr "사진이 서버에서 허용하는 크기보다 큽니다."
+
+#: assets/site/photos.js:95
+msgid "Your photo could not be sent. Check your connection and try again."
+msgstr "사진을 보내지 못했습니다. 연결을 확인한 뒤 다시 시도해 주세요."
+
+#: assets/site/saved.js:174
+msgid "That did not save. Check your connection and try again."
+msgstr "저장하지 못했습니다. 연결을 확인한 뒤 다시 시도해 주세요."
+
+#: assets/site/saved.js:181
+msgid "This browser is not letting us save. Sign in to keep a list on your account."
+msgstr "이 브라우저에서는 저장할 수 없습니다. 로그인하면 목록을 계정에 보관할 수 있습니다."
+
+#: assets/site/saved.js:195
+msgid "Removed from your saved list."
+msgstr "저장 목록에서 삭제했습니다."
+
+#: assets/site/saved.js:200
+msgid "Saved to your list."
+msgstr "목록에 저장했습니다."
+
+#. translators: %d: number of restaurants.
+#: assets/site/saved.js:211
+msgid "%d restaurant added to your list."
+msgid_plural "%d restaurants added to your list."
+msgstr[0] "식당 %d곳을 목록에 추가했습니다."
+
+#: assets/site/saved.js:260
+msgid "Your saved restaurants could not load right now. Try again in a moment."
+msgstr "지금은 저장한 식당을 불러올 수 없습니다. 잠시 후 다시 시도해 주세요."
+
+#. translators: %d: number of restaurants.
+#: assets/site/saved.js:278
+msgid "We added %d place you saved in this browser to your account."
+msgid_plural "We added the %d places you saved in this browser to your account."
+msgstr[0] "이 브라우저에 저장한 %d곳을 계정에 추가했습니다."
+
+#: assets/site/saved.js:288
+msgid "Your account and saved list were deleted."
+msgstr "계정과 저장 목록을 삭제했습니다."
+
+#: assets/site/saved.js:355
+msgid "Your saved list could not load right now."
+msgstr "지금은 저장 목록을 불러올 수 없습니다."

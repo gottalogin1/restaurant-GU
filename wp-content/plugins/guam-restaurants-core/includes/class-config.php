@@ -51,14 +51,6 @@ final class Config {
 	public const FOURSQUARE_LOGO_URL  = 'GUAM_RESTAURANTS_FOURSQUARE_LOGO_URL';
 
 	/**
-	 * URL of Google's "powered by Google Translate" badge, downloaded by hand
-	 * from Google's attribution page. Google requires it next to machine
-	 * translations (docs/translation.md §4); until it is set, the notice on
-	 * translated pages shows the words instead.
-	 */
-	public const GOOGLE_TRANSLATE_BADGE_URL = 'GUAM_RESTAURANTS_GOOGLE_TRANSLATE_BADGE_URL';
-
-	/**
 	 * Who receives job alerts (missed jobs, many closures in one run).
 	 * Defaults to the site's administration email address.
 	 */

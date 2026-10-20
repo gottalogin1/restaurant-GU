@@ -9,6 +9,7 @@ namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Term_Meta;
+use GuamRestaurants\Core\Translation\Dictionary;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -88,7 +89,7 @@ final class Intro {
 	 *
 	 * @param \WP_Term $term     Term.
 	 * @param string   $taxonomy Other taxonomy.
-	 * @return string[] Names.
+	 * @return string[] Names (cuisines in the page's language).
 	 */
 	private static function top_terms( \WP_Term $term, string $taxonomy ): array {
 		global $wpdb;
@@ -107,6 +108,7 @@ final class Intro {
 				(int) $term->term_taxonomy_id
 			)
 		);
-		return array_map( 'strval', (array) $names );
+		$names = array_map( 'strval', (array) $names );
+		return Content_Types::TAX_CUISINE === $taxonomy ? array_map( array( Dictionary::class, 'text' ), $names ) : $names;
 	}
 }
