@@ -92,6 +92,10 @@ final class Ads {
 				'label'     => __( 'Homepage leaderboard (exclusive)', 'guam-restaurants-core' ),
 				'exclusive' => true,
 			),
+			'picker_sponsor'   => array(
+				'label'     => __( 'Pick for me sponsor (one above each pick)', 'guam-restaurants-core' ),
+				'exclusive' => true,
+			),
 		);
 	}
 
@@ -118,6 +122,7 @@ final class Ads {
 			'cuisine'    => __( 'Cuisine pages', 'guam-restaurants-core' ),
 			'directory'  => __( 'Restaurant directory', 'guam-restaurants-core' ),
 			'restaurant' => __( 'Restaurant pages', 'guam-restaurants-core' ),
+			'picker'     => __( 'Pick for me (random place picker)', 'guam-restaurants-core' ),
 			'other'      => __( 'Other pages', 'guam-restaurants-core' ),
 		);
 	}

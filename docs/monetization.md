@@ -48,6 +48,7 @@ restaurants are listed.
 | 9 | Sponsored feature | $200 | Per feature |
 | 10 | Hotel and tour operator ads | 1.5 × restaurant rates | As the product |
 | 11 | Affiliate links | Commission from partner | None |
+| 12 | Pick for me sponsor (one ad above each random pick) | $150/month (one village, mall or food type), $250/month (every pick) | Monthly |
 
 ### 1. Claimed basic listing (free)
 
@@ -177,6 +178,8 @@ restaurant price:
 | Category sponsor, top cuisine | $250/month | $375/month |
 | Banner | $20 CPM, $100 min | $30 CPM, $150 min |
 | Homepage leaderboard | $400/month | $600/month |
+| Pick for me sponsor, one village, mall or food type | $150/month | $225/month |
+| Pick for me sponsor, every pick | $250/month | $375/month |
 | Deal or event post | $25 / $60 | $37.50 / $90 |
 | Newsletter sponsor | band price | 1.5 × band price |
 | Sponsored feature | $200 | $300 |
@@ -193,6 +196,13 @@ are listed or how they are ordered, and an affiliate link is never the only
 way to contact a restaurant. Each partner's terms are checked and listed in
 [data-sources.md](data-sources.md) before its links go live.
 
+### 12. Pick for me sponsor ($150 or $250/month)
+
+One labeled "Sponsored" box above every result on the random place picker (/what-to-eat/, product `picker_sponsor`). It can run island-wide or only when the visitor chose certain villages, malls or food types; one ad per pick. The random pick below it is never changed by it: every matching restaurant keeps the same chance. While nothing is booked, the box invites businesses to advertise and links to the advertise page.
+
+- **$150/month:** shown when the visitor chose one village, mall or food type (priced like a category sponsor; Sanjay, 2026-10-20).
+- **$250/month:** shown above every pick, island-wide.
+
 ## Founding-advertiser discount
 
 - **30 percent off** the launch price, locked for six months, for advertisers
@@ -200,7 +210,7 @@ way to contact a restaurant. Each partner's terms are checked and listed in
 - **Who qualifies:** advertisers who sign before the 90-day repricing review
   in [market-rates.md](market-rates.md#repricing-rule).
 - **Which products:** the recurring ones: premium profile, featured listing,
-  category sponsor, and banner. One-off products (deal posts, sponsored
+  category sponsor, Pick for me sponsor, and banner. One-off products (deal posts, sponsored
   features, newsletter issues) and the homepage leaderboard are excluded.
 - **After six months:** the term renews at the rate card in effect then. The
   advertiser gets 30 days' notice of any change.
@@ -211,6 +221,8 @@ way to contact a restaurant. Each partner's terms are checked and listed in
 | Featured listing | $75/month | $52.50/month | $315.00 |
 | Category sponsor, village or mall | $150/month | $105/month | $630.00 |
 | Category sponsor, top cuisine | $250/month | $175/month | $1,050.00 |
+| Pick for me sponsor, one village, mall or food type | $150/month | $105/month | $630.00 |
+| Pick for me sponsor, every pick | $250/month | $175/month | $1,050.00 |
 | Banner | $20 CPM, $100 min | $14 CPM, $70 min | at least $420.00 |
 
 The founding discount stacks with the hotel and tour multiplier (for example,

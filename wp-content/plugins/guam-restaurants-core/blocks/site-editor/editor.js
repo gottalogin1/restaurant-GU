@@ -160,6 +160,7 @@
 		'related-links',
 		'restaurant-row',
 		'restaurant-hero',
+		'random-picker',
 		'color-scheme-toggle',
 	];
 

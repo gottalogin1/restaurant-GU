@@ -16,7 +16,8 @@ defined( 'ABSPATH' ) || exit;
  * Creates the site's fixed pages once (per VERSION) if they do not exist,
  * and finds them for links. Content lives in the page, so it stays editable.
  *
- * - map, recently opened and closed: published, made of this plugin's blocks.
+ * - map, what to eat (the random place picker), recently opened and
+ *   closed: published, made of this plugin's blocks.
  * - claim: published, with the claim form block (Claims\Claim_Form). A
  *   claim page still holding the old editor placeholder is upgraded and
  *   published once (VERSION 3).
@@ -37,7 +38,7 @@ defined( 'ABSPATH' ) || exit;
 final class Pages {
 
 	public const OPTION  = 'guam_restaurants_site_pages';
-	public const VERSION = '3';
+	public const VERSION = '4';
 
 	/**
 	 * Placeholder the claim page shipped with before the claim form existed.
@@ -69,6 +70,14 @@ final class Pages {
 				'status'  => 'publish',
 				'content' => '<!-- wp:guam-restaurants/map-explorer /-->',
 				'excerpt' => __( 'Map of restaurants on Guam. Filter by village, mall, cuisine, price, awards and opening hours.', 'guam-restaurants-core' ),
+			),
+			'picker'     => array(
+				'slug'    => 'what-to-eat',
+				'title'   => __( 'What should I eat?', 'guam-restaurants-core' ),
+				'status'  => 'publish',
+				'content' => $p( __( 'Can\'t decide? Choose a village, food type, price or anything else that matters, and we pick a restaurant at random from the places that match. Every match has the same chance. Ads appear only in the box marked Sponsored, above the pick.', 'guam-restaurants-core' ) )
+					. "\n\n" . '<!-- wp:guam-restaurants/random-picker /-->',
+				'excerpt' => __( 'Can\'t decide where to eat on Guam? Pick a village, food type and price, and get a random restaurant that matches.', 'guam-restaurants-core' ),
 			),
 			'recent'     => array(
 				'slug'    => 'recently-opened-and-closed',
