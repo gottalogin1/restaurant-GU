@@ -32,6 +32,13 @@ class Photos_Test extends Guam_Test_Case {
 	private array $urls = array();
 
 	/**
+	 * Arguments the fake transport received, in the same order.
+	 *
+	 * @var array<int, array<string, mixed>>
+	 */
+	private array $args = array();
+
+	/**
 	 * A small JPEG.
 	 *
 	 * @return string
@@ -79,8 +86,9 @@ class Photos_Test extends Guam_Test_Case {
 	private function client( array $results, ?string $image = null ): Retrying_Client {
 		$bytes = $image ?? self::jpeg();
 		return new Retrying_Client(
-			function ( string $url ) use ( $results, $bytes ): array {
+			function ( string $url, array $args ) use ( $results, $bytes ): array {
 				$this->urls[] = $url;
+				$this->args[] = $args;
 				$body         = 0 === strpos( $url, Openverse_Importer::API ) ? (string) wp_json_encode( array( 'results' => $results ) ) : $bytes;
 				return array(
 					'response' => array( 'code' => 200 ),
@@ -125,6 +133,8 @@ class Photos_Test extends Guam_Test_Case {
 		$this->assertSame( 1, $result['counts']['created'] );
 		$this->assertStringContainsString( 'q=Chamorro%20food', $this->urls[0] );
 		$this->assertStringContainsString( 'license=cc0,pdm,by,by-sa', $this->urls[0] );
+		$this->assertStringContainsString( 'filter_dead=false', $this->urls[0], 'Openverse does not check every result\'s host before answering.' );
+		$this->assertSame( array( '1.1', '1.1' ), array_column( $this->args, 'httpversion' ), 'Openverse stalls on HTTP/1.0, the WordPress default.' );
 		$this->assertSame( 'https://img.example/44444444-4444-4444-4444-444444444444.jpg', $this->urls[1] );
 		$photo = Cuisine_Photos::get( $cuisine->term_id );
 		$this->assertNotNull( $photo );
@@ -163,6 +173,72 @@ class Photos_Test extends Guam_Test_Case {
 		$this->assertSame( 1, $dry['counts']['created'] );
 		$this->assertNull( Cuisine_Photos::get( $cuisine->term_id ), 'A dry run saves nothing.' );
 		$this->assertSame( 0, $dry['run_id'] );
+	}
+
+	/**
+	 * URL-encoded names are decoded; a photo already saved gets its credit fixed without a new download.
+	 */
+	public function test_importer_decodes_names() {
+		$this->assertSame( 'Krzysztof Puszczyński', Openverse_Importer::decode( 'Krzysztof%20Puszczy%u0144ski' ) );
+		$this->assertSame( 'José', Openverse_Importer::decode( 'Jos%C3%A9' ) );
+		$this->assertSame( '100% juice', Openverse_Importer::decode( '100% juice' ) );
+		$this->assertSame( 'Bad %FF byte', Openverse_Importer::decode( 'Bad %FF byte' ), 'Invalid UTF-8 is left alone.' );
+
+		$cuisine = $this->cuisine( 'Pizza' );
+		$id      = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
+		( new Openverse_Importer( $this->client( array( self::result( $id ) ) ), 0 ) )->run( array( $cuisine ) );
+		$photo = Cuisine_Photos::get( $cuisine->term_id );
+		update_post_meta( $photo['id'], Cuisine_Photos::CREDIT, array( 'creator' => 'Krzysztof%20Puszczy%u0144ski' ) + $photo['credit'] );
+
+		$this->urls = array();
+		$fix        = ( new Openverse_Importer( $this->client( array( self::result( $id, array( 'creator' => 'Krzysztof%20Puszczy%u0144ski' ) ) ) ), 0 ) )->run( array( $cuisine ), true );
+		$this->assertSame( 1, $fix['counts']['updated'] );
+		$this->assertCount( 1, $this->urls, 'Only the search; the photo is not downloaded again.' );
+		$after = Cuisine_Photos::get( $cuisine->term_id );
+		$this->assertSame( $photo['id'], $after['id'] );
+		$this->assertSame( 'Krzysztof Puszczyński', $after['credit']['creator'] );
+
+		$again = ( new Openverse_Importer( $this->client( array( self::result( $id, array( 'creator' => 'Krzysztof%20Puszczy%u0144ski' ) ) ) ), 0 ) )->run( array( $cuisine ), true );
+		$this->assertSame( 1, $again['counts']['unchanged'] );
+	}
+
+	/**
+	 * A result whose image is gone gives way to the next suitable one, and its credit is the one saved.
+	 */
+	public function test_importer_skips_dead_image() {
+		$cuisine = $this->cuisine( 'Korean' );
+		$results = array(
+			self::result( 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' ),
+			self::result( 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' ),
+		);
+		$bytes   = self::jpeg();
+		$client  = new Retrying_Client(
+			function ( string $url ) use ( $results, $bytes ): array {
+				$this->urls[] = $url;
+				if ( 0 === strpos( $url, Openverse_Importer::API ) ) {
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array(),
+						'body'     => (string) wp_json_encode( array( 'results' => $results ) ),
+					);
+				}
+				$dead = false !== strpos( $url, 'aaaaaaaa' );
+				return array(
+					'response' => array( 'code' => $dead ? 404 : 200 ),
+					'headers'  => array(),
+					'body'     => $dead ? 'Not found' : $bytes,
+				);
+			},
+			static function () {},
+			array( 429 ),
+			0,
+			0
+		);
+
+		$result = ( new Openverse_Importer( $client, 0 ) )->run( array( $cuisine ) );
+		$this->assertSame( 1, $result['counts']['created'] );
+		$this->assertCount( 3, $this->urls );
+		$this->assertSame( 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', Cuisine_Photos::get( $cuisine->term_id )['credit']['openverse_id'] );
 	}
 
 	/**
