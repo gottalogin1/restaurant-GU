@@ -25,7 +25,7 @@ that page. Re-check before building an importer.
 | Foursquare Open Source Places | **Use with limits** | Apache 2.0 bulk POI data (name, address, phone, website, category, closed date). Good for gap-filling; quality varies. |
 | Guam Phone Book (guamphonebook.com, Guam's yellow pages) | **Skip** | robots.txt disallows automated access (checked 2026-10-19); no published terms allowing reuse. FSQ OS Places is the permitted business-listings source instead (§4c). |
 | Foursquare Places API | **Use with limits** (or skip) | Ratings, hours, tips are Premium-only and **cannot be cached** on a server on pay-as-you-go. Little gain over the OS dataset for a directory. |
-| Google Places API (New) | **Use with limits** | Attorney cleared the directory-use question (2026-10-10). Store only place IDs; fetch ratings live; never show Places content on or near a non-Google map. |
+| Google Places API (New) | **Use with limits** | Attorney cleared the directory-use question (2026-10-10). Store only place IDs (plus the business name an admin saves from the review queue, attorney-cleared 2026-10-20); fetch ratings live; never show Places content on or near a non-Google map. |
 | Yelp Places API | **Use with limits** (optional) | Attorney cleared the commercial-use question (2026-10-10). 24-hour cache cap; Yelp ratings may not sit alongside other user-generated content; paid plans start at $229/month. |
 | Pika's Best of Guam (PDN) | **Use with limits** | Facts only (year, category, placing) with source URL, pending PDN's reply. See §8 and `docs/awards-research.md`. |
 
@@ -238,6 +238,18 @@ counts and (optionally) reviews on listing pages, within these rules:
   requests a month), stopping at the free allowance under the $0 cap.
   "Add as restaurant" in the review queue creates a draft holding the place
   ID; the name and details are entered by hand.
+  Since 2026-10-19 the review queue can show each discovered place's
+  current name, address and business status on request ("Show Google names
+  on this page"): Place Details with field mask
+  `displayName,formattedAddress,businessStatus` (Pro: 5,000 free a month,
+  we stop at 4,500 under the $0 monthly cap), one call per place per page
+  view, displayed with "Google Maps" attribution. Since 2026-10-20 the name
+  also fills the place's name box, and saving the page keeps it as the
+  draft restaurant's title: Sanjay's Guam attorney advised that a business
+  name is public knowledge and cleared storing it (Sanjay, 2026-10-20).
+  This is the one exception to "store only the place ID"; the address,
+  status and every other Google field are still not stored. Places Google
+  lists as permanently closed are left blank and pre-ticked to skip.
 - Matching (`wp guam-restaurants match-ratings --source=google`,
   2026-10-10): Text Search with the restaurant's name, biased to 150 m
   around its OSM coordinates, field mask
