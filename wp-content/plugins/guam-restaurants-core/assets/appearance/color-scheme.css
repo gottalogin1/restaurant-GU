@@ -1,0 +1,71 @@
+/*
+ * Light / dark / system switch: the header block and the admin bar's
+ * Theme menu (Appearance\Color_Scheme).
+ */
+
+.gr-scheme {
+	display: inline-flex;
+	flex: none;
+	gap: 0.125rem;
+	padding: 0.125rem;
+	border: 1px solid var(--wp--preset--color--border, #c9c3b8);
+	border-radius: 999px;
+}
+
+.gr-scheme[hidden] {
+	display: none;
+}
+
+.gr-scheme__option {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--wp--preset--color--secondary, #4a4a4a);
+	cursor: pointer;
+}
+
+.gr-scheme__option:hover {
+	color: var(--wp--preset--color--contrast, #1b1b1b);
+}
+
+.gr-scheme__option[aria-pressed="true"] {
+	background: var(--wp--preset--color--primary, #0b6e8a);
+	color: var(--wp--preset--color--base, #fff);
+}
+
+.gr-scheme__option svg {
+	width: 1.1rem;
+	height: 1.1rem;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+@media (max-width: 599px) {
+	.gr-scheme__option {
+		width: 1.75rem;
+		height: 1.75rem;
+	}
+
+	.gr-scheme__option svg {
+		width: 1rem;
+		height: 1rem;
+	}
+}
+
+#wpadminbar #wp-admin-bar-gr-color-scheme .ab-icon::before {
+	content: "\f100";
+	top: 2px;
+}
+
+#wpadminbar .gr-scheme-option.is-current > .ab-item::after {
+	content: " \2713";
+}

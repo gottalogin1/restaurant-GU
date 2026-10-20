@@ -31,3 +31,31 @@ img {
 	height: auto;
 	max-width: 100%;
 }
+
+/*
+ * Dark palette. guam-restaurants-core sets <html data-theme="dark"> from the
+ * visitor's choice or their device setting before the page is drawn; these
+ * replace the theme.json presets, so everything built on them follows.
+ */
+:root[data-theme="dark"],
+:root[data-theme="dark"] body {
+	color-scheme: dark;
+	--wp--preset--color--base: #141618;
+	--wp--preset--color--contrast: #e8e6e3;
+	--wp--preset--color--primary: #5bb8d4;
+	--wp--preset--color--accent: #e3876f;
+	--wp--preset--color--secondary: #b3afa8;
+	--wp--preset--color--muted: #1f2225;
+	--wp--preset--color--border: #3d4247;
+}
+
+/* Core's navigation menus draw a white panel unless given a background. */
+:root[data-theme="dark"] .wp-block-navigation:not(.has-background) :is(.wp-block-navigation__responsive-container.is-menu-open, .wp-block-navigation__submenu-container) {
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--contrast);
+}
+
+/* Header: menu and the light / dark switch sit together on the right. */
+header .wp-block-site-title + .wp-block-navigation {
+	margin-left: auto;
+}
