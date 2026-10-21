@@ -174,6 +174,18 @@ final class Directory_View {
 		if ( ! empty( $filters['late'] ) ) {
 			$out .= '<p class="gr-directory__note">' . esc_html__( 'Open late means open at 10 pm tonight, Guam time, and lists only restaurants whose hours we have.', 'guam-restaurants-core' ) . '</p>';
 		}
+		if ( '' !== (string) ( $filters['at'] ?? '' ) ) {
+			$out .= '<p class="gr-directory__note">' . esc_html(
+				sprintf(
+					/* translators: %s: day and time, for example "Saturday at 7:30 am". */
+					__( 'Open %s uses Guam time and lists only restaurants whose hours we have. Holiday hours may differ.', 'guam-restaurants-core' ),
+					Filters::at_label( (string) $filters['at'] )
+				)
+			) . '</p>';
+		}
+		if ( ! empty( $filters['breakfast'] ) ) {
+			$out .= '<p class="gr-directory__note">' . esc_html__( 'Breakfast lists restaurants open by 8 am on at least one day, going by their listed hours.', 'guam-restaurants-core' ) . '</p>';
+		}
 		if ( '' !== $cards ) {
 			$out .= '<ul class="gr-cards" role="list">' . $cards . '</ul>';
 		} elseif ( '' === $active && Filters::is_filtered( $filters, $locked ) ) {
@@ -231,14 +243,19 @@ final class Directory_View {
 			}
 		}
 		$flags = array(
-			'open'  => __( 'Open now', 'guam-restaurants-core' ),
-			'late'  => __( 'Open late', 'guam-restaurants-core' ),
-			'award' => __( 'Award winners', 'guam-restaurants-core' ),
+			'open'      => __( 'Open now', 'guam-restaurants-core' ),
+			'late'      => __( 'Open late', 'guam-restaurants-core' ),
+			'breakfast' => __( 'Breakfast', 'guam-restaurants-core' ),
+			'award'     => __( 'Award winners', 'guam-restaurants-core' ),
 		);
 		foreach ( $flags as $flag => $label ) {
 			if ( ! empty( $filters[ $flag ] ) ) {
 				$add( esc_html( $label ), array_merge( $filters, array( $flag => false ) ) );
 			}
+		}
+		if ( '' !== (string) $filters['at'] ) {
+			/* translators: %s: day and time, for example "Saturday at 7:30 am". */
+			$add( esc_html( sprintf( __( 'Open %s', 'guam-restaurants-core' ), Filters::at_label( (string) $filters['at'] ) ) ), array_merge( $filters, array( 'at' => '' ) ) );
 		}
 		if ( '' !== (string) $filters['q'] ) {
 			/* translators: %s: keywords searched for. */
@@ -335,9 +352,12 @@ final class Directory_View {
 			$facets .= self::facet( $param, $taxonomy, $labels[ $param ], (array) $filters['facets'][ $param ] );
 			$more   += count( (array) $filters['facets'][ $param ] );
 		}
-		$top   = array();
-		$chips = self::chip( Filters::OPEN, Filters::OPEN_NOW, ! empty( $filters['open'] ), esc_html__( 'Open now', 'guam-restaurants-core' ) )
+		$facets .= self::open_at( (string) $filters['at'] );
+		$more   += '' !== (string) $filters['at'] ? 1 : 0;
+		$top     = array();
+		$chips   = self::chip( Filters::OPEN, Filters::OPEN_NOW, ! empty( $filters['open'] ), esc_html__( 'Open now', 'guam-restaurants-core' ) )
 			. self::chip( Filters::LATE, Filters::LATE_TONIGHT, ! empty( $filters['late'] ), esc_html__( 'Open late', 'guam-restaurants-core' ) )
+			. self::chip( Filters::MEAL, Filters::MEAL_BREAKFAST, ! empty( $filters['breakfast'] ), esc_html__( 'Breakfast', 'guam-restaurants-core' ) )
 			. self::chip( Filters::AWARD, Filters::AWARD_WINNER, ! empty( $filters['award'] ), esc_html__( 'Award winners', 'guam-restaurants-core' ) );
 		if ( ! isset( $locked['price'] ) ) {
 			foreach ( self::facet_terms( Content_Types::TAX_PRICE ) as $term ) {
@@ -440,6 +460,49 @@ final class Directory_View {
 			esc_attr( $value ),
 			checked( $checked, true, false ),
 			$label
+		);
+	}
+
+	/**
+	 * "Open at": a day and a time, sent as at_day and at_time (directory.js
+	 * joins them into one `at` parameter).
+	 *
+	 * @param string $at Current `at` value, or ''.
+	 * @return string
+	 */
+	private static function open_at( string $at ): string {
+		$parts  = Filters::at_parts( $at );
+		$chosen = null === $parts ? '' : sprintf( '%02d%02d', intdiv( $parts['minute'], 60 ), $parts['minute'] % 60 );
+		$days   = array(
+			''         => __( 'Choose a day', 'guam-restaurants-core' ),
+			'today'    => __( 'Today', 'guam-restaurants-core' ),
+			'tomorrow' => __( 'Tomorrow', 'guam-restaurants-core' ),
+		) + Restaurant_View::day_names();
+		$times  = array( '' => __( 'Choose a time', 'guam-restaurants-core' ) );
+		for ( $minute = 0; $minute < Clock::MINUTES_PER_DAY; $minute += 30 ) {
+			$time                                   = sprintf( '%02d:%02d', intdiv( $minute, 60 ), $minute % 60 );
+			$times[ str_replace( ':', '', $time ) ] = Restaurant_View::time_label( $time );
+		}
+		if ( '' !== $chosen && ! isset( $times[ $chosen ] ) ) {
+			$times[ $chosen ] = Restaurant_View::time_label( substr( $chosen, 0, 2 ) . ':' . substr( $chosen, 2 ) );
+		}
+		$options = static function ( array $choices, string $selected ): string {
+			$html = '';
+			foreach ( $choices as $value => $label ) {
+				$html .= sprintf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( (string) $value ), selected( (string) $value, $selected, false ), esc_html( $label ) );
+			}
+			return $html;
+		};
+		return sprintf(
+			'<fieldset class="gr-open-at"><legend>%1$s</legend><div class="gr-open-at__fields"><label>%2$s <select name="%3$s">%4$s</select></label> <label>%5$s <select name="%6$s">%7$s</select></label></div><p class="gr-open-at__hint">%8$s</p></fieldset>',
+			esc_html__( 'Open at', 'guam-restaurants-core' ),
+			esc_html__( 'Day', 'guam-restaurants-core' ),
+			esc_attr( Filters::AT_DAY ),
+			$options( $days, null === $parts ? '' : $parts['day'] ),
+			esc_html__( 'Time', 'guam-restaurants-core' ),
+			esc_attr( Filters::AT_TIME ),
+			$options( $times, $chosen ),
+			esc_html__( 'Guam time, by listed hours. Choose both a day and a time.', 'guam-restaurants-core' )
 		);
 	}
 

@@ -301,6 +301,9 @@ final class Seo {
 		if ( '' !== \GuamRestaurants\Core\Awards\Pages::current_page() ) {
 			return __( 'Restaurant award results recorded on this site, each with a link to where it was published.', 'guam-restaurants-core' );
 		}
+		if ( '' !== \GuamRestaurants\Core\Dishes\Dish_Pages::current_page() ) {
+			return \GuamRestaurants\Core\Dishes\Dish_Pages::description();
+		}
 		if ( is_front_page() ) {
 			$tagline = (string) get_bloginfo( 'description' );
 			return '' !== $tagline ? $tagline : __( 'Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine.', 'guam-restaurants-core' );

@@ -72,13 +72,13 @@ final class Picker {
 
 	/**
 	 * Filters for a pick: the directory's, without the keyword search, "open
-	 * late" or sort.
+	 * late", "open at" or sort.
 	 *
 	 * @param array<string, mixed> $params Raw parameters.
 	 * @return array<string, mixed>
 	 */
 	public static function filters( array $params ): array {
-		unset( $params[ Filters::SEARCH ], $params[ Filters::LATE ], $params[ Filters::SORT ], $params[ Filters::WHERE ], $params['page'] );
+		unset( $params[ Filters::SEARCH ], $params[ Filters::LATE ], $params[ Filters::AT ], $params[ Filters::AT_DAY ], $params[ Filters::AT_TIME ], $params[ Filters::SORT ], $params[ Filters::WHERE ], $params['page'] );
 		$filters = Filters::from_params( $params );
 		foreach ( array_keys( Filters::FACETS ) as $facet ) {
 			if ( ! in_array( $facet, self::FACETS, true ) ) {

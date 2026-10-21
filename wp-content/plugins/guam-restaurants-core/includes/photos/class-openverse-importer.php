@@ -16,8 +16,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Searches Openverse (api.openverse.org, which indexes Wikimedia Commons,
  * Flickr and other open collections) for "<cuisine> food", keeps the first
- * large landscape photo under a license in Cuisine_Photos::LICENSES, and
- * stores it with its credit. A cuisine that already has a photo is left
+ * large landscape photo under a license in Cuisine_Photos::LICENSES that
+ * downloads, and stores it with its credit. A cuisine that already has a photo is left
  * alone unless refresh is on, so running it again changes nothing.
  */
 final class Openverse_Importer {
@@ -26,6 +26,9 @@ final class Openverse_Importer {
 	public const API        = 'https://api.openverse.org/v1/images/';
 	public const TERM_QUERY = 'gr_photo_query';
 	public const MIN_WIDTH  = 800;
+	public const CANDIDATES = 3;
+	public const TIMEOUT    = 30;
+	public const RETRIES    = 2;
 
 	/**
 	 * HTTP client.
@@ -51,12 +54,12 @@ final class Openverse_Importer {
 	/**
 	 * Constructor.
 	 *
-	 * @param Retrying_Client|null $client  HTTP client.
+	 * @param Retrying_Client|null $client  HTTP client (default: RETRIES retries, so a host that never answers costs minutes, not most of an hour).
 	 * @param int                  $delay   Seconds between cuisines (anonymous Openverse use is rate limited).
 	 * @param callable|null        $sleeper Defaults to sleep().
 	 */
 	public function __construct( ?Retrying_Client $client = null, int $delay = 3, ?callable $sleeper = null ) {
-		$this->client  = $client ?? new Retrying_Client();
+		$this->client  = $client ?? new Retrying_Client( null, null, array( 429 ), 30, self::RETRIES );
 		$this->delay   = max( 0, $delay );
 		$this->sleeper = $sleeper ?? 'sleep';
 	}
@@ -105,12 +108,12 @@ final class Openverse_Importer {
 
 			$problem = __( 'no suitable openly licensed photo found', 'guam-restaurants-core' );
 			try {
-				$image = '' !== $openverse_id ? $this->image( $openverse_id ) : $this->search( $query ?? self::query_for( $cuisine ) );
+				$images = '' !== $openverse_id ? $this->image( $openverse_id ) : $this->search( $query ?? self::query_for( $cuisine ) );
 			} catch ( Request_Failed $e ) {
-				$image   = null;
+				$images  = array();
 				$problem = $e->getMessage();
 			}
-			if ( null === $image ) {
+			if ( array() === $images ) {
 				++$counts['failed'];
 				$errors[] = $cuisine->slug . ': ' . $problem;
 				$rows[]   = array(
@@ -120,19 +123,36 @@ final class Openverse_Importer {
 				continue;
 			}
 
-			$credit = self::credit_from( $image );
+			$credit = self::credit_from( $images[0] );
 			if ( null !== $current && ( $current['credit']['openverse_id'] ?? '' ) === $credit['openverse_id'] ) {
-				++$counts['unchanged'];
-				$rows[] = $row + self::credit_columns( $credit );
+				// Same photo: only the credit can have changed (for example a name that is now decoded).
+				$fixed = array_map( 'sanitize_text_field', $credit ) != $current['credit']; // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- key order may differ.
+				if ( $fixed && ! $dry_run ) {
+					Cuisine_Photos::set( $cuisine->term_id, (int) $current['id'], $credit );
+				}
+				++$counts[ $fixed ? 'updated' : 'unchanged' ];
+				$rows[] = array(
+					'cuisine' => $cuisine->slug,
+					'action'  => $fixed ? 'updated' : 'unchanged',
+				) + self::credit_columns( $credit );
 				continue;
 			}
 
 			$action = null === $current ? 'created' : 'updated';
 			if ( ! $dry_run ) {
-				$attachment = Photo_Download::fetch( $this->client, (string) $image['url'], 0, $cuisine->slug . '-food' );
+				// Search results are not checked for dead links (see search()), so a photo whose host is gone or slow gives way to the next one.
+				$problems = array();
+				foreach ( $images as $image ) {
+					$credit     = self::credit_from( $image );
+					$attachment = Photo_Download::fetch( $this->client, (string) $image['url'], 0, $cuisine->slug . '-food' );
+					if ( ! is_wp_error( $attachment ) ) {
+						break;
+					}
+					$problems[] = $attachment->get_error_message();
+				}
 				if ( is_wp_error( $attachment ) ) {
 					++$counts['failed'];
-					$errors[] = $cuisine->slug . ': ' . $attachment->get_error_message();
+					$errors[] = $cuisine->slug . ': ' . implode( '; ', array_unique( $problems ) );
 					$rows[]   = array(
 						'cuisine' => $cuisine->slug,
 						'action'  => 'failed',
@@ -177,61 +197,78 @@ final class Openverse_Importer {
 	}
 
 	/**
-	 * First suitable search result.
+	 * Up to CANDIDATES suitable search results, best first.
+	 *
+	 * Dead-link filtering is turned off: with it on, Openverse checks every
+	 * result's image host before it answers, which can take longer than any
+	 * sensible timeout (an anonymous run timed out on 18 of 19 cuisines; the
+	 * one that answered had no results to check). The download step skips
+	 * dead links instead.
 	 *
 	 * @param string $query Search words.
-	 * @return array<string, mixed>|null
+	 * @return array<int, array<string, mixed>>
 	 * @throws Request_Failed When Openverse does not answer.
 	 */
-	private function search( string $query ): ?array {
+	private function search( string $query ): array {
 		$url      = add_query_arg(
 			array(
-				'q'         => rawurlencode( $query ),
-				'license'   => implode( ',', Cuisine_Photos::LICENSES ),
-				'category'  => 'photograph',
-				'mature'    => 'false',
-				'page_size' => 20,
+				'q'           => rawurlencode( $query ),
+				'license'     => implode( ',', Cuisine_Photos::LICENSES ),
+				'category'    => 'photograph',
+				'mature'      => 'false',
+				'filter_dead' => 'false',
+				'page_size'   => 20,
 			),
 			self::API
 		);
 		$response = $this->client->request( $url, $this->args() );
 		$data     = json_decode( $response['body'], true );
+		$images   = array();
 		foreach ( (array) ( $data['results'] ?? array() ) as $image ) {
 			if ( is_array( $image ) && self::suitable( $image ) ) {
-				return $image;
+				$images[] = $image;
+				if ( count( $images ) >= self::CANDIDATES ) {
+					break;
+				}
 			}
 		}
-		return null;
+		return $images;
 	}
 
 	/**
 	 * One image by its Openverse id.
 	 *
 	 * @param string $id Openverse id.
-	 * @return array<string, mixed>|null
+	 * @return array<int, array<string, mixed>> The image, or nothing.
 	 * @throws Request_Failed When Openverse does not answer.
 	 */
-	private function image( string $id ): ?array {
+	private function image( string $id ): array {
 		if ( ! preg_match( '/^[0-9a-f-]{36}$/i', $id ) ) {
-			return null;
+			return array();
 		}
 		$response = $this->client->request( self::API . $id . '/', $this->args() );
 		$image    = json_decode( $response['body'], true );
 		// An image picked by hand may be portrait or small; the license still has to fit.
-		return is_array( $image ) && self::license_ok( $image ) && '' !== (string) ( $image['url'] ?? '' ) ? $image : null;
+		return is_array( $image ) && self::license_ok( $image ) && '' !== (string) ( $image['url'] ?? '' ) ? array( $image ) : array();
 	}
 
 	/**
 	 * Request arguments.
 	 *
+	 * HTTP/1.1 on purpose: WordPress sends HTTP/1.0 by default, and on
+	 * Sanjay's machine Openverse answered HTTP/1.0 and HTTP/2 requests with
+	 * a full page of results with nothing for 30 s, while the same request
+	 * over HTTP/1.1 answered in 0.1 s (`make photo-source-check`).
+	 *
 	 * @return array<string, mixed>
 	 */
 	private function args(): array {
 		return array(
-			'method'     => 'GET',
-			'timeout'    => 20,
-			'user-agent' => Photo_Download::user_agent(),
-			'headers'    => array( 'Accept' => 'application/json' ),
+			'method'      => 'GET',
+			'httpversion' => '1.1',
+			'timeout'     => self::TIMEOUT,
+			'user-agent'  => Photo_Download::user_agent(),
+			'headers'     => array( 'Accept' => 'application/json' ),
 		);
 	}
 
@@ -271,8 +308,8 @@ final class Openverse_Importer {
 	 */
 	private static function credit_from( array $image ): array {
 		return array(
-			'title'           => (string) ( $image['title'] ?? '' ),
-			'creator'         => (string) ( $image['creator'] ?? '' ),
+			'title'           => self::decode( (string) ( $image['title'] ?? '' ) ),
+			'creator'         => self::decode( (string) ( $image['creator'] ?? '' ) ),
 			'creator_url'     => (string) ( $image['creator_url'] ?? '' ),
 			'license'         => strtolower( (string) ( $image['license'] ?? '' ) ),
 			'license_version' => (string) ( $image['license_version'] ?? '' ),
@@ -280,6 +317,29 @@ final class Openverse_Importer {
 			'source_url'      => (string) ( $image['foreign_landing_url'] ?? '' ),
 			'openverse_id'    => (string) ( $image['id'] ?? '' ),
 		);
+	}
+
+	/**
+	 * Undoes URL encoding that some providers leave in names, for example
+	 * "Krzysztof%20Puszczy%u0144ski" (StockSnap) becomes "Krzysztof Puszczyński".
+	 * Text without escapes, or that would not decode to valid UTF-8, is kept as is.
+	 *
+	 * @param string $text Name or title from Openverse.
+	 * @return string
+	 */
+	public static function decode( string $text ): string {
+		if ( ! preg_match( '/%(?:u[0-9a-f]{4}|[0-9a-f]{2})/i', $text ) ) {
+			return $text;
+		}
+		$decoded = preg_replace_callback(
+			'/%u([0-9a-f]{4})/i',
+			static function ( array $m ): string {
+				return (string) mb_chr( (int) hexdec( $m[1] ), 'UTF-8' );
+			},
+			$text
+		);
+		$decoded = rawurldecode( (string) $decoded );
+		return mb_check_encoding( $decoded, 'UTF-8' ) ? $decoded : $text;
 	}
 
 	/**
