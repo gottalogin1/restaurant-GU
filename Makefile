@@ -116,11 +116,10 @@ lint-fix: ## Auto-fix what PHPCS can fix.
 test: ## Run the plugin's PHPUnit tests (needs `make up`).
 	$(COMPOSE) run --rm -w /project cli vendor/bin/phpunit -c wp-content/plugins/guam-restaurants-core/phpunit.xml.dist
 
-LANG_DIR = wp-content/plugins/guam-restaurants-core/languages
-
 .PHONY: translations
 translations: ## After changing interface text: refresh the translation files, then list text still in English (docs/translation.md).
-	$(COMPOSE) run --rm -T -w /project/wp-content/plugins/guam-restaurants-core cli sh -c '\
+	@# Runs as your user so the files stay yours (the cli container is www-data otherwise).
+	$(COMPOSE) run --rm -T --user "$(shell id -u):$(shell id -g)" -e HOME=/tmp -e WP_CLI_ALLOW_ROOT=1 -w /project/wp-content/plugins/guam-restaurants-core cli sh -c '\
 		wp i18n make-pot . languages/guam-restaurants-core.pot --skip-block-json --skip-theme-json --skip-audit --exclude=vendor,tests,assets/vendor \
 		&& wp i18n update-po languages/guam-restaurants-core.pot languages \
 		&& rm -f languages/*.json && wp i18n make-mo languages && wp i18n make-json languages --no-purge'

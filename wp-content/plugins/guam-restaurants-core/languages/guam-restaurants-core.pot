@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-20T23:36:40+00:00\n"
+"POT-Creation-Date: 2026-10-21T17:27:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: guam-restaurants-core\n"
@@ -457,7 +457,7 @@ msgstr ""
 
 #: includes/admin/class-review-queue-screen.php:1073
 #: includes/class-content-types.php:51
-#: includes/site/class-directory-view.php:323
+#: includes/site/class-directory-view.php:340
 #: includes/site/class-picker.php:261
 #: includes/site/class-related-links.php:128
 msgid "Village"
@@ -470,7 +470,7 @@ msgstr ""
 #: includes/admin/class-review-queue-screen.php:1074
 #: includes/admin/class-tag-origins-box.php:59
 #: includes/class-content-types.php:57
-#: includes/site/class-directory-view.php:324
+#: includes/site/class-directory-view.php:341
 #: includes/site/class-picker.php:262
 msgid "Mall"
 msgstr ""
@@ -813,9 +813,9 @@ msgstr ""
 #: includes/highlights/class-moderation-screen.php:165
 #: includes/highlights/class-submit-screen.php:145
 #: includes/highlights/class-submit-screen.php:216
-#: includes/site/class-restaurant-view.php:387
+#: includes/site/class-restaurant-view.php:420
 #: assets/advertising/inquiry.js:218
-#: assets/corrections/corrections.js:276
+#: assets/corrections/corrections.js:277
 msgid "Restaurant"
 msgstr ""
 
@@ -835,7 +835,7 @@ msgstr ""
 #: includes/advertising/class-leads.php:503
 #: includes/claims/class-admin.php:134
 #: assets/advertising/inquiry.js:219
-#: assets/corrections/corrections.js:284
+#: assets/corrections/corrections.js:285
 msgid "Email"
 msgstr ""
 
@@ -929,6 +929,7 @@ msgid "open-ended"
 msgstr ""
 
 #: includes/ads/class-admin.php:89
+#: includes/site/class-blocks.php:679
 msgid "Yes"
 msgstr ""
 
@@ -1389,7 +1390,7 @@ msgid "No leads found in the trash."
 msgstr ""
 
 #: includes/advertising/class-leads.php:172
-#: includes/site/class-restaurant-view.php:357
+#: includes/site/class-restaurant-view.php:390
 msgid "New"
 msgstr ""
 
@@ -1744,7 +1745,7 @@ msgstr ""
 #: includes/advertising/class-page-content.php:127
 #: includes/owners/class-dashboard.php:434
 #: includes/site/class-blocks.php:580
-#: includes/site/class-directory-view.php:326
+#: includes/site/class-directory-view.php:343
 msgid "Price"
 msgstr ""
 
@@ -2543,7 +2544,7 @@ msgstr ""
 #. translators: %s: date, for example "March 2024".
 #: includes/claims/class-claim-form.php:209
 #: includes/newsletter/class-renderer.php:82
-#: includes/site/class-blocks.php:640
+#: includes/site/class-blocks.php:649
 #: includes/site/class-pages.php:103
 #: includes/site/class-restaurant-view.php:203
 msgid "Closed"
@@ -2746,7 +2747,7 @@ msgstr ""
 
 #: includes/class-content-types.php:63
 #: includes/site/class-blocks.php:575
-#: includes/site/class-directory-view.php:325
+#: includes/site/class-directory-view.php:342
 msgid "Cuisine"
 msgstr ""
 
@@ -2972,7 +2973,7 @@ msgstr ""
 
 #: includes/corrections/class-corrections.php:98
 #: includes/owners/class-dashboard.php:378
-#: includes/site/class-blocks.php:646
+#: includes/site/class-blocks.php:655
 msgid "Opening hours"
 msgstr ""
 
@@ -3037,7 +3038,7 @@ msgid "Manager or staff"
 msgstr ""
 
 #: includes/corrections/class-corrections.php:192
-#: assets/corrections/corrections.js:309
+#: assets/corrections/corrections.js:314
 msgid "Choose the restaurant from the list."
 msgstr ""
 
@@ -3078,7 +3079,7 @@ msgid "Only the owner or a manager can ask to change or remove a listing. To rep
 msgstr ""
 
 #: includes/corrections/class-corrections.php:247
-#: assets/corrections/corrections.js:350
+#: assets/corrections/corrections.js:355
 msgid "Your request could not be sent. Please try again."
 msgstr ""
 
@@ -3215,6 +3216,116 @@ msgstr ""
 msgid "Guam Restaurants database tables are at version %1$s but the plugin needs %2$s. Run: wp guam-restaurants db upgrade"
 msgstr ""
 
+#. translators: %s: dish name, for example "Kelaguen".
+#: includes/dishes/class-dish-pages.php:205
+msgid "Where to get Guam dishes"
+msgstr ""
+
+#. translators: %s: dish name, for example "Kelaguen".
+#: includes/dishes/class-dish-pages.php:205
+#, php-format
+msgid "Where to get %s on Guam"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:216
+msgid "Guam dishes and the restaurants that serve them, from what visitors photographed and named in their reviews."
+msgstr ""
+
+#. translators: 1: number of places, 2: dish name.
+#: includes/dishes/class-dish-pages.php:220
+#, php-format
+msgid "%1$s place on Guam serves %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
+msgid_plural "%1$s places on Guam serve %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/dishes/class-dish-pages.php:257
+msgid "Guam favorites"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:258
+msgid "All dishes, A to Z"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:259
+msgid "No dishes yet. When visitors add dish photos or name what they ordered in a review, the dishes appear here."
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:264
+msgid "Dishes visitors photographed or named in their reviews, and dishes owners list on their menus, with every listed restaurant that serves each one."
+msgstr ""
+
+#. translators: %s: number of restaurants.
+#: includes/dishes/class-dish-pages.php:307
+#, php-format
+msgid "%s place serves it"
+msgid_plural "%s places serve it"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/dishes/class-dish-pages.php:313
+msgid "All dishes"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:315
+msgid "Listed by how many different visitors photographed this dish or named it in an approved review at each place, counting each person once. Places where only the owner lists it come next. This is not a ranking of who makes it best: owners and staff are never counted, and sponsors cannot change the order."
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:318
+#: includes/saved/class-view.php:297
+msgid "Show the list as"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:319
+#: includes/saved/class-view.php:298
+#: includes/site/class-directory-view.php:120
+#: blocks/site-editor/editor.js:69
+#: blocks/site-editor/editor.js:121
+msgid "List"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:320
+#: includes/saved/class-view.php:299
+#: includes/site/class-directory-view.php:121
+#: includes/site/class-pages.php:73
+msgid "Map"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:323
+#: includes/saved/class-view.php:303
+msgid "Map of these restaurants"
+msgstr ""
+
+#: includes/dishes/class-dish-pages.php:325
+msgid "Had it somewhere else? Add a dish photo or name it in a review on that restaurant's page, and the place appears here once it is approved."
+msgstr ""
+
+#. translators: %s: number of visitors.
+#: includes/dishes/class-dish-pages.php:341
+#, php-format
+msgid "Named by %s visitor"
+msgid_plural "Named by %s visitors"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/dishes/class-dish-pages.php:344
+msgid "On the owner's menu"
+msgstr ""
+
+#. translators: %s: dish names, for example "Chicken kelaguen, Beef kelaguen".
+#: includes/dishes/class-dish-pages.php:356
+#, php-format
+msgid "As %s"
+msgstr ""
+
+#. translators: %s: number of places.
+#: includes/dishes/class-dish-pages.php:375
+#, php-format
+msgid "%s place"
+msgid_plural "%s places"
+msgstr[0] ""
+msgstr[1] ""
+
 #: includes/dishes/class-display.php:87
 msgid "No dishes yet. Tell others what you ordered: add a photo of a dish, or name the dishes you tried when you write a review."
 msgstr ""
@@ -3236,8 +3347,12 @@ msgstr ""
 msgid "Write a review"
 msgstr ""
 
+#: includes/dishes/class-display.php:98
+msgid "Where to get other Guam dishes"
+msgstr ""
+
 #. translators: %s: number of visitors.
-#: includes/dishes/class-display.php:123
+#: includes/dishes/class-display.php:125
 #, php-format
 msgid "%s visitor"
 msgid_plural "%s visitors"
@@ -3245,7 +3360,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: number of photos.
-#: includes/dishes/class-display.php:127
+#: includes/dishes/class-display.php:129
 #, php-format
 msgid "%s photo"
 msgid_plural "%s photos"
@@ -3253,44 +3368,48 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: number of reviews.
-#: includes/dishes/class-display.php:131
+#: includes/dishes/class-display.php:133
 #, php-format
 msgid "%s review"
 msgid_plural "%s reviews"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dishes/class-display.php:138
+#: includes/dishes/class-display.php:140
 msgid "Visitors' average dish rating:"
 msgstr ""
 
 #. translators: 1: average stars, e.g. 4.5, 2: number of ratings.
-#: includes/dishes/class-display.php:142
+#: includes/dishes/class-display.php:144
 #, php-format
 msgid "%1$s/5 · %2$s rating"
 msgid_plural "%1$s/5 · %2$s ratings"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dishes/class-display.php:152
+#: includes/dishes/class-display.php:154
 msgid "On the menu"
 msgstr ""
 
-#: includes/dishes/class-display.php:184
+#: includes/dishes/class-display.php:164
+msgid "Other places that serve it"
+msgstr ""
+
+#: includes/dishes/class-display.php:196
 #: includes/site/class-picker.php:396
 msgid "Advertising space"
 msgstr ""
 
-#: includes/dishes/class-display.php:185
+#: includes/dishes/class-display.php:197
 #: includes/site/class-picker.php:397
 msgid "Advertise here"
 msgstr ""
 
-#: includes/dishes/class-display.php:187
+#: includes/dishes/class-display.php:199
 msgid "Your restaurant could be here, before Popular dishes"
 msgstr ""
 
-#: includes/dishes/class-display.php:188
+#: includes/dishes/class-display.php:200
 msgid "People read this section when they are choosing what to eat. Sponsors take turns in this labeled spot on restaurant pages, chosen by village, mall or food type."
 msgstr ""
 
@@ -3485,7 +3604,7 @@ msgstr ""
 #: includes/highlights/class-moderation-screen.php:135
 #: includes/highlights/class-policy-page.php:80
 #: includes/highlights/class-submit-screen.php:117
-#: includes/site/class-blocks.php:867
+#: includes/site/class-blocks.php:903
 msgid "Editorial policy"
 msgstr ""
 
@@ -3816,7 +3935,7 @@ msgid "Sent. An administrator will check it before it appears."
 msgstr ""
 
 #: includes/legal/class-pages.php:69
-#: includes/site/class-blocks.php:870
+#: includes/site/class-blocks.php:906
 msgid "Advertising disclosure"
 msgstr ""
 
@@ -3833,7 +3952,7 @@ msgid "Where the directory's restaurant details, maps, ratings and award results
 msgstr ""
 
 #: includes/legal/class-pages.php:81
-#: includes/site/class-blocks.php:872
+#: includes/site/class-blocks.php:908
 msgid "Photo upload agreement"
 msgstr ""
 
@@ -3843,7 +3962,7 @@ msgstr ""
 
 #: includes/legal/class-pages.php:217
 #: includes/saved/class-view.php:385
-#: includes/site/class-blocks.php:868
+#: includes/site/class-blocks.php:904
 #: assets/advertising/inquiry.js:206
 #: assets/corrections/corrections.js:229
 msgid "Privacy policy"
@@ -4090,7 +4209,7 @@ msgid "Facts come from our directory records. Spotted a mistake?"
 msgstr ""
 
 #: includes/newsletter/class-renderer.php:91
-#: includes/site/class-blocks.php:739
+#: includes/site/class-blocks.php:775
 #: includes/site/class-pages.php:114
 msgid "Suggest a correction"
 msgstr ""
@@ -4293,7 +4412,7 @@ msgid "24-hour clock, Guam time. Separate split shifts with a comma, e.g. 11:00-
 msgstr ""
 
 #: includes/owners/class-dashboard.php:383
-#: includes/site/class-blocks.php:639
+#: includes/site/class-blocks.php:648
 #: assets/site/hours.js:63
 msgid "Open 24 hours"
 msgstr ""
@@ -4559,7 +4678,7 @@ msgstr ""
 msgid "Remove and delete"
 msgstr ""
 
-#: includes/photos/class-openverse-importer.php:106
+#: includes/photos/class-openverse-importer.php:109
 msgid "no suitable openly licensed photo found"
 msgstr ""
 
@@ -4567,15 +4686,15 @@ msgstr ""
 msgid "The photo address is not a public http or https URL."
 msgstr ""
 
-#: includes/photos/class-photo-download.php:59
+#: includes/photos/class-photo-download.php:60
 msgid "The photo is larger than 10 MB."
 msgstr ""
 
-#: includes/photos/class-photo-download.php:68
+#: includes/photos/class-photo-download.php:69
 msgid "Could not write a temporary file."
 msgstr ""
 
-#: includes/photos/class-photo-download.php:73
+#: includes/photos/class-photo-download.php:74
 msgid "The address did not return a JPEG, PNG or WebP image."
 msgstr ""
 
@@ -5085,27 +5204,6 @@ msgstr ""
 msgid "The link shows your newest %s saved restaurants and nothing else about you."
 msgstr ""
 
-#: includes/saved/class-view.php:297
-msgid "Show the list as"
-msgstr ""
-
-#: includes/saved/class-view.php:298
-#: includes/site/class-directory-view.php:120
-#: blocks/site-editor/editor.js:69
-#: blocks/site-editor/editor.js:121
-msgid "List"
-msgstr ""
-
-#: includes/saved/class-view.php:299
-#: includes/site/class-directory-view.php:121
-#: includes/site/class-pages.php:73
-msgid "Map"
-msgstr ""
-
-#: includes/saved/class-view.php:303
-msgid "Map of these restaurants"
-msgstr ""
-
 #: includes/saved/class-view.php:350
 msgid "Saved. Keep your list on every device"
 msgstr ""
@@ -5296,122 +5394,138 @@ msgstr ""
 msgid "Get directions in Google Maps"
 msgstr ""
 
-#: includes/site/class-blocks.php:635
+#: includes/site/class-blocks.php:643
 msgid "Opening hours are not listed yet. Please check with the restaurant."
 msgstr ""
 
-#: includes/site/class-blocks.php:648
+#: includes/site/class-blocks.php:644
+msgid "Know the hours? Tell us"
+msgstr ""
+
+#: includes/site/class-blocks.php:657
 msgid "Opening hours, Guam time"
 msgstr ""
 
+#: includes/site/class-blocks.php:678
+msgid "Are these hours right?"
+msgstr ""
+
+#: includes/site/class-blocks.php:681
+msgid "No, report a change"
+msgstr ""
+
+#: includes/site/class-blocks.php:682
+msgid "Thanks for checking."
+msgstr ""
+
 #. translators: %s: restaurant name.
-#: includes/site/class-blocks.php:672
+#: includes/site/class-blocks.php:708
 #, php-format
 msgid "Map showing %s"
 msgstr ""
 
-#: includes/site/class-blocks.php:691
+#: includes/site/class-blocks.php:727
 msgid "The map needs JavaScript. Use the directions link above instead."
 msgstr ""
 
-#: includes/site/class-blocks.php:719
+#: includes/site/class-blocks.php:755
 msgid "History"
 msgstr ""
 
-#: includes/site/class-blocks.php:738
+#: includes/site/class-blocks.php:774
 msgid "Own this restaurant? Claim this listing"
 msgstr ""
 
-#: includes/site/class-blocks.php:740
+#: includes/site/class-blocks.php:776
 #: includes/site/class-pages.php:121
 msgid "Contact the owner"
 msgstr ""
 
-#: includes/site/class-blocks.php:741
+#: includes/site/class-blocks.php:777
 msgid "Advertise on this page"
 msgstr ""
 
-#: includes/site/class-blocks.php:757
+#: includes/site/class-blocks.php:793
 msgid "About this listing"
 msgstr ""
 
 #. translators: %s: restaurant name, linked.
-#: includes/site/class-blocks.php:778
+#: includes/site/class-blocks.php:814
 #, php-format
 msgid "Listing: %s"
 msgstr ""
 
-#: includes/site/class-blocks.php:801
+#: includes/site/class-blocks.php:837
 msgid "Loading the map…"
 msgstr ""
 
-#: includes/site/class-blocks.php:802
+#: includes/site/class-blocks.php:838
 msgid "Map of restaurants"
 msgstr ""
 
-#: includes/site/class-blocks.php:803
+#: includes/site/class-blocks.php:839
 msgid "The map needs JavaScript. The list view shows the same restaurants."
 msgstr ""
 
-#: includes/site/class-blocks.php:805
+#: includes/site/class-blocks.php:841
 msgid "Show these restaurants as a list"
 msgstr ""
 
 #. translators: 1: "© OpenStreetMap contributors" link, 2: licence link.
-#: includes/site/class-blocks.php:820
+#: includes/site/class-blocks.php:856
 #, php-format
 msgid "Restaurant details include data %1$s, available under the %2$s."
 msgstr ""
 
-#: includes/site/class-blocks.php:821
+#: includes/site/class-blocks.php:857
 msgid "© OpenStreetMap contributors"
 msgstr ""
 
-#: includes/site/class-blocks.php:822
+#: includes/site/class-blocks.php:858
 msgid "Open Database License"
 msgstr ""
 
 #. translators: 1: OpenFreeMap link, 2: OpenMapTiles link.
-#: includes/site/class-blocks.php:827
+#: includes/site/class-blocks.php:863
 #, php-format
 msgid "Maps: %1$s, %2$s, with OpenStreetMap data."
 msgstr ""
 
 #. translators: %s: Census link.
-#: includes/site/class-blocks.php:834
+#: includes/site/class-blocks.php:870
 #, php-format
 msgid "Village boundaries: %s."
 msgstr ""
 
-#: includes/site/class-blocks.php:835
+#: includes/site/class-blocks.php:871
 msgid "U.S. Census Bureau TIGER/Line"
 msgstr ""
 
 #. translators: %s: Foursquare Open Source Places link.
-#: includes/site/class-blocks.php:840
+#: includes/site/class-blocks.php:876
 #, php-format
 msgid "Some business details: %s, © Foursquare Labs, Inc., Apache License 2.0."
 msgstr ""
 
-#: includes/site/class-blocks.php:844
+#: includes/site/class-blocks.php:880
 msgid "Ratings from other sites are shown as each site provides them, with its own credit."
 msgstr ""
 
-#: includes/site/class-blocks.php:869
+#: includes/site/class-blocks.php:905
 #: includes/site/class-pages.php:127
 msgid "Terms of use"
 msgstr ""
 
-#: includes/site/class-blocks.php:871
+#: includes/site/class-blocks.php:907
 msgid "Data sources"
 msgstr ""
 
-#: includes/site/class-blocks.php:873
+#: includes/site/class-blocks.php:909
 #: includes/site/class-pages.php:140
 msgid "Advertise with us"
 msgstr ""
 
-#: includes/site/class-blocks.php:900
+#: includes/site/class-blocks.php:936
 msgid "Color theme"
 msgstr ""
 
@@ -5443,153 +5557,220 @@ msgstr ""
 msgid "Open late means open at 10 pm tonight, Guam time, and lists only restaurants whose hours we have."
 msgstr ""
 
-#: includes/site/class-directory-view.php:180
+#. translators: %s: day and time, for example "Saturday at 7:30 am".
+#: includes/site/class-directory-view.php:181
+#, php-format
+msgid "Open %s uses Guam time and lists only restaurants whose hours we have. Holiday hours may differ."
+msgstr ""
+
+#: includes/site/class-directory-view.php:187
+msgid "Breakfast lists restaurants open by 8 am on at least one day, going by their listed hours."
+msgstr ""
+
+#: includes/site/class-directory-view.php:192
 msgid "Clear all filters"
 msgstr ""
 
-#: includes/site/class-directory-view.php:207
+#: includes/site/class-directory-view.php:219
 msgid "(remove)"
 msgstr ""
 
 #. translators: %s: the words the visitor typed, for example "Tumon".
-#: includes/site/class-directory-view.php:226
+#: includes/site/class-directory-view.php:238
 #, php-format
 msgid "(%s)"
 msgstr ""
 
-#: includes/site/class-directory-view.php:234
-#: includes/site/class-directory-view.php:339
+#: includes/site/class-directory-view.php:246
+#: includes/site/class-directory-view.php:358
 #: includes/site/class-picker.php:308
 msgid "Open now"
 msgstr ""
 
-#: includes/site/class-directory-view.php:235
-#: includes/site/class-directory-view.php:340
+#: includes/site/class-directory-view.php:247
+#: includes/site/class-directory-view.php:359
 msgid "Open late"
 msgstr ""
 
-#: includes/site/class-directory-view.php:236
-#: includes/site/class-directory-view.php:341
+#: includes/site/class-directory-view.php:248
+#: includes/site/class-directory-view.php:360
+msgid "Breakfast"
+msgstr ""
+
+#: includes/site/class-directory-view.php:249
+#: includes/site/class-directory-view.php:361
 msgid "Award winners"
 msgstr ""
 
+#. translators: %s: day and time, for example "Saturday at 7:30 am".
+#: includes/site/class-directory-view.php:258
+#, php-format
+msgid "Open %s"
+msgstr ""
+
 #. translators: %s: keywords searched for.
-#: includes/site/class-directory-view.php:245
+#: includes/site/class-directory-view.php:262
 #, php-format
 msgid "Words: “%s”"
 msgstr ""
 
 #. translators: %s: what the visitor typed.
-#: includes/site/class-directory-view.php:255
+#: includes/site/class-directory-view.php:272
 #, php-format
 msgid "We read “%s” as:"
 msgstr ""
 
-#: includes/site/class-directory-view.php:259
+#: includes/site/class-directory-view.php:276
 msgid "Search the exact words instead"
 msgstr ""
 
-#: includes/site/class-directory-view.php:262
+#: includes/site/class-directory-view.php:279
 msgid "Filters:"
 msgstr ""
 
-#: includes/site/class-directory-view.php:266
+#: includes/site/class-directory-view.php:283
 msgid "Filters in use"
 msgstr ""
 
-#: includes/site/class-directory-view.php:271
+#: includes/site/class-directory-view.php:288
 msgid "Clear all"
 msgstr ""
 
-#: includes/site/class-directory-view.php:290
+#: includes/site/class-directory-view.php:307
 msgid "Previous"
 msgstr ""
 
 #. translators: %s: page number.
-#: includes/site/class-directory-view.php:302
+#: includes/site/class-directory-view.php:319
 #, php-format
 msgid "Page %s"
 msgstr ""
 
-#: includes/site/class-directory-view.php:306
+#: includes/site/class-directory-view.php:323
 msgid "Next"
 msgstr ""
 
-#: includes/site/class-directory-view.php:308
+#: includes/site/class-directory-view.php:325
 msgid "Results pages"
 msgstr ""
 
 #. translators: 1: price level, 2: highest level.
-#: includes/site/class-directory-view.php:350
+#: includes/site/class-directory-view.php:370
 #: includes/site/class-picker.php:272
 #: includes/site/class-restaurant-view.php:133
 #, php-format
 msgid "Price level %1$d of %2$d"
 msgstr ""
 
-#: includes/site/class-directory-view.php:374
+#: includes/site/class-directory-view.php:394
 msgid "Name (A to Z)"
 msgstr ""
 
-#: includes/site/class-directory-view.php:375
+#: includes/site/class-directory-view.php:395
 #: blocks/site-editor/editor.js:99
 msgid "Newest listings"
 msgstr ""
 
-#: includes/site/class-directory-view.php:376
+#: includes/site/class-directory-view.php:396
 msgid "Price (low to high)"
 msgstr ""
 
-#: includes/site/class-directory-view.php:377
+#: includes/site/class-directory-view.php:397
 msgid "Price (high to low)"
 msgstr ""
 
-#: includes/site/class-directory-view.php:380
+#: includes/site/class-directory-view.php:400
 msgid "Best match"
 msgstr ""
 
-#: includes/site/class-directory-view.php:389
+#: includes/site/class-directory-view.php:409
 msgid "Sort by"
 msgstr ""
 
-#: includes/site/class-directory-view.php:406
+#: includes/site/class-directory-view.php:426
 msgid "Filter restaurants"
 msgstr ""
 
-#: includes/site/class-directory-view.php:407
+#: includes/site/class-directory-view.php:427
 msgid "Search by name, dish or what you feel like"
 msgstr ""
 
-#: includes/site/class-directory-view.php:414
+#: includes/site/class-directory-view.php:434
 msgid "More filters"
 msgstr ""
 
-#: includes/site/class-directory-view.php:417
+#: includes/site/class-directory-view.php:437
 msgid "Quick filters"
 msgstr ""
 
-#: includes/site/class-directory-view.php:420
+#: includes/site/class-directory-view.php:440
 msgid "Show results"
 msgstr ""
 
-#: includes/site/class-directory-view.php:422
+#: includes/site/class-directory-view.php:442
 msgid "Clear filters"
 msgstr ""
 
-#: includes/site/class-directory-view.php:423
+#: includes/site/class-directory-view.php:443
 msgid "Try “cheap Korean open late in Tumon”"
 msgstr ""
 
-#. translators: %d: number of selected options.
 #: includes/site/class-directory-view.php:477
+msgid "Choose a day"
+msgstr ""
+
+#: includes/site/class-directory-view.php:478
+msgid "Today"
+msgstr ""
+
+#: includes/site/class-directory-view.php:479
+msgid "Tomorrow"
+msgstr ""
+
+#: includes/site/class-directory-view.php:481
+msgid "Choose a time"
+msgstr ""
+
+#: includes/site/class-directory-view.php:498
+msgid "Open at"
+msgstr ""
+
+#: includes/site/class-directory-view.php:499
+msgid "Day"
+msgstr ""
+
+#: includes/site/class-directory-view.php:502
+msgid "Time"
+msgstr ""
+
+#: includes/site/class-directory-view.php:505
+msgid "Guam time, by listed hours. Choose both a day and a time."
+msgstr ""
+
+#. translators: %d: number of selected options.
+#: includes/site/class-directory-view.php:540
 #: includes/site/class-picker.php:300
-#: assets/site/directory.js:109
+#: assets/site/directory.js:123
 #: assets/site/picker.js:53
 #, php-format,js-format
 msgid " (%d selected)"
 msgid_plural " (%d selected)"
 msgstr[0] ""
 msgstr[1] ""
+
+#: includes/site/class-filters.php:292
+msgid "today"
+msgstr ""
+
+#: includes/site/class-filters.php:293
+msgid "tomorrow"
+msgstr ""
+
+#. translators: 1: day, for example "Saturday" or "today", 2: time, for example "7:30 am".
+#: includes/site/class-filters.php:297
+#, php-format
+msgid "%1$s at %2$s"
+msgstr ""
 
 #: includes/site/class-history.php:35
 #: includes/site/class-pages.php:99
@@ -5849,36 +6030,66 @@ msgstr ""
 msgid "Closed in %s"
 msgstr ""
 
-#: includes/site/class-restaurant-view.php:260
+#. translators: %s: date.
+#: includes/site/class-restaurant-view.php:275
+#, php-format
+msgid "Hours confirmed by the owner on %s."
+msgstr ""
+
+#. translators: %s: date.
+#: includes/site/class-restaurant-view.php:275
+msgid "Hours from the owner."
+msgstr ""
+
+#. translators: %s: date.
+#: includes/site/class-restaurant-view.php:278
+#, php-format
+msgid "Hours checked by our editors on %s."
+msgstr ""
+
+#. translators: %s: date.
+#: includes/site/class-restaurant-view.php:278
+msgid "Hours added by our editors."
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:280
+msgid "Hours from OpenStreetMap, not yet confirmed by the owner."
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:282
+msgid "Hours not yet confirmed by the owner."
+msgstr ""
+
+#: includes/site/class-restaurant-view.php:293
 msgid "Monday"
 msgstr ""
 
-#: includes/site/class-restaurant-view.php:261
+#: includes/site/class-restaurant-view.php:294
 msgid "Tuesday"
 msgstr ""
 
-#: includes/site/class-restaurant-view.php:262
+#: includes/site/class-restaurant-view.php:295
 msgid "Wednesday"
 msgstr ""
 
-#: includes/site/class-restaurant-view.php:263
+#: includes/site/class-restaurant-view.php:296
 msgid "Thursday"
 msgstr ""
 
-#: includes/site/class-restaurant-view.php:264
+#: includes/site/class-restaurant-view.php:297
 msgid "Friday"
 msgstr ""
 
-#: includes/site/class-restaurant-view.php:265
+#: includes/site/class-restaurant-view.php:298
 msgid "Saturday"
 msgstr ""
 
-#: includes/site/class-restaurant-view.php:266
+#: includes/site/class-restaurant-view.php:299
 msgid "Sunday"
 msgstr ""
 
 #. translators: %d: year.
-#: includes/site/class-restaurant-view.php:354
+#: includes/site/class-restaurant-view.php:387
 #, php-format
 msgid "Award winner %d"
 msgstr ""
@@ -5943,7 +6154,7 @@ msgstr ""
 msgid "Restaurant award results recorded on this site, each with a link to where it was published."
 msgstr ""
 
-#: includes/site/class-seo.php:306
+#: includes/site/class-seo.php:309
 msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
 msgstr ""
 
@@ -6029,7 +6240,7 @@ msgid "Your inquiry could not be sent. Please check your connection and try agai
 msgstr ""
 
 #: assets/advertising/inquiry.js:309
-#: assets/corrections/corrections.js:375
+#: assets/corrections/corrections.js:380
 msgid "The form could not be loaded. Please reload the page."
 msgstr ""
 
@@ -6092,23 +6303,23 @@ msgstr ""
 msgid "A closed restaurant is marked closed rather than removed. Removing a listing never adds any note to the site."
 msgstr ""
 
-#: assets/corrections/corrections.js:276
+#: assets/corrections/corrections.js:277
 msgid "Type at least two letters of the restaurant name and pick it from the list."
 msgstr ""
 
-#: assets/corrections/corrections.js:281
+#: assets/corrections/corrections.js:282
 msgid "Where can we confirm this?"
 msgstr ""
 
-#: assets/corrections/corrections.js:281
+#: assets/corrections/corrections.js:282
 msgid "For example, a link to the restaurant's website or social media page, or \"sign on the door\"."
 msgstr ""
 
-#: assets/corrections/corrections.js:282
+#: assets/corrections/corrections.js:283
 msgid "Your connection to the restaurant"
 msgstr ""
 
-#: assets/corrections/corrections.js:354
+#: assets/corrections/corrections.js:359
 msgid "Your request could not be sent. Please check your connection and try again."
 msgstr ""
 

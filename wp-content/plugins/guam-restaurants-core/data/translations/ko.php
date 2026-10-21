@@ -39,6 +39,7 @@ return array(
 	'Pick for me'                 => '식당 골라 줘',
 	'New and closed'              => '개업·폐업',
 	'Awards'                      => '수상 내역',
+	'Dishes'                      => '음식',
 	'Browse by cuisine'           => '음식 종류별로 찾기',
 	'New on Guam'                 => '괌의 새 식당',
 	'Budget eats'                 => '저렴한 맛집',
