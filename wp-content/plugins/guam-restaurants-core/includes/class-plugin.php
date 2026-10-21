@@ -104,6 +104,7 @@ final class Plugin {
 		Saved\View::register();
 		Saved\Members::register();
 		Saved\Rest_Controller::register();
+		Translation\Integration::register();
 		Site\Seo::register();
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();
@@ -138,6 +139,7 @@ final class Plugin {
 			Cli\Photo_Commands::register();
 			Cli\Premium_Commands::register();
 			Cli\Operations_Commands::register();
+			Cli\Translation_Commands::register();
 		}
 	}
 

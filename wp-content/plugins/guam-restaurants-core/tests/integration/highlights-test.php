@@ -571,7 +571,7 @@ class Highlights_Test extends Test_Case {
 		$this->assertStringContainsString( '>Highlights</h2>', $html );
 		$this->assertStringContainsString( 'gr-highlight--owner', $html );
 		$this->assertStringContainsString( 'Editor&#039;s note', $html );
-		$this->assertStringContainsString( 'Editor Person, staff writer', $html );
+		$this->assertStringContainsString( '<span class="notranslate" translate="no">Editor Person</span>, staff writer', $html );
 		$this->assertStringContainsString( '>User reviews</h3>', $html );
 		$this->assertStringContainsString( esc_url( Policy_Page::url() ), $html );
 

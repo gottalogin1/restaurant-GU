@@ -23,6 +23,8 @@ use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Saved\View as Saved_View;
+use GuamRestaurants\Core\Translation\Integration as Translation;
+use GuamRestaurants\Core\Translation\Languages;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -60,6 +62,7 @@ final class Blocks {
 		'random-picker'       => 'random_picker',
 		'saved-list'          => 'saved_list',
 		'account-links'       => 'account_links',
+		'language-switcher'   => 'language_switcher',
 	);
 
 	/**
@@ -146,7 +149,7 @@ final class Blocks {
 		) as $facet => $group ) {
 			$options = '';
 			foreach ( Directory_View::facet_terms( $group[0] ) as $term ) {
-				$options .= sprintf( '<option value="%1$s">%2$s</option>', esc_attr( $facet . ':' . $term->slug ), esc_html( $term->name ) );
+				$options .= sprintf( '<option value="%1$s" %3$s>%2$s</option>', esc_attr( $facet . ':' . $term->slug ), esc_html( $term->name ), Languages::keep_attributes() );
 			}
 			$groups .= '' === $options ? '' : sprintf( '<optgroup label="%1$s">%2$s</optgroup>', esc_attr( $group[1] ), $options );
 		}
@@ -209,6 +212,15 @@ final class Blocks {
 	}
 
 	/**
+	 * Header language links (English, 日本語, 한국어), shown once a translation plugin publishes them.
+	 *
+	 * @return string
+	 */
+	public static function language_switcher(): string {
+		return Translation::switcher();
+	}
+
+	/**
 	 * Term chips.
 	 *
 	 * @param array<string, mixed> $attributes Attributes.
@@ -250,7 +262,7 @@ final class Blocks {
 			$items .= sprintf(
 				'<li><a class="gr-chip" href="%1$s">%2$s%3$s</a></li>',
 				esc_url( $link ),
-				esc_html( $term->name ),
+				Restaurant_View::is_place_taxonomy( $taxonomy ) ? Languages::keep( esc_html( $term->name ) ) : esc_html( $term->name ),
 				/* translators: %s: number of restaurants. */
 				$counts ? ' <span class="gr-chip__count"><span class="screen-reader-text">' . esc_html( sprintf( _n( '%s restaurant', '%s restaurants', (int) $term->count, 'guam-restaurants-core' ), number_format_i18n( (int) $term->count ) ) ) . '</span><span aria-hidden="true">' . esc_html( number_format_i18n( (int) $term->count ) ) . '</span></span>' : ''
 			);
@@ -369,18 +381,18 @@ final class Blocks {
 		$items    = '';
 		foreach ( $rows as $row ) {
 			$id     = (int) $row['restaurant_id'];
-			$name   = '' !== $row['url'] ? sprintf( '<a href="%1$s">%2$s</a>', esc_url( $row['url'] ), esc_html( $row['name'] ) ) : esc_html( $row['name'] );
+			$name   = '' !== $row['url'] ? sprintf( '<a href="%1$s">%2$s</a>', esc_url( $row['url'] ), Languages::keep( esc_html( $row['name'] ) ) ) : Languages::keep( esc_html( $row['name'] ) );
 			$date   = 'closures' === $kind && '' !== (string) ( $row['closed_on'] ?? '' ) ? Restaurant_View::partial_date( (string) $row['closed_on'] ) : Clock::local_date( (string) $row[ $date_key ] );
 			$meta   = array_filter(
 				array(
-					Restaurant_View::term_names( $id, Content_Types::TAX_CUISINE ),
-					implode( ', ', array_filter( array( Restaurant_View::term_names( $id, Content_Types::TAX_VILLAGE ), Restaurant_View::term_names( $id, Content_Types::TAX_MALL ) ) ) ),
+					esc_html( Restaurant_View::term_names( $id, Content_Types::TAX_CUISINE ) ),
+					Restaurant_View::place_html( $id ),
 				)
 			);
 			$items .= sprintf(
 				'<li class="gr-recent__item"><h3 class="gr-recent__name">%1$s</h3>%2$s<p class="gr-recent__date"><time>%3$s</time></p></li>',
 				$name,
-				$meta ? '<p class="gr-recent__meta">' . esc_html( implode( ' · ', $meta ) ) . '</p>' : '',
+				$meta ? '<p class="gr-recent__meta">' . implode( ' · ', $meta ) . '</p>' : '',
 				esc_html( $date )
 			);
 		}
@@ -475,7 +487,7 @@ final class Blocks {
 		$meta   = array_filter(
 			array(
 				esc_html( Restaurant_View::term_names( $id, Content_Types::TAX_CUISINE ) ),
-				esc_html( implode( ', ', array_filter( array( Restaurant_View::term_names( $id, Content_Types::TAX_MALL ), Restaurant_View::term_names( $id, Content_Types::TAX_VILLAGE ) ) ) ) ),
+				Restaurant_View::place_html( $id, Content_Types::TAX_MALL ),
 				Restaurant_View::price_html( $id ),
 			)
 		);
@@ -527,7 +539,7 @@ final class Blocks {
 					: ( '' !== $hours ? '<p class="gr-card__open gr-hero__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' ),
 				esc_attr__( 'Restaurant actions', 'guam-restaurants-core' ),
 				implode( '', $actions ),
-				esc_html( get_the_title( $id ) )
+				Languages::keep( esc_html( get_the_title( $id ) ) )
 			),
 			array(
 				'class'           => 'gr-hero',
@@ -556,7 +568,7 @@ final class Blocks {
 		$place  = array_filter( array( Restaurant_View::term_links( $id, Content_Types::TAX_MALL ), Restaurant_View::term_links( $id, Content_Types::TAX_VILLAGE ) ) );
 		$street = Restaurant_View::address( $id );
 		if ( '' !== $street || $place ) {
-			$rows[ __( 'Address', 'guam-restaurants-core' ) ] = implode( '<br>', array_filter( array( esc_html( $street ), implode( ', ', $place ) ) ) );
+			$rows[ __( 'Address', 'guam-restaurants-core' ) ] = implode( '<br>', array_filter( array( Languages::keep( esc_html( $street ) ), implode( ', ', $place ) ) ) );
 		}
 		$cuisine = Restaurant_View::term_links( $id, Content_Types::TAX_CUISINE );
 		if ( '' !== $cuisine ) {
@@ -800,7 +812,7 @@ final class Blocks {
 			sprintf(
 				/* translators: %s: restaurant name, linked. */
 				esc_html__( 'Listing: %s', 'guam-restaurants-core' ),
-				sprintf( '<a href="%1$s">%2$s</a>%3$s', esc_url( (string) get_permalink( $id ) ), esc_html( get_the_title( $id ) ), '' !== $place ? ' (' . esc_html( $place ) . ')' : '' )
+				sprintf( '<a href="%1$s">%2$s</a>%3$s', esc_url( (string) get_permalink( $id ) ), Languages::keep( esc_html( get_the_title( $id ) ) ), '' !== $place ? ' (' . Languages::keep( esc_html( $place ) ) . ')' : '' )
 			),
 			array( 'class' => 'gr-listing-context' )
 		);

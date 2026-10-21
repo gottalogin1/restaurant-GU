@@ -7,13 +7,16 @@
 
 namespace GuamRestaurants\Core\Site;
 
+use GuamRestaurants\Core\Translation\Languages;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Caches computed lists (map points, facet lists, feeds) in the object
  * cache. Keys include WordPress's last-changed stamps for posts, post meta
  * and terms, so an edit or import makes new keys instead of serving stale
- * data; entries also expire after TTL seconds.
+ * data, and the page's language, since names and text in them are
+ * translated; entries also expire after TTL seconds.
  *
  * Without a persistent object cache (Redis or Memcached, for example
  * through W3 Total Cache) this only saves work within one request.
@@ -53,7 +56,7 @@ final class Cache {
 	 */
 	public static function key( string $name, $args ): string {
 		$stamp = wp_cache_get_last_changed( 'posts' ) . ':' . wp_cache_get_last_changed( 'post-queries' ) . ':' . wp_cache_get_last_changed( 'terms' ) . ':' . wp_cache_get_last_changed( self::GROUP );
-		return $name . ':' . md5( (string) wp_json_encode( $args ) . '|' . $stamp );
+		return $name . ':' . md5( (string) wp_json_encode( $args ) . '|' . $stamp . '|' . Languages::current() );
 	}
 
 	/**

@@ -26,6 +26,7 @@
 		'restaurant-hero',
 		'color-scheme-toggle',
 		'popular-dishes',
+		'language-switcher',
 	];
 
 	function number( props, name, label ) {
@@ -167,6 +168,7 @@
 		'account-links',
 		'color-scheme-toggle',
 		'popular-dishes',
+		'language-switcher',
 	];
 
 	names.forEach( function ( name ) {

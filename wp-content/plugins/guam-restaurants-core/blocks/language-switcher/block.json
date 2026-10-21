@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "guam-restaurants/language-switcher",
+	"version": "0.1.0",
+	"title": "Language switcher",
+	"category": "widgets",
+	"icon": "translation",
+	"description": "Header links to this page in English, Japanese and Korean. Shows once TranslatePress publishes the translations.",
+	"textdomain": "guam-restaurants-core",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "guam-restaurants-site-blocks-editor"
+}

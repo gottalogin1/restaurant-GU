@@ -437,6 +437,29 @@ class Ratings_Display_Test extends Test_Case {
 	}
 
 	/**
+	 * On a translated page Google is asked for its own text in that language; nothing else changes.
+	 */
+	public function test_google_answers_in_the_page_language() {
+		$request = new WP_REST_Request( 'GET', '/guam-restaurants/v1/restaurants/' . $this->restaurant . '/ratings' );
+		$request->set_param( 'sources', 'google' );
+		$request->set_param( 'lang', 'ja' );
+		$this->assertSame( 200, rest_get_server()->dispatch( $request )->get_status() );
+
+		$request = new WP_REST_Request( 'GET', '/guam-restaurants/v1/restaurants/' . $this->restaurant . '/ratings' );
+		$request->set_param( 'sources', 'google' );
+		$this->assertSame( 200, rest_get_server()->dispatch( $request )->get_status() );
+
+		$urls = array_column( $this->api->requests_to( '#places\.googleapis\.com/v1/places/#' ), 0 );
+		$this->assertCount( 2, $urls );
+		$this->assertStringEndsWith( '/places/ChIJgrill?languageCode=ja', $urls[0] );
+		$this->assertStringEndsWith( '/places/ChIJgrill', $urls[1] );
+
+		$request = new WP_REST_Request( 'GET', '/guam-restaurants/v1/restaurants/' . $this->restaurant . '/ratings' );
+		$request->set_param( 'lang', 'ja"><script>' );
+		$this->assertSame( 400, rest_get_server()->dispatch( $request )->get_status() );
+	}
+
+	/**
 	 * The shortcode and block print only a placeholder pointing at the endpoint: no ratings in cached HTML.
 	 */
 	public function test_markup_is_a_placeholder() {

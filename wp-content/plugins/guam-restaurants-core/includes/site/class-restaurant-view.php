@@ -16,6 +16,7 @@ use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Saved\View as Saved_View;
 use GuamRestaurants\Core\Term_Meta;
+use GuamRestaurants\Core\Translation\Languages;
 use GuamRestaurants\Core\Vocabulary;
 
 defined( 'ABSPATH' ) || exit;
@@ -73,9 +74,34 @@ final class Restaurant_View {
 		$links = array();
 		foreach ( self::terms( $restaurant_id, $taxonomy ) as $term ) {
 			$url     = get_term_link( $term );
-			$links[] = is_wp_error( $url ) ? esc_html( $term->name ) : sprintf( '<a href="%1$s">%2$s</a>', esc_url( $url ), esc_html( $term->name ) );
+			$name    = self::is_place_taxonomy( $taxonomy ) ? Languages::keep( esc_html( $term->name ) ) : esc_html( $term->name );
+			$links[] = is_wp_error( $url ) ? $name : sprintf( '<a href="%1$s">%2$s</a>', esc_url( $url ), $name );
 		}
 		return implode( ', ', $links );
+	}
+
+	/**
+	 * Whether a taxonomy holds place names (villages, malls), which keep
+	 * their local spelling on translated pages.
+	 *
+	 * @param string $taxonomy Taxonomy.
+	 * @return bool
+	 */
+	public static function is_place_taxonomy( string $taxonomy ): bool {
+		return in_array( $taxonomy, array( Content_Types::TAX_VILLAGE, Content_Types::TAX_MALL ), true );
+	}
+
+	/**
+	 * Village and mall names of a restaurant, escaped and kept in their local spelling.
+	 *
+	 * @param int    $restaurant_id Restaurant.
+	 * @param string $first         Taxonomy listed first (village or mall).
+	 * @return string HTML, or ''.
+	 */
+	public static function place_html( int $restaurant_id, string $first = Content_Types::TAX_VILLAGE ): string {
+		$second = Content_Types::TAX_VILLAGE === $first ? Content_Types::TAX_MALL : Content_Types::TAX_VILLAGE;
+		$names  = implode( ', ', array_filter( array( self::term_names( $restaurant_id, $first ), self::term_names( $restaurant_id, $second ) ) ) );
+		return Languages::keep( esc_html( $names ) );
 	}
 
 	/**
@@ -432,7 +458,7 @@ final class Restaurant_View {
 		$meta          = array_filter(
 			array(
 				esc_html( self::term_names( $restaurant_id, Content_Types::TAX_CUISINE ) ),
-				esc_html( implode( ', ', array_filter( array( self::term_names( $restaurant_id, Content_Types::TAX_VILLAGE ), self::term_names( $restaurant_id, Content_Types::TAX_MALL ) ) ) ) ),
+				self::place_html( $restaurant_id ),
 				self::price_html( $restaurant_id ),
 			)
 		);
@@ -443,9 +469,9 @@ final class Restaurant_View {
 			'<article class="gr-card">%7$s%9$s<div class="gr-card__body">%8$s<h%1$d class="gr-card__name"><a href="%2$s">%3$s</a></h%1$d>%4$s%5$s%6$s</div></article>',
 			$heading_level,
 			esc_url( (string) get_permalink( $restaurant_id ) ),
-			esc_html( get_the_title( $restaurant_id ) ),
+			Languages::keep( esc_html( get_the_title( $restaurant_id ) ) ),
 			$meta ? '<p class="gr-card__meta">' . implode( ' <span aria-hidden="true">·</span> ', $meta ) . '</p>' : '',
-			'' !== self::address( $restaurant_id ) ? '<p class="gr-card__address">' . esc_html( self::address( $restaurant_id ) ) . '</p>' : '',
+			'' !== self::address( $restaurant_id ) ? '<p class="gr-card__address">' . Languages::keep( esc_html( self::address( $restaurant_id ) ) ) . '</p>' : '',
 			'' !== $status
 				? '<p class="gr-card__status">' . esc_html( $status ) . '</p>'
 				: ( '' !== $hours ? '<p class="gr-card__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' ),

@@ -39,6 +39,28 @@ final class Google_Provider extends Base_Provider {
 	public const REVIEWS_FIELD = 'reviews';
 
 	/**
+	 * Language Google writes its own fields in (hours, review dates, and
+	 * reviews it translates itself), e.g. ja; '' for Google's default.
+	 *
+	 * @var string
+	 */
+	private string $language = '';
+
+	/**
+	 * A copy that asks Google for its content in a language (the page's
+	 * language on machine-translated pages). The text is still Google's
+	 * own, shown as returned.
+	 *
+	 * @param string $language Language code such as ja or ko.
+	 * @return self
+	 */
+	public function with_language( string $language ): self {
+		$copy           = clone $this;
+		$copy->language = preg_match( '/^[a-z]{2,3}$/', $language ) ? $language : '';
+		return $copy;
+	}
+
+	/**
 	 * Source key.
 	 *
 	 * @return string
@@ -149,7 +171,8 @@ final class Google_Provider extends Base_Provider {
 	 */
 	public function fetch( string $id, bool $with_reviews ): array {
 		$mask = self::DETAILS_FIELD_MASK . ( $with_reviews ? ',' . self::REVIEWS_FIELD : '' );
-		$data = $this->json( 'GET', self::DETAILS_URL . rawurlencode( $id ), $this->headers( $mask ) );
+		$url  = self::DETAILS_URL . rawurlencode( $id ) . ( '' !== $this->language ? '?languageCode=' . rawurlencode( $this->language ) : '' );
+		$data = $this->json( 'GET', $url, $this->headers( $mask ) );
 
 		$rating                             = $this->rating_shell( 'Google Maps', (string) ( $data['googleMapsUri'] ?? '' ) );
 		$rating['rating']                   = isset( $data['rating'] ) ? (float) $data['rating'] : null;

@@ -30,6 +30,7 @@ that page. Re-check before building an importer.
 | Pika's Best of Guam (PDN) | **Use with limits** | Facts only (year, category, placing) with source URL, pending PDN's reply. See §8 and `docs/awards-research.md`. |
 | Openverse (openly licensed photos) | **Use with limits** | One illustrative photo per cuisine, CC0, public domain, CC BY or CC BY-SA only, always labeled "Illustrative photo" and credited. See §8a. |
 | Restaurant websites (photos) | **Use with limits** | Only with the owner's permission, recorded on the restaurant (§8a). Photos on a website belong to whoever took them. |
+| Japanese and Korean translations (first party, not a data source) | **Use** | Our own interface and page text translated with AI (Claude) during development and shipped with the plugin; no translation service is called. Google, Yelp and Foursquare content is never translated. See §8b. |
 
 **Collection method (2026-10-10).** Data comes through the official APIs
 and open datasets above. Small, rate-limited fetches of other public pages
@@ -623,6 +624,20 @@ uploaded without a license, so neither is copied without permission.
 | Rate limits | Anonymous Openverse requests are rate limited; the command waits 3 seconds between cuisines and retries with backoff. Limits not checked from here: api.openverse.org, Wikimedia Commons and Flickr are blocked from the cloud environment, so run the command on the server. ⚠️ unverified |
 | Review | Look at each photo after a run. Swap one with `--cuisine=<slug> --refresh`, `--query="<words>"` or `--id=<openverse id>`; remove with `--remove`. |
 
+## 8b. Japanese and Korean translations (added 2026-10-20)
+
+Not a data source: translations of text we already publish, written with Claude during
+development (`docs/translation.md`). Google Cloud Translation through TranslatePress was
+considered first and dropped (cost, attribution rules); nothing is sent to a translation
+service.
+
+| | |
+|---|---|
+| What is translated | Our own interface text (`languages/*.po`), page titles and text blocks, theme headings and labels, cuisine names and price levels (`data/translations/*.php`). |
+| Not translated | Restaurant names, addresses, village and mall names, reviewer and author names, photo credits, restaurant descriptions, owner text, visitor reviews, and all Google, Yelp and Foursquare content. Legal, editorial policy and advertiser pages stay English. |
+| Label | Every translated page says it is an AI translation and links the English original and the Translations section of the Data sources page, which says the English page applies. |
+| Google Places in other languages | Place Details accepts `languageCode`; Google then returns its own text (hours, review dates, its own review translations) in that language. Used on translated pages; still shown as returned and never stored. <https://developers.google.com/maps/documentation/places/web-service/place-details> |
+
 ## 9. Data policy table
 
 | Data | Source | Policy | Expiry / refresh |
@@ -648,6 +663,7 @@ uploaded without a license, so neither is copied without permission.
 | Illustrative cuisine photo and its credit (title, author, license, source page, Openverse id) | Openverse (CC0, PDM, CC BY, CC BY-SA) | **Stored permanently** in the media library, always shown with label and credit | When an editor runs `cuisine-photos --refresh` |
 | Visitor and owner photo uploads (reduced copy, dish name, optional dish rating, display name, agreement version) | First-party, under the photo upload agreement | **Stored permanently** after approval; the full-size original is deleted after 30 days; email never stored | n/a |
 | Restaurant photo from its own website, with the permission note | Restaurant website, owner's permission | **Stored permanently** as the featured image; removed if the owner asks | n/a |
+| Japanese and Korean translations of our own text | First-party (written with Claude) | **Stored** in the plugin's `languages/` and `data/translations/` files | Each translation pass (`docs/translation.md` §4) |
 
 ## 10. Research-only references (not data sources)
 

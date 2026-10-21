@@ -11,6 +11,7 @@ use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Reviews\Display as Reviews_Display;
 use GuamRestaurants\Core\Reviews\Visitor_Reviews;
+use GuamRestaurants\Core\Translation\Languages;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -201,7 +202,7 @@ final class Display {
 			nl2br( esc_html( (string) $row['body'] ) ),
 			$list,
 			/* translators: %s: name of the owner or manager. */
-			esc_html( sprintf( __( '%s, for the restaurant', 'guam-restaurants-core' ), (string) $row['author_name'] ) )
+			sprintf( esc_html__( '%s, for the restaurant', 'guam-restaurants-core' ), Languages::keep( esc_html( (string) $row['author_name'] ) ) )
 		);
 	}
 
@@ -220,7 +221,7 @@ final class Display {
 			nl2br( esc_html( (string) $row['body'] ) ),
 			$disclosure,
 			/* translators: %s: staff member's name. */
-			esc_html( sprintf( __( '%s, staff writer ·', 'guam-restaurants-core' ), (string) $row['author_name'] ) ),
+			sprintf( esc_html__( '%s, staff writer ·', 'guam-restaurants-core' ), Languages::keep( esc_html( (string) $row['author_name'] ) ) ),
 			esc_attr( mysql2date( 'Y-m-d', $date ) ),
 			esc_html( mysql2date( (string) get_option( 'date_format' ), $date ) )
 		);

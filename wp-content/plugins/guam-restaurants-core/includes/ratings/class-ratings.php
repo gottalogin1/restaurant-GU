@@ -98,6 +98,7 @@ final class Ratings {
 	 *
 	 *     @type string[] $sources Sources to include, in display order. Default all.
 	 *     @type bool     $reviews Include review text. Default true.
+	 *     @type string   $language Language Google should answer in (ja, ko); '' for its default.
 	 * }
 	 * @return array<int, array<string, mixed>>
 	 */
@@ -108,6 +109,7 @@ final class Ratings {
 
 		$sources   = self::sanitize_sources( $args['sources'] ?? self::SOURCES );
 		$reviews   = (bool) ( $args['reviews'] ?? true );
+		$language  = (string) ( $args['language'] ?? '' );
 		$providers = self::providers();
 		$ratings   = array();
 
@@ -116,7 +118,10 @@ final class Ratings {
 				continue;
 			}
 			$provider = $providers[ $source ];
-			$id       = (string) get_post_meta( $restaurant_id, $provider->id_meta_key(), true );
+			if ( '' !== $language && $provider instanceof Google_Provider ) {
+				$provider = $provider->with_language( $language );
+			}
+			$id = (string) get_post_meta( $restaurant_id, $provider->id_meta_key(), true );
 			if ( '' === $id ) {
 				continue;
 			}

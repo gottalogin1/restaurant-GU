@@ -13,6 +13,7 @@ use GuamRestaurants\Core\Ads\Tracking;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Term_Meta;
+use GuamRestaurants\Core\Translation\Languages;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -428,7 +429,7 @@ final class Picker {
 					$name .= ' (' . implode( ', ', $aliases ) . ')';
 				}
 			}
-			$options .= sprintf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $term->slug ), selected( in_array( $term->slug, $current, true ), true, false ), esc_html( $name ) );
+			$options .= sprintf( '<option value="%1$s"%2$s %4$s>%3$s</option>', esc_attr( $term->slug ), selected( in_array( $term->slug, $current, true ), true, false ), esc_html( $name ), Languages::keep_attributes() );
 		}
 		return sprintf(
 			'<div class="gr-picker__field gr-picker__select"><label for="%1$s">%2$s</label><select id="%1$s" name="%3$s"><option value="">%4$s</option>%5$s</select></div>',

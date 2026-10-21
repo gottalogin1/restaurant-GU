@@ -133,6 +133,10 @@ full list is in [.env.example](../.env.example).
 - [ ] Logo and asset URLs for Google Maps, Foursquare and Yelp (if used),
       downloaded from each brand page by hand.
 - [ ] Alert email (`GUAM_RESTAURANTS_ALERT_EMAIL`).
+- [ ] Japanese and Korean pages ([translation.md](translation.md) §6): install the
+      WordPress core language packs for 日本語 and 한국어, purge the page cache, reset the
+      header if it was edited, and run `wp guam-restaurants translations missing --lang=ja`
+      (and `ko`) after the live content is in, so a translation pass can fill the gaps.
 - [ ] Server crontab for the scheduled jobs ([scheduling.md](scheduling.md)),
       with `GUAM_RESTAURANTS_CRON_MODE=server`.
 - [ ] Confirm the host gzips JSON. The map data is about 450 KB without it and
