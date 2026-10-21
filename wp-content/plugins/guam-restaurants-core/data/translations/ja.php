@@ -39,6 +39,7 @@ return array(
 	'Pick for me'                 => 'お店を選んで',
 	'New and closed'              => '開店・閉店',
 	'Awards'                      => '受賞歴',
+	'Dishes'                      => '料理',
 	'Browse by cuisine'           => '料理のジャンルから探す',
 	'New on Guam'                 => 'グアムの新しいお店',
 	'Budget eats'                 => 'お手頃なお店',

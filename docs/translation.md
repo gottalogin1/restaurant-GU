@@ -35,7 +35,7 @@ owner highlights and visitor reviews are not translated (§5).
   login and files under `wp-content` and `wp-includes` never get a prefix.
 - **Interface text** comes from the plugin's translation files in `languages/`:
   `guam-restaurants-core-ja.po`/`.mo`, `-ko_KR.po`/`.mo`, and JSON files for the scripts
-  (directory, map, picker, Saved page, ratings and reviews boxes). 541 of 1,462 strings are
+  (directory, map, picker, Saved page, ratings and reviews boxes). 584 of 1,468 strings are
   translated: everything visitors see. Owner, admin, claims, checkout and admin email text is
   left in English on purpose.
 - **Saved and theme text** (`Dictionary`, `data/translations/ja.php` and `ko.php`): page and
@@ -79,9 +79,12 @@ Interface text (strings in PHP or JS wrapped in `__()` and friends):
 
 1. Run `make translations`. It refreshes `languages/guam-restaurants-core.pot`, merges new
    strings into both `.po` files (as untranslated), rebuilds the `.mo` and JSON files, and
-   prints how many saved texts still have no translation.
+   prints how many saved texts still have no translation. It runs as your user, so the files
+   stay yours.
 2. Ask Claude to translate the new empty entries in both `.po` files, then run
-   `make translations` again and commit `languages/`.
+   `make translations` again and commit `languages/`. The `.po` files also hold the owner and
+   admin strings left empty on purpose (§2), so compare against the previous `.pot` to find
+   what is new.
 
 Saved text (new pages, edited headings, new cuisines, template edits in the Site Editor):
 
