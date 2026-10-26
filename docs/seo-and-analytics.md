@@ -165,6 +165,17 @@ those profiles.
 - **Restaurant data** adds `postalCode` when the address has a 969xx ZIP
   code, and `hasMenu` from the owner's first menu link while the listing is
   claimed (the same rule as the Menu button).
+- **Cuisine-in-village pages** (`Site\Cuisine_Villages`, added 2026-10-26,
+  gap G1). A village page with one cuisine chosen and nothing else
+  (`/villages/tumon/?cuisine=korean`) is a page of its own when 5 or more
+  open restaurants match (`Cuisine_Villages::MIN_PLACES`, Sanjay's
+  threshold; closed places don't count). It gets the heading and title
+  "Korean Restaurants in Tumon, Guam", a description with the count, a
+  canonical link, an `ItemList`, an entry in the `pages` sitemap, and links
+  from the village page ("Popular cuisines in ...") and the cuisine page
+  ("Where to find ... food"). Below 5 places, or with any other filter or
+  sort, the URL stays noindex,follow. The list of pairs is cached for an
+  hour and refreshed when restaurants or terms change.
 - The full plan, with what comes next, is the SEO plan doc
   (https://claude.ai/artifact/JcXSSwwXHeqLCb91Ye8ZYC).
 

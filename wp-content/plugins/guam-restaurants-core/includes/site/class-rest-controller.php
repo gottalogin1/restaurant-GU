@@ -108,11 +108,12 @@ final class Rest_Controller {
 
 		$response = new \WP_REST_Response(
 			array(
-				'html'  => Directory_View::results( $query, $filters, $locked ),
-				'total' => (int) $query->found_posts,
-				'page'  => $filters['page'],
-				'pages' => (int) $query->max_num_pages,
-				'url'   => Directory_View::page_url( $filters, $locked, $filters['page'] ),
+				'html'    => Directory_View::results( $query, $filters, $locked ),
+				'total'   => (int) $query->found_posts,
+				'page'    => $filters['page'],
+				'pages'   => (int) $query->max_num_pages,
+				'url'     => Directory_View::page_url( $filters, $locked, $filters['page'] ),
+				'heading' => Cuisine_Villages::heading( $filters, $locked ),
 			)
 		);
 		return self::cacheable( $response, $filters );

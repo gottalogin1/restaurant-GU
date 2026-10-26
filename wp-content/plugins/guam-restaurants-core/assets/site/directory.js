@@ -195,6 +195,11 @@
 				.then( function ( data ) {
 					results.innerHTML = data.html;
 					results.removeAttribute( 'aria-busy' );
+					// On a village page the heading follows the cuisine ("Korean Restaurants in Tumon, Guam").
+					var heading = data.heading ? document.querySelector( '.wp-block-query-title' ) : null;
+					if ( heading ) {
+						heading.textContent = data.heading;
+					}
 					if ( sync ) {
 						apply( form, new URL( data.url, window.location.href ).searchParams );
 					}

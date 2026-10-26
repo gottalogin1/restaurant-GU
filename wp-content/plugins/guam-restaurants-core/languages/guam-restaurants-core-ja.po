@@ -21,22 +21,22 @@ msgid "Source"
 msgstr "出典"
 
 #: includes/admin/class-review-queue-screen.php:690
-#: includes/site/class-blocks.php:617
+#: includes/site/class-blocks.php:618
 msgid "Details"
 msgstr "詳細"
 
 #: includes/admin/class-review-queue-screen.php:1073
 #: includes/class-content-types.php:51
-#: includes/site/class-directory-view.php:340
+#: includes/site/class-directory-view.php:348
 #: includes/site/class-picker.php:261
-#: includes/site/class-related-links.php:128
+#: includes/site/class-related-links.php:137
 msgid "Village"
 msgstr "村"
 
 #: includes/admin/class-review-queue-screen.php:1074
 #: includes/admin/class-tag-origins-box.php:59
 #: includes/class-content-types.php:57
-#: includes/site/class-directory-view.php:341
+#: includes/site/class-directory-view.php:349
 #: includes/site/class-picker.php:262
 msgid "Mall"
 msgstr "モール"
@@ -49,13 +49,13 @@ msgstr "モール"
 #: includes/awards/class-pages.php:391
 #: includes/awards/class-pages.php:499
 #: includes/class-content-types.php:35
-#: includes/commerce/class-woo-checkout.php:314
-#: includes/commerce/class-woo-checkout.php:360
+#: includes/commerce/class-woo-checkout.php:325
+#: includes/commerce/class-woo-checkout.php:371
 #: includes/corrections/class-corrections.php:365
 #: includes/highlights/class-moderation-screen.php:165
 #: includes/highlights/class-submit-screen.php:145
 #: includes/highlights/class-submit-screen.php:216
-#: includes/site/class-restaurant-view.php:420
+#: includes/site/class-restaurant-view.php:491
 #: assets/advertising/inquiry.js:218
 #: assets/corrections/corrections.js:277
 msgid "Restaurant"
@@ -65,7 +65,7 @@ msgstr "レストラン"
 #: includes/advertising/class-admin.php:352
 #: includes/advertising/class-admin.php:449
 #: includes/advertising/class-leads.php:504
-#: includes/site/class-blocks.php:584
+#: includes/site/class-blocks.php:585
 #: assets/advertising/inquiry.js:220
 #: assets/ratings/ratings.js:154
 msgid "Phone"
@@ -82,7 +82,7 @@ msgid "Email"
 msgstr "メール"
 
 #: includes/admin/class-website-followup-screen.php:281
-#: includes/site/class-blocks.php:571
+#: includes/site/class-blocks.php:572
 msgid "Address"
 msgstr "住所"
 
@@ -130,7 +130,7 @@ msgid "Loading the form…"
 msgstr "フォームを読み込み中…"
 
 #: includes/advertising/class-leads.php:172
-#: includes/site/class-restaurant-view.php:390
+#: includes/site/class-restaurant-view.php:461
 msgid "New"
 msgstr "新着"
 
@@ -143,8 +143,8 @@ msgstr "プレミアムプロフィール"
 
 #: includes/advertising/class-page-content.php:127
 #: includes/owners/class-dashboard.php:434
-#: includes/site/class-blocks.php:580
-#: includes/site/class-directory-view.php:343
+#: includes/site/class-blocks.php:581
+#: includes/site/class-directory-view.php:351
 msgid "Price"
 msgstr "料金"
 
@@ -180,7 +180,7 @@ msgid "Awards"
 msgstr "受賞歴"
 
 #: includes/awards/class-display.php:118
-#: includes/site/class-blocks.php:430
+#: includes/site/class-blocks.php:431
 msgid "All award results"
 msgstr "すべての受賞結果"
 
@@ -344,19 +344,19 @@ msgstr "%1$s %2$s、%3$s：%4$s"
 
 #: includes/claims/class-admin.php:104
 #: includes/claims/class-admin.php:116
-#: includes/saved/class-view.php:451
+#: includes/saved/class-view.php:452
 msgid "Account"
 msgstr "アカウント"
 
 #: includes/claims/class-claim-form.php:112
-#: includes/saved/class-view.php:371
+#: includes/saved/class-view.php:372
 msgid "or"
 msgstr "または"
 
 #. translators: %s: date, for example "March 2024".
 #: includes/claims/class-claim-form.php:209
 #: includes/newsletter/class-renderer.php:82
-#: includes/site/class-blocks.php:649
+#: includes/site/class-blocks.php:650
 #: includes/site/class-pages.php:103
 #: includes/site/class-restaurant-view.php:203
 msgid "Closed"
@@ -368,12 +368,12 @@ msgid "Restaurants"
 msgstr "レストラン"
 
 #: includes/class-content-types.php:63
-#: includes/site/class-blocks.php:575
-#: includes/site/class-directory-view.php:342
+#: includes/site/class-blocks.php:576
+#: includes/site/class-directory-view.php:350
 msgid "Cuisine"
 msgstr "料理"
 
-#: includes/class-structured-data.php:95
+#: includes/class-structured-data.php:108
 msgid "Restaurants on Guam"
 msgstr "グアムのレストラン"
 
@@ -391,7 +391,7 @@ msgstr "オーナー・管理者の方：掲載を削除"
 
 #: includes/corrections/class-corrections.php:98
 #: includes/owners/class-dashboard.php:378
-#: includes/site/class-blocks.php:655
+#: includes/site/class-blocks.php:656
 msgid "Opening hours"
 msgstr "営業時間"
 
@@ -701,14 +701,14 @@ msgstr "%1$d～%2$d 文字で入力してください。"
 
 #. translators: %d: maximum characters.
 #: includes/highlights/class-highlights.php:502
-#: includes/photos/class-photo-submissions.php:156
+#: includes/photos/class-photo-submissions.php:164
 #: includes/reviews/class-visitor-reviews.php:135
 #, php-format
 msgid "Enter a display name of up to %d characters."
 msgstr "%d 文字以内で表示名を入力してください。"
 
 #: includes/highlights/class-highlights.php:512
-#: includes/photos/class-photo-submissions.php:126
+#: includes/photos/class-photo-submissions.php:134
 #: includes/ratings/class-rest-controller.php:99
 #: includes/reviews/class-rest-controller.php:180
 #: includes/reviews/class-visitor-reviews.php:101
@@ -719,7 +719,7 @@ msgstr "不明なレストランです。"
 #: includes/highlights/class-moderation-screen.php:135
 #: includes/highlights/class-policy-page.php:80
 #: includes/highlights/class-submit-screen.php:117
-#: includes/site/class-blocks.php:903
+#: includes/site/class-blocks.php:904
 msgid "Editorial policy"
 msgstr "編集方針"
 
@@ -868,7 +868,7 @@ msgid "Send for approval"
 msgstr "承認を依頼"
 
 #: includes/legal/class-pages.php:69
-#: includes/site/class-blocks.php:906
+#: includes/site/class-blocks.php:907
 msgid "Advertising disclosure"
 msgstr "広告に関する開示"
 
@@ -885,7 +885,7 @@ msgid "Where the directory's restaurant details, maps, ratings and award results
 msgstr "このディレクトリのレストラン情報、地図、評価、受賞結果の出典とそのライセンス。"
 
 #: includes/legal/class-pages.php:81
-#: includes/site/class-blocks.php:908
+#: includes/site/class-blocks.php:909
 msgid "Photo upload agreement"
 msgstr "写真投稿に関する同意事項"
 
@@ -894,8 +894,8 @@ msgid "What you confirm and agree to when you upload a photo, including the tran
 msgstr "写真を投稿する際に確認・同意いただく内容（写真の権利の譲渡を含む）。"
 
 #: includes/legal/class-pages.php:217
-#: includes/saved/class-view.php:385
-#: includes/site/class-blocks.php:904
+#: includes/saved/class-view.php:386
+#: includes/site/class-blocks.php:905
 #: assets/advertising/inquiry.js:206
 #: assets/corrections/corrections.js:229
 msgid "Privacy policy"
@@ -912,18 +912,18 @@ msgid "Reopened"
 msgstr "営業再開"
 
 #: includes/newsletter/class-renderer.php:91
-#: includes/site/class-blocks.php:775
+#: includes/site/class-blocks.php:776
 #: includes/site/class-pages.php:114
 msgid "Suggest a correction"
 msgstr "訂正を提案"
 
 #: includes/owners/class-dashboard.php:70
-#: includes/saved/class-view.php:405
+#: includes/saved/class-view.php:406
 msgid "My restaurant"
 msgstr "マイレストラン"
 
 #: includes/owners/class-dashboard.php:383
-#: includes/site/class-blocks.php:648
+#: includes/site/class-blocks.php:649
 #: assets/site/hours.js:63
 msgid "Open 24 hours"
 msgstr "24時間営業"
@@ -934,7 +934,7 @@ msgid "Photos"
 msgstr "写真"
 
 #: includes/owners/class-owner-content.php:238
-#: includes/site/class-blocks.php:519
+#: includes/site/class-blocks.php:520
 msgid "Menu"
 msgstr "メニュー"
 
@@ -1059,101 +1059,101 @@ msgstr "あと少しです。メールをお送りしました。24 時間以内
 msgid "Thanks! Your photo will appear after an administrator approves it."
 msgstr "ありがとうございます！写真は管理者の承認後に表示されます。"
 
-#: includes/photos/class-photo-submissions.php:86
+#: includes/photos/class-photo-submissions.php:94
 msgid "Does not show food, drink, the menu or the restaurant."
 msgstr "料理、飲み物、メニュー、店舗が写っていない。"
 
-#: includes/photos/class-photo-submissions.php:87
+#: includes/photos/class-photo-submissions.php:95
 msgid "Taken at a different restaurant."
 msgstr "別のレストランで撮影されたもの。"
 
-#: includes/photos/class-photo-submissions.php:88
+#: includes/photos/class-photo-submissions.php:96
 msgid "Not taken by the person who uploaded it (for example, copied from a website or another app)."
 msgstr "投稿者本人が撮影したものではない（例：ウェブサイトや他のアプリからのコピー）。"
 
-#: includes/photos/class-photo-submissions.php:89
+#: includes/photos/class-photo-submissions.php:97
 msgid "Shows people's faces up close, or personal information such as a receipt with a card number."
 msgstr "人の顔が大きく写っている、またはカード番号入りのレシートなどの個人情報が写っている。"
 
-#: includes/photos/class-photo-submissions.php:90
+#: includes/photos/class-photo-submissions.php:98
 msgid "Offensive, explicit or illegal content."
 msgstr "不快、露骨、または違法な内容。"
 
-#: includes/photos/class-photo-submissions.php:91
+#: includes/photos/class-photo-submissions.php:99
 msgid "Too dark or blurry to see the dish, or a duplicate of a photo already shown."
 msgstr "暗すぎる・ぼやけていて料理が見えない、またはすでに掲載されている写真と重複している。"
 
-#: includes/photos/class-photo-submissions.php:92
+#: includes/photos/class-photo-submissions.php:100
 msgid "The dish name is not a dish name (for example, advertising or a comment about someone)."
 msgstr "料理名が料理名になっていない（例：宣伝や誰かについてのコメント）。"
 
-#: includes/photos/class-photo-submissions.php:129
+#: includes/photos/class-photo-submissions.php:137
 #: assets/site/photos.js:24
 msgid "Your photo could not be sent. Please try again."
 msgstr "写真を送信できませんでした。もう一度お試しください。"
 
 #. translators: %d: maximum characters.
-#: includes/photos/class-photo-submissions.php:146
+#: includes/photos/class-photo-submissions.php:154
 #, php-format
 msgid "Enter the dish name, up to %d characters."
 msgstr "料理名を %d 文字以内で入力してください。"
 
-#: includes/photos/class-photo-submissions.php:149
+#: includes/photos/class-photo-submissions.php:157
 msgid "Choose a rating from 1 to 5 stars, or leave it empty."
 msgstr "星 1～5 で評価を選ぶか、空欄のままにしてください。"
 
-#: includes/photos/class-photo-submissions.php:152
+#: includes/photos/class-photo-submissions.php:160
 msgid "Owners, staff and family of the restaurant can add photos but not ratings."
 msgstr "レストランのオーナー、スタッフ、家族は写真を追加できますが、評価はできません。"
 
-#: includes/photos/class-photo-submissions.php:159
+#: includes/photos/class-photo-submissions.php:167
 #: includes/reviews/class-visitor-reviews.php:152
 msgid "Enter your email address so we can send you a confirmation link, or log in."
 msgstr "確認リンクをお送りするためメールアドレスを入力するか、ログインしてください。"
 
-#: includes/photos/class-photo-submissions.php:162
+#: includes/photos/class-photo-submissions.php:170
 msgid "Read and accept the photo upload agreement."
 msgstr "写真投稿に関する同意事項を読んで同意してください。"
 
-#: includes/photos/class-photo-submissions.php:176
+#: includes/photos/class-photo-submissions.php:184
 msgid "You have sent several photos recently. Please try again later."
 msgstr "最近写真を多く送信されています。しばらくしてからもう一度お試しください。"
 
-#: includes/photos/class-photo-submissions.php:216
+#: includes/photos/class-photo-submissions.php:224
 #: includes/reviews/class-visitor-reviews.php:184
 msgid "We could not send the confirmation email. Please try again later."
 msgstr "確認メールを送信できませんでした。しばらくしてからもう一度お試しください。"
 
 #. translators: %s: size such as "20 MB".
-#: includes/photos/class-photo-submissions.php:236
+#: includes/photos/class-photo-submissions.php:244
 #, php-format
 msgid "Photos can be at most %s."
 msgstr "写真は %s までです。"
 
-#: includes/photos/class-photo-submissions.php:239
+#: includes/photos/class-photo-submissions.php:247
 msgid "Choose a photo to upload."
 msgstr "投稿する写真を選んでください。"
 
-#: includes/photos/class-photo-submissions.php:242
+#: includes/photos/class-photo-submissions.php:250
 msgid "Photos must be JPEG, PNG or WebP images."
 msgstr "写真は JPEG、PNG、WebP 形式の画像にしてください。"
 
-#: includes/photos/class-photo-submissions.php:283
+#: includes/photos/class-photo-submissions.php:307
 msgid "That image could not be read. Try a different photo."
 msgstr "その画像を読み込めませんでした。別の写真をお試しください。"
 
-#: includes/photos/class-photo-submissions.php:291
+#: includes/photos/class-photo-submissions.php:315
 msgid "That image could not be processed. Try a different photo."
 msgstr "その画像を処理できませんでした。別の写真をお試しください。"
 
 #. translators: %s: restaurant name.
-#: includes/photos/class-photo-submissions.php:383
+#: includes/photos/class-photo-submissions.php:407
 #, php-format
 msgid "Confirm your photo of %s"
 msgstr "%s の写真を確認してください"
 
 #. translators: %s: confirmation URL.
-#: includes/photos/class-photo-submissions.php:386
+#: includes/photos/class-photo-submissions.php:410
 #, php-format
 msgid ""
 "Please confirm your email address by opening this link:\n"
@@ -1172,12 +1172,12 @@ msgstr ""
 "\n"
 "メールアドレスは保存しません。写真を投稿した覚えがない場合は、このメッセージを無視してください。"
 
-#: includes/photos/class-photo-submissions.php:403
+#: includes/photos/class-photo-submissions.php:427
 #: includes/reviews/class-visitor-reviews.php:224
 msgid "This link has expired or was already used."
 msgstr "このリンクは期限切れか、すでに使用されています。"
 
-#: includes/photos/class-photo-submissions.php:464
+#: includes/photos/class-photo-submissions.php:488
 msgid "Photo not found."
 msgstr "写真が見つかりません。"
 
@@ -1262,11 +1262,11 @@ msgstr "料理は %d 品まで挙げられます。"
 msgid "Review not found."
 msgstr "レビューが見つかりません。"
 
-#: includes/reviews/class-visitor-reviews.php:451
+#: includes/reviews/class-visitor-reviews.php:431
 msgid "You have sent several reviews recently. Please try again later."
 msgstr "最近レビューを多く送信されています。しばらくしてからもう一度お試しください。"
 
-#: includes/reviews/class-visitor-reviews.php:454
+#: includes/reviews/class-visitor-reviews.php:434
 msgid "You have already reviewed this restaurant today."
 msgstr "このレストランのレビューは本日すでに投稿済みです。"
 
@@ -1297,7 +1297,7 @@ msgid "Saved: %s. Remove from your list"
 msgstr "保存済み：%s。リストから削除"
 
 #: includes/saved/class-view.php:166
-#: includes/saved/class-view.php:463
+#: includes/saved/class-view.php:464
 #: includes/site/class-pages.php:88
 msgid "Saved"
 msgstr "保存済み"
@@ -1321,155 +1321,155 @@ msgid "Browse restaurants"
 msgstr "レストランを探す"
 
 #. translators: %s: number of restaurants.
-#: includes/saved/class-view.php:205
+#: includes/saved/class-view.php:206
 #, php-format
 msgid "%s restaurant in this list"
 msgid_plural "%s restaurants in this list"
 msgstr[0] "このリストのレストラン：%s 件"
 
 #. translators: %s: number of restaurants.
-#: includes/saved/class-view.php:207
+#: includes/saved/class-view.php:208
 #, php-format
 msgid "%s saved restaurant"
 msgid_plural "%s saved restaurants"
 msgstr[0] "保存したレストラン：%s 件"
 
-#: includes/saved/class-view.php:228
+#: includes/saved/class-view.php:229
 msgid "Someone shared this list of restaurants with you. The link holds only the restaurants, nothing about the person who shared it."
 msgstr "このレストランのリストが共有されました。リンクに含まれるのはレストランのみで、共有した人の情報は含まれません。"
 
-#: includes/saved/class-view.php:232
+#: includes/saved/class-view.php:233
 msgid "Added to your list"
 msgstr "リストに追加しました"
 
-#: includes/saved/class-view.php:233
+#: includes/saved/class-view.php:234
 msgid "Save all to my list"
 msgstr "すべてリストに保存"
 
-#: includes/saved/class-view.php:235
+#: includes/saved/class-view.php:236
 msgid "Go to my list"
 msgstr "マイリストへ"
 
-#: includes/saved/class-view.php:251
+#: includes/saved/class-view.php:252
 msgid "Loading your saved restaurants…"
 msgstr "保存したレストランを読み込み中…"
 
-#: includes/saved/class-view.php:252
+#: includes/saved/class-view.php:253
 msgid "Saved restaurants are kept in your browser, which needs JavaScript. Sign in to keep a list on your account."
 msgstr "保存したレストランはブラウザに保管されるため、JavaScript が必要です。ログインすると、リストをアカウントに保存できます。"
 
-#: includes/saved/class-view.php:274
+#: includes/saved/class-view.php:275
 msgid "My saved restaurants"
 msgstr "保存したレストラン"
 
-#: includes/saved/class-view.php:275
-#: includes/site/class-blocks.php:526
+#: includes/saved/class-view.php:276
+#: includes/site/class-blocks.php:527
 msgid "Link copied"
 msgstr "リンクをコピーしました"
 
-#: includes/saved/class-view.php:276
+#: includes/saved/class-view.php:277
 msgid "Share my list"
 msgstr "リストを共有"
 
 #. translators: %s: most restaurants in a shared link.
-#: includes/saved/class-view.php:280
+#: includes/saved/class-view.php:281
 #, php-format
 msgid "The link shows your newest %s saved restaurants and nothing else about you."
 msgstr "リンクには、最近保存した %s 件のレストランだけが表示され、あなたに関するその他の情報は含まれません。"
 
-#: includes/dishes/class-dish-pages.php:318
-#: includes/saved/class-view.php:297
+#: includes/dishes/class-dish-pages.php:322
+#: includes/saved/class-view.php:298
 msgid "Show the list as"
 msgstr "リストの表示方法"
 
-#: includes/dishes/class-dish-pages.php:319
-#: includes/saved/class-view.php:298
+#: includes/dishes/class-dish-pages.php:323
+#: includes/saved/class-view.php:299
 #: includes/site/class-directory-view.php:120
 #: blocks/site-editor/editor.js:69
 #: blocks/site-editor/editor.js:121
 msgid "List"
 msgstr "リスト"
 
-#: includes/dishes/class-dish-pages.php:320
-#: includes/saved/class-view.php:299
+#: includes/dishes/class-dish-pages.php:324
+#: includes/saved/class-view.php:300
 #: includes/site/class-directory-view.php:121
 #: includes/site/class-pages.php:73
 msgid "Map"
 msgstr "地図"
 
-#: includes/dishes/class-dish-pages.php:323
-#: includes/saved/class-view.php:303
+#: includes/dishes/class-dish-pages.php:327
+#: includes/saved/class-view.php:304
 msgid "Map of these restaurants"
 msgstr "これらのレストランの地図"
 
-#: includes/saved/class-view.php:350
+#: includes/saved/class-view.php:351
 msgid "Saved. Keep your list on every device"
 msgstr "保存しました。どの端末でもリストを使えるようにしましょう"
 
-#: includes/saved/class-view.php:350
+#: includes/saved/class-view.php:351
 msgid "Keep your list on every device"
 msgstr "どの端末でもリストを使う"
 
-#: includes/saved/class-view.php:354
+#: includes/saved/class-view.php:355
 msgid "Sign up with email"
 msgstr "メールで登録"
 
-#: includes/saved/class-view.php:358
+#: includes/saved/class-view.php:359
 msgid "Already have an account?"
 msgstr "すでにアカウントをお持ちですか？"
 
-#: includes/saved/class-view.php:360
-#: includes/saved/class-view.php:452
+#: includes/saved/class-view.php:361
+#: includes/saved/class-view.php:453
 msgid "Sign in"
 msgstr "ログイン"
 
-#: includes/saved/class-view.php:369
+#: includes/saved/class-view.php:370
 msgid "Right now your list lives only in this browser. Sign in free to see it on your phone and computer, keep it if you clear your browser, and share it with friends."
 msgstr "今はリストがこのブラウザにだけ保存されています。無料でログインすると、スマートフォンでもパソコンでもリストを見られ、ブラウザのデータを消しても残り、友だちとも共有できます。"
 
-#: includes/saved/class-view.php:384
+#: includes/saved/class-view.php:385
 msgid "We use your account only to keep your list. With Google or Facebook we receive just your name, email address and profile picture, and we never post anything for you."
 msgstr "アカウントはリストの保存にのみ使用します。Google または Facebook の場合、受け取るのは名前、メールアドレス、プロフィール写真だけで、あなたに代わって投稿することはありません。"
 
-#: includes/saved/class-view.php:401
+#: includes/saved/class-view.php:402
 msgid "Sign out"
 msgstr "ログアウト"
 
-#: includes/saved/class-view.php:402
+#: includes/saved/class-view.php:403
 msgid "Set or change your password"
 msgstr "パスワードの設定・変更"
 
-#: includes/saved/class-view.php:417
+#: includes/saved/class-view.php:418
 msgid "Yes, delete my account and my saved list for good."
 msgstr "はい、アカウントと保存したリストを完全に削除します。"
 
-#: includes/saved/class-view.php:419
+#: includes/saved/class-view.php:420
 msgid "Delete my account now"
 msgstr "今すぐアカウントを削除"
 
-#: includes/saved/class-view.php:419
+#: includes/saved/class-view.php:420
 msgid "Delete my account"
 msgstr "アカウントを削除"
 
-#: includes/saved/class-view.php:424
+#: includes/saved/class-view.php:425
 msgid "Your account"
 msgstr "あなたのアカウント"
 
 #. translators: 1: display name, 2: email address.
-#: includes/saved/class-view.php:428
+#: includes/saved/class-view.php:429
 #, php-format
 msgid "Signed in as %1$s (%2$s). Your saved list is kept on this account."
 msgstr "%1$s（%2$s）でログイン中。保存したリストはこのアカウントに保管されています。"
 
-#: includes/saved/class-view.php:458
+#: includes/saved/class-view.php:459
 msgid "Saved and account"
 msgstr "保存とアカウント"
 
-#: includes/saved/class-view.php:481
+#: includes/saved/class-view.php:482
 msgid "Close"
 msgstr "閉じる"
 
-#: includes/saved/class-view.php:483
+#: includes/saved/class-view.php:484
 msgid "Not now"
 msgstr "今はしない"
 
@@ -1502,188 +1502,188 @@ msgid "%s restaurant"
 msgid_plural "%s restaurants"
 msgstr[0] "%s 件のレストラン"
 
-#: includes/site/class-blocks.php:328
+#: includes/site/class-blocks.php:329
 msgid "See all"
 msgstr "すべて見る"
 
 #. translators: %d: number of days.
-#: includes/site/class-blocks.php:368
+#: includes/site/class-blocks.php:369
 #, php-format
 msgid "No new restaurants recorded in the last %d day."
 msgid_plural "No new restaurants recorded in the last %d days."
 msgstr[0] "過去 %d 日間に新しいレストランは記録されていません。"
 
 #. translators: %d: number of days.
-#: includes/site/class-blocks.php:370
+#: includes/site/class-blocks.php:371
 #, php-format
 msgid "No reopenings recorded in the last %d day."
 msgid_plural "No reopenings recorded in the last %d days."
 msgstr[0] "過去 %d 日間に営業再開は記録されていません。"
 
 #. translators: %d: number of days.
-#: includes/site/class-blocks.php:372
+#: includes/site/class-blocks.php:373
 #, php-format
 msgid "No closures recorded in the last %d day."
 msgid_plural "No closures recorded in the last %d days."
 msgstr[0] "過去 %d 日間に閉店は記録されていません。"
 
-#: includes/site/class-blocks.php:432
+#: includes/site/class-blocks.php:433
 msgid "Award results have not been added yet. When they are, winners appear here with a link to where each result was published."
 msgstr "受賞結果はまだ追加されていません。追加されると、各結果が発表された場所へのリンクとともに受賞店がここに表示されます。"
 
-#: includes/site/class-blocks.php:506
+#: includes/site/class-blocks.php:507
 msgid "Call"
 msgstr "電話"
 
 #. translators: %s: restaurant name.
-#: includes/site/class-blocks.php:510
-#: includes/site/class-blocks.php:602
+#: includes/site/class-blocks.php:511
+#: includes/site/class-blocks.php:603
 msgid "Directions"
 msgstr "経路"
 
-#: includes/site/class-blocks.php:514
-#: includes/site/class-blocks.php:588
+#: includes/site/class-blocks.php:515
+#: includes/site/class-blocks.php:589
 #: assets/ratings/ratings.js:160
 msgid "Website"
 msgstr "ウェブサイト"
 
-#: includes/site/class-blocks.php:527
+#: includes/site/class-blocks.php:528
 msgid "Share"
 msgstr "共有"
 
-#: includes/site/class-blocks.php:540
+#: includes/site/class-blocks.php:541
 msgid "Restaurant actions"
 msgstr "レストランの操作"
 
-#: includes/site/class-blocks.php:591
+#: includes/site/class-blocks.php:592
 msgid "Facebook"
 msgstr "Facebook"
 
-#: includes/site/class-blocks.php:592
+#: includes/site/class-blocks.php:593
 msgid "Instagram"
 msgstr "Instagram"
 
 #. translators: %s: restaurant name.
-#: includes/site/class-blocks.php:602
+#: includes/site/class-blocks.php:603
 msgid "Get directions in Google Maps"
 msgstr "Google マップで経路を表示"
 
-#: includes/site/class-blocks.php:643
+#: includes/site/class-blocks.php:644
 msgid "Opening hours are not listed yet. Please check with the restaurant."
 msgstr "営業時間はまだ掲載されていません。レストランにご確認ください。"
 
-#: includes/site/class-blocks.php:657
+#: includes/site/class-blocks.php:658
 msgid "Opening hours, Guam time"
 msgstr "営業時間（グアム時間）"
 
 #. translators: %s: restaurant name.
-#: includes/site/class-blocks.php:708
+#: includes/site/class-blocks.php:709
 #, php-format
 msgid "Map showing %s"
 msgstr "%s の地図"
 
-#: includes/site/class-blocks.php:727
+#: includes/site/class-blocks.php:728
 msgid "The map needs JavaScript. Use the directions link above instead."
 msgstr "地図には JavaScript が必要です。上の経路リンクをご利用ください。"
 
-#: includes/site/class-blocks.php:755
+#: includes/site/class-blocks.php:756
 msgid "History"
 msgstr "履歴"
 
-#: includes/site/class-blocks.php:774
+#: includes/site/class-blocks.php:775
 msgid "Own this restaurant? Claim this listing"
 msgstr "このレストランのオーナーですか？掲載を申請する"
 
-#: includes/site/class-blocks.php:776
+#: includes/site/class-blocks.php:777
 #: includes/site/class-pages.php:121
 msgid "Contact the owner"
 msgstr "オーナーに連絡"
 
-#: includes/site/class-blocks.php:777
+#: includes/site/class-blocks.php:778
 msgid "Advertise on this page"
 msgstr "このページに広告を掲載"
 
-#: includes/site/class-blocks.php:793
+#: includes/site/class-blocks.php:794
 msgid "About this listing"
 msgstr "この掲載について"
 
 #. translators: %s: restaurant name, linked.
-#: includes/site/class-blocks.php:814
+#: includes/site/class-blocks.php:815
 #, php-format
 msgid "Listing: %s"
 msgstr "掲載：%s"
 
-#: includes/site/class-blocks.php:837
+#: includes/site/class-blocks.php:838
 msgid "Loading the map…"
 msgstr "地図を読み込み中…"
 
-#: includes/site/class-blocks.php:838
+#: includes/site/class-blocks.php:839
 msgid "Map of restaurants"
 msgstr "レストランの地図"
 
-#: includes/site/class-blocks.php:839
+#: includes/site/class-blocks.php:840
 msgid "The map needs JavaScript. The list view shows the same restaurants."
 msgstr "地図には JavaScript が必要です。リスト表示でも同じレストランを見られます。"
 
-#: includes/site/class-blocks.php:841
+#: includes/site/class-blocks.php:842
 msgid "Show these restaurants as a list"
 msgstr "これらのレストランをリストで表示"
 
 #. translators: 1: "© OpenStreetMap contributors" link, 2: licence link.
-#: includes/site/class-blocks.php:856
+#: includes/site/class-blocks.php:857
 #, php-format
 msgid "Restaurant details include data %1$s, available under the %2$s."
 msgstr "レストランの情報には %1$s のデータが含まれ、%2$s の下で利用できます。"
 
-#: includes/site/class-blocks.php:857
+#: includes/site/class-blocks.php:858
 msgid "© OpenStreetMap contributors"
 msgstr "© OpenStreetMap contributors"
 
-#: includes/site/class-blocks.php:858
+#: includes/site/class-blocks.php:859
 msgid "Open Database License"
 msgstr "Open Database License"
 
 #. translators: 1: OpenFreeMap link, 2: OpenMapTiles link.
-#: includes/site/class-blocks.php:863
+#: includes/site/class-blocks.php:864
 #, php-format
 msgid "Maps: %1$s, %2$s, with OpenStreetMap data."
 msgstr "地図：%1$s、%2$s、OpenStreetMap のデータを使用。"
 
 #. translators: %s: Census link.
-#: includes/site/class-blocks.php:870
+#: includes/site/class-blocks.php:871
 #, php-format
 msgid "Village boundaries: %s."
 msgstr "村の境界：%s。"
 
-#: includes/site/class-blocks.php:871
+#: includes/site/class-blocks.php:872
 msgid "U.S. Census Bureau TIGER/Line"
 msgstr "U.S. Census Bureau TIGER/Line"
 
 #. translators: %s: Foursquare Open Source Places link.
-#: includes/site/class-blocks.php:876
+#: includes/site/class-blocks.php:877
 #, php-format
 msgid "Some business details: %s, © Foursquare Labs, Inc., Apache License 2.0."
 msgstr "一部の事業者情報：%s、© Foursquare Labs, Inc.、Apache License 2.0。"
 
-#: includes/site/class-blocks.php:880
+#: includes/site/class-blocks.php:881
 msgid "Ratings from other sites are shown as each site provides them, with its own credit."
 msgstr "他サイトの評価は、各サイトが提供するとおりに、そのサイトのクレジットとともに表示しています。"
 
-#: includes/site/class-blocks.php:905
+#: includes/site/class-blocks.php:906
 #: includes/site/class-pages.php:127
 msgid "Terms of use"
 msgstr "利用規約"
 
-#: includes/site/class-blocks.php:907
+#: includes/site/class-blocks.php:908
 msgid "Data sources"
 msgstr "データの出典"
 
-#: includes/site/class-blocks.php:909
+#: includes/site/class-blocks.php:910
 #: includes/site/class-pages.php:140
 msgid "Advertise with us"
 msgstr "広告掲載について"
 
-#: includes/site/class-blocks.php:936
+#: includes/site/class-blocks.php:937
 msgid "Color theme"
 msgstr "カラーテーマ"
 
@@ -1706,153 +1706,153 @@ msgid "Showing %1$s–%2$s of %3$s restaurant"
 msgid_plural "Showing %1$s–%2$s of %3$s restaurants"
 msgstr[0] "%3$s 件中 %1$s～%2$s 件を表示"
 
-#: includes/site/class-directory-view.php:172
+#: includes/site/class-directory-view.php:180
 msgid "Open now uses Guam time and lists only restaurants whose hours we have."
 msgstr "「営業中」はグアム時間で判定し、営業時間が分かっているレストランのみを表示します。"
 
-#: includes/site/class-directory-view.php:175
+#: includes/site/class-directory-view.php:183
 msgid "Open late means open at 10 pm tonight, Guam time, and lists only restaurants whose hours we have."
 msgstr "「夜遅くまで営業」は今夜 10 時（グアム時間）に営業していることを意味し、営業時間が分かっているレストランのみを表示します。"
 
-#: includes/site/class-directory-view.php:192
+#: includes/site/class-directory-view.php:200
 msgid "Clear all filters"
 msgstr "すべての条件をクリア"
 
-#: includes/site/class-directory-view.php:219
+#: includes/site/class-directory-view.php:227
 msgid "(remove)"
 msgstr "（削除）"
 
 #. translators: %s: the words the visitor typed, for example "Tumon".
-#: includes/site/class-directory-view.php:238
+#: includes/site/class-directory-view.php:246
 #, php-format
 msgid "(%s)"
 msgstr "（%s）"
 
-#: includes/site/class-directory-view.php:246
-#: includes/site/class-directory-view.php:358
+#: includes/site/class-directory-view.php:254
+#: includes/site/class-directory-view.php:366
 #: includes/site/class-picker.php:308
 msgid "Open now"
 msgstr "営業中"
 
-#: includes/site/class-directory-view.php:247
-#: includes/site/class-directory-view.php:359
+#: includes/site/class-directory-view.php:255
+#: includes/site/class-directory-view.php:367
 msgid "Open late"
 msgstr "夜遅くまで営業"
 
-#: includes/site/class-directory-view.php:249
-#: includes/site/class-directory-view.php:361
+#: includes/site/class-directory-view.php:257
+#: includes/site/class-directory-view.php:369
 msgid "Award winners"
 msgstr "受賞店"
 
 #. translators: %s: keywords searched for.
-#: includes/site/class-directory-view.php:262
+#: includes/site/class-directory-view.php:270
 #, php-format
 msgid "Words: “%s”"
 msgstr "キーワード：「%s」"
 
 #. translators: %s: what the visitor typed.
-#: includes/site/class-directory-view.php:272
+#: includes/site/class-directory-view.php:280
 #, php-format
 msgid "We read “%s” as:"
 msgstr "「%s」を次のように解釈しました："
 
-#: includes/site/class-directory-view.php:276
+#: includes/site/class-directory-view.php:284
 msgid "Search the exact words instead"
 msgstr "入力した言葉そのままで検索"
 
-#: includes/site/class-directory-view.php:279
+#: includes/site/class-directory-view.php:287
 msgid "Filters:"
 msgstr "条件："
 
-#: includes/site/class-directory-view.php:283
+#: includes/site/class-directory-view.php:291
 msgid "Filters in use"
 msgstr "使用中の条件"
 
-#: includes/site/class-directory-view.php:288
+#: includes/site/class-directory-view.php:296
 msgid "Clear all"
 msgstr "すべてクリア"
 
-#: includes/site/class-directory-view.php:307
+#: includes/site/class-directory-view.php:315
 msgid "Previous"
 msgstr "前へ"
 
 #. translators: %s: page number.
-#: includes/site/class-directory-view.php:319
+#: includes/site/class-directory-view.php:327
 #, php-format
 msgid "Page %s"
 msgstr "%s ページ"
 
-#: includes/site/class-directory-view.php:323
+#: includes/site/class-directory-view.php:331
 msgid "Next"
 msgstr "次へ"
 
-#: includes/site/class-directory-view.php:325
+#: includes/site/class-directory-view.php:333
 msgid "Results pages"
 msgstr "結果のページ"
 
 #. translators: 1: price level, 2: highest level.
-#: includes/site/class-directory-view.php:370
+#: includes/site/class-directory-view.php:378
 #: includes/site/class-picker.php:272
 #: includes/site/class-restaurant-view.php:133
 #, php-format
 msgid "Price level %1$d of %2$d"
 msgstr "価格帯 %1$d／%2$d"
 
-#: includes/site/class-directory-view.php:394
+#: includes/site/class-directory-view.php:402
 msgid "Name (A to Z)"
 msgstr "店名（A～Z）"
 
-#: includes/site/class-directory-view.php:395
+#: includes/site/class-directory-view.php:403
 #: blocks/site-editor/editor.js:99
 msgid "Newest listings"
 msgstr "新着順"
 
-#: includes/site/class-directory-view.php:396
+#: includes/site/class-directory-view.php:404
 msgid "Price (low to high)"
 msgstr "価格（安い順）"
 
-#: includes/site/class-directory-view.php:397
+#: includes/site/class-directory-view.php:405
 msgid "Price (high to low)"
 msgstr "価格（高い順）"
 
-#: includes/site/class-directory-view.php:400
+#: includes/site/class-directory-view.php:408
 msgid "Best match"
 msgstr "関連度順"
 
-#: includes/site/class-directory-view.php:409
+#: includes/site/class-directory-view.php:417
 msgid "Sort by"
 msgstr "並べ替え"
 
-#: includes/site/class-directory-view.php:426
+#: includes/site/class-directory-view.php:434
 msgid "Filter restaurants"
 msgstr "レストランを絞り込む"
 
-#: includes/site/class-directory-view.php:427
+#: includes/site/class-directory-view.php:435
 msgid "Search by name, dish or what you feel like"
 msgstr "店名、料理、食べたいもので検索（英語）"
 
-#: includes/site/class-directory-view.php:434
+#: includes/site/class-directory-view.php:442
 msgid "More filters"
 msgstr "その他の条件"
 
-#: includes/site/class-directory-view.php:437
+#: includes/site/class-directory-view.php:445
 msgid "Quick filters"
 msgstr "クイック絞り込み"
 
-#: includes/site/class-directory-view.php:440
+#: includes/site/class-directory-view.php:448
 msgid "Show results"
 msgstr "結果を表示"
 
-#: includes/site/class-directory-view.php:442
+#: includes/site/class-directory-view.php:450
 msgid "Clear filters"
 msgstr "条件をクリア"
 
-#: includes/site/class-directory-view.php:443
+#: includes/site/class-directory-view.php:451
 msgid "Try “cheap Korean open late in Tumon”"
 msgstr "例：「cheap Korean open late in Tumon」（英語）"
 
 #. translators: %d: number of selected options.
-#: includes/site/class-directory-view.php:540
+#: includes/site/class-directory-view.php:548
 #: includes/site/class-picker.php:300
 #: assets/site/directory.js:123
 #: assets/site/picker.js:53
@@ -2048,51 +2048,51 @@ msgstr "すべての候補の上に、あなたのレストランを掲載でき
 msgid "People use this page when they are deciding where to eat right now. Put your restaurant in front of them with a sponsored spot, shown by village or food type."
 msgstr "このページは、今どこで食べるか決めるときに使われます。村や料理の種類ごとに表示されるスポンサー枠で、あなたのレストランを紹介しましょう。"
 
-#: includes/site/class-related-links.php:95
+#: includes/site/class-related-links.php:98
 msgid "Related pages"
 msgstr "関連ページ"
 
 #. translators: %s: village.
-#: includes/site/class-related-links.php:122
+#: includes/site/class-related-links.php:125
 #, php-format
 msgid "Malls in %s"
 msgstr "%s のモール"
 
 #. translators: %s: village.
-#: includes/site/class-related-links.php:124
+#: includes/site/class-related-links.php:128
 #, php-format
 msgid "Popular cuisines in %s"
 msgstr "%s で人気の料理"
 
 #. translators: %s: mall.
-#: includes/site/class-related-links.php:130
+#: includes/site/class-related-links.php:139
 #, php-format
 msgid "Cuisines at %s"
 msgstr "%s の料理"
 
 #. translators: %s: cuisine.
-#: includes/site/class-related-links.php:134
+#: includes/site/class-related-links.php:144
 #, php-format
 msgid "Where to find %s food"
 msgstr "%sが食べられるお店"
 
-#: includes/site/class-related-links.php:135
+#: includes/site/class-related-links.php:150
 msgid "Related cuisines"
 msgstr "関連する料理"
 
 #. translators: 1: cuisine, 2: village.
-#: includes/site/class-related-links.php:160
+#: includes/site/class-related-links.php:175
 #, php-format
 msgid "More %1$s restaurants in %2$s"
 msgstr "%2$s のその他の%1$sのお店"
 
 #. translators: %s: village.
-#: includes/site/class-related-links.php:162
+#: includes/site/class-related-links.php:177
 #, php-format
 msgid "More restaurants in %s"
 msgstr "%s のその他のレストラン"
 
-#: includes/site/class-related-links.php:177
+#: includes/site/class-related-links.php:192
 msgid "Browse"
 msgstr "探す"
 
@@ -2135,72 +2135,74 @@ msgid "Sunday"
 msgstr "日曜日"
 
 #. translators: %d: year.
-#: includes/site/class-restaurant-view.php:387
+#: includes/site/class-restaurant-view.php:458
 #, php-format
 msgid "Award winner %d"
 msgstr "%d年 受賞"
 
 #. translators: %s: village.
-#: includes/site/class-seo.php:71
+#: includes/site/class-seo.php:83
 #, php-format
 msgid "Restaurants in %s, Guam"
 msgstr "グアム・%s のレストラン"
 
 #. translators: 1: mall, 2: village.
-#: includes/site/class-seo.php:76
+#: includes/site/class-seo.php:88
 #, php-format
 msgid "Restaurants at %1$s, %2$s, Guam"
 msgstr "グアム・%2$s、%1$s のレストラン"
 
 #. translators: %s: mall.
-#: includes/site/class-seo.php:78
+#: includes/site/class-seo.php:90
 #, php-format
 msgid "Restaurants at %s, Guam"
 msgstr "グアム・%s のレストラン"
 
 #. translators: %s: cuisine.
-#: includes/site/class-seo.php:81
+#: includes/site/class-seo.php:93
 #, php-format
 msgid "%s Restaurants on Guam"
 msgstr "グアムの%sのお店"
 
 #. translators: %s: price level, for example $$.
-#: includes/site/class-seo.php:84
+#: includes/site/class-seo.php:96
 #, php-format
 msgid "%s Restaurants on Guam by Price"
 msgstr "価格帯別 グアムの %s のお店"
 
-#: includes/site/class-seo.php:102
+#: includes/site/class-cuisine-villages.php:200
+#: includes/site/class-seo.php:114
 msgid "See hours, maps, awards and reviews for each."
 msgstr "各店の営業時間、地図、受賞歴、レビューを掲載。"
 
 #. translators: %d: page number.
-#: includes/site/class-seo.php:147
+#: includes/site/class-seo.php:167
+#: includes/site/class-seo.php:275
 #, php-format
 msgid "Page %d"
 msgstr "%d ページ"
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:291
+#: includes/site/class-seo.php:406
 #, php-format
 msgid "%1$s: %2$s, Guam. Hours, map, awards and reviews."
 msgstr "%1$s：%2$s、グアム。営業時間、地図、受賞歴、レビュー。"
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:291
+#: includes/site/class-seo.php:406
 #, php-format
 msgid "%1$s, Guam. Hours, map, awards and reviews."
 msgstr "%1$s、グアム。営業時間、地図、受賞歴、レビュー。"
 
-#: includes/site/class-seo.php:299
+#: includes/site/class-seo.php:418
 msgid "Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews."
 msgstr "村、モール、料理、価格でグアム全域のレストランを探せます。営業時間、受賞歴、レビュー付き。"
 
-#: includes/site/class-seo.php:302
+#: includes/site/class-seo.php:421
 msgid "Restaurant award results recorded on this site, each with a link to where it was published."
 msgstr "このサイトに記録されたレストランの受賞結果。それぞれ発表元へのリンク付き。"
 
-#: includes/site/class-seo.php:309
+#: includes/site/class-seo.php:428
 msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
 msgstr "グアムで食事の場所を探そう：店名や料理で検索、または村、モール、料理から探せます。"
 
@@ -2532,25 +2534,25 @@ msgstr "（今日）"
 
 #: assets/site/map.js:56
 #: assets/site/map.js:70
-#: assets/site/map.js:243
+#: assets/site/map.js:244
 msgid "The map could not load right now."
 msgstr "現在、地図を読み込めません。"
 
-#: assets/site/map.js:111
+#: assets/site/map.js:112
 #, js-format
 msgid "%d restaurant on the map."
 msgid_plural "%d restaurants on the map."
 msgstr[0] "地図上のレストラン：%d 件"
 
-#: assets/site/map.js:187
+#: assets/site/map.js:188
 msgid "The map could not load right now. The list view shows the same restaurants."
 msgstr "現在、地図を読み込めません。リスト表示でも同じレストランを見られます。"
 
-#: assets/site/map.js:192
+#: assets/site/map.js:193
 msgid "Updating the map…"
 msgstr "地図を更新中…"
 
-#: assets/site/map.js:196
+#: assets/site/map.js:197
 msgid "The map could not be updated."
 msgstr "地図を更新できませんでした。"
 
@@ -3442,7 +3444,7 @@ msgid "open-ended"
 msgstr ""
 
 #: includes/ads/class-admin.php:89
-#: includes/site/class-blocks.php:679
+#: includes/site/class-blocks.php:680
 msgid "Yes"
 msgstr ""
 
@@ -5122,65 +5124,65 @@ msgstr ""
 msgid "Sort order, 1 (cheapest) to 4."
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:162
+#: includes/commerce/class-woo-checkout.php:173
 msgid "Premium profile, 1 month"
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:163
+#: includes/commerce/class-woo-checkout.php:174
 msgid "Premium profile, 12 months"
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:180
+#: includes/commerce/class-woo-checkout.php:191
 msgid "A premium profile for the restaurant you manage: a call-to-action button, up to 20 photos, and no other restaurant's Sponsored placements on your page. It does not change ratings, awards or where your restaurant appears in lists. Buy it from My restaurant in your account so it is linked to your listing. It does not renew automatically."
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:228
+#: includes/commerce/class-woo-checkout.php:239
 msgid "Premium profile days"
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:229
+#: includes/commerce/class-woo-checkout.php:240
 msgid "Set this only on premium profile products: the days a paid order adds to the buyer's listing (30 for monthly, 365 for annual). Leave empty for any other product."
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:278
+#: includes/commerce/class-woo-checkout.php:289
 msgid "That link has expired. Open My restaurant in your account and choose the plan again."
 msgstr ""
 
 #. translators: %s: order number.
-#: includes/commerce/class-woo-checkout.php:383
+#: includes/commerce/class-woo-checkout.php:394
 #, php-format
 msgid "Order #%s paid"
 msgstr ""
 
 #. translators: %d: restaurant ID.
-#: includes/commerce/class-woo-checkout.php:386
+#: includes/commerce/class-woo-checkout.php:397
 #, php-format
 msgid "Premium profile not added: restaurant %d was not found."
 msgstr ""
 
 #. translators: 1: restaurant, 2: number of days, 3: end date.
-#: includes/commerce/class-woo-checkout.php:395
+#: includes/commerce/class-woo-checkout.php:406
 #, php-format
 msgid "Premium profile for %1$s: %2$d days added; it now runs until %3$s."
 msgstr ""
 
 #. translators: 1: order number, 2: order status.
-#: includes/commerce/class-woo-checkout.php:421
+#: includes/commerce/class-woo-checkout.php:432
 #, php-format
 msgid "Order #%1$s %2$s"
 msgstr ""
 
 #. translators: 1: restaurant, 2: number of days, 3: end date.
-#: includes/commerce/class-woo-checkout.php:427
+#: includes/commerce/class-woo-checkout.php:438
 #, php-format
 msgid "Premium profile for %1$s: %2$d days taken off; it now ends %3$s."
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:470
+#: includes/commerce/class-woo-checkout.php:498
 msgid "Log in with the account linked to your restaurant, then buy the premium profile from My restaurant."
 msgstr ""
 
-#: includes/commerce/class-woo-checkout.php:473
+#: includes/commerce/class-woo-checkout.php:501
 msgid "A premium profile can only be bought by the verified owner of the restaurant, from My restaurant. Claim your listing first."
 msgstr ""
 
@@ -5241,81 +5243,81 @@ msgid "Guam Restaurants database tables are at version %1$s but the plugin needs
 msgstr ""
 
 #. translators: %s: dish name, for example "Kelaguen".
-#: includes/dishes/class-dish-pages.php:205
+#: includes/dishes/class-dish-pages.php:219
 msgid "Where to get Guam dishes"
 msgstr "グアム料理が食べられるお店"
 
 #. translators: %s: dish name, for example "Kelaguen".
-#: includes/dishes/class-dish-pages.php:205
+#: includes/dishes/class-dish-pages.php:219
 #, php-format
 msgid "Where to get %s on Guam"
 msgstr "グアムで%sが食べられるお店"
 
-#: includes/dishes/class-dish-pages.php:216
+#: includes/dishes/class-dish-pages.php:230
 msgid "Guam dishes and the restaurants that serve them, from what visitors photographed and named in their reviews."
 msgstr "グアムの料理と、それを出すレストラン。訪問者が撮った写真やレビューで挙げた料理をもとにしています。"
 
 #. translators: 1: number of places, 2: dish name.
-#: includes/dishes/class-dish-pages.php:220
+#: includes/dishes/class-dish-pages.php:234
 #, php-format
 msgid "%1$s place on Guam serves %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
 msgid_plural "%1$s places on Guam serve %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
 msgstr[0] "グアムで%2$sを出すお店は%1$s軒です(地図付き)。訪問者が挙げた数の順で、味の良さの順ではありません。"
 
-#: includes/dishes/class-dish-pages.php:257
+#: includes/dishes/class-dish-pages.php:271
 msgid "Guam favorites"
 msgstr "グアムの定番"
 
-#: includes/dishes/class-dish-pages.php:258
+#: includes/dishes/class-dish-pages.php:272
 msgid "All dishes, A to Z"
 msgstr "すべての料理(A〜Z順)"
 
-#: includes/dishes/class-dish-pages.php:259
+#: includes/dishes/class-dish-pages.php:273
 msgid "No dishes yet. When visitors add dish photos or name what they ordered in a review, the dishes appear here."
 msgstr "まだ料理はありません。訪問者が料理の写真を追加したり、レビューで注文した料理を挙げたりすると、ここに表示されます。"
 
-#: includes/dishes/class-dish-pages.php:264
+#: includes/dishes/class-dish-pages.php:278
 msgid "Dishes visitors photographed or named in their reviews, and dishes owners list on their menus, with every listed restaurant that serves each one."
 msgstr "訪問者が写真に撮ったりレビューで挙げたりした料理と、オーナーがメニューに載せている料理です。それぞれ、出している掲載店をすべて表示します。"
 
 #. translators: %s: number of restaurants.
-#: includes/dishes/class-dish-pages.php:307
+#: includes/dishes/class-dish-pages.php:311
 #, php-format
 msgid "%s place serves it"
 msgid_plural "%s places serve it"
 msgstr[0] "%s軒で食べられます"
 
-#: includes/dishes/class-dish-pages.php:313
+#: includes/dishes/class-dish-pages.php:317
 msgid "All dishes"
 msgstr "すべての料理"
 
-#: includes/dishes/class-dish-pages.php:315
+#: includes/dishes/class-dish-pages.php:319
 msgid "Listed by how many different visitors photographed this dish or named it in an approved review at each place, counting each person once. Places where only the owner lists it come next. This is not a ranking of who makes it best: owners and staff are never counted, and sponsors cannot change the order."
 msgstr "各店でこの料理を写真に撮ったり、承認済みのレビューで挙げたりした訪問者の人数順です(1人は1回だけ数えます)。オーナーのメニューにだけ載っているお店はその後に続きます。味の良さのランキングではありません。オーナーやスタッフは数えず、スポンサーも順番を変えられません。"
 
-#: includes/dishes/class-dish-pages.php:325
+#: includes/dishes/class-dish-pages.php:329
 msgid "Had it somewhere else? Add a dish photo or name it in a review on that restaurant's page, and the place appears here once it is approved."
 msgstr "ほかのお店で食べましたか? そのレストランのページで料理の写真を追加するか、レビューで料理名を挙げてください。承認されるとここに表示されます。"
 
 #. translators: %s: number of visitors.
-#: includes/dishes/class-dish-pages.php:341
+#: includes/dishes/class-dish-pages.php:378
 #, php-format
 msgid "Named by %s visitor"
 msgid_plural "Named by %s visitors"
 msgstr[0] "訪問者%s人が挙げています"
 
-#: includes/dishes/class-dish-pages.php:344
+#: includes/dishes/class-dish-pages.php:381
 msgid "On the owner's menu"
 msgstr "オーナーのメニューに掲載"
 
 #. translators: %s: dish names, for example "Chicken kelaguen, Beef kelaguen".
-#: includes/dishes/class-dish-pages.php:356
+#: includes/dishes/class-dish-pages.php:393
 #, php-format
 msgid "As %s"
 msgstr "%sとして"
 
 #. translators: %s: number of places.
-#: includes/dishes/class-dish-pages.php:375
+#: includes/dishes/class-dish-pages.php:412
 #, php-format
 msgid "%s place"
 msgid_plural "%s places"
@@ -6310,7 +6312,7 @@ msgstr ""
 msgid "The address did not return a JPEG, PNG or WebP image."
 msgstr ""
 
-#: includes/photos/class-photo-submissions.php:478
+#: includes/photos/class-photo-submissions.php:502
 msgid "Choose one of the published photo rules."
 msgstr ""
 
@@ -6402,18 +6404,18 @@ msgstr ""
 msgid "Language of the page showing the ratings (ja, ko). Google then writes its own text in it."
 msgstr ""
 
-#: includes/security/class-hardening.php:83
+#: includes/security/class-hardening.php:92
 msgid "Sign in to list users."
 msgstr ""
 
 #. translators: %s: size such as "10 MB".
-#: includes/security/class-hardening.php:176
+#: includes/security/class-hardening.php:231
 #, php-format
 msgid "Files must be %s or smaller."
 msgstr ""
 
 #. translators: %d: megapixels.
-#: includes/security/class-hardening.php:186
+#: includes/security/class-hardening.php:241
 #, php-format
 msgid "Images can be at most %d megapixels. Resize it and try again."
 msgstr ""
@@ -6422,72 +6424,72 @@ msgstr ""
 msgid "Administrators must turn on two-factor sign-in. Choose a method under Two-Factor Options below (an authenticator app plus backup codes is recommended), save your profile, and the rest of wp-admin opens again."
 msgstr ""
 
-#: includes/site/class-blocks.php:644
+#: includes/site/class-blocks.php:645
 msgid "Know the hours? Tell us"
 msgstr "営業時間をご存じですか? お知らせください"
 
-#: includes/site/class-blocks.php:678
+#: includes/site/class-blocks.php:679
 msgid "Are these hours right?"
 msgstr "この営業時間は正しいですか?"
 
-#: includes/site/class-blocks.php:681
+#: includes/site/class-blocks.php:682
 msgid "No, report a change"
 msgstr "いいえ、変更を報告する"
 
-#: includes/site/class-blocks.php:682
+#: includes/site/class-blocks.php:683
 msgid "Thanks for checking."
 msgstr "ご確認ありがとうございます。"
 
 #. translators: %s: day and time, for example "Saturday at 7:30 am".
-#: includes/site/class-directory-view.php:181
+#: includes/site/class-directory-view.php:189
 #, php-format
 msgid "Open %s uses Guam time and lists only restaurants whose hours we have. Holiday hours may differ."
 msgstr "「%s営業中」はグアム時間で、営業時間が分かっているレストランだけを表示します。祝日の営業時間は異なる場合があります。"
 
-#: includes/site/class-directory-view.php:187
+#: includes/site/class-directory-view.php:195
 msgid "Breakfast lists restaurants open by 8 am on at least one day, going by their listed hours."
 msgstr "「朝食」は、掲載されている営業時間で、少なくとも1日は午前8時までに開いているレストランを表示します。"
 
-#: includes/site/class-directory-view.php:248
-#: includes/site/class-directory-view.php:360
+#: includes/site/class-directory-view.php:256
+#: includes/site/class-directory-view.php:368
 msgid "Breakfast"
 msgstr "朝食"
 
 #. translators: %s: day and time, for example "Saturday at 7:30 am".
-#: includes/site/class-directory-view.php:258
+#: includes/site/class-directory-view.php:266
 #, php-format
 msgid "Open %s"
 msgstr "%s営業中"
 
-#: includes/site/class-directory-view.php:477
+#: includes/site/class-directory-view.php:485
 msgid "Choose a day"
 msgstr "曜日を選択"
 
-#: includes/site/class-directory-view.php:478
+#: includes/site/class-directory-view.php:486
 msgid "Today"
 msgstr "今日"
 
-#: includes/site/class-directory-view.php:479
+#: includes/site/class-directory-view.php:487
 msgid "Tomorrow"
 msgstr "明日"
 
-#: includes/site/class-directory-view.php:481
+#: includes/site/class-directory-view.php:489
 msgid "Choose a time"
 msgstr "時刻を選択"
 
-#: includes/site/class-directory-view.php:498
+#: includes/site/class-directory-view.php:506
 msgid "Open at"
 msgstr "営業している日時"
 
-#: includes/site/class-directory-view.php:499
+#: includes/site/class-directory-view.php:507
 msgid "Day"
 msgstr "曜日"
 
-#: includes/site/class-directory-view.php:502
+#: includes/site/class-directory-view.php:510
 msgid "Time"
 msgstr "時刻"
 
-#: includes/site/class-directory-view.php:505
+#: includes/site/class-directory-view.php:513
 msgid "Guam time, by listed hours. Choose both a day and a time."
 msgstr "グアム時間、掲載の営業時間で探します。曜日と時刻の両方を選んでください。"
 
@@ -6761,3 +6763,33 @@ msgstr ""
 #: blocks/visitor-reviews/editor.js:47
 msgid "Visitor reviews load here on the live page. Do not place this block in a section that shows Yelp ratings."
 msgstr ""
+
+#: includes/photos/class-photo-submissions.php:278
+msgid "The photo could not be saved. Please try again later."
+msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
+
+#: includes/security/class-hardening.php:134
+msgid "Error:"
+msgstr "エラー:"
+
+#: includes/security/class-hardening.php:135
+msgid "The user name, email address or password is not right."
+msgstr "ユーザー名、メールアドレス、またはパスワードが正しくありません。"
+
+#: includes/security/class-hardening.php:137
+msgid "Lost your password?"
+msgstr "パスワードをお忘れですか？"
+
+#. translators: 1: cuisine, 2: village.
+#: includes/site/class-cuisine-villages.php:184
+#: includes/site/class-cuisine-villages.php:235
+#, php-format
+msgid "%1$s Restaurants in %2$s, Guam"
+msgstr "グアム・%2$s の%1$sのお店"
+
+#. translators: 1: number of restaurants, 2: cuisine, 3: village.
+#: includes/site/class-cuisine-villages.php:196
+#, php-format
+msgid "%1$s %2$s restaurant in %3$s, Guam."
+msgid_plural "%1$s %2$s restaurants in %3$s, Guam."
+msgstr[0] "グアム・%3$s の%2$sのお店 %1$s 件。"
