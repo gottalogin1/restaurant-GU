@@ -458,7 +458,7 @@ class Site_Test extends Guam_Test_Case {
 		$this->assertSame( 'GU', $node['address']['addressCountry'] );
 		$this->assertSame( 13.513, $node['geo']['latitude'] );
 		$this->assertSame( '+16716467762', $node['telephone'] );
-		$this->assertSame( array( 'Chamorro' ), $node['servesCuisine'] );
+		$this->assertSame( array( 'CHamoru' ), $node['servesCuisine'] );
 		$this->assertSame( '$$', $node['priceRange'] );
 		$this->assertCount( 7, $node['openingHoursSpecification'] );
 		$this->assertSame( array( 'Sample Awards 2025, Best Fusion: Finalist' ), $node['award'] );

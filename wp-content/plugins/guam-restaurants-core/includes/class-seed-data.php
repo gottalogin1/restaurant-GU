@@ -168,9 +168,9 @@ final class Seed_Data {
 				'aliases' => array(),
 			),
 			'the-plaza'             => array(
-				'name'    => 'The Plaza',
+				'name'    => 'Dusit Place',
 				'village' => 'tamuning',
-				'aliases' => array( 'The Plaza Shopping Center' ),
+				'aliases' => array( 'The Plaza', 'The Plaza Shopping Center' ),
 			),
 			'pacific-place'         => array(
 				'name'    => 'Pacific Place',
@@ -189,7 +189,7 @@ final class Seed_Data {
 	public static function cuisines(): array {
 		return array(
 			'chamorro'           => array(
-				'name' => 'Chamorro',
+				'name' => 'CHamoru',
 				'osm'  => array( 'chamorro' ),
 			),
 			'filipino'           => array(

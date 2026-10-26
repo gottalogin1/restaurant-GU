@@ -379,7 +379,7 @@ class Dish_Pages_Test extends Guam_Test_Case {
 		$this->assertStringContainsString( 'data-gr-results-map', $html );
 		$this->assertStringContainsString( 'data-gr-point="144.807,13.513"', $html );
 		$this->assertLessThan( strpos( $html, 'Meskla' ), strpos( $html, 'Proa' ), 'Visitors first, owner-only next' );
-		$this->assertStringContainsString( 'places on Guam serve Kelaguen', Dish_Pages::description() );
+		$this->assertStringStartsWith( 'Kelaguen is chopped chicken', Dish_Pages::description(), 'The dish intro, when there is one.' );
 
 		$this->go_to( home_url( '/dishes/not-a-dish/' ) );
 		$this->assertTrue( is_404() );

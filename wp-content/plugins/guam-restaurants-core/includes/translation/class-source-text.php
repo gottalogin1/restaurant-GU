@@ -18,8 +18,8 @@ defined( 'ABSPATH' ) || exit;
  * text can be translated and added to data/translations/ (`wp
  * guam-restaurants translations missing`): page and post titles, text
  * blocks in pages, posts and restaurant descriptions, block headings and
- * labels in the theme's templates, cuisine names, price level descriptions
- * and the tagline. Pages that stay in English (english_only_ids()) are
+ * labels in the theme's templates, cuisine names, the Descriptions (intros)
+ * of villages, malls, cuisines and price levels, and the tagline. Pages that stay in English (english_only_ids()) are
  * left out.
  */
 final class Source_Text {
@@ -62,12 +62,15 @@ final class Source_Text {
 
 		$terms = get_terms(
 			array(
-				'taxonomy'   => array( Content_Types::TAX_CUISINE, Content_Types::TAX_PRICE ),
+				'taxonomy'   => array( Content_Types::TAX_CUISINE, Content_Types::TAX_PRICE, Content_Types::TAX_VILLAGE, Content_Types::TAX_MALL ),
 				'hide_empty' => false,
 			)
 		);
 		foreach ( is_array( $terms ) ? $terms : array() as $term ) {
-			$texts[] = Content_Types::TAX_CUISINE === $term->taxonomy ? $term->name : $term->description;
+			if ( Content_Types::TAX_CUISINE === $term->taxonomy ) {
+				$texts[] = $term->name;
+			}
+			$texts[] = $term->description;
 		}
 
 		$keys = array_filter( array_map( array( Dictionary::class, 'key' ), $texts ) );
