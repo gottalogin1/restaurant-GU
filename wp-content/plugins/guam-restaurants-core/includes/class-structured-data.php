@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  * prints its own Restaurant node).
  *
  * Listing pages (village, mall, cuisine, price and the restaurants
- * archive, unfiltered) get an ItemList of the restaurants on the page, in
+ * archive, unfiltered, and each dish page) get an ItemList of the restaurants on the page, in
  * the order shown, each pointing at the restaurant page that carries its
  * Restaurant node. The home page gets Organization and WebSite nodes for
  * the site's own brand when no SEO plugin prints them; Config::BRAND_PROFILES
@@ -78,12 +78,20 @@ final class Structured_Data {
 	}
 
 	/**
-	 * Prints the ItemList on unfiltered listing pages.
+	 * Prints the ItemList on unfiltered listing pages and dish pages.
 	 *
 	 * @return void
 	 */
 	public static function print_item_list(): void {
 		global $wp_query;
+		$dish = is_404() ? null : Dishes\Dish_Pages::current_dish();
+		if ( null !== $dish ) {
+			$data = self::item_list( array_keys( Dishes\Dish_Pages::places( $dish ) ), Dishes\Dish_Pages::title( $dish ), Dishes\Dish_Pages::url( $dish['slug'] ) );
+			if ( null !== $data ) {
+				wp_print_inline_script_tag( (string) wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG ), array( 'type' => 'application/ld+json' ) );
+			}
+			return;
+		}
 		if ( ! $wp_query instanceof \WP_Query || ! Site\Directory_Query::is_directory( $wp_query ) || Site\Seo::is_filtered_listing() ) {
 			return;
 		}

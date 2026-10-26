@@ -40,6 +40,20 @@ final class Dish_Pages {
 	public const PAGES = array( 'index', 'dish' );
 
 	/**
+	 * Places per dish key, for the index below.
+	 *
+	 * @var array<string, array<int, array{visitors: int, owner: bool, names: string[]}>>
+	 */
+	private static array $places = array();
+
+	/**
+	 * The dish index the places above came from.
+	 *
+	 * @var array<string, mixed>|null
+	 */
+	private static ?array $places_index = null;
+
+	/**
 	 * Hooks registration.
 	 *
 	 * @return void
@@ -276,19 +290,7 @@ final class Dish_Pages {
 		Assets::enqueue( 'directory' );
 		wp_enqueue_script( Assets::SCRIPTS['map'] );
 
-		$index  = Dish_Index::get();
-		$titles = array();
-		_prime_post_caches( array_keys( $index['places'] ), false, false );
-		foreach ( array_keys( $index['places'] ) as $restaurant_id ) {
-			$titles[ $restaurant_id ] = (string) get_the_title( $restaurant_id );
-		}
-		$places = array_filter(
-			Dish_Index::places( $index['places'], $dish['key'], $titles ),
-			static function ( $restaurant_id ): bool {
-				return Content_Types::POST_TYPE === get_post_type( $restaurant_id ) && 'publish' === get_post_status( $restaurant_id );
-			},
-			ARRAY_FILTER_USE_KEY
-		);
+		$places = self::places( $dish );
 
 		$items = '';
 		$pin   = 0;
@@ -326,6 +328,39 @@ final class Dish_Pages {
 			),
 			esc_html__( 'Had it somewhere else? Add a dish photo or name it in a review on that restaurant\'s page, and the place appears here once it is approved.', 'guam-restaurants-core' )
 		);
+	}
+
+	/**
+	 * Published restaurants serving a dish, in page order, with why each is
+	 * listed. Kept for the request, since the page and its structured data
+	 * both need them.
+	 *
+	 * @param array{key: string}|array $dish Dish page.
+	 * @return array<int, array{visitors: int, owner: bool, names: string[]}>
+	 */
+	public static function places( array $dish ): array {
+		$key   = (string) $dish['key'];
+		$index = Dish_Index::get();
+		if ( self::$places_index !== $index ) {
+			self::$places_index = $index;
+			self::$places       = array();
+		}
+		if ( isset( self::$places[ $key ] ) ) {
+			return self::$places[ $key ];
+		}
+		$titles = array();
+		_prime_post_caches( array_keys( $index['places'] ), false, false );
+		foreach ( array_keys( $index['places'] ) as $restaurant_id ) {
+			$titles[ $restaurant_id ] = (string) get_the_title( $restaurant_id );
+		}
+		self::$places[ $key ] = array_filter(
+			Dish_Index::places( $index['places'], $key, $titles ),
+			static function ( $restaurant_id ): bool {
+				return Content_Types::POST_TYPE === get_post_type( $restaurant_id ) && 'publish' === get_post_status( $restaurant_id );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+		return self::$places[ $key ];
 	}
 
 	/**
