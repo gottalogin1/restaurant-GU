@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Term_Meta;
 use GuamRestaurants\Core\Translation\Dictionary;
 
@@ -18,8 +19,77 @@ defined( 'ABSPATH' ) || exit;
  * wp-admin (Restaurants > Villages, Malls, Cuisines). Until one is
  * written, a short factual line is built from the listings themselves, so
  * no page is empty and nothing is copied from elsewhere.
+ *
+ * The plugin ships approved intros in data/intros.php; fill() copies them
+ * into empty Descriptions once (Database\Migrations), and dish() gives the
+ * one for a Guam favorite dish page.
  */
 final class Intro {
+
+	/**
+	 * Shipped intros, by group (village, mall, cuisine, dish) and slug or dish key.
+	 *
+	 * @var array<string, array<string, string>>|null
+	 */
+	private static ?array $shipped = null;
+
+	/**
+	 * The intros in data/intros.php.
+	 *
+	 * @return array<string, array<string, string>>
+	 */
+	public static function shipped(): array {
+		if ( null === self::$shipped ) {
+			$intros        = include GUAM_RESTAURANTS_CORE_DIR . 'data/intros.php';
+			self::$shipped = is_array( $intros ) ? $intros : array();
+		}
+		return self::$shipped;
+	}
+
+	/**
+	 * Copies the shipped intros into village, mall and cuisine Descriptions
+	 * that are still empty. A Description someone wrote is never replaced.
+	 *
+	 * @return array{filled: int, kept: int, missing: int} Terms filled, kept as written, not found.
+	 */
+	public static function fill(): array {
+		$counts = array(
+			'filled'  => 0,
+			'kept'    => 0,
+			'missing' => 0,
+		);
+		foreach ( self::shipped() as $group => $intros ) {
+			$taxonomy = Filters::FACETS[ $group ] ?? '';
+			if ( '' === $taxonomy ) {
+				continue;
+			}
+			foreach ( $intros as $slug => $text ) {
+				$term = Mall_Verification::with_unverified(
+					static function () use ( $slug, $taxonomy ) {
+						return get_term_by( 'slug', $slug, $taxonomy );
+					}
+				);
+				if ( ! $term instanceof \WP_Term ) {
+					++$counts['missing'];
+				} elseif ( '' !== trim( $term->description ) ) {
+					++$counts['kept'];
+				} elseif ( ! is_wp_error( wp_update_term( $term->term_id, $taxonomy, array( 'description' => wp_slash( $text ) ) ) ) ) {
+					++$counts['filled'];
+				}
+			}
+		}
+		return $counts;
+	}
+
+	/**
+	 * Intro for a Guam favorite dish page, in English.
+	 *
+	 * @param string $key Dish key (Dishes\Dish_Index::SEEDS).
+	 * @return string '' when the dish has none.
+	 */
+	public static function dish( string $key ): string {
+		return (string) ( self::shipped()['dish'][ $key ] ?? '' );
+	}
 
 	/**
 	 * Introduction markup for a term.

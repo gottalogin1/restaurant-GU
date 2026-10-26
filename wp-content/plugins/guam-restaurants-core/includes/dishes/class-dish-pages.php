@@ -10,7 +10,9 @@ namespace GuamRestaurants\Core\Dishes;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Site\Assets;
 use GuamRestaurants\Core\Site\Directory_View;
+use GuamRestaurants\Core\Site\Intro;
 use GuamRestaurants\Core\Site\Restaurant_View;
+use GuamRestaurants\Core\Translation\Dictionary;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -229,12 +231,28 @@ final class Dish_Pages {
 		if ( null === $dish ) {
 			return __( 'Guam dishes and the restaurants that serve them, from what visitors photographed and named in their reviews.', 'guam-restaurants-core' );
 		}
+		$intro = self::intro( $dish );
+		if ( '' !== $intro ) {
+			return $intro;
+		}
 		return sprintf(
 			/* translators: 1: number of places, 2: dish name. */
 			_n( '%1$s place on Guam serves %2$s, with a map. Listed by how many visitors named it there, not by who makes it best.', '%1$s places on Guam serve %2$s, with a map. Listed by how many visitors named it there, not by who makes it best.', (int) $dish['places'], 'guam-restaurants-core' ),
 			number_format_i18n( (int) $dish['places'] ),
 			(string) $dish['name']
 		);
+	}
+
+	/**
+	 * What a Guam favorite dish is and how it is served (Site\Intro), in
+	 * the page's language.
+	 *
+	 * @param array{key: string}|array $dish Dish page.
+	 * @return string Plain text; '' for dishes without one.
+	 */
+	public static function intro( array $dish ): string {
+		$intro = Intro::dish( (string) ( $dish['key'] ?? '' ) );
+		return '' === $intro ? '' : Dictionary::text( $intro );
 	}
 
 	/**
@@ -312,7 +330,7 @@ final class Dish_Pages {
 		) . '</p><ul class="gr-cards" role="list">' . $items . '</ul>';
 
 		return sprintf(
-			'<div class="gr-dish-page alignwide"><p class="gr-dish-page__back"><a href="%1$s">%2$s</a></p><h1 class="gr-dish-page__title">%3$s</h1><p class="gr-dish-page__intro">%4$s</p>%5$s<p class="gr-dish-page__add">%6$s</p></div>',
+			'<div class="gr-dish-page alignwide"><p class="gr-dish-page__back"><a href="%1$s">%2$s</a></p><h1 class="gr-dish-page__title">%3$s</h1>%7$s<p class="gr-dish-page__intro">%4$s</p>%5$s<p class="gr-dish-page__add">%6$s</p></div>',
 			esc_url( self::url() ),
 			esc_html__( 'All dishes', 'guam-restaurants-core' ),
 			esc_html( self::title( $dish ) ),
@@ -326,7 +344,8 @@ final class Dish_Pages {
 				$results,
 				esc_attr__( 'Map of these restaurants', 'guam-restaurants-core' )
 			),
-			esc_html__( 'Had it somewhere else? Add a dish photo or name it in a review on that restaurant\'s page, and the place appears here once it is approved.', 'guam-restaurants-core' )
+			esc_html__( 'Had it somewhere else? Add a dish photo or name it in a review on that restaurant\'s page, and the place appears here once it is approved.', 'guam-restaurants-core' ),
+			'' === self::intro( $dish ) ? '' : '<p class="gr-dish-page__about">' . esc_html( self::intro( $dish ) ) . '</p>'
 		);
 	}
 

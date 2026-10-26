@@ -30,6 +30,7 @@ that page. Re-check before building an importer.
 | Pika's Best of Guam (PDN) | **Use with limits** | Facts only (year, category, placing) with source URL, pending PDN's reply. See §8 and `docs/awards-research.md`. |
 | Openverse (openly licensed photos) | **Use with limits** | One illustrative photo per cuisine, CC0, public domain, CC BY or CC BY-SA only, always labeled "Illustrative photo" and credited. See §8a. |
 | Restaurant websites (photos) | **Use with limits** | Only with the owner's permission, recorded on the restaurant (§8a). Photos on a website belong to whoever took them. |
+| Page intro facts (Guampedia, Visit Guam, Guam Daily Post, Wikipedia and others) | **Use** | Facts only, in our own words, with each source listed. See §8c. |
 | Japanese and Korean translations (first party, not a data source) | **Use** | Our own interface and page text translated with AI (Claude) during development and shipped with the plugin; no translation service is called. Google, Yelp and Foursquare content is never translated. See §8b. |
 
 **Collection method (2026-10-10).** Data comes through the official APIs
@@ -633,10 +634,43 @@ service.
 
 | | |
 |---|---|
-| What is translated | Our own interface text (`languages/*.po`), page titles and text blocks, theme headings and labels, cuisine names and price levels (`data/translations/*.php`). |
+| What is translated | Our own interface text (`languages/*.po`), page titles and text blocks, theme headings and labels, cuisine names and price levels, and the shipped page intros (§8c) (`data/translations/*.php`). |
 | Not translated | Restaurant names, addresses, village and mall names, reviewer and author names, photo credits, restaurant descriptions, owner text, visitor reviews, and all Google, Yelp and Foursquare content. Legal, editorial policy and advertiser pages stay English. |
 | Label | Every translated page says it is an AI translation and links the English original and the Translations section of the Data sources page, which says the English page applies. |
 | Google Places in other languages | Place Details accepts `languageCode`; Google then returns its own text (hours, review dates, its own review translations) in that language. Used on translated pages; still shown as returned and never stored. <https://developers.google.com/maps/documentation/places/web-service/place-details> |
+
+## 8c. Page intros (added 2026-10-26)
+
+Short intros at the top of every seeded village, mall and cuisine page and
+every Guam favorite dish page (55 in all), shipped in
+`data/intros.php` with Japanese and Korean versions in
+`data/translations/*.php`. Sanjay approved the English text on 2026-10-26.
+The text is our own words (CLAUDE.md rule 3); the facts in it (history,
+landmarks, events, how a dish is made) come from the pages below, which
+were read by hand, not fetched by an import. Intros name no restaurants and
+give no counts. A one-time migration (`2026-10-26-page-intros`) copies them
+into term Descriptions that are still empty; a Description written in
+wp-admin is never replaced. Owner input: the restaurants at Pacific Place
+(Outback, Capricciosa, Primo Pizzakaya) and the rename of The Plaza to
+Dusit Place came from Sanjay.
+
+| Source | URL |
+|---|---|
+| Guampedia (village and food pages, 29 pages) | <https://www.guampedia.com/>; every page is listed in §11 |
+| Wikipedia | <https://en.wikipedia.org/wiki/Agana_Shopping_Center> |
+| Wikipedia | <https://en.wikipedia.org/wiki/Demographics_of_Guam> |
+| Wikipedia | <https://en.wikipedia.org/wiki/Guam_Premier_Outlets> |
+| Wikipedia | <https://en.wikipedia.org/wiki/Micronesia_Mall> |
+| Wikipedia | <https://en.wikipedia.org/wiki/Tinaktak> |
+| Wikipedia | <https://en.wikipedia.org/wiki/Villages_of_Guam> |
+| Stars and Stripes Guam | <https://guam.stripes.com/food-drink/taste-of-guam-hafaloha-shaved-ice-mixes-chamorro,-hawaiian-cultures.html> |
+| The Guam Guide | <https://theguamguide.com/shopping/the-plaza> |
+| Annie's Chamorro Kitchen | <https://www.annieschamorrokitchen.com/apigigi/> |
+| Guam Daily Post | <https://www.postguam.com/news/local/dusit-now-manages-second-guam-hotel-shopping-center/article_298c20ee-a4a0-11ea-8a9a-afa55b5c8f40.html> |
+| Guam Daily Post | <https://www.postguam.com/news/local/gvb-reports-year-end-tourism-surge/article_91271d71-e3ce-4128-be59-9929cbee7e00.html> |
+| Guam Daily Post | <https://www.postguam.com/news/local/tourism-market-shift-prompts-mall-to-adjust/article_80a9abea-d66f-11e8-888d-3f5379ffd4be.html> |
+| Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/listing/chamorro-village/3734/> |
+| Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/listing/dusit-place/1043/> |
 
 ## 9. Data policy table
 
@@ -726,6 +760,49 @@ in `docs/seo-and-analytics.md` and `docs/monetization.md` §8.
 | https://operations.osmfoundation.org/policies/tiles/ | Read 2026-10-10 |
 | https://developers.google.com/maps/documentation/embed/usage-and-billing | Read 2026-10-10 |
 | https://www2.census.gov/geo/tiger/, https://tigerweb.geo.census.gov | Blocked by network proxy |
+| <https://en.wikipedia.org/wiki/Agana_Shopping_Center> | Read 2026-10-26 (page intros) |
+| <https://en.wikipedia.org/wiki/Demographics_of_Guam> | Read 2026-10-26 (page intros) |
+| <https://en.wikipedia.org/wiki/Guam_Premier_Outlets> | Read 2026-10-26 (page intros) |
+| <https://en.wikipedia.org/wiki/Micronesia_Mall> | Read 2026-10-26 (page intros) |
+| <https://en.wikipedia.org/wiki/Tinaktak> | Read 2026-10-26 (page intros) |
+| <https://en.wikipedia.org/wiki/Villages_of_Guam> | Read 2026-10-26 (page intros) |
+| <https://guam.stripes.com/food-drink/taste-of-guam-hafaloha-shaved-ice-mixes-chamorro,-hawaiian-cultures.html> | Read 2026-10-26 (page intros) |
+| <https://theguamguide.com/shopping/the-plaza> | Read 2026-10-26 (page intros) |
+| <https://www.annieschamorrokitchen.com/apigigi/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/agana-heights/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/agat-hagat/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/asan-maina-assan-maina/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/barrigada/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/chalan-pago-ordot/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/chamorro-food/fiesta-table-overview/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/chicken-tinaktak-recipe/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/dededo-dedidu/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/empanada-recipe/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/finadenne-dipping-sauce/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/hagatna/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/hineksa-agaga-red-rice/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/inarajan-inalahan/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/kelaguen-meat-chicken-or-seafood-with-lemon/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/latiya-vanilla-custard-spongecake/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/lumpia-filipino-eggrolls/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/mangilao/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/mannok-kadon-pika-recipe/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/merizo-malesso/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/mongmong-toto-maite-mongmong-toto-maite/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/piti-piti/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/santa-rita/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/sinajana/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/talofofo-talofofo/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/tamuning/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/titiyas-flatbread/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/umatac-humatak/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/yigo/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/yona-yo-na/> | Read 2026-10-26 (page intros) |
+| <https://www.postguam.com/news/local/dusit-now-manages-second-guam-hotel-shopping-center/article_298c20ee-a4a0-11ea-8a9a-afa55b5c8f40.html> | Read 2026-10-26 (page intros) |
+| <https://www.postguam.com/news/local/gvb-reports-year-end-tourism-surge/article_91271d71-e3ce-4128-be59-9929cbee7e00.html> | Read 2026-10-26 (page intros) |
+| <https://www.postguam.com/news/local/tourism-market-shift-prompts-mall-to-adjust/article_80a9abea-d66f-11e8-888d-3f5379ffd4be.html> | Read 2026-10-26 (page intros) |
+| <https://www.visitguam.com/listing/chamorro-village/3734/> | Read 2026-10-26 (page intros) |
+| <https://www.visitguam.com/listing/dusit-place/1043/> | Read 2026-10-26 (page intros) |
 
 ## 12. To do before the first import
 

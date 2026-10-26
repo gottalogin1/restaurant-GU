@@ -176,6 +176,19 @@ those profiles.
   ("Where to find ... food"). Below 5 places, or with any other filter or
   sort, the URL stays noindex,follow. The list of pairs is cached for an
   hour and refreshed when restaurants or terms change.
+- **Page intros** (`data/intros.php`, added 2026-10-26, plan phase 2).
+  Every seeded village, mall and cuisine page and every Guam favorite dish
+  page has a short intro in our own words, approved by Sanjay, in English,
+  Japanese and Korean. They replace the generated count line at the top of
+  the page and become the meta description. A one-time migration copies
+  them into term Descriptions that are still empty, so they stay editable
+  in wp-admin (Restaurants > Villages, Malls, Cuisines) and a Description
+  someone wrote is kept; translated pages show the dictionary version of
+  the shipped text, and an edited Description shows in English until
+  `wp guam-restaurants translations missing` lists it for translation. Dish
+  intros show under the dish page heading. The same migration renames the
+  cuisine to CHamoru and The Plaza to Dusit Place ("The Plaza" stays an
+  alias); both keep their web addresses. Sources: `docs/data-sources.md` §8c.
 - The full plan, with what comes next, is the SEO plan doc
   (https://claude.ai/artifact/JcXSSwwXHeqLCb91Ye8ZYC).
 

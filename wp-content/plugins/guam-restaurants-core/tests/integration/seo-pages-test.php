@@ -208,7 +208,7 @@ class Seo_Pages_Test extends Guam_Test_Case {
 		$this->go_to( Dish_Pages::url( 'kelaguen' ) );
 		$this->assertSame( home_url( '/dishes/kelaguen/' ), Seo::yoast_canonical( 'https://example.com/wrong/' ) );
 		$this->assertSame( 'Where to get Kelaguen on Guam - ' . get_bloginfo( 'name' ), Seo::yoast_title( 'Yoast title' ) );
-		$this->assertStringContainsString( 'places on Guam serve Kelaguen', Seo::yoast_description( '' ) );
+		$this->assertStringStartsWith( 'Kelaguen is chopped chicken', Seo::yoast_description( '' ), 'The dish intro, when there is one.' );
 		ob_start();
 		Seo::canonical();
 		$this->assertSame( '<link rel="canonical" href="' . home_url( '/dishes/kelaguen/' ) . '">' . "\n", (string) ob_get_clean() );

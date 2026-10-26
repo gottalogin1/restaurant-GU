@@ -20,8 +20,8 @@ defined( 'ABSPATH' ) || exit;
  * plugin creates take their titles and text from them). Text found in
  * neither stays in English.
  *
- * Restaurant names, village and mall names and anything from other sites
- * are never looked up.
+ * Village and mall intros are looked up too. Restaurant names, village
+ * and mall names and anything from other sites are never looked up.
  */
 final class Dictionary {
 
@@ -59,6 +59,8 @@ final class Dictionary {
 		add_filter( 'render_block_data', array( self::class, 'block_data' ) );
 		add_filter( 'get_' . Content_Types::TAX_CUISINE, array( self::class, 'term' ) );
 		add_filter( 'get_' . Content_Types::TAX_PRICE, array( self::class, 'term' ) );
+		add_filter( 'get_' . Content_Types::TAX_VILLAGE, array( self::class, 'place_description' ) );
+		add_filter( 'get_' . Content_Types::TAX_MALL, array( self::class, 'place_description' ) );
 		add_filter( 'bloginfo', array( self::class, 'bloginfo' ), 10, 2 );
 		add_filter( 'wp_sprintf_l', array( self::class, 'list_separators' ) );
 	}
@@ -208,7 +210,7 @@ final class Dictionary {
 	}
 
 	/**
-	 * Cuisine names and price level descriptions.
+	 * Cuisine names, and cuisine and price level descriptions.
 	 *
 	 * @param \WP_Term $term Term.
 	 * @return \WP_Term
@@ -216,6 +218,19 @@ final class Dictionary {
 	public static function term( $term ) {
 		if ( $term instanceof \WP_Term && Languages::is_translated() ) {
 			$term->name        = self::text( $term->name );
+			$term->description = self::text( $term->description );
+		}
+		return $term;
+	}
+
+	/**
+	 * Village and mall intros (their Descriptions); their names stay as written.
+	 *
+	 * @param \WP_Term $term Term.
+	 * @return \WP_Term
+	 */
+	public static function place_description( $term ) {
+		if ( $term instanceof \WP_Term && '' !== $term->description && Languages::is_translated() ) {
 			$term->description = self::text( $term->description );
 		}
 		return $term;

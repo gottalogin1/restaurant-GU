@@ -2067,6 +2067,12 @@
 	margin: 0;
 }
 
+.gr-dish-page__about {
+	font-size: 1.125rem;
+	max-width: 46rem;
+	margin: 0;
+}
+
 .gr-dish-page__back {
 	margin: 0;
 }

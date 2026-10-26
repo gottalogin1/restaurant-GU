@@ -365,7 +365,7 @@ class Newsletter_Seo_Test extends Guam_Test_Case {
 		$dededo   = $this->term( 'dededo', Content_Types::TAX_VILLAGE );
 		$chamorro = $this->term( 'chamorro', Content_Types::TAX_CUISINE );
 		$this->assertSame( 'Restaurants in Tamuning, Guam', Seo::term_title( $tamuning ) );
-		$this->assertSame( 'Chamorro Restaurants on Guam', Seo::term_title( $chamorro ) );
+		$this->assertSame( 'CHamoru Restaurants on Guam', Seo::term_title( $chamorro ) );
 
 		$mall = \GuamRestaurants\Core\Mall_Verification::with_unverified(
 			static function () {
@@ -437,7 +437,7 @@ class Newsletter_Seo_Test extends Guam_Test_Case {
 		$tamuning = Related_Links::for_term( $this->term( 'tamuning', Content_Types::TAX_VILLAGE ) );
 		$cuisines = $tamuning[0]['links'];
 		$this->assertSame( 'Popular cuisines in Tamuning', $tamuning[0]['title'], 'No verified malls, so no mall group.' );
-		$this->assertSame( 'Chamorro', $cuisines[0]['label'], 'Most common first.' );
+		$this->assertSame( 'CHamoru', $cuisines[0]['label'], 'Most common first.' );
 		$this->assertSame( get_term_link( 'chamorro', Content_Types::TAX_CUISINE ), $cuisines[0]['url'] );
 
 		$chamorro = Related_Links::for_term( $this->term( 'chamorro', Content_Types::TAX_CUISINE ) );
@@ -445,10 +445,10 @@ class Newsletter_Seo_Test extends Guam_Test_Case {
 		$this->assertSame( array( 'American' ), wp_list_pluck( $chamorro[1]['links'], 'label' ), 'Cuisines the same restaurants serve.' );
 
 		$proa = Related_Links::for_restaurant( $this->r['proa'] );
-		$this->assertSame( 'More Chamorro restaurants in Tamuning', $proa[0]['title'] );
+		$this->assertSame( 'More CHamoru restaurants in Tamuning', $proa[0]['title'] );
 		$this->assertSame( array( 'Fiesta Grill' ), wp_list_pluck( $proa[0]['links'], 'label' ) );
 		$this->assertSame( 'Browse', $proa[1]['title'] );
-		$this->assertSame( array( 'Tamuning', 'Chamorro' ), wp_list_pluck( $proa[1]['links'], 'label' ) );
+		$this->assertSame( array( 'Tamuning', 'CHamoru' ), wp_list_pluck( $proa[1]['links'], 'label' ) );
 
 		$this->go_to( get_permalink( $this->r['proa'] ) );
 		$html = Related_Links::render();
