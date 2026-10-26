@@ -112,12 +112,9 @@ final class Listing_Views {
 			return $response;
 		}
 
-		$key   = 'gr_views_rl_' . substr( \GuamRestaurants\Core\Reviews\Visitor_Reviews::client_key(), 0, 32 );
-		$count = (int) get_transient( $key );
-		if ( $count >= self::PER_HOUR ) {
+		if ( ! \GuamRestaurants\Core\Security\Rate_Limit::hit( 'views', self::PER_HOUR, HOUR_IN_SECONDS ) ) {
 			return $response;
 		}
-		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
 
 		self::add( $id, self::today() );
 		return $response;

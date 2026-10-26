@@ -21,6 +21,7 @@ use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Monitoring\Queries;
+use GuamRestaurants\Core\Security\Rate_Limit;
 use GuamRestaurants\Core\Site\Blocks;
 use GuamRestaurants\Core\Site\Directory_Query;
 use GuamRestaurants\Core\Site\Filters;
@@ -649,6 +650,39 @@ class Ads_Test extends Guam_Test_Case {
 
 		// Only counters are stored: no IP, user agent, cookie or user.
 		$this->assertSame( array( 'ad_id', 'stat_date', 'page_type', 'impressions', 'clicks' ), array_keys( $rows[0] ) );
+	}
+
+	/**
+	 * One visitor's requests stop counting after PER_HOUR an hour; another visitor still counts.
+	 */
+	public function test_tracking_rate_limited_per_visitor() {
+		$ad                     = $this->ad( 'Limited' );
+		$body                   = array(
+			'page'   => 'village',
+			'events' => array(
+				array(
+					'ad'   => $ad,
+					'type' => 'impression',
+				),
+			),
+		);
+		$_SERVER['REMOTE_ADDR'] = '203.0.113.20';
+		set_transient(
+			Rate_Limit::key( 'ads', Rate_Limit::client_key() ),
+			array(
+				'count' => Tracking::PER_HOUR - 1,
+				'reset' => time() + HOUR_IN_SECONDS,
+			),
+			HOUR_IN_SECONDS
+		);
+		$this->track( $body );
+		$this->assertSame( 204, $this->track( $body )->get_status(), 'Refused quietly, like a bot.' );
+		$this->assertSame( 1, (int) $this->stats( $ad )[0]['impressions'], 'Only the request within the limit counted.' );
+
+		$_SERVER['REMOTE_ADDR'] = '203.0.113.21';
+		$this->track( $body );
+		unset( $_SERVER['REMOTE_ADDR'] );
+		$this->assertSame( 2, (int) $this->stats( $ad )[0]['impressions'] );
 	}
 
 	/**

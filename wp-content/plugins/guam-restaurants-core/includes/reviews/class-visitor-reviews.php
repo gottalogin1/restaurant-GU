@@ -7,12 +7,12 @@
 
 namespace GuamRestaurants\Core\Reviews;
 
-use GuamRestaurants\Core\Config;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Highlights\Email_Verification;
 use GuamRestaurants\Core\Highlights\Highlights;
 use GuamRestaurants\Core\Highlights\Policy;
 use GuamRestaurants\Core\Highlights\Roles;
+use GuamRestaurants\Core\Security\Rate_Limit;
 use WP_Error;
 
 defined( 'ABSPATH' ) || exit;
@@ -412,27 +412,7 @@ final class Visitor_Reviews {
 	 * @return string
 	 */
 	public static function client_key(): string {
-		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-
-		// Behind a CDN every visitor shares the CDN's addresses, so one
-		// visitor's limit would block everyone (docs/security.md §5).
-		$header = strtoupper( Config::get( Config::CLIENT_IP_HEADER ) );
-		if ( '' !== $header && preg_match( '/^HTTP_[A-Z0-9_]+$/', $header ) && ! empty( $_SERVER[ $header ] ) ) {
-			$forwarded = trim( explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) ) )[0] );
-			if ( false !== filter_var( $forwarded, FILTER_VALIDATE_IP ) ) {
-				$ip = $forwarded;
-			}
-		}
-
-		/**
-		 * Filters the visitor IP used for rate limiting, for hosts behind a
-		 * proxy that puts the real address in a header.
-		 *
-		 * @param string $ip REMOTE_ADDR.
-		 */
-		$ip = (string) apply_filters( 'guam_restaurants_review_client_ip', $ip );
-
-		return hash_hmac( 'sha256', $ip, wp_salt( 'nonce' ) );
+		return Rate_Limit::client_key();
 	}
 
 	/**

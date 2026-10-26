@@ -42,6 +42,7 @@ final class Headers {
 			return;
 		}
 		add_filter( 'wp_headers', array( self::class, 'public_headers' ) );
+		add_action( 'send_headers', array( self::class, 'remove_php_version' ) );
 		add_action( 'admin_init', array( self::class, 'send_admin_headers' ) );
 		add_action( 'login_init', array( self::class, 'send_admin_headers' ) );
 	}
@@ -63,11 +64,14 @@ final class Headers {
 	 */
 	public static function base( bool $https ): array {
 		$headers = array(
-			'X-Content-Type-Options' => 'nosniff',
-			'Referrer-Policy'        => 'strict-origin-when-cross-origin',
-			'X-Frame-Options'        => 'SAMEORIGIN',
+			'X-Content-Type-Options'            => 'nosniff',
+			'Referrer-Policy'                   => 'strict-origin-when-cross-origin',
+			'X-Frame-Options'                   => 'SAMEORIGIN',
 			// The map asks for nothing; PayPal's buttons need payment on our own pages.
-			'Permissions-Policy'     => 'camera=(), microphone=(), geolocation=(), usb=(), payment=(self "https://www.paypal.com")',
+			'Permissions-Policy'                => 'camera=(), microphone=(), geolocation=(), usb=(), payment=(self "https://www.paypal.com")',
+			// Other sites' windows get no handle on ours; PayPal and Google sign-in popups still work.
+			'Cross-Origin-Opener-Policy'        => 'same-origin-allow-popups',
+			'X-Permitted-Cross-Domain-Policies' => 'none',
 		);
 		if ( $https && Config::flag( Config::HSTS ) ) {
 			$headers['Strict-Transport-Security'] = self::HSTS_VALUE;
@@ -167,8 +171,21 @@ final class Headers {
 		if ( headers_sent() ) {
 			return;
 		}
+		self::remove_php_version();
 		foreach ( self::base( is_ssl() ) as $name => $value ) {
 			header( $name . ': ' . $value );
+		}
+	}
+
+	/**
+	 * Drops PHP's `X-Powered-By: PHP/8.x` header, which tells scanners which
+	 * PHP flaws to try (`expose_php = Off` in php.ini does the same).
+	 *
+	 * @return void
+	 */
+	public static function remove_php_version(): void {
+		if ( ! headers_sent() ) {
+			header_remove( 'X-Powered-By' );
 		}
 	}
 

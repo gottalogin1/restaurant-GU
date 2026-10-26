@@ -34,12 +34,52 @@ Reviewed every request handler, REST route, query and template in the plugin
 
 **Known gaps (open items)**
 
-- `/wp-json/guam-restaurants/v1/ads/events` and `/listing/events` have no rate limit
-  (they store no IP to limit on). Add a CDN or WAF rule (§5) before invoicing on
-  impressions.
+- ~~The ad and listing beacons have no rate limit~~ (fixed 2026-10-26, §1a). A CDN or
+  WAF rule (§5) is still needed against many addresses at once.
 - Form data (leads, corrections, claims) has no automatic retention purge and no
   WordPress privacy export/erase hooks yet. The privacy policy draft leaves the
   retention period for counsel.
+
+## 1a. Second review, 2026-10-26
+
+Re-read the plugin after it grew to about 47,000 lines in 259 PHP files (photos,
+saved lists and sign-in, translations, dish pages, plain-language search and open-at
+came after §1). Same method: every REST route and `permission_callback`, every
+`admin_post_*` handler, every `$_GET`/`$_POST`/`$_FILES` read, every `phpcs:ignore`
+on an escaping, input or SQL sniff, the front-end scripts that build HTML, and the
+upload paths. PHPCS (WordPress, including `WordPress.Security`) and `composer audit`
+are clean; npm's advisory database has nothing for MapLibre 6.13.0.
+
+Nonces, capability checks, SQL preparation and escaping held up: no handler without a
+nonce and capability (or owner) check, no query with unprepared input, and the
+third-party review links in `ratings.js` only accept `http(s)` URLs.
+
+**Found and fixed**
+
+| # | Finding | Risk | Fix |
+|---|---|---|---|
+| 1 | Ad beacon (`/ads/events`) and owner listing beacon (`/listing/events`) had no limit. | Anyone could inflate an advertiser's impressions and clicks, or a restaurant's dashboard numbers, with a loop from one machine. | `Security\Rate_Limit`: 240 ad beacon requests and 120 listing requests an hour per visitor (hashed IP), refused quietly. The listing view counter uses the same class. |
+| 2 | Visitor photo originals (with camera and GPS data) were stored in the public month folder under a random name. | Readable by anyone who learns the name, and listed outright on a server with directory listing on. Could reveal where a visitor lives. | Originals go to `wp-content/uploads/gr-private/photo-originals/`, which has `Require all denied` and an empty `index.php`. A migration moves existing originals. nginx needs the rule in §2. |
+| 3 | oEmbed answers (`/wp-json/oembed/1.0/embed?url=...`) named each post's author and linked the author archive. | Gave away login names (checked locally: `admin` and `/author/admin/`) despite the other user-enumeration blocks. | Author fields removed from oEmbed answers. |
+| 4 | The sign-in page said "the password you entered for the username X is incorrect" vs "not registered". | Told an attacker which names and emails have accounts. | One message for unknown user, unknown email and wrong password. |
+| 5 | Application passwords were available. | They sign in to the REST API with no second step, so they undo the two-factor rule for administrators. Nothing on the site uses them. | Off unless `GUAM_RESTAURANTS_ALLOW_APP_PASSWORDS=1`. |
+| 6 | Map popups escaped names with a helper that left `"` alone, then put the URL in `href="..."`. | Low: the URL is the site's own permalink, but any future field there could break out of the attribute. | Escapes `& < > " '`. |
+| 7 | PHP's `X-Powered-By: PHP/8.x` header was sent. | Tells scanners which PHP to target. | Removed; also `Cross-Origin-Opener-Policy: same-origin-allow-popups` and `X-Permitted-Cross-Domain-Policies: none`. |
+
+`wp guam-restaurants preflight` now also checks that application passwords are off,
+that the private folder really refuses a request (it writes a probe file and asks the
+web server for it), and that the uploads folder does not list its files.
+
+**Still open (needs the live host or a decision)**
+
+- Administrators without two-factor are sent to their profile on wp-admin screens, but
+  REST and `admin-post.php` still work for them (the Two Factor plugin sets itself up
+  over REST). Enrolling every administrator and turning on
+  `GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA` closes this in practice.
+- Privacy export/erase hooks and a retention purge for leads, corrections and claims
+  (from §1).
+- The CSP still allows `'unsafe-inline'` scripts (WordPress core, WooCommerce and
+  PayPal need it).
 
 ## 2. Hardening built into the plugin (`Security\Hardening`)
 
@@ -52,13 +92,39 @@ Reviewed every request handler, REST route, query and template in the plugin
   server's `upload_max_filesize` still applies when lower); images over 40 megapixels
   are refused before thumbnails are made; people without `manage_options` can upload
   only JPEG, PNG, GIF, WebP, AVIF and PDF.
+- Application passwords off (they skip two-factor), unless
+  `GUAM_RESTAURANTS_ALLOW_APP_PASSWORDS=1`. Failed sign-ins show one message whatever
+  was wrong, and oEmbed answers carry no author.
 - Visitor photo uploads (`Photos\Photo_Submissions`): REST, multipart, JPEG/PNG/WebP
   only (checked from the file's bytes), up to 20 MB and 40 megapixels. Honeypot,
   3-second minimum fill, 5 uploads per hour per hashed IP and per email.
   Visitors who are not logged in confirm by email first. The original is stored
-  under a random name and deleted after 30 days. The public copy has its
+  under a random name in the private folder (below) and deleted after 30 days. The public copy has its
   camera and location data removed. Owners' photos also wait for approval unless the
   owner has the "Restaurant owner (trusted)" role.
+
+**Private uploads folder (`Security\Private_Uploads`).** `wp-content/uploads/gr-private/`
+holds files the site keeps but never shows (photo originals). The plugin writes an
+`.htaccess` that refuses every request, which Apache obeys. **nginx ignores it**, so
+add this to the site's server block, then run `wp guam-restaurants preflight` and
+expect "Private uploads closed: ok":
+
+```nginx
+location ^~ /wp-content/uploads/gr-private/ { deny all; }
+# No PHP from uploads, and no folder listings anywhere.
+location ~* ^/wp-content/uploads/.*\.php$ { deny all; }
+autoindex off;
+```
+
+On Apache, also stop PHP from running in uploads by putting this in
+`wp-content/uploads/.htaccess`:
+
+```apache
+<FilesMatch "\.(php|phtml|phar)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes
+```
 
 **`wp-config.php` settings** (in docs/deployment.md §2): `DISALLOW_FILE_EDIT`,
 `WP_DEBUG_DISPLAY` false, `FORCE_SSL_ADMIN`, fresh salts, and `WP_ENVIRONMENT_TYPE`.
@@ -81,6 +147,9 @@ The plugin sends these on every page, wp-admin and the login page:
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
 | `X-Frame-Options` | `SAMEORIGIN` |
 | `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), usb=(), payment=(self "https://www.paypal.com")` |
+| `Cross-Origin-Opener-Policy` | `same-origin-allow-popups` (PayPal and Google sign-in popups still work) |
+| `X-Permitted-Cross-Domain-Policies` | `none` |
+| `X-Powered-By` | removed |
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains`, only with `GUAM_RESTAURANTS_HSTS=1` and HTTPS |
 | `Content-Security-Policy-Report-Only` | public pages; see below |
 
@@ -109,6 +178,8 @@ headers the server adds. So add the same headers at the server or CDN, then set
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), usb=(), payment=(self \"https://www.paypal.com\")"
+  Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+  Header always set X-Permitted-Cross-Domain-Policies "none"
   # After HTTPS works on every host name:
   # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
   Header unset X-Powered-By
@@ -161,6 +232,10 @@ backup codes. It has no enforcement setting of its own, so the plugin adds one:
 - Cloudflare rate limiting rule (free plan has one): path starts with
   `/wp-json/guam-restaurants/v1/` and method `POST`, 30 requests per 10 seconds per IP,
   block for 10 minutes. This covers the ad and listing beacons and all forms.
+- The plugin's own limits (`Security\Rate_Limit`, per hashed visitor IP): reviews and
+  photos 3 and 5 an hour, listing views 60, listing beacon 120 and ad beacon 240
+  requests an hour. Without `GUAM_RESTAURANTS_CLIENT_IP_HEADER` behind a CDN, all
+  visitors share these, so set it before launch.
 - Cloudflare WAF managed rules on, "Bot Fight Mode" off (it blocks the beacon's
   `sendBeacon` calls from some browsers).
 

@@ -63,6 +63,7 @@ define( 'GUAM_RESTAURANTS_CSP', 'report-only' );     // 'enforce' after a clean 
 define( 'GUAM_RESTAURANTS_CLIENT_IP_HEADER', '' );   // 'HTTP_CF_CONNECTING_IP' behind Cloudflare
 define( 'GUAM_RESTAURANTS_REQUIRE_ADMIN_2FA', false ); // true once admins enrolled
 define( 'GUAM_RESTAURANTS_MAX_UPLOAD_MB', 20 );
+define( 'GUAM_RESTAURANTS_ALLOW_APP_PASSWORDS', false ); // off: they skip two-factor
 define( 'GUAM_RESTAURANTS_LEGAL_NAME', '' ); // TO DO: formal company name for the photo upload agreement.
 
 // API keys and budgets (docs/data-sources.md, .env.example has the full list).

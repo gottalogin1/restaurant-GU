@@ -15,6 +15,7 @@ use GuamRestaurants\Core\Photos\Agreement;
 use GuamRestaurants\Core\Photos\Photo_Gallery;
 use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Restaurant_Meta;
+use GuamRestaurants\Core\Security\Private_Uploads;
 use GuamRestaurants\Core\Site\Blocks;
 use GuamRestaurants\Core\Site\Restaurant_View;
 
@@ -126,6 +127,8 @@ class Photo_Submissions_Test extends Guam_Test_Case {
 		$original = (string) get_post_meta( $photo, Photo_Submissions::ORIGINAL, true );
 		$this->assertFileExists( $original );
 		$this->assertStringNotContainsString( 'IMG_0001', $original, 'The original gets a random name.' );
+		$this->assertTrue( Private_Uploads::contains( $original ), 'The original, with its camera and location data, is kept where browsers cannot open it.' );
+		$this->assertFalse( Private_Uploads::contains( (string) get_attached_file( $photo ) ), 'The public copy stays in the normal uploads folder.' );
 		$this->assertEqualsWithDelta( time() + 30 * DAY_IN_SECONDS, (int) get_post_meta( $photo, Photo_Submissions::KEEP_UNTIL, true ), 5 );
 		$this->assertSame( 0, Restaurant_View::photo_id( $id ), 'Not shown before approval.' );
 		$this->assertSame( 1, Photo_Submissions::count( Photo_Submissions::PENDING ) );

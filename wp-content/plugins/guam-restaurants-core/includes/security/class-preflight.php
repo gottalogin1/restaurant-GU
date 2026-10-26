@@ -83,6 +83,30 @@ final class Preflight {
 		$limiter = self::active_plugin_folder( array( 'loginpress-pro', 'malcare-security' ) );
 		$add( 'Login rate limiting', '' !== $limiter ? self::OK : self::WARN, '' !== $limiter ? $limiter . ' is active; check its login limit is on.' : 'Neither LoginPress Pro (Limit Login Attempts add-on) nor MalCare is active.' );
 
+		$app_passwords = Config::flag( Config::ALLOW_APP_PASSWORDS );
+		$add( 'Application passwords off', $app_passwords ? self::WARN : self::OK, $app_passwords ? 'GUAM_RESTAURANTS_ALLOW_APP_PASSWORDS is on; they sign in without two-factor.' : 'Off.' );
+
+		$private = Private_Uploads::probe();
+		$add(
+			'Private uploads closed',
+			'closed' === $private ? self::OK : ( 'open' === $private && $production ? self::FAIL : self::WARN ),
+			array(
+				'closed'  => Private_Uploads::url() . '/ refuses requests.',
+				'open'    => Private_Uploads::url() . '/ is served to anyone. On nginx add the deny rule in docs/security.md §2.',
+				'unknown' => 'Could not request ' . Private_Uploads::url() . '/ from this server; open it in a browser and expect 403 or 404.',
+			)[ $private ]
+		);
+		$listing = Private_Uploads::listing();
+		$add(
+			'Uploads folder listing off',
+			'off' === $listing ? self::OK : self::WARN,
+			array(
+				'off'     => 'The uploads folder does not list its files.',
+				'on'      => 'The web server lists the files in wp-content/uploads/. Turn off directory listing (Apache: Options -Indexes; nginx: autoindex off).',
+				'unknown' => 'Could not request the uploads folder from this server.',
+			)[ $listing ]
+		);
+
 		$add( 'XML-RPC off', Config::flag( Config::ALLOW_XMLRPC ) ? self::WARN : self::OK, Config::flag( Config::ALLOW_XMLRPC ) ? 'GUAM_RESTAURANTS_ALLOW_XMLRPC is on.' : 'Off.' );
 
 		$add( 'Security headers', Headers::enabled() ? self::OK : self::WARN, Headers::enabled() ? sprintf( 'Sent by the plugin; CSP %s; HSTS %s.', Headers::csp_mode(), Config::flag( Config::HSTS ) ? 'on' : 'off' ) : 'Plugin headers are off; make sure the server or CDN sends them (docs/security.md §3).' );
