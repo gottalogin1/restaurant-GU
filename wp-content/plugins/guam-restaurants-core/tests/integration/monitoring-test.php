@@ -13,6 +13,7 @@ use GuamRestaurants\Core\Database\Ingestion_Runs;
 use GuamRestaurants\Core\Database\Schema;
 use GuamRestaurants\Core\Monitoring\Health_Check;
 use GuamRestaurants\Core\Monitoring\Jobs;
+use GuamRestaurants\Core\Monitoring\Queries;
 use GuamRestaurants\Core\Restaurant_Meta;
 use function GuamRestaurants\Core\get_changes_for;
 use function GuamRestaurants\Core\get_recent_closures;
@@ -89,6 +90,7 @@ class Monitoring_Test extends Guam_Test_Case {
 	public function test_recent_openings() {
 		$this->import( Guam_Fixtures::without( array( 5003 ) ) );
 		$this->assertSame( array(), get_recent_openings( 30 ), 'The first run is the baseline.' );
+		$this->assertSame( array(), Queries::recent_opening_ids( 30 ) );
 
 		$this->import();
 		$meskla   = $this->post_for( 5003 );
@@ -100,14 +102,22 @@ class Monitoring_Test extends Guam_Test_Case {
 
 		$hand = $this->restaurant( 'Kracked Egg Tumon' );
 		$this->assertSame( array( $hand, $meskla ), array_column( get_recent_openings( 30 ), 'restaurant_id' ) );
+		$this->assertSame( array( $hand, $meskla ), Queries::recent_opening_ids( 30 ) );
 		$this->assertSame( array( $hand ), array_column( \GuamRestaurants\Core\Monitoring\Queries::recent_openings( 30, 1 ), 'restaurant_id' ), 'The limit keeps the newest.' );
 
 		global $wpdb;
 		$wpdb->update( Schema::table( Schema::CHANGE_LOG ), array( 'detected_at' => gmdate( 'Y-m-d H:i:s', time() - 40 * DAY_IN_SECONDS ) ), array( 'restaurant_id' => $meskla ) ); // phpcs:ignore WordPress.DB
 		$this->assertSame( array( $hand ), array_column( get_recent_openings( 30 ), 'restaurant_id' ), 'Outside the window.' );
+		$this->assertSame( array( $hand ), Queries::recent_opening_ids( 30 ) );
+
+		update_post_meta( $hand, Restaurant_Meta::STATUS, 'permanently_closed' );
+		$this->assertSame( array(), array_column( get_recent_openings( 30 ), 'restaurant_id' ), 'Closed places are not new.' );
+		$this->assertSame( array(), Queries::recent_opening_ids( 30 ) );
+		delete_post_meta( $hand, Restaurant_Meta::STATUS );
 
 		wp_trash_post( $hand );
 		$this->assertSame( array(), get_recent_openings( 30 ) );
+		$this->assertSame( array(), Queries::recent_opening_ids( 30 ) );
 		$this->assertSame( array(), get_recent_closures( 30 ) );
 	}
 

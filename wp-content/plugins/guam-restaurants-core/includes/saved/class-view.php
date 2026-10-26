@@ -192,6 +192,7 @@ final class View {
 		}
 		$items = '';
 		$pin   = 0;
+		Restaurant_View::prime( $ids );
 		foreach ( $ids as $id ) {
 			$point  = Restaurant_View::coordinates( $id );
 			$items .= null === $point

@@ -315,6 +315,7 @@ final class Blocks {
 			return '';
 		}
 		Assets::enqueue( 'hours' );
+		Restaurant_View::prime( $ids );
 		$heading = trim( (string) ( $attributes['heading'] ?? '' ) );
 		$cards   = '';
 		foreach ( $ids as $id ) {

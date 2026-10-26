@@ -643,6 +643,37 @@ final class Photo_Submissions {
 	}
 
 	/**
+	 * Newest approved upload of each of several restaurants, in one query
+	 * (the cards of a list), ordered as ids() orders them.
+	 *
+	 * @param int[] $restaurant_ids Restaurants.
+	 * @return array<int, int> Restaurant ID => attachment ID, for those with one.
+	 */
+	public static function newest_approved( array $restaurant_ids ): array {
+		global $wpdb;
+		$restaurant_ids = array_values( array_filter( array_map( 'intval', $restaurant_ids ) ) );
+		if ( ! $restaurant_ids ) {
+			return array();
+		}
+		$placeholders = implode( ',', array_fill( 0, count( $restaurant_ids ), '%d' ) );
+		$rows         = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- one query for a list of cards; ids() runs per restaurant otherwise.
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- the values are one array.
+				"SELECT p.ID, p.post_parent FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = %s AND m.meta_value = %s WHERE p.post_type = 'attachment' AND p.post_status = 'inherit' AND p.post_parent IN ({$placeholders}) ORDER BY p.post_date DESC, p.ID DESC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders only.
+				array_merge( array( self::STATUS, self::APPROVED ), $restaurant_ids )
+			),
+			ARRAY_A
+		);
+		$out          = array();
+		foreach ( (array) $rows as $row ) {
+			$parent = (int) $row['post_parent'];
+			if ( ! isset( $out[ $parent ] ) ) {
+				$out[ $parent ] = (int) $row['ID'];
+			}
+		}
+		return $out;
+	}
+
+	/**
 	 * Number of submissions with a status.
 	 *
 	 * @param string $status Status.

@@ -210,6 +210,40 @@ class Photo_Submissions_Test extends Guam_Test_Case {
 	}
 
 	/**
+	 * Cards of a list read each restaurant's newest approved upload from one
+	 * query, and a later approval is seen at once.
+	 */
+	public function test_primed_cards_use_newest_approved_upload() {
+		$admin = $this->login_admin();
+		$id    = $this->restaurant( 'Capricciosa' );
+		$other = $this->restaurant( 'Jamaican Grill' );
+		$older = Photo_Submissions::submit( $id, self::fields(), $this->upload( 600, 400 ), 'k5' )['id'];
+		$newer = Photo_Submissions::submit( $id, self::fields(), $this->upload( 600, 400 ), 'k5' )['id'];
+		wp_update_post(
+			array(
+				'ID'            => $older,
+				'post_date'     => '2026-01-01 10:00:00',
+				'post_date_gmt' => '2026-01-01 00:00:00',
+			)
+		);
+		// Administrators' uploads are approved at once; this one waits.
+		update_post_meta( $newer, Photo_Submissions::STATUS, Photo_Submissions::PENDING );
+		$this->assertSame( array( $id => $older ), Photo_Submissions::newest_approved( array( $id, $other ) ), 'Only approved uploads count.' );
+
+		Restaurant_View::prime( array( $id, $other ) );
+		global $wpdb;
+		$queries = $wpdb->num_queries;
+		$this->assertSame( $older, Restaurant_View::photo_id( $id ) );
+		$this->assertSame( 0, Restaurant_View::photo_id( $other ) );
+		$this->assertSame( $queries, $wpdb->num_queries, 'Primed cards need no photo queries.' );
+
+		Photo_Submissions::moderate( $newer, 'approve', '', $admin );
+		$this->assertSame( $newer, Restaurant_View::photo_id( $id ), 'An approval after priming shows at once.' );
+		Restaurant_View::prime( array( $id ) );
+		$this->assertSame( $newer, Restaurant_View::photo_id( $id ), 'Newest first, as in ids().' );
+	}
+
+	/**
 	 * The owner's photos say "From the owner" and cannot carry a rating.
 	 */
 	public function test_owner_upload() {

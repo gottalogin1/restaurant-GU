@@ -322,6 +322,72 @@ final class Restaurant_View {
 	public const NEW_DAYS = 90;
 
 	/**
+	 * Cache group for the newest approved upload of each restaurant, kept
+	 * for one request (prime() fills it for a whole list).
+	 */
+	public const UPLOADS_GROUP = 'guam_restaurants_uploads';
+
+	/**
+	 * Loads what card() reads for a list of restaurants in a few queries,
+	 * instead of several queries per card: posts, post meta, terms, term
+	 * meta, featured images and approved uploads.
+	 *
+	 * @param int[] $ids Restaurants.
+	 * @return void
+	 */
+	public static function prime( array $ids ): void {
+		$ids = array_values( array_unique( array_filter( array_map( 'intval', $ids ) ) ) );
+		if ( ! $ids ) {
+			return;
+		}
+		_prime_post_caches( $ids, false, false );
+		update_postmeta_cache( $ids );
+		update_object_term_cache( $ids, Content_Types::POST_TYPE );
+
+		$term_ids   = array();
+		$taxonomies = get_object_taxonomies( Content_Types::POST_TYPE );
+		foreach ( $ids as $id ) {
+			foreach ( $taxonomies as $taxonomy ) {
+				$terms = get_object_term_cache( $id, $taxonomy );
+				if ( is_array( $terms ) ) {
+					$term_ids = array_merge( $term_ids, wp_list_pluck( $terms, 'term_id' ) );
+				}
+			}
+		}
+		if ( $term_ids ) {
+			update_termmeta_cache( array_unique( $term_ids ) );
+		}
+
+		$thumbnails = array_filter(
+			array_map(
+				static function ( int $id ): int {
+					return (int) get_post_meta( $id, '_thumbnail_id', true );
+				},
+				$ids
+			)
+		);
+		if ( $thumbnails ) {
+			_prime_post_caches( $thumbnails, false, true );
+		}
+
+		$uploads = Photo_Submissions::newest_approved( $ids );
+		foreach ( $ids as $id ) {
+			wp_cache_set( self::upload_key( $id ), $uploads[ $id ] ?? 0, self::UPLOADS_GROUP );
+		}
+	}
+
+	/**
+	 * Key of a restaurant's newest approved upload; a new key after any post or post meta change.
+	 *
+	 * @param int $restaurant_id Restaurant.
+	 * @return string
+	 */
+	private static function upload_key( int $restaurant_id ): string {
+		wp_cache_add_non_persistent_groups( self::UPLOADS_GROUP );
+		return $restaurant_id . ':' . wp_cache_get_last_changed( 'posts' );
+	}
+
+	/**
 	 * Photo for cards and the page top: the featured image, else the
 	 * verified owner's first photo, else the newest approved upload.
 	 *
@@ -339,6 +405,11 @@ final class Restaurant_View {
 			if ( $owner ) {
 				return $owner[0];
 			}
+		}
+		$found  = false;
+		$upload = wp_cache_get( self::upload_key( $restaurant_id ), self::UPLOADS_GROUP, false, $found );
+		if ( $found ) {
+			return (int) $upload;
 		}
 		$uploads = Photo_Submissions::ids( Photo_Submissions::APPROVED, $restaurant_id, 1 );
 		return $uploads ? $uploads[0] : 0;
@@ -366,7 +437,7 @@ final class Restaurant_View {
 			'new-ids',
 			array( self::NEW_DAYS ),
 			static function (): array {
-				return array_fill_keys( wp_list_pluck( Queries::recent_openings( self::NEW_DAYS ), 'restaurant_id' ), true );
+				return array_fill_keys( Queries::recent_opening_ids( self::NEW_DAYS ), true );
 			},
 			600
 		);
