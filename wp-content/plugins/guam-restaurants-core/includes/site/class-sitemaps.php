@@ -20,9 +20,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Three lists, each a sitemap of its own (docs/seo-and-analytics.md §4):
  *
- * - `pages`: the dish pages and the awards pages. They are served by
- *   rewrite rules, not posts or terms, so neither WordPress nor Yoast lists
- *   them.
+ * - `pages`: the dish pages, the cuisine-in-village pages
+ *   (Cuisine_Villages) and the awards pages. They are not posts or terms,
+ *   so neither WordPress nor Yoast lists them.
  * - `ja` and `ko`: every public page in Japanese or Korean. hreflang links
  *   point Google at them, but Naver crawls only what it is given.
  *
@@ -108,7 +108,7 @@ final class Sitemaps {
 	}
 
 	/**
-	 * Dish and awards pages, in English.
+	 * Dish, cuisine-in-village and awards pages, in English.
 	 *
 	 * @return array<int, array{loc: string}>
 	 */
@@ -119,6 +119,13 @@ final class Sitemaps {
 			$list[] = array( 'loc' => Dish_Pages::url() );
 			foreach ( $dishes as $slug ) {
 				$list[] = array( 'loc' => Dish_Pages::url( (string) $slug ) );
+			}
+		}
+		foreach ( Cuisine_Villages::all() as $pair ) {
+			$village = get_term( $pair['village'], Content_Types::TAX_VILLAGE );
+			$cuisine = get_term( $pair['cuisine'], Content_Types::TAX_CUISINE );
+			if ( $village instanceof \WP_Term && $cuisine instanceof \WP_Term ) {
+				$list[] = array( 'loc' => Cuisine_Villages::url( $village, $cuisine ) );
 			}
 		}
 		$categories = Awards::categories();

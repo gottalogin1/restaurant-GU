@@ -21,7 +21,8 @@ defined( 'ABSPATH' ) || exit;
  * prints its own Restaurant node).
  *
  * Listing pages (village, mall, cuisine, price and the restaurants
- * archive, unfiltered, and each dish page) get an ItemList of the restaurants on the page, in
+ * archive, unfiltered, a village page narrowed to one cuisine
+ * (Site\Cuisine_Villages), and each dish page) get an ItemList of the restaurants on the page, in
  * the order shown, each pointing at the restaurant page that carries its
  * Restaurant node. The home page gets Organization and WebSite nodes for
  * the site's own brand when no SEO plugin prints them; Config::BRAND_PROFILES
@@ -96,7 +97,11 @@ final class Structured_Data {
 			return;
 		}
 		$term = get_queried_object();
-		if ( $term instanceof \WP_Term ) {
+		$pair = Site\Cuisine_Villages::current();
+		if ( null !== $pair ) {
+			$name = Site\Cuisine_Villages::title( $pair['village'], $pair['cuisine'] );
+			$url  = Site\Cuisine_Villages::url( $pair['village'], $pair['cuisine'] );
+		} elseif ( $term instanceof \WP_Term ) {
 			$name = Site\Seo::term_title( $term );
 			$url  = get_term_link( $term );
 		} else {

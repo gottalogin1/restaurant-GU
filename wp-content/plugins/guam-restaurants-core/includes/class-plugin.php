@@ -107,6 +107,7 @@ final class Plugin {
 		Translation\Integration::register();
 		Site\Seo::register();
 		Site\Sitemaps::register();
+		Site\Cuisine_Villages::register();
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();
 		Monitoring\Jobs::register();

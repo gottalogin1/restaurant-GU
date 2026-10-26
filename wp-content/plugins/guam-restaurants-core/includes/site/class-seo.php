@@ -26,9 +26,11 @@ defined( 'ABSPATH' ) || exit;
  * - gives every village, mall, cuisine and price page its own title and
  *   description ("Restaurants in Dededo, Guam"), in the page title and in
  *   Yoast SEO's, unless an editor wrote one for that term in Yoast;
- * - gives the dish and awards pages, which are not posts, a canonical link
- *   and Yoast's title, description and share link; awards pages narrowed
- *   by year, program or category are noindex,follow like filtered lists.
+ * - gives the dish and awards pages, which are not posts, and village
+ *   pages narrowed to one cuisine with enough places (Cuisine_Villages) a
+ *   canonical link and Yoast's title, description and share link; awards
+ *   pages narrowed by year, program or category are noindex,follow like
+ *   filtered lists.
  *
  * Those pages' sitemap entries come from Sitemaps.
  */
@@ -120,8 +122,11 @@ final class Seo {
 	 */
 	public static function title_parts( $parts ): array {
 		$parts = (array) $parts;
+		$pair  = Cuisine_Villages::current();
 		$term  = self::current_term();
-		if ( null !== $term ) {
+		if ( null !== $pair ) {
+			$parts['title'] = Cuisine_Villages::title( $pair['village'], $pair['cuisine'] );
+		} elseif ( null !== $term ) {
 			$parts['title'] = self::term_title( $term );
 		}
 		return $parts;
@@ -247,18 +252,30 @@ final class Seo {
 		if ( ! $wp_query instanceof \WP_Query || ! Directory_Query::is_directory( $wp_query ) ) {
 			return false;
 		}
-		return Filters::is_filtered( Directory_Query::current_filters(), Directory_Query::locked() );
+		return Filters::is_filtered( Directory_Query::current_filters(), Directory_Query::locked() ) && null === Cuisine_Villages::current();
 	}
 
 	/**
-	 * The dish or awards page shown, or null: its title, the address it is
-	 * known by, and whether the visitor narrowed it with the selector form.
+	 * The page the plugin makes that WordPress and Yoast don't know (a
+	 * cuisine in a village, a dish page or an awards page), or null: its
+	 * title, the address it is known by, and whether the visitor narrowed
+	 * it with the selector form.
 	 *
 	 * @return array{title: string, canonical: string, filtered: bool}|null
 	 */
 	public static function plugin_page(): ?array {
 		if ( is_404() ) {
 			return null;
+		}
+		$pair = Cuisine_Villages::current();
+		if ( null !== $pair ) {
+			$page = max( 1, (int) get_query_var( 'paged' ) );
+			return array(
+				/* translators: %d: page number. */
+				'title'     => Cuisine_Villages::title( $pair['village'], $pair['cuisine'] ) . ( $page > 1 ? ' - ' . sprintf( __( 'Page %d', 'guam-restaurants-core' ), $page ) : '' ),
+				'canonical' => Cuisine_Villages::url( $pair['village'], $pair['cuisine'], $page ),
+				'filtered'  => false,
+			);
 		}
 		if ( '' !== Dish_Pages::current_page() ) {
 			$dish = Dish_Pages::current_dish();
@@ -388,6 +405,10 @@ final class Seo {
 			/* translators: 1: restaurant name, 2: cuisine and place. */
 			$text = $parts ? sprintf( __( '%1$s: %2$s, Guam. Hours, map, awards and reviews.', 'guam-restaurants-core' ), get_the_title( $id ), implode( ' in ', $parts ) ) : sprintf( __( '%1$s, Guam. Hours, map, awards and reviews.', 'guam-restaurants-core' ), get_the_title( $id ) );
 			return '' !== $excerpt ? $excerpt : $text;
+		}
+		$pair = Cuisine_Villages::current();
+		if ( null !== $pair ) {
+			return Cuisine_Villages::description( $pair );
 		}
 		$term = self::current_term();
 		if ( null !== $term ) {

@@ -26,7 +26,10 @@ defined( 'ABSPATH' ) || exit;
  *   same village (else the same village), plus its village, mall and
  *   cuisine pages.
  *
- * Links never point at filtered listing URLs, which are noindex (Seo).
+ * A cuisine on a village page, and a village on a cuisine page, link to
+ * that cuisine in that village when it has a page of its own
+ * (Cuisine_Villages); links never point at other filtered listing URLs,
+ * which are noindex (Seo).
  * Order is by number of listings, never by advertising.
  */
 final class Related_Links {
@@ -120,8 +123,14 @@ final class Related_Links {
 				);
 				/* translators: %s: village. */
 				$groups[] = self::group( sprintf( __( 'Malls in %s', 'guam-restaurants-core' ), $term->name ), is_array( $malls ) ? $malls : array() );
-				/* translators: %s: village. */
-				$groups[] = self::group( sprintf( __( 'Popular cuisines in %s', 'guam-restaurants-core' ), $term->name ), self::co_terms( $term, Content_Types::TAX_CUISINE ) );
+				$groups[] = self::group(
+					/* translators: %s: village. */
+					sprintf( __( 'Popular cuisines in %s', 'guam-restaurants-core' ), $term->name ),
+					self::co_terms( $term, Content_Types::TAX_CUISINE ),
+					static function ( \WP_Term $cuisine ) use ( $term ): string {
+						return self::pair_url( $term, $cuisine );
+					}
+				);
 				break;
 			case Content_Types::TAX_MALL:
 				$village  = get_term( (int) get_term_meta( $term->term_id, Term_Meta::MALL_VILLAGE, true ), Content_Types::TAX_VILLAGE );
@@ -130,8 +139,14 @@ final class Related_Links {
 				$groups[] = self::group( sprintf( __( 'Cuisines at %s', 'guam-restaurants-core' ), $term->name ), self::co_terms( $term, Content_Types::TAX_CUISINE ) );
 				break;
 			case Content_Types::TAX_CUISINE:
-				/* translators: %s: cuisine. */
-				$groups[] = self::group( sprintf( __( 'Where to find %s food', 'guam-restaurants-core' ), $term->name ), self::co_terms( $term, Content_Types::TAX_VILLAGE ) );
+				$groups[] = self::group(
+					/* translators: %s: cuisine. */
+					sprintf( __( 'Where to find %s food', 'guam-restaurants-core' ), $term->name ),
+					self::co_terms( $term, Content_Types::TAX_VILLAGE ),
+					static function ( \WP_Term $village ) use ( $term ): string {
+						return self::pair_url( $village, $term );
+					}
+				);
 				$groups[] = self::group( __( 'Related cuisines', 'guam-restaurants-core' ), self::co_terms( $term, Content_Types::TAX_CUISINE ) );
 				break;
 		}
@@ -286,16 +301,29 @@ final class Related_Links {
 	}
 
 	/**
+	 * The page of a cuisine in a village, or '' when it has none.
+	 *
+	 * @param \WP_Term $village Village.
+	 * @param \WP_Term $cuisine Cuisine.
+	 * @return string
+	 */
+	private static function pair_url( \WP_Term $village, \WP_Term $cuisine ): string {
+		return null === Cuisine_Villages::find( $village->term_id, $cuisine->term_id ) ? '' : Cuisine_Villages::url( $village, $cuisine );
+	}
+
+	/**
 	 * A titled group of term links, or null when there are none.
 	 *
-	 * @param string     $title Title.
-	 * @param \WP_Term[] $terms Terms.
+	 * @param string        $title Title.
+	 * @param \WP_Term[]    $terms Terms.
+	 * @param callable|null $link  Address for a term, '' for its own page.
 	 * @return array{title: string, links: array<int, array{url: string, label: string}>}|null
 	 */
-	private static function group( string $title, array $terms ): ?array {
+	private static function group( string $title, array $terms, ?callable $link = null ): ?array {
 		$links = array();
 		foreach ( $terms as $term ) {
-			$url = get_term_link( $term );
+			$url = null === $link ? '' : (string) $link( $term );
+			$url = '' === $url ? get_term_link( $term ) : $url;
 			if ( ! is_wp_error( $url ) ) {
 				$links[] = array(
 					'url'   => (string) $url,
