@@ -7,7 +7,9 @@
 
 namespace GuamRestaurants\Core\Site;
 
+use GuamRestaurants\Core\Awards\Pages as Award_Pages;
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Dishes\Dish_Pages;
 use GuamRestaurants\Core\Term_Meta;
 
 defined( 'ABSPATH' ) || exit;
@@ -23,7 +25,12 @@ defined( 'ABSPATH' ) || exit;
  * - prints a meta description on directory pages when no SEO plugin does;
  * - gives every village, mall, cuisine and price page its own title and
  *   description ("Restaurants in Dededo, Guam"), in the page title and in
- *   Yoast SEO's, unless an editor wrote one for that term in Yoast.
+ *   Yoast SEO's, unless an editor wrote one for that term in Yoast;
+ * - gives the dish and awards pages, which are not posts, a canonical link
+ *   and Yoast's title, description and share link; awards pages narrowed
+ *   by year, program or category are noindex,follow like filtered lists.
+ *
+ * Those pages' sitemap entries come from Sitemaps.
  */
 final class Seo {
 
@@ -38,6 +45,9 @@ final class Seo {
 		add_filter( 'wp_robots', array( self::class, 'robots' ) );
 		add_filter( 'wpseo_robots_array', array( self::class, 'yoast_robots' ) );
 		add_action( 'wp_head', array( self::class, 'meta_description' ), 1 );
+		add_action( 'wp_head', array( self::class, 'canonical' ), 1 );
+		add_filter( 'wpseo_canonical', array( self::class, 'yoast_canonical' ) );
+		add_filter( 'wpseo_opengraph_url', array( self::class, 'yoast_share_url' ) );
 		add_filter( 'document_title_parts', array( self::class, 'title_parts' ) );
 		add_filter( 'wpseo_title', array( self::class, 'yoast_title' ) );
 		add_filter( 'wpseo_opengraph_title', array( self::class, 'yoast_title' ) );
@@ -138,6 +148,11 @@ final class Seo {
 	 * @return string
 	 */
 	public static function yoast_title( $title ): string {
+		$site = wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES );
+		$page = self::plugin_page();
+		if ( null !== $page ) {
+			return $page['title'] . ' - ' . $site;
+		}
 		$term = self::current_term();
 		if ( null === $term || self::yoast_term_has( $term, 'title' ) ) {
 			return (string) $title;
@@ -145,7 +160,7 @@ final class Seo {
 		$page = (int) get_query_var( 'paged' );
 		/* translators: %d: page number. */
 		$suffix = $page > 1 ? ' - ' . sprintf( __( 'Page %d', 'guam-restaurants-core' ), $page ) : '';
-		return self::term_title( $term ) . $suffix . ' - ' . wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES );
+		return self::term_title( $term ) . $suffix . ' - ' . $site;
 	}
 
 	/**
@@ -155,6 +170,9 @@ final class Seo {
 	 * @return string
 	 */
 	public static function yoast_description( $description ): string {
+		if ( null !== self::plugin_page() ) {
+			return wp_trim_words( self::description(), 30, '…' );
+		}
 		$term = self::current_term();
 		if ( null === $term || self::yoast_term_has( $term, 'desc' ) ) {
 			return (string) $description;
@@ -233,6 +251,86 @@ final class Seo {
 	}
 
 	/**
+	 * The dish or awards page shown, or null: its title, the address it is
+	 * known by, and whether the visitor narrowed it with the selector form.
+	 *
+	 * @return array{title: string, canonical: string, filtered: bool}|null
+	 */
+	public static function plugin_page(): ?array {
+		if ( is_404() ) {
+			return null;
+		}
+		if ( '' !== Dish_Pages::current_page() ) {
+			$dish = Dish_Pages::current_dish();
+			return array(
+				'title'     => Dish_Pages::title( $dish ),
+				'canonical' => Dish_Pages::url( null === $dish ? '' : $dish['slug'] ),
+				'filtered'  => false,
+			);
+		}
+		$page = Award_Pages::current_page();
+		if ( '' === $page ) {
+			return null;
+		}
+		$request = Award_Pages::request();
+		return array(
+			'title'     => Award_Pages::title( $page, $request ),
+			'canonical' => Award_Pages::url( $page, 'category' === $page ? $request['category'] : '' ),
+			'filtered'  => $request['year'] > 0 || '' !== $request['program'] || ( 'category' !== $page && '' !== $request['category'] ),
+		);
+	}
+
+	/**
+	 * Whether this is an awards page narrowed by the selector form.
+	 *
+	 * @return bool
+	 */
+	public static function is_filtered_plugin_page(): bool {
+		$page = self::plugin_page();
+		return null !== $page && $page['filtered'];
+	}
+
+	/**
+	 * Canonical link on dish and awards pages when no SEO plugin prints one
+	 * (WordPress prints it only on posts and pages).
+	 *
+	 * @return void
+	 */
+	public static function canonical(): void {
+		$page = self::plugin_page();
+		if ( null === $page || $page['filtered'] || self::seo_plugin_active() ) {
+			return;
+		}
+		printf( '<link rel="canonical" href="%s">' . "\n", esc_url( $page['canonical'] ) );
+	}
+
+	/**
+	 * Yoast canonical on dish and awards pages; none on a
+	 * narrowed awards page, which is noindex.
+	 *
+	 * @param string|false $url Yoast's URL.
+	 * @return string|false
+	 */
+	public static function yoast_canonical( $url ) {
+		$page = self::plugin_page();
+		if ( null === $page ) {
+			return $url;
+		}
+		return $page['filtered'] ? false : $page['canonical'];
+	}
+
+	/**
+	 * Yoast share link on dish and awards pages.
+	 *
+	 * @param string $url Yoast's URL.
+	 * @return string
+	 */
+	public static function yoast_share_url( $url ): string {
+		$page = self::plugin_page();
+		return null === $page || $page['filtered'] ? (string) $url : $page['canonical'];
+	}
+
+	/**
 	 * Core robots meta.
 	 *
 	 * @param array<string, bool|string> $robots Directives.
@@ -240,7 +338,7 @@ final class Seo {
 	 */
 	public static function robots( $robots ): array {
 		$robots = (array) $robots;
-		if ( self::is_filtered_listing() ) {
+		if ( self::is_filtered_listing() || self::is_filtered_plugin_page() ) {
 			unset( $robots['index'], $robots['max-image-preview'] );
 			$robots['noindex'] = true;
 			$robots['follow']  = true;
@@ -256,7 +354,7 @@ final class Seo {
 	 */
 	public static function yoast_robots( $robots ): array {
 		$robots = (array) $robots;
-		if ( self::is_filtered_listing() ) {
+		if ( self::is_filtered_listing() || self::is_filtered_plugin_page() ) {
 			$robots['index']  = 'noindex';
 			$robots['follow'] = 'follow';
 		}

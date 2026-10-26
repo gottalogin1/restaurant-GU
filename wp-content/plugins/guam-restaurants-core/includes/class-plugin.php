@@ -106,6 +106,7 @@ final class Plugin {
 		Saved\Rest_Controller::register();
 		Translation\Integration::register();
 		Site\Seo::register();
+		Site\Sitemaps::register();
 		Site\Related_Links::register();
 		Monitoring\Change_Tracker::register();
 		Monitoring\Jobs::register();

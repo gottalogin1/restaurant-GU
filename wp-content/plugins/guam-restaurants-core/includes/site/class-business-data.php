@@ -8,14 +8,16 @@
 namespace GuamRestaurants\Core\Site;
 
 use GuamRestaurants\Core\Content_Types;
+use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Term_Meta;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Address, coordinates, phone, website, cuisine, price range and opening
- * hours for the Restaurant node (Structured_Data). Third-party ratings are
+ * Address (with the ZIP code when the address has one), coordinates,
+ * phone, website, cuisine, price range, opening hours and the owner's menu
+ * link for the Restaurant node (Structured_Data). Third-party ratings are
  * never included: they are fetched live and may not be stored or restated.
  */
 final class Business_Data {
@@ -51,6 +53,7 @@ final class Business_Data {
 				'@type'           => 'PostalAddress',
 				'streetAddress'   => Restaurant_View::address( $id ),
 				'addressLocality' => $village ? $village[0]->name : '',
+				'postalCode'      => self::postal_code( Restaurant_View::address( $id ) ),
 				// ISO 3166-1 code for Guam.
 				'addressCountry'  => 'GU',
 			)
@@ -91,10 +94,29 @@ final class Business_Data {
 			$data['openingHoursSpecification'] = $hours;
 		}
 
+		// Menu links come from the verified owner, so they count only while the listing is claimed (as on the page).
+		if ( (int) get_post_meta( $id, Restaurant_Meta::CLAIMED_BY_USER_ID, true ) > 0 ) {
+			$menus = Owner_Content::get( $id )['menu_links'];
+			if ( $menus && ! empty( $menus[0]['url'] ) ) {
+				$data['hasMenu'] = (string) $menus[0]['url'];
+			}
+		}
+
 		if ( has_post_thumbnail( $id ) ) {
 			$data['image'] = (string) get_the_post_thumbnail_url( $id, 'large' );
 		}
 		return $data;
+	}
+
+	/**
+	 * Guam ZIP code written in an address ("..., Tamuning, GU 96913"), or ''.
+	 * Guam's ZIP codes all start with 969.
+	 *
+	 * @param string $address Address.
+	 * @return string
+	 */
+	public static function postal_code( string $address ): string {
+		return preg_match( '/\b(969\d{2})(?:-\d{4})?\b/', $address, $match ) ? $match[1] : '';
 	}
 
 	/**

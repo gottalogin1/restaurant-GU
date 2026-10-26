@@ -78,8 +78,17 @@ week" uses these counts. They also give advertisers per-listing figures later.
    Restaurant and breadcrumb structured data warnings.
 6. Use URL inspection on one restaurant page, one village page and the home
    page, and request indexing at launch.
-7. Optional: do the same in [Bing Webmaster Tools](https://www.bing.com/webmasters)
+7. Do the same in [Bing Webmaster Tools](https://www.bing.com/webmasters)
    (it can import the Search Console property).
+8. **Naver Search Advisor** (Korean searches): Naver does not crawl a new site
+   on its own. Register the domain at
+   [searchadvisor.naver.com](https://searchadvisor.naver.com), verify it with
+   the meta tag or DNS record it shows, submit the sitemap index, and request
+   collection of `/ko/`. The Korean pages are in their own sitemap
+   (`guam-ko-sitemap.xml` with Yoast, `wp-sitemap-guam-ko-1.xml` without).
+9. **IndexNow**: install Microsoft's free IndexNow plugin so new and changed
+   pages are sent to Bing and Naver right away
+   ([Naver supports IndexNow](https://searchengineland.com/naver-korean-search-engine-now-supports-indexnow-429880)).
 
 ## 3. Google Business Profile for the site's own brand
 
@@ -140,6 +149,24 @@ those profiles.
   an SEO plugin is active, since Yoast prints its own (set the brand profiles
   in Yoast > Settings > Site representation then).
 - **Corrections page** is linked from every restaurant page and the newsletter.
+- **Sitemaps for pages that are not posts** (`Site\Sitemaps`, added
+  2026-10-26). Three extra sitemaps, in Yoast's index or WordPress's:
+  `pages` (the dish pages and the awards pages, which are served by rewrite
+  rules, so neither lists them), and `ja` and `ko` (every public page in
+  that language, without the pages kept in English). With Yoast they are
+  `guam-pages-sitemap.xml`, `guam-ja-sitemap.xml` and `guam-ko-sitemap.xml`;
+  without it, `wp-sitemap-guam-pages-1.xml` and so on. An empty list is left
+  out of the index.
+- **Dish and awards pages** get a canonical link (WordPress prints one only
+  on posts and pages), and Yoast's title, description, canonical and share
+  link. An awards page narrowed by year, program or category in the selector
+  form is noindex,follow with no canonical, like filtered lists.
+- **Dish pages** get an `ItemList` of their restaurants in page order.
+- **Restaurant data** adds `postalCode` when the address has a 969xx ZIP
+  code, and `hasMenu` from the owner's first menu link while the listing is
+  claimed (the same rule as the Menu button).
+- The full plan, with what comes next, is the SEO plan doc
+  (https://claude.ai/artifact/JcXSSwwXHeqLCb91Ye8ZYC).
 
 ## 5. Sources
 
