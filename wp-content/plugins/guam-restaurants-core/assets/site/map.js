@@ -71,10 +71,11 @@
 			} );
 	}
 
+	// Safe in text and in quoted attributes (the popup puts the URL in href="").
 	function escapeHtml( text ) {
-		var div = document.createElement( 'div' );
-		div.textContent = String( text || '' );
-		return div.innerHTML;
+		return String( text || '' ).replace( /[&<>"']/g, function ( c ) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ c ];
+		} );
 	}
 
 	function keep( text ) {

@@ -190,6 +190,13 @@ final class Config {
 	public const ALLOW_XMLRPC = 'GUAM_RESTAURANTS_ALLOW_XMLRPC';
 
 	/**
+	 * 1 keeps WordPress application passwords on. Off by default: they sign
+	 * in to the REST API without the second step of two-factor sign-in, and
+	 * nothing on this site uses them.
+	 */
+	public const ALLOW_APP_PASSWORDS = 'GUAM_RESTAURANTS_ALLOW_APP_PASSWORDS';
+
+	/**
 	 * `auto` (default) upgrades custom tables on the first request after a
 	 * deploy; `cli` leaves it to `wp guam-restaurants db upgrade`, which
 	 * the deploy script runs (docs/deployment.md).

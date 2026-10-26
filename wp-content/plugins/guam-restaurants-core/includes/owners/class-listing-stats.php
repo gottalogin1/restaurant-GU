@@ -11,6 +11,7 @@ use GuamRestaurants\Core\Ads\Server;
 use GuamRestaurants\Core\Ads\Tracking;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Database\Schema;
+use GuamRestaurants\Core\Security\Rate_Limit;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -26,7 +27,8 @@ defined( 'ABSPATH' ) || exit;
  * `{"restaurant":12,"events":["view","website"]}` by navigator.sendBeacon,
  * so cached pages are counted. Bots (User-Agent, navigator.webdriver) are
  * dropped. Only totals are stored: no IP address, cookie, user ID or
- * User-Agent.
+ * User-Agent. One visitor (hashed IP) is counted for at most PER_HOUR
+ * requests an hour, so nobody can pad a listing's numbers from one address.
  */
 final class Listing_Stats {
 
@@ -36,6 +38,12 @@ final class Listing_Stats {
 	public const VIEW    = 'view';
 	public const WEBSITE = 'website';
 	public const PHONE   = 'phone';
+
+	/**
+	 * Requests counted per visitor an hour (a page sends one, plus one per
+	 * website or phone click).
+	 */
+	public const PER_HOUR = 120;
 
 	/**
 	 * Event => column.
@@ -109,6 +117,9 @@ final class Listing_Stats {
 		$response   = new WP_REST_Response( null, 204 );
 		$restaurant = (int) $request['restaurant'];
 		if ( Tracking::is_bot( (string) $request->get_header( 'user_agent' ) ) || Content_Types::POST_TYPE !== get_post_type( $restaurant ) || 'publish' !== get_post_status( $restaurant ) ) {
+			return $response;
+		}
+		if ( ! Rate_Limit::hit( 'listing', self::PER_HOUR, HOUR_IN_SECONDS ) ) {
 			return $response;
 		}
 		$counts = array_fill_keys( array_keys( self::COLUMNS ), 0 );

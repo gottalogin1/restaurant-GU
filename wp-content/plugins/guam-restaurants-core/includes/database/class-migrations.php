@@ -43,13 +43,18 @@ final class Migrations {
 		return array(
 			// Visitor accounts keep saved lists (Saved\Members). WordPress ships with
 			// sign-up off; turn it on once, as Subscribers, and leave it to the admin after.
-			'2026-10-20-visitor-signup' => static function (): void {
+			'2026-10-20-visitor-signup'          => static function (): void {
 				if ( ! get_option( 'users_can_register' ) ) {
 					update_option( 'users_can_register', 1 );
 				}
 				if ( '' === (string) get_option( 'default_role', '' ) ) {
 					update_option( 'default_role', 'subscriber' );
 				}
+			},
+			// Visitor photo originals keep camera and location data; move the ones saved
+			// in the public uploads folders into the private folder (Security\Private_Uploads).
+			'2026-10-26-private-photo-originals' => static function (): void {
+				\GuamRestaurants\Core\Photos\Photo_Submissions::make_originals_private();
 			},
 		);
 	}

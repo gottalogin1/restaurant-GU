@@ -17,8 +17,12 @@ defined( 'ABSPATH' ) || exit;
  *
  * - XML-RPC off (pingbacks and its login method are brute-force targets),
  *   unless GUAM_RESTAURANTS_ALLOW_XMLRPC=1.
+ * - Application passwords off (they skip two-factor sign-in), unless
+ *   GUAM_RESTAURANTS_ALLOW_APP_PASSWORDS=1.
  * - No user enumeration: the users REST routes need a signed-in user,
- *   `?author=N` scans get a 404, and the core sitemap has no users list.
+ *   `?author=N` scans get a 404, the core sitemap has no users list,
+ *   oEmbed answers leave out the author, and a failed sign-in says the
+ *   same thing whether the user name exists or not.
  * - No WordPress version in the page head.
  * - Upload limits: one size cap for everyone (default 10 MB), images over
  *   40 megapixels refused (they exhaust memory when thumbnails are made),
@@ -54,7 +58,12 @@ final class Hardening {
 			add_filter( 'xmlrpc_enabled', '__return_false' );
 			add_filter( 'xmlrpc_methods', '__return_empty_array' );
 		}
+		if ( ! Config::flag( Config::ALLOW_APP_PASSWORDS ) ) {
+			add_filter( 'wp_is_application_passwords_available', '__return_false' );
+		}
 		add_filter( 'rest_pre_dispatch', array( self::class, 'protect_user_routes' ), 10, 3 );
+		add_filter( 'oembed_response_data', array( self::class, 'drop_oembed_author' ) );
+		add_filter( 'wp_login_errors', array( self::class, 'same_login_error' ) );
 		add_action( 'template_redirect', array( self::class, 'block_author_scans' ), 1 );
 		add_filter( 'wp_sitemaps_add_provider', array( self::class, 'drop_user_sitemap' ), 10, 2 );
 		remove_action( 'wp_head', 'wp_generator' );
@@ -83,6 +92,52 @@ final class Hardening {
 			return new WP_Error( 'rest_user_cannot_view', __( 'Sign in to list users.', 'guam-restaurants-core' ), array( 'status' => 401 ) );
 		}
 		return $result;
+	}
+
+	/**
+	 * Leaves the author's name and archive link out of oEmbed answers
+	 * (`/wp-json/oembed/1.0/embed?url=...`). The archive link carries the
+	 * user's slug, which is often the login name.
+	 *
+	 * @param array<string, mixed> $data oEmbed response.
+	 * @return array<string, mixed>
+	 */
+	public static function drop_oembed_author( $data ): array {
+		$data = (array) $data;
+		unset( $data['author_name'], $data['author_url'] );
+		return $data;
+	}
+
+	/**
+	 * Gives "unknown user" and "wrong password" the same message on the
+	 * sign-in page, so it cannot be used to find out which names and email
+	 * addresses have accounts.
+	 *
+	 * @param \WP_Error $errors Sign-in errors.
+	 * @return \WP_Error
+	 */
+	public static function same_login_error( $errors ) {
+		if ( ! $errors instanceof WP_Error ) {
+			return $errors;
+		}
+		$codes = array_intersect( $errors->get_error_codes(), array( 'invalid_username', 'invalid_email', 'incorrect_password' ) );
+		if ( ! $codes ) {
+			return $errors;
+		}
+		foreach ( $codes as $code ) {
+			$errors->remove( $code );
+		}
+		$errors->add(
+			'gr_login_failed',
+			sprintf(
+				'<strong>%1$s</strong> %2$s <a href="%3$s">%4$s</a>',
+				esc_html__( 'Error:', 'guam-restaurants-core' ),
+				esc_html__( 'The user name, email address or password is not right.', 'guam-restaurants-core' ),
+				esc_url( wp_lostpassword_url() ),
+				esc_html__( 'Lost your password?', 'guam-restaurants-core' )
+			)
+		);
+		return $errors;
 	}
 
 	/**

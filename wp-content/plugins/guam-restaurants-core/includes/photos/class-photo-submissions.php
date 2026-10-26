@@ -12,6 +12,7 @@ use GuamRestaurants\Core\Highlights\Roles;
 use GuamRestaurants\Core\Owners\Owner_Content;
 use GuamRestaurants\Core\Reviews\Visitor_Reviews;
 use GuamRestaurants\Core\Security\Hardening;
+use GuamRestaurants\Core\Security\Private_Uploads;
 use GuamRestaurants\Core\Site\Cache;
 use WP_Error;
 
@@ -69,6 +70,13 @@ final class Photo_Submissions {
 	public const MAX_NAME      = 60;
 	public const PER_HOUR      = 5;
 	public const MIN_FILL_MS   = 3000;
+
+	/**
+	 * Subfolder of the private uploads folder (Security\Private_Uploads)
+	 * that holds originals. They keep the camera and location data, so
+	 * they must never be reachable from a browser or a folder listing.
+	 */
+	public const ORIGINALS_DIR = 'photo-originals';
 
 	private const TYPES = array(
 		'image/jpeg' => 'jpg',
@@ -249,8 +257,9 @@ final class Photo_Submissions {
 	}
 
 	/**
-	 * Saves the original under a random name, makes the reduced copy the
-	 * attachment's file, and records when to delete the original.
+	 * Saves the original under a random name in the private uploads folder,
+	 * makes the reduced copy (in the normal uploads folder) the attachment's
+	 * file, and records when to delete the original.
 	 *
 	 * @param int                  $restaurant_id Restaurant.
 	 * @param array<string, mixed> $file          Checked upload.
@@ -264,6 +273,20 @@ final class Photo_Submissions {
 		$mime         = (string) wp_get_image_mime( (string) $file['tmp_name'] );
 		$ext          = self::TYPES[ $mime ];
 		$file['name'] = 'gr-original-' . strtolower( wp_generate_password( 20, false, false ) ) . '.' . $ext;
+		$private      = Private_Uploads::dir( self::ORIGINALS_DIR );
+		if ( '' === $private ) {
+			return new WP_Error( 'gr_photo_store', __( 'The photo could not be saved. Please try again later.', 'guam-restaurants-core' ), array( 'status' => 500 ) );
+		}
+		$public      = wp_upload_dir();
+		$private_url = Private_Uploads::url() . '/' . self::ORIGINALS_DIR;
+		// Computed outside the filter: wp_upload_dir() inside it would call it again.
+		$to_private = static function ( array $dirs ) use ( $private, $private_url ): array {
+			$dirs['path']   = $private;
+			$dirs['url']    = $private_url;
+			$dirs['subdir'] = '/' . Private_Uploads::FOLDER . '/' . self::ORIGINALS_DIR;
+			return $dirs;
+		};
+		add_filter( 'upload_dir', $to_private );
 		// The REST controller has already checked that this is a real upload.
 		$moved = wp_handle_sideload(
 			$file,
@@ -272,6 +295,7 @@ final class Photo_Submissions {
 				'mimes'     => array( $ext => $mime ),
 			)
 		);
+		remove_filter( 'upload_dir', $to_private );
 		if ( isset( $moved['error'] ) ) {
 			return new WP_Error( 'gr_photo_store', (string) $moved['error'], array( 'status' => 500 ) );
 		}
@@ -285,7 +309,7 @@ final class Photo_Submissions {
 		$editor->maybe_exif_rotate();
 		$editor->resize( self::MAX_EDGE, self::MAX_EDGE, false ); // Smaller photos keep their size.
 		$editor->set_quality( self::QUALITY );
-		$reduced = $editor->save( dirname( $original ) . '/' . sanitize_title( $dish ) . '-' . strtolower( wp_generate_password( 8, false, false ) ) . '.jpg', 'image/jpeg' );
+		$reduced = $editor->save( untrailingslashit( (string) $public['path'] ) . '/' . sanitize_title( $dish ) . '-' . strtolower( wp_generate_password( 8, false, false ) ) . '.jpg', 'image/jpeg' );
 		if ( is_wp_error( $reduced ) || ! self::strip_metadata( (string) $reduced['path'] ) ) {
 			wp_delete_file( $original );
 			return new WP_Error( 'gr_photo_reduce', __( 'That image could not be processed. Try a different photo.', 'guam-restaurants-core' ), array( 'status' => 500 ) );
@@ -515,6 +539,39 @@ final class Photo_Submissions {
 		}
 		wp_delete_file( $path );
 		return true;
+	}
+
+	/**
+	 * Moves originals saved before they went to the private folder (before
+	 * 2026-10-26) into it. Run once by a migration.
+	 *
+	 * @return int Originals moved.
+	 */
+	public static function make_originals_private(): int {
+		$ids     = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'fields'         => 'ids',
+				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- one-time migration; originals are deleted after 30 days.
+				'meta_key'       => self::ORIGINAL, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one-time migration.
+			)
+		);
+		$private = Private_Uploads::dir( self::ORIGINALS_DIR );
+		$uploads = wp_normalize_path( (string) wp_get_upload_dir()['basedir'] ) . '/';
+		$moved   = 0;
+		foreach ( $ids as $id ) {
+			$path = (string) get_post_meta( (int) $id, self::ORIGINAL, true );
+			if ( '' === $private || '' === $path || Private_Uploads::contains( $path ) || 0 !== strpos( wp_normalize_path( $path ), $uploads ) || ! is_file( $path ) ) {
+				continue;
+			}
+			$target = $private . '/' . wp_unique_filename( $private, wp_basename( $path ) );
+			if ( rename( $path, $target ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- same uploads filesystem.
+				update_post_meta( (int) $id, self::ORIGINAL, $target );
+				++$moved;
+			}
+		}
+		return $moved;
 	}
 
 	/**

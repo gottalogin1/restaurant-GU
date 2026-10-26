@@ -7,6 +7,7 @@
 
 namespace GuamRestaurants\Core\Ads;
 
+use GuamRestaurants\Core\Security\Rate_Limit;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -29,7 +30,10 @@ defined( 'ABSPATH' ) || exit;
  * type once.
  *
  * The endpoint needs no nonce: it changes nothing but anonymous counters,
- * and cached pages could not carry a fresh nonce.
+ * and cached pages could not carry a fresh nonce. One visitor (hashed IP)
+ * is counted for at most PER_HOUR requests an hour, so a script on one
+ * address cannot inflate an advertiser's report; a CDN or WAF rule
+ * (docs/security.md §5) handles attacks from many addresses.
  */
 final class Tracking {
 
@@ -37,6 +41,12 @@ final class Tracking {
 	public const ROUTE      = '/ads/events';
 	public const SCRIPT     = 'guam-restaurants-ads';
 	public const MAX_EVENTS = 12;
+
+	/**
+	 * Beacon requests counted per visitor an hour. A page sends one or two
+	 * (impressions, then a click), so this allows over 100 pages an hour.
+	 */
+	public const PER_HOUR = 240;
 
 	public const IMPRESSION = 'impression';
 	public const CLICK      = 'click';
@@ -126,7 +136,7 @@ final class Tracking {
 	 */
 	public static function record( WP_REST_Request $request ): WP_REST_Response {
 		$response = new WP_REST_Response( null, 204 );
-		if ( self::is_bot( (string) $request->get_header( 'user_agent' ) ) ) {
+		if ( self::is_bot( (string) $request->get_header( 'user_agent' ) ) || ! Rate_Limit::hit( 'ads', self::PER_HOUR, HOUR_IN_SECONDS ) ) {
 			return $response;
 		}
 
