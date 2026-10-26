@@ -469,4 +469,35 @@ class Premium_Test extends Test_Case {
 		$this->assertStringContainsString( 'Add time: Premium profile, 1 month', $html );
 		$this->assertStringContainsString( 'name="cta_action"', $html );
 	}
+
+	/**
+	 * WooCommerce's scripts, styles and jQuery load only on shop pages.
+	 */
+	public function test_shop_assets_only_on_shop_pages() {
+		$this->needs_woocommerce();
+		// WooCommerce registers them on wp_enqueue_scripts, which tests do not run.
+		foreach ( Woo_Checkout::SHOP_SCRIPTS as $handle ) {
+			wp_register_script( $handle, 'https://example.org/' . $handle . '.js', array(), '1', true );
+			wp_enqueue_script( $handle );
+		}
+		foreach ( Woo_Checkout::SHOP_STYLES as $handle ) {
+			wp_register_style( $handle, 'https://example.org/' . $handle . '.css', array(), '1' );
+			wp_enqueue_style( $handle );
+		}
+		$this->go_to( get_permalink( $this->r['grill'] ) );
+		Woo_Checkout::drop_shop_assets();
+		foreach ( Woo_Checkout::SHOP_SCRIPTS as $handle ) {
+			$this->assertFalse( wp_script_is( $handle, 'enqueued' ), $handle );
+		}
+		foreach ( Woo_Checkout::SHOP_STYLES as $handle ) {
+			$this->assertFalse( wp_style_is( $handle, 'enqueued' ), $handle );
+		}
+
+		$this->go_to( get_permalink( Woo_Checkout::create_products()['ids']['monthly'] ) );
+		wp_enqueue_script( 'woocommerce' );
+		wp_enqueue_style( 'woocommerce-general' );
+		Woo_Checkout::drop_shop_assets();
+		$this->assertTrue( wp_script_is( 'woocommerce', 'enqueued' ), 'Shop pages keep them.' );
+		$this->assertTrue( wp_style_is( 'woocommerce-general', 'enqueued' ) );
+	}
 }

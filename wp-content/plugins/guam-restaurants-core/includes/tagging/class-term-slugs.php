@@ -25,6 +25,13 @@ final class Term_Slugs {
 	 * @return string[]
 	 */
 	public static function for_post( int $post_id, string $taxonomy ): array {
+		// The object term cache holds every term, unverified malls too, so a primed post needs no query.
+		$cached = get_object_term_cache( $post_id, $taxonomy );
+		if ( is_array( $cached ) ) {
+			$slugs = array_map( 'strval', wp_list_pluck( $cached, 'slug' ) );
+			sort( $slugs );
+			return $slugs;
+		}
 		$slugs = wp_get_object_terms(
 			$post_id,
 			$taxonomy,

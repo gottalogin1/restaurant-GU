@@ -53,6 +53,14 @@ final class Woo_Checkout {
 	public const NONCE_FIELD   = '_grnonce';
 
 	/**
+	 * WooCommerce's front-end scripts and styles. Only shop pages (cart,
+	 * checkout, My Account, products) use them, so other pages drop them;
+	 * with them goes jQuery, which no other public page uses.
+	 */
+	public const SHOP_SCRIPTS = array( 'woocommerce', 'wc-add-to-cart', 'wc-cart-fragments', 'wc-jquery-blockui', 'wc-js-cookie', 'sourcebuster-js', 'wc-order-attribution' );
+	public const SHOP_STYLES  = array( 'woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'woocommerce-inline', 'woocommerce-blocktheme', 'wc-blocks-style' );
+
+	/**
 	 * Hooks registration. The hooks only fire when WooCommerce is active.
 	 *
 	 * @return void
@@ -72,6 +80,9 @@ final class Woo_Checkout {
 		add_filter( 'woocommerce_prevent_admin_access', array( self::class, 'keep_owner_admin' ) );
 		add_filter( 'woocommerce_disable_admin_bar', array( self::class, 'keep_owner_admin' ) );
 		add_filter( 'hooked_block_types', array( self::class, 'no_header_icons' ), 20 );
+		add_action( 'wp_enqueue_scripts', array( self::class, 'drop_shop_assets' ), 100 );
+		// Some are enqueued while blocks render, after wp_enqueue_scripts; late ones print in the footer.
+		add_action( 'wp_footer', array( self::class, 'drop_shop_assets' ), 1 );
 	}
 
 	/**
@@ -441,6 +452,23 @@ final class Woo_Checkout {
 	 */
 	public static function no_header_icons( $types ): array {
 		return array_values( array_diff( (array) $types, array( 'woocommerce/customer-account', 'woocommerce/mini-cart' ) ) );
+	}
+
+	/**
+	 * Takes WooCommerce's scripts and styles off pages that are not shop pages.
+	 *
+	 * @return void
+	 */
+	public static function drop_shop_assets(): void {
+		if ( ! self::available() || is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) {
+			return;
+		}
+		foreach ( self::SHOP_SCRIPTS as $handle ) {
+			wp_dequeue_script( $handle );
+		}
+		foreach ( self::SHOP_STYLES as $handle ) {
+			wp_dequeue_style( $handle );
+		}
 	}
 
 	/**

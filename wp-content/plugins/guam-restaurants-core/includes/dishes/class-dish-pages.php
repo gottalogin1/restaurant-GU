@@ -278,6 +278,7 @@ final class Dish_Pages {
 
 		$index  = Dish_Index::get();
 		$titles = array();
+		_prime_post_caches( array_keys( $index['places'] ), false, false );
 		foreach ( array_keys( $index['places'] ) as $restaurant_id ) {
 			$titles[ $restaurant_id ] = (string) get_the_title( $restaurant_id );
 		}
@@ -291,6 +292,7 @@ final class Dish_Pages {
 
 		$items = '';
 		$pin   = 0;
+		Restaurant_View::prime( array_keys( $places ) );
 		foreach ( $places as $restaurant_id => $why ) {
 			// The reason goes inside the card body, under the opening hours.
 			$card   = Restaurant_View::card( $restaurant_id, 2 );

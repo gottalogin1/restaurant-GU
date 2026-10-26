@@ -1,5 +1,12 @@
 # Progress log
 
+## Speed pass, 2026-10-26
+- Requested by Sanjay: tighten the plugin's code so pages load faster. Measured every public page type on the local stack with 1,740 sample restaurants, no object or page cache (docs/performance.md §6).
+- Done: the New badge reads restaurant IDs only (Queries::recent_opening_ids) instead of loading every restaurant in the change log; recent openings skip baseline rows before loading posts; Restaurant_View::prime loads a list's posts, meta, terms, featured images and approved uploads in a few queries (home rows, directory, saved lists, dish pages); Term_Slugs reads the term cache; WooCommerce scripts, styles and jQuery load only on shop pages.
+- Result: pages went from 0.5–0.9 s and 470–1,090 queries to 0.11–0.21 s and 60–120 queries. In phone emulation, first paint is about twice as fast and pages transfer half the bytes. Screenshots are unchanged.
+- Checked: PHPCS clean; PHPUnit 526 tests pass (2 new, plus new checks in monitoring-test.php).
+- Remaining: the object cache and page cache are still launch items (docs/launch-checklist.md); map JSON and long dish pages are noted in docs/performance.md §6.
+
 ## Plain-language search (comparison change 10), 2026-10-20
 - Requested by Sanjay: a typed search like "cheap Korean open late in Tumon" becomes filters, shown and removable so visitors can see how it was read.
 - Done: Site\Query_Parser reads the `q` search with fixed word lists, no outside AI service and nothing stored: village names, slugs and stored aliases (Tumon, Upper Tumon and Harmon find Tamuning) plus Chamorro spellings and short forms (Dedidu, Tamuneng, Yigu, Barigåda, Sinahånña, Sta. Rita, MTM, Andersen); verified malls and their aliases; cuisine names plus words that clearly name a cuisine (sushi, ramen, pho, tacos, kbbq, lumpia, kelaguen, coffee, bar...); price words (cheap/affordable/budget = $, moderate = $$, expensive/fancy = $$$ and $$$$, fine dining = $$$$), dollar signs ($$) and "under $20" (every level that starts below the amount); "open now"; "open late"/"late night"; "award winning". Longer phrases win ("Korean BBQ" is Korean, "Agana Heights" is not Hagåtña), plurals match, and "or" lists several (any of them). Filler words ("in", "food", "place", "near me") are dropped only when something was recognized; unknown words stay a keyword search as typed.

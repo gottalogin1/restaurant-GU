@@ -157,6 +157,14 @@ final class Directory_View {
 
 		$cards = '';
 		$pin   = 0;
+		Restaurant_View::prime(
+			array_map(
+				static function ( $post ): int {
+					return (int) ( is_object( $post ) ? $post->ID : $post );
+				},
+				$query->posts
+			)
+		);
 		foreach ( $query->posts as $post ) {
 			$id    = (int) ( is_object( $post ) ? $post->ID : $post );
 			$point = Restaurant_View::coordinates( $id );

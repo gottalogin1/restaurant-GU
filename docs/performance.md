@@ -51,8 +51,8 @@ open=now
 and "Rejected cookies": `wordpress_logged_in`, `woocommerce_items_in_cart`,
 `wp_woocommerce_session`. Leave "Don't cache pages for logged in users" ticked.
 
-**Cacheable public REST routes.** `GET /wp-json/guam-restaurants/v1/map` (about 0.5 s
-uncached with 1,740 restaurants) and the directory/ratings GETs send no cookies and can
+**Cacheable public REST routes.** `GET /wp-json/guam-restaurants/v1/map` (about 0.3 s
+uncached with 1,740 restaurants, §6) and the directory/ratings GETs send no cookies and can
 be cached for 10 minutes at the CDN (§5). The health endpoint sends `Cache-Control:
 no-store` and must never be cached.
 
@@ -119,3 +119,96 @@ Guam and nearby; most visitors are on island). Kinsta includes Cloudflare alread
    Cloudflare API call or the host's purge command).
 5. Make sure `.mjs` files go out as `text/javascript` (the map library; check with
    `curl -I .../maplibre-gl.mjs`).
+
+## 6. Speed pass, 2026-10-26
+
+Requested by Sanjay: make the plugin run faster and cut load times. Same setup as
+above: local Docker stack, 1,740 sample restaurants (`bin/generate-sample-restaurants.php`)
+with menu dishes on 400 of them, no object cache, no page cache. Server times are the
+median of 7 requests after one warm-up, measured from WordPress start to shutdown.
+
+### What was slow
+
+1. **The New badge.** Every card and restaurant page asks whether the restaurant is
+   new. The answer came from `Queries::recent_openings()` with no limit, which loaded
+   every restaurant in the change log (post, all meta, village and mall terms, permalink)
+   to keep about 80 of them. That was about 380 queries and 300 ms on every page with a
+   card, and it grew with the whole directory, not with the new places.
+2. **Cards loaded their facts one restaurant at a time.** Rows on the home page asked
+   for IDs only, so each card then fetched its post, meta and terms on its own, and
+   every card ran its own query for an approved visitor photo.
+3. **Dish pages** read the title of every restaurant in the dish index (400 single-post
+   queries) and ran the photo query for each of the 200 cards.
+4. **WooCommerce assets on every page.** WooCommerce (only for premium profile
+   checkout) added 5 stylesheets and 7 scripts to every public page, and with them
+   jQuery and jQuery Migrate in the page head, which block the first paint. The order
+   attribution scripts also set `sbjs_*` cookies on every visit.
+
+### What changed
+
+- `Queries::recent_opening_ids()` returns the IDs only: one change-log query plus one
+  query that drops trashed and permanently closed places. `recent_openings()` now drops
+  the baseline rows (a source's first run) before it loads anything, so the home page
+  row and the newsletter load only real openings. Results are the same as before.
+- `Restaurant_View::prime()` loads posts, meta, terms, term meta, featured images and
+  the newest approved upload (`Photo_Submissions::newest_approved()`, one query) for a
+  whole list. Restaurant rows, directory results (page and REST), saved lists and dish
+  pages call it before they print cards.
+- `Term_Slugs::for_post()` reads the term cache when a post's terms are already loaded.
+- `Woo_Checkout::drop_shop_assets()` takes WooCommerce's scripts and styles off every
+  page except shop pages (cart, checkout, My Account, products). Public pages no longer
+  load jQuery. Order attribution now only sees visits to shop pages.
+
+### Server time and queries, before and after
+
+| Page | Before | After |
+|---|---|---|
+| Home | 636 ms, 539 queries | 181 ms, 121 queries |
+| Directory | 576 ms, 501 | 155 ms, 83 |
+| Directory, page 5 | 556 ms, 503 | 154 ms, 83 |
+| Directory, Thai + $ | 508 ms, 511 | 150 ms, 91 |
+| Restaurant page | 568 ms, 496 | 141 ms, 100 |
+| Village page (Dededo) | 591 ms, 496 | 144 ms, 95 |
+| Cuisine page (Thai) | 594 ms, 495 | 148 ms, 94 |
+| Map page | 125 ms, 79 | 115 ms, 79 |
+| Map JSON (REST, 1,740 points) | 358 ms, 71 | 322 ms, 71 |
+| Directory REST (filter change) | 532 ms, 469 | 113 ms, 62 |
+| Dishes index | 105 ms, 72 | 105 ms, 72 |
+| Dish page (kelaguen, 200 places) | 883 ms, 1,087 | 193 ms, 82 |
+| What should I eat? | 134 ms, 80 | 122 ms, 80 |
+| Recently opened and closed | 398 ms, 333 | 153 ms, 85 |
+| /ja/ home | 634 ms, 522 | 179–211 ms, 121 |
+| /ja/ restaurant page | 539 ms, 479 | 174 ms, 100 |
+| /ko/ village page | 561 ms, 496 | 172 ms, 95 |
+
+### In the browser, before and after
+
+Chromium with phone emulation, CPU slowed 4 times, 1.6 Mbit/s and 150 ms latency
+(close to Lighthouse's mobile setting), empty cache, median of 3 loads. FCP is first
+contentful paint; on these pages it is also the largest contentful paint.
+
+| Page | FCP | Transferred | Requests |
+|---|---|---|---|
+| Home | 1,664 → 748 ms | 135 → 62 KB | 25 → 12 |
+| Directory | 1,468 → 532 ms | 143 → 69 KB | 27 → 14 |
+| Restaurant page | 1,548 → 656 ms | 153 → 79 KB | 34 → 21 |
+| Dish page | 1,736 → 604 ms | 152 → 79 KB | 27 → 14 |
+| /ja/ home | 1,752 → 692 ms | 137 → 64 KB | 25 → 12 |
+
+Full-page screenshots of the home, directory (390 px), restaurant (1280 and 390 px),
+dish and policy pages are pixel-identical before and after.
+
+### Left as they are
+
+- **Map JSON** (about 0.3 s uncached): most of the time is loading every restaurant's
+  meta and terms. It is sent with `Cache-Control: public, max-age=300` and kept in the
+  object cache, so with Cloudflare (§5) or Redis (§1) visitors rarely wait for it.
+- **Dish pages list every place on one page** (360 KB of HTML at 200 places). Paging
+  them would change how the page works; revisit when a dish passes about 100 places.
+- **The rest of a page's time** (about 110 ms) is WordPress, the block theme and
+  WooCommerce starting up. A page cache (§2) and an object cache (§1) remove most of
+  it on repeat views; both are still open items in docs/launch-checklist.md.
+
+To repeat: the profiling helpers are not in the repository. Log `timer_stop()`,
+`$wpdb->num_queries` and, with `SAVEQUERIES`, each query's caller from a `shutdown`
+action in a must-use plugin on the local stack, then group the queries by caller.

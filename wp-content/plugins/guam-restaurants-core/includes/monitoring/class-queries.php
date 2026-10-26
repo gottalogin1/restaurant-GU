@@ -32,6 +32,55 @@ final class Queries {
 	 * @return array<int, array{restaurant_id: int, name: string, first_seen: string, source: string, status: string, village: string[], mall: string[], url: string}>
 	 */
 	public static function recent_openings( int $days, int $limit = 0 ): array {
+		return self::collect(
+			self::openings( $days ),
+			$limit,
+			static function ( int $id, array $row ): ?array {
+				if ( ! self::is_listed( $id ) || 'permanently_closed' === get_post_meta( $id, Restaurant_Meta::STATUS, true ) ) {
+					return null;
+				}
+				return self::summary( $id ) + array(
+					'first_seen' => (string) $row['detected_at'],
+					'source'     => (string) $row['source'],
+				);
+			}
+		);
+	}
+
+	/**
+	 * IDs of the restaurants recent_openings() lists, in one query and
+	 * without building each entry, for the New badge on every card.
+	 *
+	 * @param int $days Days back from now.
+	 * @return int[] Newest first.
+	 */
+	public static function recent_opening_ids( int $days ): array {
+		global $wpdb;
+
+		$ids = array_map( 'intval', array_column( self::openings( $days ), 'restaurant_id' ) );
+		if ( ! $ids ) {
+			return array();
+		}
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+		$listed       = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- the values are one array.
+				"SELECT p.ID FROM {$wpdb->posts} p WHERE p.ID IN ({$placeholders}) AND p.post_type = %s AND p.post_status <> 'trash' AND NOT EXISTS (SELECT 1 FROM {$wpdb->postmeta} s WHERE s.post_id = p.ID AND s.meta_key = %s AND s.meta_value = 'permanently_closed')", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- placeholders only.
+				array_merge( $ids, array( Content_Types::POST_TYPE, Restaurant_Meta::STATUS ) )
+			)
+		);
+		return array_values( array_intersect( $ids, array_map( 'intval', $listed ) ) );
+	}
+
+	/**
+	 * First-seen rows of the last N days that are openings, newest first:
+	 * each restaurant's newest row, unless that row is from a source's
+	 * first run (the baseline). Done before collect(), so a long baseline
+	 * is not loaded post by post.
+	 *
+	 * @param int $days Days back from now.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function openings( int $days ): array {
 		global $wpdb;
 
 		$table = Schema::table( Schema::CHANGE_LOG );
@@ -44,20 +93,20 @@ final class Queries {
 			ARRAY_A
 		);
 
-		return self::collect(
-			$rows ? $rows : array(),
-			$limit,
-			static function ( int $id, array $row ): ?array {
-				$value = json_decode( (string) $row['new_value'], true );
-				if ( ! empty( $value['baseline'] ) || ! self::is_listed( $id ) || 'permanently_closed' === get_post_meta( $id, Restaurant_Meta::STATUS, true ) ) {
-					return null;
-				}
-				return self::summary( $id ) + array(
-					'first_seen' => (string) $row['detected_at'],
-					'source'     => (string) $row['source'],
-				);
+		$out  = array();
+		$seen = array();
+		foreach ( $rows ? $rows : array() as $row ) {
+			$id = (int) $row['restaurant_id'];
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
 			}
-		);
+			$seen[ $id ] = true;
+			$value       = json_decode( (string) $row['new_value'], true );
+			if ( empty( $value['baseline'] ) ) {
+				$out[] = $row;
+			}
+		}
+		return $out;
 	}
 
 	/**
