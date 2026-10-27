@@ -22,7 +22,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * The plugin ships approved intros in data/intros.php; fill() copies them
  * into empty Descriptions once (Database\Migrations), and dish() gives the
- * one for a Guam favorite dish page.
+ * one for a Guam favorite dish page. Village pages add their fiesta dates
+ * (Local_Events::village_line()).
  */
 final class Intro {
 
@@ -99,10 +100,11 @@ final class Intro {
 	 */
 	public static function render( \WP_Term $term ): string {
 		$description = trim( (string) term_description( $term ) );
+		$fiestas     = Content_Types::TAX_VILLAGE === $term->taxonomy ? Local_Events::village_line( $term ) : '';
 		if ( '' !== $description ) {
-			return '<div class="gr-intro">' . wp_kses_post( $description ) . '</div>';
+			return '<div class="gr-intro">' . wp_kses_post( $description ) . $fiestas . '</div>';
 		}
-		return '<div class="gr-intro gr-intro--default"><p>' . esc_html( self::default_text( $term ) ) . '</p></div>';
+		return '<div class="gr-intro gr-intro--default"><p>' . esc_html( self::default_text( $term ) ) . '</p>' . $fiestas . '</div>';
 	}
 
 	/**

@@ -8,6 +8,7 @@
 namespace GuamRestaurants\Core\Newsletter;
 
 use GuamRestaurants\Core\Awards\Policy as Awards_Policy;
+use GuamRestaurants\Core\Site\Fresh_Pages;
 use GuamRestaurants\Core\Site\Pages;
 
 defined( 'ABSPATH' ) || exit;
@@ -83,6 +84,7 @@ final class Renderer {
 		if ( ! Issue::has_content( $issue ) ) {
 			$body .= self::row( '<p style="margin:0">' . esc_html__( 'No openings, closures or new award results were recorded this week.', 'guam-restaurants-core' ) . '</p>' );
 		}
+		$body .= self::fresh_links();
 		$body .= self::sponsor( $issue['sponsor'] );
 
 		$corrections = Pages::url( 'correction' );
@@ -98,6 +100,22 @@ final class Renderer {
 			. '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#1b1b1b">'
 			. $body
 			. '</table></td></tr></table></body></html>';
+	}
+
+	/**
+	 * Links to This week on Guam and New on Guam.
+	 *
+	 * @return string
+	 */
+	private static function fresh_links(): string {
+		return self::row(
+			'<p style="margin:0">' . sprintf(
+				/* translators: 1: link to the This week on Guam page, 2: link to the New on Guam page. */
+				esc_html__( 'Plans for the week ahead: %1$s lists night markets, food truck stops, village fiestas and holiday hours. %2$s lists new places month by month.', 'guam-restaurants-core' ),
+				'<a href="' . esc_url( Fresh_Pages::url( 'week' ) ) . '" style="color:#0b6e8a">' . esc_html__( 'This week on Guam', 'guam-restaurants-core' ) . '</a>',
+				'<a href="' . esc_url( Fresh_Pages::url( 'new' ) ) . '" style="color:#0b6e8a">' . esc_html__( 'New on Guam', 'guam-restaurants-core' ) . '</a>'
+			) . '</p>'
+		);
 	}
 
 	/**

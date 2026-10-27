@@ -99,6 +99,8 @@ final class Plugin {
 		Appearance\Color_Scheme::register();
 		Site\Directory_Query::register();
 		Site\Open_Hours::register();
+		Site\Special_Hours::register();
+		Site\Fresh_Pages::register();
 		Site\Rest_Controller::register();
 		Site\Pages::register();
 		Site\Picker::register();
@@ -123,6 +125,8 @@ final class Plugin {
 		Admin\Website_Followup_Screen::register();
 		Admin\Tag_Origins_Box::register();
 		Photos\Website_Photo_Box::register();
+		Admin\Special_Hours_Box::register();
+		Admin\Local_Events_Screen::register();
 		Photos\Agreement::register();
 		Photos\Photo_Gallery::register();
 		Photos\Photo_Rest_Controller::register();

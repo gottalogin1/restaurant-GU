@@ -16,7 +16,7 @@
 	--gr-radius: 0.5rem;
 }
 
-:where(.gr-card, .gr-photos, .gr-dishes, .gr-dish-page, .gr-chips, .gr-recent, .gr-details, .gr-hero, .gr-row, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
+:where(.gr-card, .gr-photos, .gr-dishes, .gr-dish-page, .gr-fresh-page, .gr-fiestas, .gr-chips, .gr-recent, .gr-details, .gr-hero, .gr-row, .gr-hours, .gr-awards-feature, .gr-history, .gr-actions, .gr-sponsored, .gr-attributions, .gr-policy-links, .gr-search, .gr-map, .gr-intro, .gr-term-links, .gr-owner, .gr-claim, .gr-related) {
 	--gr-primary: var(--wp--preset--color--primary, #0b6e8a);
 	--gr-text: var(--wp--preset--color--contrast, #1b1b1b);
 	--gr-muted-text: var(--wp--preset--color--secondary, #4a4a4a);
@@ -2120,4 +2120,118 @@
 
 .gr-dish__name a {
 	color: inherit;
+}
+
+/* New on Guam and This week on Guam. */
+.gr-fresh-page {
+	display: grid;
+	gap: 1rem;
+	margin-block: 1.5rem 3rem;
+}
+
+.gr-fresh-page__title {
+	margin: 0;
+}
+
+.gr-fresh-page__intro,
+.gr-fresh-page__also,
+.gr-fresh-page__empty {
+	color: var(--gr-muted-text);
+	max-width: 46rem;
+	margin: 0;
+}
+
+.gr-week__day {
+	display: grid;
+	gap: 0.5rem;
+	padding-block: 0.75rem;
+	border-top: 1px solid var(--gr-border);
+}
+
+.gr-week__day > .gr-section-title {
+	margin: 0;
+}
+
+.gr-week__kind {
+	font-size: 1rem;
+	margin: 0.5rem 0 0;
+}
+
+.gr-week__list {
+	margin: 0;
+	padding-inline-start: 1.25rem;
+	display: grid;
+	gap: 0.25rem;
+}
+
+.gr-week__time {
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+}
+
+.gr-week__source,
+.gr-week__checked,
+.gr-week__note,
+.gr-week__empty,
+.gr-week__owners {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+}
+
+.gr-week__note,
+.gr-week__empty,
+.gr-week__owners {
+	margin: 0;
+}
+
+/* Holiday hours and truck stops under the weekly hours. */
+.gr-special-hours,
+.gr-truck-stops {
+	margin-top: 1rem;
+}
+
+.gr-special-hours__title,
+.gr-truck-stops__title {
+	font-size: 1rem;
+	margin: 0 0 0.25rem;
+}
+
+.gr-special-hours ul,
+.gr-truck-stops ul {
+	margin: 0;
+	padding-inline-start: 1.25rem;
+}
+
+.gr-special-hours__date,
+.gr-truck-stops__when {
+	font-weight: 600;
+}
+
+.gr-special-hours__source,
+.gr-truck-stops__source {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	margin: 0.25rem 0 0;
+}
+
+/* Fiesta dates on village pages. */
+.gr-fiestas {
+	margin-top: 1rem;
+	padding: 0.75rem 1rem;
+	border-radius: var(--gr-radius);
+	background: var(--gr-surface);
+	max-width: 46rem;
+}
+
+.gr-fiestas p {
+	margin: 0;
+}
+
+.gr-fiestas p + p {
+	margin-top: 0.25rem;
+}
+
+.gr-fiestas__source {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
 }

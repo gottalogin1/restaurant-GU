@@ -277,6 +277,13 @@ final class Seo {
 				'filtered'  => false,
 			);
 		}
+		if ( '' !== Fresh_Pages::current_page() ) {
+			return array(
+				'title'     => Fresh_Pages::title(),
+				'canonical' => Fresh_Pages::canonical(),
+				'filtered'  => ! Fresh_Pages::indexable(),
+			);
+		}
 		if ( '' !== Dish_Pages::current_page() ) {
 			$dish = Dish_Pages::current_dish();
 			return array(
@@ -422,6 +429,9 @@ final class Seo {
 		}
 		if ( '' !== \GuamRestaurants\Core\Dishes\Dish_Pages::current_page() ) {
 			return \GuamRestaurants\Core\Dishes\Dish_Pages::description();
+		}
+		if ( '' !== Fresh_Pages::current_page() ) {
+			return Fresh_Pages::description();
 		}
 		if ( is_front_page() ) {
 			$tagline = (string) get_bloginfo( 'description' );

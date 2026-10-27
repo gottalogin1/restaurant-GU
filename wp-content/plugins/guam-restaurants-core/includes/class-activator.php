@@ -48,9 +48,11 @@ final class Activator {
 		Seeder::seed_all();
 		Awards\Pages::add_rewrite_rules();
 		Dishes\Dish_Pages::add_rewrite_rules();
+		Site\Fresh_Pages::add_rewrite_rules();
 		flush_rewrite_rules();
 		update_option( Awards\Pages::ROUTES_OPTION, Awards\Pages::ROUTES_VERSION );
 		update_option( Dishes\Dish_Pages::ROUTES_OPTION, Dishes\Dish_Pages::ROUTES_VERSION );
+		update_option( Site\Fresh_Pages::ROUTES_OPTION, Site\Fresh_Pages::ROUTES_VERSION );
 		Highlights\Policy_Page::ensure();
 
 		update_option( 'guam_restaurants_core_version', GUAM_RESTAURANTS_CORE_VERSION );

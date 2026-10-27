@@ -37,6 +37,7 @@ return array(
 	'Nothing found.'              => '見つかりませんでした。',
 	'Ratings on other sites'      => '他サイトでの評価',
 	'Pick for me'                 => 'お店を選んで',
+	'This week'                   => '今週',
 	'New and closed'              => '開店・閉店',
 	'Awards'                      => '受賞歴',
 	'Dishes'                      => '料理',

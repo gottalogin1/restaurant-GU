@@ -31,6 +31,7 @@ that page. Re-check before building an importer.
 | Openverse (openly licensed photos) | **Use with limits** | One illustrative photo per cuisine, CC0, public domain, CC BY or CC BY-SA only, always labeled "Illustrative photo" and credited. See §8a. |
 | Restaurant websites (photos) | **Use with limits** | Only with the owner's permission, recorded on the restaurant (§8a). Photos on a website belong to whoever took them. |
 | Page intro facts (Guampedia, Visit Guam, Guam Daily Post, Wikipedia and others) | **Use** | Facts only, in our own words, with each source listed. See §8c. |
+| Village fiesta dates (Guampedia) and weekly food markets (Visit Guam, Stars and Stripes Guam) | **Use** | Facts only (date, village, patron saint; market day, hours, place) with the source link shown beside each one. Truck stops and holiday hours come from owners. See §8d. |
 | Japanese and Korean translations (first party, not a data source) | **Use** | Our own interface and page text translated with AI (Claude) during development and shipped with the plugin; no translation service is called. Google, Yelp and Foursquare content is never translated. See §8b. |
 
 **Collection method (2026-10-10).** Data comes through the official APIs
@@ -672,6 +673,28 @@ Dusit Place came from Sanjay.
 | Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/listing/chamorro-village/3734/> |
 | Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/listing/dusit-place/1043/> |
 
+## 8d. Fiestas, markets, truck stops and holiday hours (added 2026-10-27)
+
+The This week on Guam page (`/this-week/`), the fiesta line on village
+pages and the open-now checks use four kinds of facts. All are entered by
+hand or by owners; nothing here is imported or scraped.
+
+| | |
+|---|---|
+| Village fiestas | `data/fiestas.php`: 40 dates for 2026 (date, village, the community the calendar names, patron saint), read by hand on 2026-10-27 from Guampedia's fiesta calendar. Calendar communities map to our villages (Tumon to Tamuning, Maina and Asan to Asan-Maina, Malojloj to Inarajan, Sumai to Santa Rita and so on). Church-wide feasts with no village fiesta are left out. The Church sets the dates each year, so the page says to check with the parish. Add the 2027 dates when the calendar is updated. |
+| Weekly food markets | `data/markets.php`: four markets (day, hours, place) from the pages below, each shown with its source and the date it was checked (2026-10-27). Hours a source does not give are shown as "hours not published". |
+| Editing | Restaurants > Markets and fiestas (administrators). Every row needs a seeded village and a source link; a save replaces the shipped lists, and "Use the shipped lists instead" goes back. |
+| Food truck and pop-up stops | Owner input: verified owners (dashboard) and editors (restaurant screen) list dated stops, repeating weekly for up to 8 weeks, at most 30 and 60 days ahead. Shown as "Stops listed by the owner". |
+| Holiday and special hours | Owner input: closed all day, or other hours, for up to 20 dates within a year. These replace the weekly hours that start that day for Open now, Open late, Open at and the open-now label. Shown as "Set by the owner or our editors". |
+
+| Source | URL | Use |
+|---|---|---|
+| Guampedia fiesta calendar | <https://www.guampedia.com/guam-fiesta-calendar> | 2026 fiesta dates |
+| Visit Guam (Guam Visitors Bureau) event page | <https://www.visitguam.com/event/chamorro-village:-wednesday-night-market/518361/> | Chamorro Village Wednesday Night Market day and hours |
+| Stars and Stripes Guam | <https://guam.stripes.com/food-drink/'buy-local'-at-guam's-agat-tuesday-night-market.html> | Hågat Tuesday Night Market day and place |
+| Stars and Stripes Guam | <https://guam.stripes.com/travel/guam-marketplaces-full-of-life-energy-fun.html> | Mangilao Night Market and Dededo Flea Market days, hours and places |
+| Guam Daily Post | <https://www.postguam.com/news/local/food-trucks-lose-frequented-spots-at-skinner-plaza/image_251e21c8-79c0-11ec-ba48-17ee25a73e97.html> | Checked, not used: a 2022 story on food trucks leaving Skinner Plaza, with no current schedule. Truck stops come from owners instead. |
+
 ## 9. Data policy table
 
 | Data | Source | Policy | Expiry / refresh |
@@ -697,6 +720,8 @@ Dusit Place came from Sanjay.
 | Illustrative cuisine photo and its credit (title, author, license, source page, Openverse id) | Openverse (CC0, PDM, CC BY, CC BY-SA) | **Stored permanently** in the media library, always shown with label and credit | When an editor runs `cuisine-photos --refresh` |
 | Visitor and owner photo uploads (reduced copy, dish name, optional dish rating, display name, agreement version) | First-party, under the photo upload agreement | **Stored permanently** after approval; the full-size original is deleted after 30 days; email never stored | n/a |
 | Restaurant photo from its own website, with the permission note | Restaurant website, owner's permission | **Stored permanently** as the featured image; removed if the owner asks | n/a |
+| Fiesta dates and weekly market days, hours and places, with source URL and date checked | Guampedia, Visit Guam, Stars and Stripes Guam (facts only) | **Stored permanently** in `data/` or the saved option | Yearly for fiestas; check markets every few months |
+| Truck stops and holiday hours | Owners and editors | **Stored** on the restaurant; past dates stop showing and are dropped on the next save | n/a |
 | Japanese and Korean translations of our own text | First-party (written with Claude) | **Stored** in the plugin's `languages/` and `data/translations/` files | Each translation pass (`docs/translation.md` §4) |
 
 ## 10. Research-only references (not data sources)
@@ -803,6 +828,11 @@ in `docs/seo-and-analytics.md` and `docs/monetization.md` §8.
 | <https://www.postguam.com/news/local/tourism-market-shift-prompts-mall-to-adjust/article_80a9abea-d66f-11e8-888d-3f5379ffd4be.html> | Read 2026-10-26 (page intros) |
 | <https://www.visitguam.com/listing/chamorro-village/3734/> | Read 2026-10-26 (page intros) |
 | <https://www.visitguam.com/listing/dusit-place/1043/> | Read 2026-10-26 (page intros) |
+| <https://www.guampedia.com/guam-fiesta-calendar> | Read 2026-10-27 (fiestas and markets) |
+| <https://www.visitguam.com/event/chamorro-village:-wednesday-night-market/518361/> | Read 2026-10-27 (fiestas and markets) |
+| <https://guam.stripes.com/food-drink/'buy-local'-at-guam's-agat-tuesday-night-market.html> | Read 2026-10-27 (fiestas and markets) |
+| <https://guam.stripes.com/travel/guam-marketplaces-full-of-life-energy-fun.html> | Read 2026-10-27 (fiestas and markets) |
+| <https://www.postguam.com/news/local/food-trucks-lose-frequented-spots-at-skinner-plaza/image_251e21c8-79c0-11ec-ba48-17ee25a73e97.html> | Read 2026-10-27 (fiestas and markets) |
 
 ## 12. To do before the first import
 

@@ -18,6 +18,8 @@ use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Assets;
+use GuamRestaurants\Core\Site\Special_Hours;
+use GuamRestaurants\Core\Site\Truck_Stops;
 use GuamRestaurants\Core\Vocabulary;
 use WP_Error;
 
@@ -34,6 +36,9 @@ defined( 'ABSPATH' ) || exit;
  *   show under "Popular dishes" (Dishes\Display) as "On the menu"; they
  *   are listed, never rated, and never move a dish up the ranking.
  * - `specials`: up to five specials with an optional end date (gr_specials).
+ * - `special_hours`: holiday and special hours by date (Site\Special_Hours).
+ * - `truck_stops`: where a food truck or pop-up will be, by date
+ *   (Site\Truck_Stops).
  * - `photos`: up to eight images they uploaded (gr_owner_photos), or
  *   Premium::MAX_PHOTOS while a premium profile runs.
  * - `cta`: a call-to-action button, only while a premium profile runs
@@ -58,7 +63,7 @@ final class Owner_Content {
 	public const SPECIALS    = 'gr_specials';
 	public const PHOTOS      = 'gr_owner_photos';
 
-	public const FIELDS = array( 'hours', 'menu_links', 'menu_dishes', 'specials', 'photos', 'cta' );
+	public const FIELDS = array( 'hours', 'menu_links', 'menu_dishes', 'specials', 'special_hours', 'truck_stops', 'photos', 'cta' );
 
 	public const MAX_LINKS       = 5;
 	public const MAX_MENU_DISHES = 15;
@@ -137,6 +142,22 @@ final class Owner_Content {
 				$values[ self::SPECIALS ] = $specials;
 			}
 		}
+		if ( array_key_exists( 'special_hours', $input ) ) {
+			$special = Special_Hours::from_input( (array) $input['special_hours'] );
+			if ( is_wp_error( $special ) ) {
+				$errors->merge_from( $special );
+			} else {
+				$values[ Special_Hours::META ] = $special;
+			}
+		}
+		if ( array_key_exists( 'truck_stops', $input ) ) {
+			$stops = Truck_Stops::from_input( (array) $input['truck_stops'] );
+			if ( is_wp_error( $stops ) ) {
+				$errors->merge_from( $stops );
+			} else {
+				$values[ Truck_Stops::META ] = $stops;
+			}
+		}
 		if ( array_key_exists( 'photos', $input ) ) {
 			$values[ self::PHOTOS ] = self::photos_from_input( (array) $input['photos'], $restaurant_id, $user_id );
 		}
@@ -191,16 +212,13 @@ final class Owner_Content {
 			if ( '' === $text || in_array( strtolower( $text ), array( 'closed', '-' ), true ) ) {
 				continue;
 			}
-			foreach ( array_map( 'trim', explode( ',', $text ) ) as $range ) {
-				if ( ! preg_match( '/^(\d{1,2}):([0-5]\d)\s*[-–]\s*(\d{1,2}):([0-5]\d)$/u', $range, $m ) || (int) $m[1] > 23 || (int) $m[3] > 24 || ( 24 === (int) $m[3] && '00' !== $m[4] ) ) {
-					$bad[] = $day;
-					continue;
-				}
-				$weekly[] = array(
-					'day'   => $day,
-					'open'  => sprintf( '%02d:%s', (int) $m[1], $m[2] ),
-					'close' => sprintf( '%02d:%s', (int) $m[3], $m[4] ),
-				);
+			$ranges = self::ranges_from_text( $text );
+			if ( null === $ranges ) {
+				$bad[] = $day;
+				continue;
+			}
+			foreach ( $ranges as $range ) {
+				$weekly[] = array( 'day' => $day ) + $range;
 			}
 		}
 		if ( $bad ) {
@@ -217,6 +235,27 @@ final class Owner_Content {
 			$hours['note'] = $note;
 		}
 		return Restaurant_Meta::sanitize_hours( $hours );
+	}
+
+	/**
+	 * Time ranges written like "11:00-14:00, 17:00-21:00" (24-hour clock; a
+	 * close time at or before the open time runs past midnight).
+	 *
+	 * @param string $text Text.
+	 * @return array<int, array{open: string, close: string}>|null Null when a range is not valid.
+	 */
+	public static function ranges_from_text( string $text ): ?array {
+		$out = array();
+		foreach ( array_map( 'trim', explode( ',', $text ) ) as $range ) {
+			if ( ! preg_match( '/^(\d{1,2}):([0-5]\d)\s*[-–]\s*(\d{1,2}):([0-5]\d)$/u', $range, $m ) || (int) $m[1] > 23 || (int) $m[3] > 24 || ( 24 === (int) $m[3] && '00' !== $m[4] ) ) {
+				return null;
+			}
+			$out[] = array(
+				'open'  => sprintf( '%02d:%s', (int) $m[1], $m[2] ),
+				'close' => sprintf( '%02d:%s', (int) $m[3], $m[4] ),
+			);
+		}
+		return $out;
 	}
 
 	/**

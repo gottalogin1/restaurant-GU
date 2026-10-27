@@ -37,6 +37,7 @@ return array(
 	'Nothing found.'              => '찾은 결과가 없습니다.',
 	'Ratings on other sites'      => '다른 사이트의 평점',
 	'Pick for me'                 => '식당 골라 줘',
+	'This week'                   => '이번 주',
 	'New and closed'              => '개업·폐업',
 	'Awards'                      => '수상 내역',
 	'Dishes'                      => '음식',

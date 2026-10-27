@@ -545,7 +545,7 @@ final class Restaurant_View {
 			'' !== self::address( $restaurant_id ) ? '<p class="gr-card__address">' . Languages::keep( esc_html( self::address( $restaurant_id ) ) ) . '</p>' : '',
 			'' !== $status
 				? '<p class="gr-card__status">' . esc_html( $status ) . '</p>'
-				: ( '' !== $hours ? '<p class="gr-card__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' ),
+				: ( '' !== $hours ? '<p class="gr-card__open" data-gr-hours="' . esc_attr( $hours ) . '"' . Special_Hours::attribute( $restaurant_id ) . '></p>' : '' ),
 			self::media( $restaurant_id, 'medium_large', 'gr-card__media' ),
 			self::badges( $restaurant_id ),
 			Saved_View::heart( $restaurant_id )

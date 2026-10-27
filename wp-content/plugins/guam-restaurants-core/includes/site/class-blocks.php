@@ -537,7 +537,7 @@ final class Blocks {
 				$meta ? '<p class="gr-hero__meta">' . implode( ' <span aria-hidden="true">·</span> ', $meta ) . '</p>' : '',
 				'' !== $status
 					? '<p class="gr-hero__status">' . esc_html( $status ) . '</p>'
-					: ( '' !== $hours ? '<p class="gr-card__open gr-hero__open" data-gr-hours="' . esc_attr( $hours ) . '"></p>' : '' ),
+					: ( '' !== $hours ? '<p class="gr-card__open gr-hero__open" data-gr-hours="' . esc_attr( $hours ) . '"' . Special_Hours::attribute( $id ) . '></p>' : '' ),
 				esc_attr__( 'Restaurant actions', 'guam-restaurants-core' ),
 				implode( '', $actions ),
 				Languages::keep( esc_html( get_the_title( $id ) ) )
@@ -642,7 +642,8 @@ final class Blocks {
 		);
 		if ( null === $hours ) {
 			return '<p class="gr-details__hours-none">' . esc_html__( 'Opening hours are not listed yet. Please check with the restaurant.', 'guam-restaurants-core' )
-				. ( '' !== $report ? ' <a href="' . esc_url( $report ) . '">' . esc_html__( 'Know the hours? Tell us', 'guam-restaurants-core' ) . '</a>' : '' ) . '</p>';
+				. ( '' !== $report ? ' <a href="' . esc_url( $report ) . '">' . esc_html__( 'Know the hours? Tell us', 'guam-restaurants-core' ) . '</a>' : '' ) . '</p>'
+				. Special_Hours::render( $id ) . Truck_Stops::render( $id );
 		}
 		$body = '';
 		foreach ( Restaurant_View::day_names() as $day => $name ) {
@@ -651,14 +652,15 @@ final class Blocks {
 		}
 		$compact = Open_Hours::compact( $id );
 		return sprintf(
-			'<div class="gr-hours"%1$s><h3 class="gr-hours__title">%2$s</h3>%3$s<table class="gr-hours__table"><caption class="screen-reader-text">%4$s</caption><tbody>%5$s</tbody></table>%6$s%7$s</div>',
-			$open_info && '' !== $compact ? ' data-gr-hours="' . esc_attr( $compact ) . '"' : '',
+			'<div class="gr-hours"%1$s><h3 class="gr-hours__title">%2$s</h3>%3$s<table class="gr-hours__table"><caption class="screen-reader-text">%4$s</caption><tbody>%5$s</tbody></table>%6$s%8$s%7$s</div>',
+			$open_info && '' !== $compact ? ' data-gr-hours="' . esc_attr( $compact ) . '"' . Special_Hours::attribute( $id ) : '',
 			esc_html__( 'Opening hours', 'guam-restaurants-core' ),
 			$open_info && '' !== $compact ? '<p class="gr-card__open gr-hours__now" aria-live="polite"></p>' : '',
 			esc_html__( 'Opening hours, Guam time', 'guam-restaurants-core' ),
 			$body,
 			'' !== $hours['note'] ? '<p class="gr-hours__note">' . esc_html( $hours['note'] ) . '</p>' : '',
-			self::hours_check( $id, $report )
+			self::hours_check( $id, $report ),
+			Special_Hours::render( $id ) . Truck_Stops::render( $id )
 		);
 	}
 

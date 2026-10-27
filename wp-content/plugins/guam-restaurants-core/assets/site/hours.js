@@ -3,7 +3,9 @@
  * browser in Guam time so cached pages are never out of date.
  *
  * Elements carry data-gr-hours="start-end,start-end" in minutes from
- * Monday 00:00 (Site\Open_Hours::compact()).
+ * Monday 00:00 (Site\Open_Hours::compact()), and data-gr-special for the
+ * days with holiday or special hours: "Y-m-d:start-end,...;..." in minutes
+ * from that day's midnight, empty for closed (Site\Special_Hours).
  */
 ( function () {
 	var __ = window.wp && window.wp.i18n ? window.wp.i18n.__ : function ( text ) {
@@ -20,6 +22,9 @@
 		new Intl.DateTimeFormat( 'en-US', {
 			timeZone: 'Pacific/Guam',
 			weekday: 'short',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
 			hour: '2-digit',
 			minute: '2-digit',
 			hourCycle: 'h23',
@@ -29,7 +34,11 @@
 				parts[ part.type ] = part.value;
 			} );
 		var day = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ].indexOf( parts.weekday );
-		return { day: day, minute: day * 1440 + parseInt( parts.hour, 10 ) * 60 + parseInt( parts.minute, 10 ) };
+		return {
+			day: day,
+			date: parts.year + '-' + parts.month + '-' + parts.day,
+			minute: day * 1440 + parseInt( parts.hour, 10 ) * 60 + parseInt( parts.minute, 10 ),
+		};
 	}
 
 	function intervals( value ) {
@@ -69,6 +78,30 @@
 		return { open: false, text: __( 'Closed now', 'guam-restaurants-core' ) };
 	}
 
+	// A day with special hours: its intervals, or null when the weekly hours apply.
+	function specialDay( value, date ) {
+		var found = null;
+		String( value || '' )
+			.split( ';' )
+			.forEach( function ( day ) {
+				var at = day.indexOf( ':' );
+				if ( at > 0 && day.slice( 0, at ) === date ) {
+					found = intervals( day.slice( at + 1 ) );
+				}
+			} );
+		return found;
+	}
+
+	function specialStatus( list, minute ) {
+		for ( var i = 0; i < list.length; i++ ) {
+			if ( list[ i ][ 0 ] <= minute && minute < list[ i ][ 1 ] ) {
+				/* translators: %s: closing time. */
+				return { open: true, text: sprintf( __( 'Open now, until %s', 'guam-restaurants-core' ), timeLabel( list[ i ][ 1 ] ) ) };
+			}
+		}
+		return { open: false, text: __( 'Closed now', 'guam-restaurants-core' ) };
+	}
+
 	function apply( root ) {
 		var now = guamNow();
 		( root || document ).querySelectorAll( '[data-gr-hours]' ).forEach( function ( node ) {
@@ -76,7 +109,8 @@
 			if ( ! list.length ) {
 				return;
 			}
-			var result = status( list, now.minute );
+			var special = specialDay( node.getAttribute( 'data-gr-special' ), now.date );
+			var result = special ? specialStatus( special, now.minute % 1440 ) : status( list, now.minute );
 			var target = node.classList.contains( 'gr-card__open' ) ? node : node.querySelector( '.gr-hours__now' );
 			if ( target ) {
 				target.textContent = result.text;

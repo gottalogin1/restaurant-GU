@@ -250,13 +250,13 @@ final class Directory_Query {
 			);
 		}
 		if ( isset( $extra['open_at'] ) && null !== $extra['open_at'] ) {
-			$clauses['where'] .= ' AND ' . Open_Hours::open_sql( (int) $extra['open_at'], $posts );
+			$clauses['where'] .= ' AND ' . Special_Hours::open_sql( Clock::now(), $posts, Open_Hours::open_sql( (int) $extra['open_at'], $posts ) );
 		}
 		if ( isset( $extra['late_at'] ) && null !== $extra['late_at'] ) {
-			$clauses['where'] .= ' AND ' . Open_Hours::open_sql( (int) $extra['late_at'], $posts );
+			$clauses['where'] .= ' AND ' . Special_Hours::open_sql( Clock::instant( (int) $extra['late_at'] ), $posts, Open_Hours::open_sql( (int) $extra['late_at'], $posts ) );
 		}
 		if ( isset( $extra['chosen_at'] ) && null !== $extra['chosen_at'] ) {
-			$clauses['where'] .= ' AND ' . Open_Hours::open_sql( (int) $extra['chosen_at'], $posts );
+			$clauses['where'] .= ' AND ' . Special_Hours::open_sql( Clock::instant( (int) $extra['chosen_at'] ), $posts, Open_Hours::open_sql( (int) $extra['chosen_at'], $posts ) );
 		}
 		if ( ! empty( $extra['breakfast'] ) ) {
 			$clauses['where'] .= ' AND ' . Open_Hours::open_any_day_sql( Filters::BREAKFAST_MINUTE, $posts );
