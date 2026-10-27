@@ -18,6 +18,8 @@ use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Restaurant_View;
+use GuamRestaurants\Core\Site\Special_Hours;
+use GuamRestaurants\Core\Site\Truck_Stops;
 use GuamRestaurants\Core\Vocabulary;
 
 defined( 'ABSPATH' ) || exit;
@@ -33,8 +35,8 @@ defined( 'ABSPATH' ) || exit;
  * - The premium profile: when it ends, links to buy more time through
  *   WooCommerce (Commerce\Woo_Checkout) and, while it runs, the
  *   call-to-action form.
- * - Forms for the owner fields (Owner_Content): hours, menu links,
- *   specials and photos.
+ * - Forms for the owner fields (Owner_Content): hours, holiday and
+ *   special hours, menu links, specials, truck and pop-up stops, and photos.
  * - A link to reply to reviews (Highlights > Write).
  *
  * Every number is a total; nothing identifies a visitor.
@@ -154,6 +156,12 @@ final class Dashboard {
 			case 'specials':
 				$input['specials'] = isset( $_POST['specials'] ) && is_array( $_POST['specials'] ) ? wp_unslash( $_POST['specials'] ) : array();
 				break;
+			case 'special_hours':
+				$input['special_hours'] = isset( $_POST['special_hours'] ) && is_array( $_POST['special_hours'] ) ? wp_unslash( $_POST['special_hours'] ) : array();
+				break;
+			case 'truck_stops':
+				$input['truck_stops'] = isset( $_POST['truck_stops'] ) && is_array( $_POST['truck_stops'] ) ? wp_unslash( $_POST['truck_stops'] ) : array();
+				break;
 			case 'cta':
 				$input['cta'] = array(
 					'action' => isset( $_POST['cta_action'] ) ? sanitize_key( wp_unslash( $_POST['cta_action'] ) ) : '',
@@ -264,12 +272,14 @@ final class Dashboard {
 		self::render_stats( $restaurant );
 		self::render_premium( $restaurant );
 		self::render_hours_form( $restaurant );
+		self::render_special_hours_form( $restaurant );
 		self::render_links_form( $restaurant );
 		self::render_dishes_form( $restaurant );
 		self::render_specials_form( $restaurant );
+		self::render_truck_stops_form( $restaurant );
 		self::render_photos_form( $restaurant, $user_id );
 
-		echo '<p class="description">' . esc_html__( 'You can change your hours, menu links, menu dishes, specials and photos here. Ratings, awards, the listing\'s open or closed history and reviews are not editable by owners; to report a mistake in them, contact us.', 'guam-restaurants-core' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'You can change your hours, holiday hours, menu links, menu dishes, specials, stops and photos here. Ratings, awards, the listing\'s open or closed history and reviews are not editable by owners; to report a mistake in them, contact us.', 'guam-restaurants-core' ) . '</p>';
 		echo '</div>';
 	}
 
@@ -471,6 +481,32 @@ final class Dashboard {
 		}
 		echo '</tbody></table>';
 		self::form_close( __( 'Save specials', 'guam-restaurants-core' ) );
+	}
+
+	/**
+	 * Holiday and special hours form.
+	 *
+	 * @param int $restaurant Restaurant.
+	 * @return void
+	 */
+	private static function render_special_hours_form( int $restaurant ): void {
+		self::form_open( $restaurant, 'special_hours', __( 'Holiday and special hours', 'guam-restaurants-core' ) );
+		echo '<p class="description">' . esc_html__( 'For a date when you close or keep other hours, such as Christmas, Liberation Day or your village fiesta. On that date these hours replace your weekly hours, including in "Open now". Past dates disappear by themselves; clear a date to remove it.', 'guam-restaurants-core' ) . '</p>';
+		echo Special_Hours::form_rows( $restaurant, 'special_hours' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped while built.
+		self::form_close( __( 'Save holiday hours', 'guam-restaurants-core' ) );
+	}
+
+	/**
+	 * Food truck and pop-up stops form.
+	 *
+	 * @param int $restaurant Restaurant.
+	 * @return void
+	 */
+	private static function render_truck_stops_form( int $restaurant ): void {
+		self::form_open( $restaurant, 'truck_stops', __( 'Food truck and pop-up stops', 'guam-restaurants-core' ) );
+		echo '<p class="description">' . esc_html__( 'If you move around, list where you will be. Stops show on your listing and on the This week on Guam page, by date and time. Choose Weekly to repeat a stop on the same day each week.', 'guam-restaurants-core' ) . '</p>';
+		echo Truck_Stops::form_rows( $restaurant, 'truck_stops' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped while built.
+		self::form_close( __( 'Save stops', 'guam-restaurants-core' ) );
 	}
 
 	/**

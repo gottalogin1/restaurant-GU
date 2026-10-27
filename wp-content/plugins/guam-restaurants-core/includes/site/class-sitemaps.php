@@ -108,7 +108,7 @@ final class Sitemaps {
 	}
 
 	/**
-	 * Dish, cuisine-in-village and awards pages, in English.
+	 * Dish, cuisine-in-village, New on Guam, This week and awards pages, in English.
 	 *
 	 * @return array<int, array{loc: string}>
 	 */
@@ -128,6 +128,7 @@ final class Sitemaps {
 				$list[] = array( 'loc' => Cuisine_Villages::url( $village, $cuisine ) );
 			}
 		}
+		$list       = array_merge( $list, Fresh_Pages::sitemap_pages() );
 		$categories = Awards::categories();
 		if ( $categories ) {
 			$list[] = array( 'loc' => Award_Pages::url( 'archive' ) );

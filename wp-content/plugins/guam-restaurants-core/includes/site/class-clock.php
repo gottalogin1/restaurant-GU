@@ -54,6 +54,32 @@ final class Clock {
 	}
 
 	/**
+	 * Today's date in Guam.
+	 *
+	 * @param int|null $timestamp Unix time; defaults to now().
+	 * @return string Y-m-d.
+	 */
+	public static function today( ?int $timestamp = null ): string {
+		return ( new \DateTimeImmutable( '@' . ( $timestamp ?? self::now() ) ) )->setTimezone( self::zone() )->format( 'Y-m-d' );
+	}
+
+	/**
+	 * The moment a minute of the week next falls, from the start of today
+	 * (Guam): today's minutes stay today, even when already past.
+	 *
+	 * @param int      $minute_of_week Minute of the week.
+	 * @param int|null $timestamp      Unix time; defaults to now().
+	 * @return int Unix time.
+	 */
+	public static function instant( int $minute_of_week, ?int $timestamp = null ): int {
+		$now      = $timestamp ?? self::now();
+		$midnight = ( new \DateTimeImmutable( '@' . $now ) )->setTimezone( self::zone() )->setTime( 0, 0 );
+		$today    = (int) $midnight->format( 'N' ) - 1;
+		$ahead    = ( intdiv( $minute_of_week, self::MINUTES_PER_DAY ) - $today + 7 ) % 7;
+		return $midnight->getTimestamp() + $ahead * DAY_IN_SECONDS + ( $minute_of_week % self::MINUTES_PER_DAY ) * MINUTE_IN_SECONDS;
+	}
+
+	/**
 	 * Minutes since Monday 00:00, Guam time.
 	 *
 	 * @param int|null $timestamp Unix time; defaults to now().

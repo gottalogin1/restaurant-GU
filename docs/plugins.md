@@ -42,7 +42,27 @@ time ("4 days ago"), the date is computed from 2026-10-09 and marked "about".
   Squirrly account, it does not clearly document taxonomy sitemaps or breadcrumbs, and it is
   tested only to 7.0.7. Its "GEO" (AI-search citation) features are a reasonable later
   experiment; it can import Yoast data if the owner switches.
-- **Note:** Run only one SEO plugin at a time; two will output duplicate meta tags and sitemaps.
+- **Squirrly beside Yoast (decided by Sanjay, 2026-10-27).** Both are installed. Yoast is
+  the only one that prints anything on the pages: our plugin (`Site\Seo`, `Site\Sitemaps`)
+  hooks Yoast's filters only, and two plugins printing titles, meta tags, schema and sitemaps
+  would duplicate them. Squirrly is used for its cloud audits, keyword research, rank
+  tracking and llms.txt. Setup:
+  1. Install and set up Yoast SEO first (`docs/seo-and-analytics.md` §2).
+  2. Install GEO Plugin by Squirrly SEO and the Advanced Pack, and connect the Squirrly
+     account it asks for.
+  3. Squirrly > Settings > Compatibility (in some versions SEO Configuration > Settings):
+     turn on the option that leaves SEO output to another plugin, if offered.
+  4. Then in Squirrly's SEO Configuration (or Automation) settings, turn **off**: META
+     title and description, canonical link, Open Graph and Twitter cards, JSON-LD
+     structured data, sitemap XML, robots.txt and breadcrumbs. Leave on the audit,
+     keyword research, rank tracking and llms.txt tools.
+  5. Check one restaurant page's source: one `<title>`, one `rel="canonical"`, one
+     `og:title`, and only Yoast's sitemap at `/sitemap_index.xml`. If Squirrly's sitemap
+     (`/sitemap.xml`) still answers, turn its sitemap off again.
+  6. Do not use Squirrly's "import from Yoast" or bulk SEO edit; Yoast stays the source
+     of titles and descriptions.
+  Exact menu names in Squirrly change between versions and were not checked against
+  version 14 from here. ⚠️ unverified
 
 ## Forms: Happyforms (owned)
 

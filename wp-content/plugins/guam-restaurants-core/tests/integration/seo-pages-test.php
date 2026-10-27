@@ -116,6 +116,8 @@ class Seo_Pages_Test extends Guam_Test_Case {
 			array(
 				home_url( '/dishes/' ),
 				home_url( '/dishes/kelaguen/' ),
+				home_url( '/this-week/' ),
+				home_url( '/new/' ),
 				home_url( '/awards/' ),
 				home_url( '/awards/most-awarded/' ),
 				home_url( '/awards/category/best-fiesta-plate/' ),
@@ -193,12 +195,14 @@ class Seo_Pages_Test extends Guam_Test_Case {
 
 		$index = wp_list_pluck( $provider->get_index_links( 3 ), 'loc' );
 		$this->assertSame( home_url( '/guam-pages-sitemap.xml' ), $index[0] );
-		$this->assertSame( home_url( '/guam-pages-sitemap2.xml' ), $index[1], 'Five pages at three per sitemap' );
+		$this->assertSame( home_url( '/guam-pages-sitemap2.xml' ), $index[1] );
+		$this->assertSame( home_url( '/guam-pages-sitemap3.xml' ), $index[2], 'Seven pages at three per sitemap' );
 		$this->assertContains( home_url( '/guam-ja-sitemap.xml' ), $index );
 
-		$this->assertSame( array( home_url( '/awards/most-awarded/' ), home_url( '/awards/category/best-fiesta-plate/' ) ), wp_list_pluck( $provider->get_sitemap_links( 'guam-pages', 3, 2 ), 'loc' ) );
+		$this->assertSame( array( home_url( '/new/' ), home_url( '/awards/' ), home_url( '/awards/most-awarded/' ) ), wp_list_pluck( $provider->get_sitemap_links( 'guam-pages', 3, 2 ), 'loc' ) );
+		$this->assertSame( array( home_url( '/awards/category/best-fiesta-plate/' ) ), wp_list_pluck( $provider->get_sitemap_links( 'guam-pages', 3, 3 ), 'loc' ) );
 		$this->expectException( \OutOfBoundsException::class );
-		$provider->get_sitemap_links( 'guam-pages', 3, 3 );
+		$provider->get_sitemap_links( 'guam-pages', 3, 4 );
 	}
 
 	/**

@@ -86,7 +86,11 @@ week" uses these counts. They also give advertisers per-listing figures later.
    the meta tag or DNS record it shows, submit the sitemap index, and request
    collection of `/ko/`. The Korean pages are in their own sitemap
    (`guam-ko-sitemap.xml` with Yoast, `wp-sitemap-guam-ko-1.xml` without).
-9. **IndexNow**: install Microsoft's free IndexNow plugin so new and changed
+9. **Squirrly GEO beside Yoast**: install it only after Yoast, and turn its
+   titles, meta, canonical, Open Graph, schema and sitemaps off before the
+   site goes live (steps in `docs/plugins.md`, SEO section). Yoast stays the
+   one plugin that prints SEO tags.
+10. **IndexNow**: install Microsoft's free IndexNow plugin so new and changed
    pages are sent to Bing and Naver right away
    ([Naver supports IndexNow](https://searchengineland.com/naver-korean-search-engine-now-supports-indexnow-429880)).
 
@@ -189,6 +193,18 @@ those profiles.
   intros show under the dish page heading. The same migration renames the
   cuisine to CHamoru and The Plaza to Dusit Place ("The Plaza" stays an
   alias); both keep their web addresses. Sources: `docs/data-sources.md` §8c.
+- **Fresh pages** (added 2026-10-27, plan phase 3, comparison additions
+  15, 22, 23 and 26). `/new/` lists every month with new places and
+  `/new/YYYY-MM/` each month, with a map and an `ItemList`; a place counts
+  in the month it opened (owner or editor date) or else the month the
+  directory first found it, skipping the starting inventory. A month page is
+  indexed at 5 or more places, like cuisine-in-village pages, and is a 404
+  when it has none. `/this-week/` shows the next seven days of village
+  fiestas, weekly markets, owner truck stops and holiday hours. Both are in
+  the `pages` sitemap, the header has a "This week" link, and the newsletter
+  links both. Village pages show the next village fiesta with its source.
+  Holiday hours change Open now, Open late and Open at on those dates.
+  Sources: `docs/data-sources.md` §8d.
 - The full plan, with what comes next, is the SEO plan doc
   (https://claude.ai/artifact/JcXSSwwXHeqLCb91Ye8ZYC).
 

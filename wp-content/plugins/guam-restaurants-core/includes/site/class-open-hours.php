@@ -270,7 +270,7 @@ final class Open_Hours {
 	 * @param string $time Time.
 	 * @return int|null
 	 */
-	private static function minutes( string $time ): ?int {
+	public static function minutes( string $time ): ?int {
 		if ( 1 !== preg_match( '/^(\d{2}):(\d{2})$/', $time, $m ) ) {
 			return null;
 		}
