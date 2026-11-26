@@ -10,12 +10,13 @@ namespace GuamRestaurants\Core\Site;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Three pages served by the plugin at fixed URLs, like the dish pages:
+ * Four pages served by the plugin at fixed URLs, like the dish pages:
  *
  * - /new/ : New on Guam, every month with new places (New_Places).
  * - /new/{YYYY-MM}/ : the places new in one month, as a list and a map.
  * - /this-week/ : the next seven days of markets, truck stops, village
  *   fiestas and holiday hours (This_Week).
+ * - /specials/ : specials and happy hours posted by owners (Specials_Page).
  *
  * The /ja/ and /ko/ copies come from the language router as for every
  * other page.
@@ -28,10 +29,10 @@ final class Fresh_Pages {
 	/**
 	 * Bump when the rewrite rules change so they are flushed once.
 	 */
-	public const ROUTES_VERSION = '1';
+	public const ROUTES_VERSION = '2';
 	public const ROUTES_OPTION  = 'guam_restaurants_fresh_routes';
 
-	public const PAGES = array( 'new', 'new-month', 'week' );
+	public const PAGES = array( 'new', 'new-month', 'week', 'specials' );
 
 	/**
 	 * Hooks registration.
@@ -70,6 +71,7 @@ final class Fresh_Pages {
 		add_rewrite_rule( '^new/?$', 'index.php?' . self::QUERY_VAR . '=new', 'top' );
 		add_rewrite_rule( '^new/(\d{4}-\d{2})/?$', 'index.php?' . self::QUERY_VAR . '=new-month&' . self::MONTH_QUERY_VAR . '=$matches[1]', 'top' );
 		add_rewrite_rule( '^this-week/?$', 'index.php?' . self::QUERY_VAR . '=week', 'top' );
+		add_rewrite_rule( '^specials/?$', 'index.php?' . self::QUERY_VAR . '=specials', 'top' );
 	}
 
 	/**
@@ -98,7 +100,7 @@ final class Fresh_Pages {
 	}
 
 	/**
-	 * URL of a page: `new` (optionally with a month) or `week`.
+	 * URL of a page: `new` (optionally with a month), `week` or `specials`.
 	 *
 	 * @param string $page  Page.
 	 * @param string $month YYYY-MM, for a month of New on Guam.
@@ -109,10 +111,13 @@ final class Fresh_Pages {
 			if ( 'week' === $page ) {
 				return home_url( '/this-week/' );
 			}
+			if ( 'specials' === $page ) {
+				return home_url( '/specials/' );
+			}
 			return home_url( '' === $month ? '/new/' : '/new/' . $month . '/' );
 		}
-		if ( 'week' === $page ) {
-			return add_query_arg( self::QUERY_VAR, 'week', home_url( '/' ) );
+		if ( 'week' === $page || 'specials' === $page ) {
+			return add_query_arg( self::QUERY_VAR, $page, home_url( '/' ) );
 		}
 		return add_query_arg(
 			'' === $month ? array( self::QUERY_VAR => 'new' ) : array(
@@ -198,7 +203,14 @@ final class Fresh_Pages {
 	 * @return string
 	 */
 	public static function title(): string {
-		return 'week' === self::current_page() ? This_Week::title() : New_Places::title( self::current_month() );
+		switch ( self::current_page() ) {
+			case 'week':
+				return This_Week::title();
+			case 'specials':
+				return Specials_Page::title();
+			default:
+				return New_Places::title( self::current_month() );
+		}
 	}
 
 	/**
@@ -207,7 +219,14 @@ final class Fresh_Pages {
 	 * @return string
 	 */
 	public static function description(): string {
-		return 'week' === self::current_page() ? This_Week::description() : New_Places::description( self::current_month() );
+		switch ( self::current_page() ) {
+			case 'week':
+				return This_Week::description();
+			case 'specials':
+				return Specials_Page::description();
+			default:
+				return New_Places::description( self::current_month() );
+		}
 	}
 
 	/**
@@ -216,16 +235,22 @@ final class Fresh_Pages {
 	 * @return string
 	 */
 	public static function canonical(): string {
-		return 'week' === self::current_page() ? self::url( 'week' ) : self::url( 'new', self::current_month() );
+		$page = self::current_page();
+		return in_array( $page, array( 'week', 'specials' ), true ) ? self::url( $page ) : self::url( 'new', self::current_month() );
 	}
 
 	/**
 	 * Whether search engines should index the current page: a month needs
-	 * Cuisine_Villages::MIN_PLACES places, as cuisine-in-village pages do.
+	 * Cuisine_Villages::MIN_PLACES places, as cuisine-in-village pages do,
+	 * and Specials needs as many restaurants with specials (a filtered
+	 * view is never indexed).
 	 *
 	 * @return bool
 	 */
 	public static function indexable(): bool {
+		if ( 'specials' === self::current_page() ) {
+			return ! Specials_Page::is_filtered() && Specials_Page::indexable();
+		}
 		return 'new-month' !== self::current_page() || count( New_Places::in_month( self::current_month() ) ) >= Cuisine_Villages::MIN_PLACES;
 	}
 
@@ -238,6 +263,8 @@ final class Fresh_Pages {
 		switch ( self::current_page() ) {
 			case 'week':
 				return This_Week::render();
+			case 'specials':
+				return Specials_Page::render();
 			case 'new-month':
 				return New_Places::render_month( self::current_month() );
 			default:
@@ -246,12 +273,16 @@ final class Fresh_Pages {
 	}
 
 	/**
-	 * Pages for the sitemap: This week, New on Guam and its indexable months.
+	 * Pages for the sitemap: This week, Specials once it is indexable, New
+	 * on Guam and its indexable months.
 	 *
 	 * @return array<int, array{loc: string}>
 	 */
 	public static function sitemap_pages(): array {
-		$list   = array( array( 'loc' => self::url( 'week' ) ) );
+		$list = array( array( 'loc' => self::url( 'week' ) ) );
+		if ( Specials_Page::indexable() ) {
+			$list[] = array( 'loc' => self::url( 'specials' ) );
+		}
 		$months = New_Places::months();
 		if ( $months ) {
 			$list[] = array( 'loc' => self::url( 'new' ) );

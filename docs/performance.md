@@ -32,6 +32,7 @@ Page Cache "Disk: Enhanced". Either way, these must **never** be cached:
 | `/owner-dashboard/`, `/claim/` (claim and owner pages) | Per-owner content. |
 | `/wp-json/` POST requests | Forms, beacons, owner actions. Caching is for GET only. |
 | Any URL with `open=now` | "Open now" changes by the minute. |
+| `/specials/` (and `/ja/specials/`, `/ko/specials/`) | "On now" for happy hours changes by the minute. The page also sets `DONOTCACHEPAGE`. |
 | `/feed/` for 15 minutes at most | New restaurants and awards. |
 | `?s=` search | Unbounded variations. |
 
@@ -46,6 +47,7 @@ my-account
 owner-dashboard
 claim
 open=now
+specials
 ```
 
 and "Rejected cookies": `wordpress_logged_in`, `woocommerce_items_in_cart`,

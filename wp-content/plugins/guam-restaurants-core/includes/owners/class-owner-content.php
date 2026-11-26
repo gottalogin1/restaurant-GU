@@ -18,7 +18,10 @@ use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Assets;
+use GuamRestaurants\Core\Site\Clock;
+use GuamRestaurants\Core\Site\Fresh_Pages;
 use GuamRestaurants\Core\Site\Special_Hours;
+use GuamRestaurants\Core\Site\Specials_Page;
 use GuamRestaurants\Core\Site\Truck_Stops;
 use GuamRestaurants\Core\Vocabulary;
 use WP_Error;
@@ -35,7 +38,8 @@ defined( 'ABSPATH' ) || exit;
  *   with an optional price and short description (gr_menu_dishes). They
  *   show under "Popular dishes" (Dishes\Display) as "On the menu"; they
  *   are listed, never rated, and never move a dish up the ranking.
- * - `specials`: up to five specials with an optional end date (gr_specials).
+ * - `specials`: up to Specials::MAX specials and happy hours, with days,
+ *   times and dates (gr_specials; Specials).
  * - `special_hours`: holiday and special hours by date (Site\Special_Hours).
  * - `truck_stops`: where a food truck or pop-up will be, by date
  *   (Site\Truck_Stops).
@@ -67,7 +71,7 @@ final class Owner_Content {
 
 	public const MAX_LINKS       = 5;
 	public const MAX_MENU_DISHES = 15;
-	public const MAX_SPECIALS    = 5;
+	public const MAX_SPECIALS    = Specials::MAX;
 	public const MAX_PHOTOS      = 8;
 	public const MAX_TITLE       = 80;
 	public const MAX_PRICE       = 20;
@@ -328,47 +332,13 @@ final class Owner_Content {
 	}
 
 	/**
-	 * Specials from a form: rows of `title`, `details` and `ends` (Y-m-d or
-	 * empty); rows without a title are dropped.
+	 * Specials and happy hours from a form (Specials::from_input).
 	 *
 	 * @param array<int, mixed> $rows Rows.
-	 * @return array<int, array{title: string, details: string, ends: string}>|WP_Error
+	 * @return array<int, array<string, mixed>>|WP_Error
 	 */
 	public static function specials_from_input( array $rows ) {
-		$out    = array();
-		$errors = new WP_Error();
-		foreach ( $rows as $row ) {
-			$row   = (array) $row;
-			$title = mb_substr( sanitize_text_field( (string) ( $row['title'] ?? '' ) ), 0, self::MAX_TITLE );
-			if ( '' === $title ) {
-				continue;
-			}
-			$details = mb_substr( sanitize_textarea_field( (string) ( $row['details'] ?? '' ) ), 0, self::MAX_DETAILS );
-			$ends    = trim( (string) ( $row['ends'] ?? '' ) );
-			$date    = \DateTimeImmutable::createFromFormat( '!Y-m-d', $ends );
-			if ( '' !== $ends && ( ! $date || $date->format( 'Y-m-d' ) !== $ends ) ) {
-				$errors->add( 'gr_owner_special_date', __( 'Use a valid end date for each special, or leave it empty.', 'guam-restaurants-core' ) );
-				continue;
-			}
-			foreach ( Guard::creative_problems(
-				array(
-					'headline' => $title,
-					'text'     => $details,
-				)
-			) as $problem ) {
-				$errors->add( 'gr_owner_words', $problem );
-			}
-			$out[] = array(
-				'title'   => $title,
-				'details' => $details,
-				'ends'    => $ends,
-			);
-		}
-		if ( count( $out ) > self::MAX_SPECIALS ) {
-			/* translators: %d: maximum. */
-			$errors->add( 'gr_owner_specials', sprintf( __( 'Add at most %d specials.', 'guam-restaurants-core' ), self::MAX_SPECIALS ) );
-		}
-		return $errors->has_errors() ? $errors : $out;
+		return Specials::from_input( $rows );
 	}
 
 	/**
@@ -453,22 +423,36 @@ final class Owner_Content {
 	}
 
 	/**
-	 * Specials not past their end date (Guam).
+	 * Specials and happy hours not past their end date (Guam).
 	 *
 	 * @param int         $restaurant_id Restaurant.
 	 * @param string|null $today         Y-m-d.
-	 * @return array<int, array<string, string>>
+	 * @return array<int, array<string, mixed>>
 	 */
 	public static function current_specials( int $restaurant_id, ?string $today = null ): array {
-		$today = $today ?? Server::today();
-		return array_values(
-			array_filter(
-				self::get( $restaurant_id )['specials'],
-				static function ( array $special ) use ( $today ): bool {
-					return '' === ( $special['ends'] ?? '' ) || $special['ends'] >= $today;
-				}
-			)
-		);
+		return Specials::current( $restaurant_id, $today );
+	}
+
+	/**
+	 * The "Specials and happy hours" list in the owner block.
+	 *
+	 * @param array<int, array<string, mixed>> $specials Normalized specials.
+	 * @return string
+	 */
+	public static function specials_html( array $specials ): string {
+		if ( ! $specials ) {
+			return '';
+		}
+		$now = Clock::now();
+		foreach ( $specials as $i => $special ) {
+			$specials[ $i ]['on_now'] = Specials::running_at( $special, $now );
+		}
+		usort( $specials, array( Specials::class, 'compare' ) );
+		$items = '';
+		foreach ( $specials as $special ) {
+			$items .= Specials_Page::special_html( $special );
+		}
+		return '<h3>' . esc_html__( 'Specials and happy hours', 'guam-restaurants-core' ) . '</h3><ul class="gr-specials__list">' . $items . '</ul><p class="gr-owner__more"><a href="' . esc_url( Fresh_Pages::url( 'specials' ) ) . '">' . esc_html__( 'More specials and happy hours on Guam', 'guam-restaurants-core' ) . '</a></p>';
 	}
 
 	/**
@@ -504,17 +488,7 @@ final class Owner_Content {
 			}
 			$html .= '</ul>';
 		}
-		if ( $specials ) {
-			$html .= '<h3>' . esc_html__( 'Specials', 'guam-restaurants-core' ) . '</h3><ul class="gr-owner__specials">';
-			foreach ( $specials as $special ) {
-				$ends = '' === $special['ends'] ? '' : ' <span class="gr-owner__ends">' . esc_html(
-					/* translators: %s: date. */
-					sprintf( __( 'Until %s', 'guam-restaurants-core' ), wp_date( get_option( 'date_format' ), (int) strtotime( $special['ends'] . ' 12:00:00' ) ) )
-				) . '</span>';
-				$html .= '<li><strong>' . esc_html( $special['title'] ) . '</strong>' . $ends . ( '' === $special['details'] ? '' : '<br>' . esc_html( $special['details'] ) ) . '</li>';
-			}
-			$html .= '</ul>';
-		}
+		$html .= self::specials_html( $specials );
 		if ( $photos ) {
 			$html .= '<div class="gr-owner__photos">';
 			foreach ( $photos as $photo ) {
