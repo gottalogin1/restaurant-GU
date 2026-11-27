@@ -384,7 +384,7 @@ msgstr "식당"
 msgid "Cuisine"
 msgstr "요리"
 
-#: includes/class-structured-data.php:131
+#: includes/class-structured-data.php:140
 msgid "Restaurants on Guam"
 msgstr "괌의 식당"
 
@@ -1388,7 +1388,7 @@ msgstr "내 목록 공유"
 msgid "The link shows your newest %s saved restaurants and nothing else about you."
 msgstr "링크에는 최근 저장한 식당 %s곳만 표시되며, 회원님에 대한 다른 정보는 담기지 않습니다."
 
-#: includes/dishes/class-dish-pages.php:340
+#: includes/dishes/class-dish-pages.php:373
 #: includes/saved/class-view.php:298
 #: includes/site/class-buffets.php:567
 #: includes/site/class-hotel-pages.php:354
@@ -1396,7 +1396,7 @@ msgstr "링크에는 최근 저장한 식당 %s곳만 표시되며, 회원님에
 msgid "Show the list as"
 msgstr "목록 보기 방식"
 
-#: includes/dishes/class-dish-pages.php:341
+#: includes/dishes/class-dish-pages.php:374
 #: includes/saved/class-view.php:299
 #: includes/site/class-buffets.php:568
 #: includes/site/class-directory-view.php:120
@@ -1407,7 +1407,7 @@ msgstr "목록 보기 방식"
 msgid "List"
 msgstr "목록"
 
-#: includes/dishes/class-dish-pages.php:342
+#: includes/dishes/class-dish-pages.php:375
 #: includes/saved/class-view.php:300
 #: includes/site/class-buffets.php:569
 #: includes/site/class-directory-view.php:121
@@ -1417,7 +1417,7 @@ msgstr "목록"
 msgid "Map"
 msgstr "지도"
 
-#: includes/dishes/class-dish-pages.php:345
+#: includes/dishes/class-dish-pages.php:378
 #: includes/saved/class-view.php:304
 #: includes/site/class-new-places.php:268
 msgid "Map of these restaurants"
@@ -2211,26 +2211,26 @@ msgid "Page %d"
 msgstr "%d페이지"
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:420
+#: includes/site/class-seo.php:419
 #, php-format
 msgid "%1$s: %2$s, Guam. Hours, map, awards and reviews."
 msgstr "%1$s: %2$s, 괌. 영업시간, 지도, 수상 내역, 리뷰."
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:420
+#: includes/site/class-seo.php:419
 #, php-format
 msgid "%1$s, Guam. Hours, map, awards and reviews."
 msgstr "%1$s, 괌. 영업시간, 지도, 수상 내역, 리뷰."
 
-#: includes/site/class-seo.php:432
+#: includes/site/class-seo.php:431
 msgid "Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews."
 msgstr "마을, 몰, 요리, 가격으로 괌 전역의 식당을 찾아보세요. 영업시간, 수상 내역, 리뷰 포함."
 
-#: includes/site/class-seo.php:435
+#: includes/site/class-seo.php:434
 msgid "Restaurant award results recorded on this site, each with a link to where it was published."
 msgstr "이 사이트에 기록된 식당 수상 결과. 각 결과의 발표처 링크 포함."
 
-#: includes/site/class-seo.php:448
+#: includes/site/class-seo.php:447
 msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
 msgstr "괌에서 식당 찾기: 이름이나 요리로 검색하거나 마을, 몰, 요리별로 둘러보세요."
 
@@ -5280,81 +5280,82 @@ msgid "Guam Restaurants database tables are at version %1$s but the plugin needs
 msgstr ""
 
 #. translators: %s: dish name, for example "Kelaguen".
-#: includes/dishes/class-dish-pages.php:221
+#: includes/dishes/class-dish-pages.php:247
 msgid "Where to get Guam dishes"
 msgstr "괌 음식 맛집"
 
 #. translators: %s: dish name, for example "Kelaguen".
-#: includes/dishes/class-dish-pages.php:221
+#: includes/dishes/class-dish-pages.php:247
 #, php-format
 msgid "Where to get %s on Guam"
 msgstr "괌에서 %s 먹을 수 있는 곳"
 
-#: includes/dishes/class-dish-pages.php:232
+#: includes/dishes/class-dish-pages.php:261
 msgid "Guam dishes and the restaurants that serve them, from what visitors photographed and named in their reviews."
 msgstr "괌 음식과 그 음식을 파는 식당입니다. 방문객이 찍은 사진과 리뷰에서 언급한 음식을 바탕으로 합니다."
 
 #. translators: 1: number of places, 2: dish name.
-#: includes/dishes/class-dish-pages.php:240
+#: includes/dishes/class-dish-pages.php:269
 #, php-format
 msgid "%1$s place on Guam serves %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
 msgid_plural "%1$s places on Guam serve %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
 msgstr[0] "괌에서 %2$s 파는 곳은 %1$s곳입니다(지도 포함). 방문객이 언급한 횟수 순이며, 가장 잘하는 순서가 아닙니다."
 
-#: includes/dishes/class-dish-pages.php:289
+#: includes/dishes/class-dish-pages.php:321
 msgid "Guam favorites"
 msgstr "괌 인기 음식"
 
-#: includes/dishes/class-dish-pages.php:290
+#: includes/dishes/class-dish-pages.php:322
 msgid "All dishes, A to Z"
 msgstr "모든 음식(A~Z 순)"
 
-#: includes/dishes/class-dish-pages.php:291
+#: includes/dishes/class-dish-pages.php:323
 msgid "No dishes yet. When visitors add dish photos or name what they ordered in a review, the dishes appear here."
 msgstr "아직 음식이 없습니다. 방문객이 음식 사진을 올리거나 리뷰에서 주문한 음식을 언급하면 여기에 표시됩니다."
 
-#: includes/dishes/class-dish-pages.php:296
+#: includes/dishes/class-dish-pages.php:328
 msgid "Dishes visitors photographed or named in their reviews, and dishes owners list on their menus, with every listed restaurant that serves each one."
 msgstr "방문객이 사진을 찍거나 리뷰에서 언급한 음식과 사장님이 메뉴에 올린 음식입니다. 음식마다 그 음식을 파는 등록 식당을 모두 보여 줍니다."
 
 #. translators: %s: number of restaurants.
-#: includes/dishes/class-dish-pages.php:329
+#: includes/dishes/class-dish-pages.php:362
 #, php-format
 msgid "%s place serves it"
 msgid_plural "%s places serve it"
 msgstr[0] "%s곳에서 판매"
 
-#: includes/dishes/class-dish-pages.php:335
+#: includes/dishes/class-dish-pages.php:368
+#: includes/dishes/class-glossary.php:205
 msgid "All dishes"
 msgstr "모든 음식"
 
-#: includes/dishes/class-dish-pages.php:337
+#: includes/dishes/class-dish-pages.php:370
 msgid "Listed by how many different visitors photographed this dish or named it in an approved review at each place, counting each person once. Places where only the owner lists it come next. This is not a ranking of who makes it best: owners and staff are never counted, and sponsors cannot change the order."
 msgstr "각 식당에서 이 음식을 사진으로 찍거나 승인된 리뷰에서 언급한 서로 다른 방문객 수 순서입니다(한 사람은 한 번만 셉니다). 사장님 메뉴에만 있는 곳은 그다음에 나옵니다. 가장 잘하는 곳의 순위가 아니며, 사장님과 직원은 세지 않고 스폰서도 순서를 바꿀 수 없습니다."
 
-#: includes/dishes/class-dish-pages.php:347
+#: includes/dishes/class-dish-pages.php:380
 msgid "Had it somewhere else? Add a dish photo or name it in a review on that restaurant's page, and the place appears here once it is approved."
 msgstr "다른 곳에서 드셨나요? 그 식당 페이지에서 음식 사진을 올리거나 리뷰에 음식 이름을 적어 주세요. 승인되면 여기에 표시됩니다."
 
 #. translators: %s: number of visitors.
-#: includes/dishes/class-dish-pages.php:397
+#: includes/dishes/class-dish-pages.php:431
 #, php-format
 msgid "Named by %s visitor"
 msgid_plural "Named by %s visitors"
 msgstr[0] "방문객 %s명이 언급"
 
-#: includes/dishes/class-dish-pages.php:400
+#: includes/dishes/class-dish-pages.php:434
 msgid "On the owner's menu"
 msgstr "사장님 메뉴에 있음"
 
 #. translators: %s: dish names, for example "Chicken kelaguen, Beef kelaguen".
-#: includes/dishes/class-dish-pages.php:412
+#: includes/dishes/class-dish-pages.php:446
 #, php-format
 msgid "As %s"
 msgstr "%s(으)로"
 
 #. translators: %s: number of places.
-#: includes/dishes/class-dish-pages.php:431
+#: includes/dishes/class-dish-pages.php:465
 #: includes/site/class-buffets.php:560
 #: includes/site/class-new-places.php:198
 #, php-format
@@ -7945,3 +7946,39 @@ msgstr ""
 #, php-format
 msgid "Last saved %s. Saving again marks the facts as checked today."
 msgstr ""
+
+#: includes/dishes/class-glossary.php:106
+msgid "CHamoru food glossary"
+msgstr "차모로 음식 용어집"
+
+#: includes/dishes/class-glossary.php:115
+msgid "What kelaguen, fina'denne', titiyas, chalakiles and other Guam food words mean, with links to the restaurants that serve each dish."
+msgstr "켈라구엔, 피나데니, 티티야스, 찰라킬레스 등 괌 음식 용어의 뜻과, 각 음식을 파는 식당 링크."
+
+#: includes/dishes/class-glossary.php:153
+msgid "New to CHamoru food? Read the food glossary."
+msgstr "차모로 음식이 처음이세요? 음식 용어집을 읽어 보세요."
+
+#. translators: %s: glossary term, for example "Kelaguen".
+#: includes/dishes/class-glossary.php:161
+#, php-format
+msgid "What is %s? Read it in the food glossary."
+msgstr "%s(이)란? 음식 용어집에서 읽어 보세요."
+
+#. translators: %s: name of the website the facts come from, for example "Guampedia".
+#: includes/dishes/class-glossary.php:189
+#, php-format
+msgid "Source: %s"
+msgstr "출처: %s"
+
+#: includes/dishes/class-glossary.php:207
+msgid "Words you will see on menus and fiesta tables around Guam, in plain language. When listed restaurants serve a dish, its entry links to where to get it."
+msgstr "괌의 메뉴와 피에스타 상에서 보게 되는 말을 쉽게 풀어 설명합니다. 등록된 식당에서 그 음식을 팔면, 어디서 먹을 수 있는지 링크가 있습니다."
+
+#: includes/dishes/class-glossary.php:208
+msgid "Glossary terms"
+msgstr "용어 목록"
+
+#: includes/dishes/class-glossary.php:211
+msgid "Spellings follow Guampedia. Menus often use older spellings, such as finadene for fina'denne'."
+msgstr "철자는 Guampedia를 따릅니다. 메뉴에서는 fina'denne'를 finadene로 쓰는 것처럼 예전 철자도 자주 쓰입니다."

@@ -22,6 +22,8 @@ defined( 'ABSPATH' ) || exit;
  * - /dishes/ : every dish with a page, Guam favorites first.
  * - /dishes/{slug}/ : every listed restaurant serving that dish, as a
  *   list and a map.
+ * - /dishes/glossary/ : the CHamoru food glossary (Glossary), linked from
+ *   the list and from every dish page.
  *
  * A dish page is ordered by how many different visitors named or
  * photographed the dish at each place, and says so. It is never called
@@ -36,10 +38,10 @@ final class Dish_Pages {
 	/**
 	 * Bump when the rewrite rules change so they are flushed once.
 	 */
-	public const ROUTES_VERSION = '1';
+	public const ROUTES_VERSION = '2';
 	public const ROUTES_OPTION  = 'guam_restaurants_dish_routes';
 
-	public const PAGES = array( 'index', 'dish' );
+	public const PAGES = array( 'index', 'dish', 'glossary' );
 
 	/**
 	 * Places per dish key, for the index below.
@@ -90,6 +92,8 @@ final class Dish_Pages {
 	 */
 	public static function add_rewrite_rules(): void {
 		add_rewrite_rule( '^dishes/?$', 'index.php?' . self::QUERY_VAR . '=index', 'top' );
+		// Before the dish rule, which would read "glossary" as a dish.
+		add_rewrite_rule( '^dishes/glossary/?$', 'index.php?' . self::QUERY_VAR . '=glossary', 'top' );
 		add_rewrite_rule( '^dishes/([^/]+)/?$', 'index.php?' . self::QUERY_VAR . '=dish&' . self::DISH_QUERY_VAR . '=$matches[1]', 'top' );
 	}
 
@@ -205,9 +209,31 @@ final class Dish_Pages {
 	public static function document_title( $parts ): array {
 		$parts = (array) $parts;
 		if ( '' !== self::current_page() && ! is_404() ) {
-			$parts['title'] = self::title( self::current_dish() );
+			$parts['title'] = self::current_title();
 		}
 		return $parts;
+	}
+
+	/**
+	 * Title of the dish page requested.
+	 *
+	 * @return string
+	 */
+	public static function current_title(): string {
+		return 'glossary' === self::current_page() ? Glossary::title() : self::title( self::current_dish() );
+	}
+
+	/**
+	 * Canonical URL of the dish page requested.
+	 *
+	 * @return string
+	 */
+	public static function current_url(): string {
+		if ( 'glossary' === self::current_page() ) {
+			return Glossary::url();
+		}
+		$dish = self::current_dish();
+		return self::url( null === $dish ? '' : $dish['slug'] );
 	}
 
 	/**
@@ -227,6 +253,9 @@ final class Dish_Pages {
 	 * @return string
 	 */
 	public static function description(): string {
+		if ( 'glossary' === self::current_page() ) {
+			return Glossary::description();
+		}
 		$dish = self::current_dish();
 		if ( null === $dish ) {
 			return __( 'Guam dishes and the restaurants that serve them, from what visitors photographed and named in their reviews.', 'guam-restaurants-core' );
@@ -261,6 +290,9 @@ final class Dish_Pages {
 	 * @return string
 	 */
 	public static function render_current(): string {
+		if ( 'glossary' === self::current_page() ) {
+			return Glossary::render();
+		}
 		$dish = self::current_dish();
 		return null === $dish ? self::render_index() : self::render_dish( $dish );
 	}
@@ -291,10 +323,11 @@ final class Dish_Pages {
 			: '<p class="gr-dish-page__empty">' . esc_html__( 'No dishes yet. When visitors add dish photos or name what they ordered in a review, the dishes appear here.', 'guam-restaurants-core' ) . '</p>';
 
 		return sprintf(
-			'<div class="gr-dish-page alignwide"><h1 class="gr-dish-page__title">%1$s</h1><p class="gr-dish-page__intro">%2$s</p>%3$s</div>',
+			'<div class="gr-dish-page alignwide"><h1 class="gr-dish-page__title">%1$s</h1><p class="gr-dish-page__intro">%2$s</p>%4$s%3$s</div>',
 			esc_html( self::title( null ) ),
 			esc_html__( 'Dishes visitors photographed or named in their reviews, and dishes owners list on their menus, with every listed restaurant that serves each one.', 'guam-restaurants-core' ),
-			$body
+			$body,
+			Glossary::link( null )
 		);
 	}
 
@@ -330,7 +363,7 @@ final class Dish_Pages {
 		) . '</p><ul class="gr-cards" role="list">' . $items . '</ul>';
 
 		return sprintf(
-			'<div class="gr-dish-page alignwide"><p class="gr-dish-page__back"><a href="%1$s">%2$s</a></p><h1 class="gr-dish-page__title">%3$s</h1>%7$s<p class="gr-dish-page__intro">%4$s</p>%5$s<p class="gr-dish-page__add">%6$s</p></div>',
+			'<div class="gr-dish-page alignwide"><p class="gr-dish-page__back"><a href="%1$s">%2$s</a></p><h1 class="gr-dish-page__title">%3$s</h1>%7$s%8$s<p class="gr-dish-page__intro">%4$s</p>%5$s<p class="gr-dish-page__add">%6$s</p></div>',
 			esc_url( self::url() ),
 			esc_html__( 'All dishes', 'guam-restaurants-core' ),
 			esc_html( self::title( $dish ) ),
@@ -345,7 +378,8 @@ final class Dish_Pages {
 				esc_attr__( 'Map of these restaurants', 'guam-restaurants-core' )
 			),
 			esc_html__( 'Had it somewhere else? Add a dish photo or name it in a review on that restaurant\'s page, and the place appears here once it is approved.', 'guam-restaurants-core' ),
-			'' === self::intro( $dish ) ? '' : '<p class="gr-dish-page__about">' . esc_html( self::intro( $dish ) ) . '</p>'
+			'' === self::intro( $dish ) ? '' : '<p class="gr-dish-page__about">' . esc_html( self::intro( $dish ) ) . '</p>',
+			Glossary::link( $dish )
 		);
 	}
 

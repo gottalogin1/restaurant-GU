@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-27T02:52:00+00:00\n"
+"POT-Creation-Date: 2026-11-27T02:59:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: guam-restaurants-core\n"
@@ -3149,7 +3149,7 @@ msgstr ""
 msgid "Confidence (0 to 1) of the Foursquare match, from name similarity and distance."
 msgstr ""
 
-#: includes/class-structured-data.php:131
+#: includes/class-structured-data.php:140
 msgid "Restaurants on Guam"
 msgstr ""
 
@@ -3504,61 +3504,62 @@ msgid "Guam Restaurants database tables are at version %1$s but the plugin needs
 msgstr ""
 
 #. translators: %s: dish name, for example "Kelaguen".
-#: includes/dishes/class-dish-pages.php:221
+#: includes/dishes/class-dish-pages.php:247
 msgid "Where to get Guam dishes"
 msgstr ""
 
 #. translators: %s: dish name, for example "Kelaguen".
-#: includes/dishes/class-dish-pages.php:221
+#: includes/dishes/class-dish-pages.php:247
 #, php-format
 msgid "Where to get %s on Guam"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:232
+#: includes/dishes/class-dish-pages.php:261
 msgid "Guam dishes and the restaurants that serve them, from what visitors photographed and named in their reviews."
 msgstr ""
 
 #. translators: 1: number of places, 2: dish name.
-#: includes/dishes/class-dish-pages.php:240
+#: includes/dishes/class-dish-pages.php:269
 #, php-format
 msgid "%1$s place on Guam serves %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
 msgid_plural "%1$s places on Guam serve %2$s, with a map. Listed by how many visitors named it there, not by who makes it best."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dishes/class-dish-pages.php:289
+#: includes/dishes/class-dish-pages.php:321
 msgid "Guam favorites"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:290
+#: includes/dishes/class-dish-pages.php:322
 msgid "All dishes, A to Z"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:291
+#: includes/dishes/class-dish-pages.php:323
 msgid "No dishes yet. When visitors add dish photos or name what they ordered in a review, the dishes appear here."
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:296
+#: includes/dishes/class-dish-pages.php:328
 msgid "Dishes visitors photographed or named in their reviews, and dishes owners list on their menus, with every listed restaurant that serves each one."
 msgstr ""
 
 #. translators: %s: number of restaurants.
-#: includes/dishes/class-dish-pages.php:329
+#: includes/dishes/class-dish-pages.php:362
 #, php-format
 msgid "%s place serves it"
 msgid_plural "%s places serve it"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dishes/class-dish-pages.php:335
+#: includes/dishes/class-dish-pages.php:368
+#: includes/dishes/class-glossary.php:205
 msgid "All dishes"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:337
+#: includes/dishes/class-dish-pages.php:370
 msgid "Listed by how many different visitors photographed this dish or named it in an approved review at each place, counting each person once. Places where only the owner lists it come next. This is not a ranking of who makes it best: owners and staff are never counted, and sponsors cannot change the order."
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:340
+#: includes/dishes/class-dish-pages.php:373
 #: includes/saved/class-view.php:298
 #: includes/site/class-buffets.php:567
 #: includes/site/class-hotel-pages.php:354
@@ -3566,7 +3567,7 @@ msgstr ""
 msgid "Show the list as"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:341
+#: includes/dishes/class-dish-pages.php:374
 #: includes/saved/class-view.php:299
 #: includes/site/class-buffets.php:568
 #: includes/site/class-directory-view.php:120
@@ -3577,7 +3578,7 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:342
+#: includes/dishes/class-dish-pages.php:375
 #: includes/saved/class-view.php:300
 #: includes/site/class-buffets.php:569
 #: includes/site/class-directory-view.php:121
@@ -3587,36 +3588,36 @@ msgstr ""
 msgid "Map"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:345
+#: includes/dishes/class-dish-pages.php:378
 #: includes/saved/class-view.php:304
 #: includes/site/class-new-places.php:268
 msgid "Map of these restaurants"
 msgstr ""
 
-#: includes/dishes/class-dish-pages.php:347
+#: includes/dishes/class-dish-pages.php:380
 msgid "Had it somewhere else? Add a dish photo or name it in a review on that restaurant's page, and the place appears here once it is approved."
 msgstr ""
 
 #. translators: %s: number of visitors.
-#: includes/dishes/class-dish-pages.php:397
+#: includes/dishes/class-dish-pages.php:431
 #, php-format
 msgid "Named by %s visitor"
 msgid_plural "Named by %s visitors"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/dishes/class-dish-pages.php:400
+#: includes/dishes/class-dish-pages.php:434
 msgid "On the owner's menu"
 msgstr ""
 
 #. translators: %s: dish names, for example "Chicken kelaguen, Beef kelaguen".
-#: includes/dishes/class-dish-pages.php:412
+#: includes/dishes/class-dish-pages.php:446
 #, php-format
 msgid "As %s"
 msgstr ""
 
 #. translators: %s: number of places.
-#: includes/dishes/class-dish-pages.php:431
+#: includes/dishes/class-dish-pages.php:465
 #: includes/site/class-buffets.php:560
 #: includes/site/class-new-places.php:198
 #, php-format
@@ -3710,6 +3711,42 @@ msgstr ""
 
 #: includes/dishes/class-display.php:200
 msgid "People read this section when they are choosing what to eat. Sponsors take turns in this labeled spot on restaurant pages, chosen by village, mall or food type."
+msgstr ""
+
+#: includes/dishes/class-glossary.php:106
+msgid "CHamoru food glossary"
+msgstr ""
+
+#: includes/dishes/class-glossary.php:115
+msgid "What kelaguen, fina'denne', titiyas, chalakiles and other Guam food words mean, with links to the restaurants that serve each dish."
+msgstr ""
+
+#: includes/dishes/class-glossary.php:153
+msgid "New to CHamoru food? Read the food glossary."
+msgstr ""
+
+#. translators: %s: glossary term, for example "Kelaguen".
+#: includes/dishes/class-glossary.php:161
+#, php-format
+msgid "What is %s? Read it in the food glossary."
+msgstr ""
+
+#. translators: %s: name of the website the facts come from, for example "Guampedia".
+#: includes/dishes/class-glossary.php:189
+#, php-format
+msgid "Source: %s"
+msgstr ""
+
+#: includes/dishes/class-glossary.php:207
+msgid "Words you will see on menus and fiesta tables around Guam, in plain language. When listed restaurants serve a dish, its entry links to where to get it."
+msgstr ""
+
+#: includes/dishes/class-glossary.php:208
+msgid "Glossary terms"
+msgstr ""
+
+#: includes/dishes/class-glossary.php:211
+msgid "Spellings follow Guampedia. Menus often use older spellings, such as finadene for fina'denne'."
 msgstr ""
 
 #: includes/highlights/class-display.php:175
@@ -7091,26 +7128,26 @@ msgid "Page %d"
 msgstr ""
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:420
+#: includes/site/class-seo.php:419
 #, php-format
 msgid "%1$s: %2$s, Guam. Hours, map, awards and reviews."
 msgstr ""
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:420
+#: includes/site/class-seo.php:419
 #, php-format
 msgid "%1$s, Guam. Hours, map, awards and reviews."
 msgstr ""
 
-#: includes/site/class-seo.php:432
+#: includes/site/class-seo.php:431
 msgid "Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews."
 msgstr ""
 
-#: includes/site/class-seo.php:435
+#: includes/site/class-seo.php:434
 msgid "Restaurant award results recorded on this site, each with a link to where it was published."
 msgstr ""
 
-#: includes/site/class-seo.php:448
+#: includes/site/class-seo.php:447
 msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
 msgstr ""
 

@@ -2117,6 +2117,67 @@
 	color: inherit;
 }
 
+.gr-dish-page__glossary {
+	margin: 0;
+}
+
+/* CHamoru food glossary (/dishes/glossary/) */
+.gr-glossary__jump {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 0.5rem;
+}
+
+.gr-glossary__jump a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.75rem;
+	padding: 0 0.75rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	background: var(--gr-card);
+	text-decoration: none;
+}
+
+.gr-glossary {
+	display: grid;
+	gap: 0.75rem;
+	max-width: 46rem;
+	margin: 0;
+}
+
+.gr-glossary__entry {
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	background: var(--gr-card);
+	scroll-margin-top: 5rem;
+}
+
+.gr-glossary__entry:target {
+	border-color: currentcolor;
+}
+
+.gr-glossary__term {
+	font-size: 1.25rem;
+	font-weight: 700;
+}
+
+.gr-glossary__text {
+	margin: 0.25rem 0 0;
+}
+
+.gr-glossary__text p {
+	margin: 0;
+}
+
+.gr-glossary__text .gr-glossary__links {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	margin-top: 0.5rem;
 /* Restaurants near your hotel. */
 .gr-hotel-index {
 	grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));

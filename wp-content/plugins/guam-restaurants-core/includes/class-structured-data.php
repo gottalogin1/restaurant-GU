@@ -79,12 +79,16 @@ final class Structured_Data {
 	}
 
 	/**
-	 * Prints the ItemList on unfiltered listing pages, dish pages, hotel pages, New on Guam months and the buffets page.
+	 * Prints the ItemList on unfiltered listing pages, dish pages, hotel pages, New on Guam months and the buffets page, and the DefinedTermSet on the food glossary.
 	 *
 	 * @return void
 	 */
 	public static function print_item_list(): void {
 		global $wp_query;
+		if ( ! is_404() && 'glossary' === Dishes\Dish_Pages::current_page() ) {
+			wp_print_inline_script_tag( (string) wp_json_encode( Dishes\Glossary::structured_data(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG ), array( 'type' => 'application/ld+json' ) );
+			return;
+		}
 		$dish = is_404() ? null : Dishes\Dish_Pages::current_dish();
 		if ( null !== $dish ) {
 			$data = self::item_list( array_keys( Dishes\Dish_Pages::places( $dish ) ), Dishes\Dish_Pages::title( $dish ), Dishes\Dish_Pages::url( $dish['slug'] ) );
