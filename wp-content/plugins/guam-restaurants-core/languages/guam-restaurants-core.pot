@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-27T01:24:01+00:00\n"
+"POT-Creation-Date: 2026-11-27T02:35:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: guam-restaurants-core\n"
@@ -27,6 +27,159 @@ msgstr ""
 #. Author of the plugin
 #: guam-restaurants-core.php
 msgid "Guam Restaurants"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:53
+#: includes/admin/class-hotels-screen.php:54
+#: includes/admin/class-hotels-screen.php:199
+msgid "Hotels"
+msgstr ""
+
+#. translators: %s: hotel name.
+#: includes/admin/class-hotels-screen.php:111
+#, php-format
+msgid "%s: give a latitude and longitude on Guam (for example 13.5167 and 144.8051) and the link to where the location came from."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:126
+#: includes/admin/class-hotels-screen.php:150
+#: includes/admin/class-local-events-screen.php:129
+msgid "Sorry, you are not allowed to do that."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:138
+#: includes/admin/class-local-events-screen.php:143
+msgid "Nothing was saved."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:138
+#: includes/admin/class-website-followup-screen.php:235
+msgid "Saved."
+msgstr ""
+
+#. translators: 1: created, 2: updated, 3: unchanged, 4: removed, 5: hotels with a page.
+#: includes/admin/class-hotels-screen.php:161
+#, php-format
+msgid "Loaded from OpenStreetMap: %1$d new, %2$d updated, %3$d unchanged, %4$d removed. %5$d hotels have a page."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:172
+msgid "OpenStreetMap did not answer. Try again in a few minutes, or run: wp guam-restaurants hotels import"
+msgstr ""
+
+#. translators: 1: number of places, 2: kilometres.
+#: includes/admin/class-hotels-screen.php:210
+#, php-format
+msgid "Each hotel with at least %1$d places to eat within %2$s km gets a \"Restaurants near\" page, listing places nearest first. Hide a hotel to take its page down."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:216
+msgid "See the hotel list"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:224
+msgid "Load hotels from OpenStreetMap"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:227
+msgid "Not loaded yet. Run this once, then every few months."
+msgstr ""
+
+#. translators: %s: date and time.
+#: includes/admin/class-hotels-screen.php:229
+#, php-format
+msgid "Last loaded %s (UTC)."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Hotel"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+#: includes/admin/class-local-events-screen.php:268
+#: includes/admin/class-review-queue-screen.php:1073
+#: includes/class-content-types.php:51
+#: includes/site/class-directory-view.php:348
+#: includes/site/class-picker.php:261
+#: includes/site/class-related-links.php:138
+#: includes/site/class-truck-stops.php:239
+#: includes/site/class-truck-stops.php:269
+msgid "Village"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Places within walking distance"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+#: includes/site/class-hotel-pages.php:335
+msgid "A short drive away"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Page"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Location from"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+#: includes/admin/class-hotels-screen.php:253
+msgid "Hide"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:238
+msgid "No hotels yet. Load them from OpenStreetMap above."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:249
+msgid "View"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:249
+msgid "Hidden"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:249
+msgid "Too few places"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:250
+msgid "Added by hand"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:254
+msgid "Remove"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:259
+msgid "Add a hotel OpenStreetMap lacks"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:259
+msgid "Give the hotel's latitude and longitude and the link to where they came from. Better still, add the hotel to OpenStreetMap and load the list again."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:262
+msgid "Hotel name"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:263
+msgid "Latitude"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:264
+msgid "Longitude"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:265
+#: includes/admin/class-local-events-screen.php:206
+msgid "Source link"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:267
+msgid "Save hotels"
 msgstr ""
 
 #: includes/admin/class-ingestion-runs-screen.php:42
@@ -146,14 +299,6 @@ msgstr ""
 msgid "%s: give the date, village, patron saint and source link."
 msgstr ""
 
-#: includes/admin/class-local-events-screen.php:129
-msgid "Sorry, you are not allowed to do that."
-msgstr ""
-
-#: includes/admin/class-local-events-screen.php:143
-msgid "Nothing was saved."
-msgstr ""
-
 #: includes/admin/class-local-events-screen.php:143
 msgid "Saved. The This week page and village pages use these lists now."
 msgstr ""
@@ -223,10 +368,6 @@ msgstr ""
 msgid "Patron saint or feast"
 msgstr ""
 
-#: includes/admin/class-local-events-screen.php:206
-msgid "Source link"
-msgstr ""
-
 #: includes/admin/class-local-events-screen.php:223
 msgid "Community (optional)"
 msgstr ""
@@ -241,17 +382,6 @@ msgstr ""
 
 #: includes/admin/class-local-events-screen.php:235
 msgid "Use the shipped lists instead"
-msgstr ""
-
-#: includes/admin/class-local-events-screen.php:268
-#: includes/admin/class-review-queue-screen.php:1073
-#: includes/class-content-types.php:51
-#: includes/site/class-directory-view.php:348
-#: includes/site/class-picker.php:261
-#: includes/site/class-related-links.php:137
-#: includes/site/class-truck-stops.php:239
-#: includes/site/class-truck-stops.php:269
-msgid "Village"
 msgstr ""
 
 #: includes/admin/class-no-cuisine-filter.php:104
@@ -921,10 +1051,6 @@ msgstr ""
 
 #: includes/admin/class-website-followup-screen.php:185
 msgid "Only administrators can update website follow-ups."
-msgstr ""
-
-#: includes/admin/class-website-followup-screen.php:235
-msgid "Saved."
 msgstr ""
 
 #: includes/admin/class-website-followup-screen.php:237
@@ -1646,7 +1772,9 @@ msgid "You have sent several messages recently. Please try again later."
 msgstr ""
 
 #. translators: 1: business name, 2: contact name.
+#. translators: 1: hotel name, 2: distance, for example "350 m".
 #: includes/advertising/class-leads.php:378
+#: includes/site/class-related-links.php:240
 #, php-format
 msgid "%1$s (%2$s)"
 msgstr ""
@@ -3003,7 +3131,7 @@ msgstr ""
 msgid "Confidence (0 to 1) of the Foursquare match, from name similarity and distance."
 msgstr ""
 
-#: includes/class-structured-data.php:116
+#: includes/class-structured-data.php:124
 msgid "Restaurants on Guam"
 msgstr ""
 
@@ -3412,6 +3540,7 @@ msgstr ""
 
 #: includes/dishes/class-dish-pages.php:340
 #: includes/saved/class-view.php:298
+#: includes/site/class-hotel-pages.php:354
 #: includes/site/class-new-places.php:263
 msgid "Show the list as"
 msgstr ""
@@ -3419,6 +3548,7 @@ msgstr ""
 #: includes/dishes/class-dish-pages.php:341
 #: includes/saved/class-view.php:299
 #: includes/site/class-directory-view.php:120
+#: includes/site/class-hotel-pages.php:355
 #: includes/site/class-new-places.php:264
 #: blocks/site-editor/editor.js:69
 #: blocks/site-editor/editor.js:121
@@ -3428,6 +3558,7 @@ msgstr ""
 #: includes/dishes/class-dish-pages.php:342
 #: includes/saved/class-view.php:300
 #: includes/site/class-directory-view.php:121
+#: includes/site/class-hotel-pages.php:356
 #: includes/site/class-new-places.php:265
 #: includes/site/class-pages.php:73
 msgid "Map"
@@ -5671,6 +5802,7 @@ msgid "Restaurant details include data %1$s, available under the %2$s."
 msgstr ""
 
 #: includes/site/class-blocks.php:860
+#: includes/site/class-hotel-pages.php:435
 msgid "© OpenStreetMap contributors"
 msgstr ""
 
@@ -5993,6 +6125,115 @@ msgstr ""
 
 #: includes/site/class-history.php:58
 msgid "First listed here"
+msgstr ""
+
+#. translators: %s: hotel name, for example "Hotel Nikko Guam".
+#: includes/site/class-hotel-pages.php:202
+msgid "Restaurants near your hotel on Guam"
+msgstr ""
+
+#. translators: %s: hotel name, for example "Hotel Nikko Guam".
+#. translators: %s: hotel name.
+#: includes/site/class-hotel-pages.php:202
+#: includes/site/class-hotel-pages.php:350
+#, php-format
+msgid "Restaurants near %s"
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:213
+msgid "Pick your hotel to see the places to eat within walking distance and a short drive away, nearest first, with a map."
+msgstr ""
+
+#. translators: 1: number of places within walking distance, 2: hotel name, 3: number of places a short drive away.
+#: includes/site/class-hotel-pages.php:218
+#, php-format
+msgid "%1$s places to eat within walking distance of %2$s and %3$s more a short drive away, nearest first, with a map."
+msgstr ""
+
+#. translators: %s: number of places.
+#: includes/site/class-hotel-pages.php:275
+#, php-format
+msgid "%s place within walking distance"
+msgid_plural "%s places within walking distance"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-hotel-pages.php:289
+msgid "Elsewhere on Guam"
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:292
+msgid "No hotels yet. They appear here once hotel locations are loaded."
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:298
+msgid "Staying on Guam? Pick your hotel to see the places to eat you can walk to, then the ones a short drive away, nearest first."
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:324
+msgid "Within walking distance"
+msgstr ""
+
+#. translators: 1: number of places, 2: walking minutes.
+#: includes/site/class-hotel-pages.php:327
+#, php-format
+msgid "%1$s place within about %2$s minutes on foot"
+msgid_plural "%1$s places within about %2$s minutes on foot"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number of places, 2: distance in kilometres.
+#: includes/site/class-hotel-pages.php:338
+#, php-format
+msgid "%1$s place within %2$s km"
+msgid_plural "%1$s places within %2$s km"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/site/class-hotel-pages.php:348
+msgid "All hotels"
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:351
+msgid "Nearest first, by straight-line distance from the hotel. Walking times are estimates, so check the route before you set out. Sponsors cannot change the order."
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:362
+msgid "Map of the hotel and these restaurants"
+msgstr ""
+
+#. translators: 1: distance, for example "350 m", 2: walking minutes.
+#: includes/site/class-hotel-pages.php:383
+#, php-format
+msgid "%1$s away · about %2$s minute walk"
+msgid_plural "%1$s away · about %2$s minute walk"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: distance, for example "2.1 km".
+#: includes/site/class-hotel-pages.php:385
+#, php-format
+msgid "%s away"
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:421
+msgid "Other hotels nearby"
+msgstr ""
+
+#: includes/site/class-hotel-pages.php:434
+msgid "Hotel names and locations:"
+msgstr ""
+
+#. translators: %s: distance in metres.
+#: includes/site/class-hotels.php:500
+#, php-format
+msgid "%s m"
+msgstr ""
+
+#. translators: %s: distance in kilometres.
+#: includes/site/class-hotels.php:503
+#, php-format
+msgid "%s km"
 msgstr ""
 
 #. translators: 1: number, 2: cuisine.
@@ -6328,35 +6569,51 @@ msgid "Popular cuisines in %s"
 msgstr ""
 
 #. translators: %s: mall.
-#: includes/site/class-related-links.php:139
+#: includes/site/class-related-links.php:140
 #, php-format
 msgid "Cuisines at %s"
 msgstr ""
 
 #. translators: %s: cuisine.
-#: includes/site/class-related-links.php:144
+#: includes/site/class-related-links.php:145
 #, php-format
 msgid "Where to find %s food"
 msgstr ""
 
-#: includes/site/class-related-links.php:150
+#: includes/site/class-related-links.php:151
 msgid "Related cuisines"
 msgstr ""
 
 #. translators: 1: cuisine, 2: village.
-#: includes/site/class-related-links.php:175
+#: includes/site/class-related-links.php:176
 #, php-format
 msgid "More %1$s restaurants in %2$s"
 msgstr ""
 
 #. translators: %s: village.
-#: includes/site/class-related-links.php:177
+#: includes/site/class-related-links.php:178
 #, php-format
 msgid "More restaurants in %s"
 msgstr ""
 
-#: includes/site/class-related-links.php:192
+#: includes/site/class-related-links.php:193
 msgid "Browse"
+msgstr ""
+
+#. translators: %s: hotel name.
+#: includes/site/class-related-links.php:211
+#, php-format
+msgid "Near %s"
+msgstr ""
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:217
+#, php-format
+msgid "Restaurants near hotels in %s"
+msgstr ""
+
+#: includes/site/class-related-links.php:244
+msgid "Hotels within walking distance"
 msgstr ""
 
 #: includes/site/class-restaurant-view.php:199
@@ -6471,26 +6728,26 @@ msgid "Page %d"
 msgstr ""
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:413
+#: includes/site/class-seo.php:420
 #, php-format
 msgid "%1$s: %2$s, Guam. Hours, map, awards and reviews."
 msgstr ""
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:413
+#: includes/site/class-seo.php:420
 #, php-format
 msgid "%1$s, Guam. Hours, map, awards and reviews."
 msgstr ""
 
-#: includes/site/class-seo.php:425
+#: includes/site/class-seo.php:432
 msgid "Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews."
 msgstr ""
 
-#: includes/site/class-seo.php:428
+#: includes/site/class-seo.php:435
 msgid "Restaurant award results recorded on this site, each with a link to where it was published."
 msgstr ""
 
-#: includes/site/class-seo.php:438
+#: includes/site/class-seo.php:448
 msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
 msgstr ""
 
@@ -7048,7 +7305,7 @@ msgstr ""
 
 #: assets/site/map.js:56
 #: assets/site/map.js:70
-#: assets/site/map.js:244
+#: assets/site/map.js:257
 msgid "The map could not load right now."
 msgstr ""
 

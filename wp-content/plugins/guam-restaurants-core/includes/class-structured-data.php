@@ -79,7 +79,7 @@ final class Structured_Data {
 	}
 
 	/**
-	 * Prints the ItemList on unfiltered listing pages, dish pages and New on Guam months.
+	 * Prints the ItemList on unfiltered listing pages, dish pages, hotel pages and New on Guam months.
 	 *
 	 * @return void
 	 */
@@ -88,6 +88,14 @@ final class Structured_Data {
 		$dish = is_404() ? null : Dishes\Dish_Pages::current_dish();
 		if ( null !== $dish ) {
 			$data = self::item_list( array_keys( Dishes\Dish_Pages::places( $dish ) ), Dishes\Dish_Pages::title( $dish ), Dishes\Dish_Pages::url( $dish['slug'] ) );
+			if ( null !== $data ) {
+				wp_print_inline_script_tag( (string) wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG ), array( 'type' => 'application/ld+json' ) );
+			}
+			return;
+		}
+		$hotel = is_404() ? null : Site\Hotel_Pages::current_hotel();
+		if ( null !== $hotel ) {
+			$data = self::item_list( Site\Hotel_Pages::current_ids(), Site\Hotel_Pages::title( $hotel ), Site\Hotel_Pages::url( (string) $hotel['slug'] ) );
 			if ( null !== $data ) {
 				wp_print_inline_script_tag( (string) wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG ), array( 'type' => 'application/ld+json' ) );
 			}

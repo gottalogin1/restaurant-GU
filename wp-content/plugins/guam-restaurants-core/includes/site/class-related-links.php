@@ -131,6 +131,7 @@ final class Related_Links {
 						return self::pair_url( $term, $cuisine );
 					}
 				);
+				$groups[] = self::village_hotels( $term );
 				break;
 			case Content_Types::TAX_MALL:
 				$village  = get_term( (int) get_term_meta( $term->term_id, Term_Meta::MALL_VILLAGE, true ), Content_Types::TAX_VILLAGE );
@@ -190,7 +191,59 @@ final class Related_Links {
 			);
 		}
 		$groups[] = self::group( __( 'Browse', 'guam-restaurants-core' ), $browse );
+		$groups[] = self::hotels_nearby( $restaurant_id );
 		return array_values( array_filter( $groups ) );
+	}
+
+	/**
+	 * Links to the "Restaurants near" pages of a village's hotels.
+	 *
+	 * @param \WP_Term $village Village.
+	 * @return array{title: string, links: array<int, array{url: string, label: string}>}|null
+	 */
+	private static function village_hotels( \WP_Term $village ): ?array {
+		$links = array();
+		foreach ( Hotels::with_pages() as $slug => $hotel ) {
+			if ( $hotel['village'] === $village->slug ) {
+				$links[] = array(
+					'url'   => Hotel_Pages::url( (string) $slug ),
+					/* translators: %s: hotel name. */
+					'label' => sprintf( __( 'Near %s', 'guam-restaurants-core' ), (string) $hotel['name'] ),
+				);
+			}
+		}
+		return $links ? array(
+			/* translators: %s: village. */
+			'title' => sprintf( __( 'Restaurants near hotels in %s', 'guam-restaurants-core' ), $village->name ),
+			'links' => array_slice( $links, 0, 24 ),
+		) : null;
+	}
+
+	/**
+	 * Links to the "Restaurants near" pages of hotels within walking
+	 * distance of a restaurant, nearest first.
+	 *
+	 * @param int $restaurant_id Restaurant.
+	 * @return array{title: string, links: array<int, array{url: string, label: string}>}|null
+	 */
+	private static function hotels_nearby( int $restaurant_id ): ?array {
+		$point = Restaurant_View::coordinates( $restaurant_id );
+		if ( null === $point ) {
+			return null;
+		}
+		$visible = Hotels::visible();
+		$links   = array();
+		foreach ( Hotels::hotels_near( $point['lat'], $point['lng'], '', 4 ) as $slug => $metres ) {
+			$links[] = array(
+				'url'   => Hotel_Pages::url( (string) $slug ),
+				/* translators: 1: hotel name, 2: distance, for example "350 m". */
+				'label' => sprintf( __( '%1$s (%2$s)', 'guam-restaurants-core' ), (string) $visible[ $slug ]['name'], Hotels::distance_label( $metres ) ),
+			);
+		}
+		return $links ? array(
+			'title' => __( 'Hotels within walking distance', 'guam-restaurants-core' ),
+			'links' => $links,
+		) : null;
 	}
 
 	/**

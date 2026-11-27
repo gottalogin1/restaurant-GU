@@ -227,6 +227,19 @@
 				item.grPin = pin;
 				bounds.extend( point );
 			} );
+			// The hotel (or other place) the list is measured from.
+			var origin = container.getAttribute( 'data-gr-origin' );
+			if ( origin ) {
+				var home = document.createElement( 'span' );
+				home.className = 'gr-pin gr-pin--origin';
+				home.title = container.getAttribute( 'data-gr-origin-label' ) || '';
+				home.setAttribute( 'role', 'img' );
+				home.setAttribute( 'aria-label', home.title );
+				home.textContent = '★';
+				var at = origin.split( ',' ).map( Number );
+				markers.push( new maplibre.Marker( { element: home } ).setLngLat( at ).addTo( map ) );
+				bounds.extend( at );
+			}
 			container.classList.toggle( 'is-empty', ! markers.length );
 			if ( markers.length ) {
 				map.fitBounds( bounds, { padding: 48, maxZoom: 15, animate: false } );

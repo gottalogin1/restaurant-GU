@@ -284,6 +284,13 @@ final class Seo {
 				'filtered'  => ! Fresh_Pages::indexable(),
 			);
 		}
+		if ( '' !== Hotel_Pages::current_page() ) {
+			return array(
+				'title'     => Hotel_Pages::title( Hotel_Pages::current_hotel() ),
+				'canonical' => Hotel_Pages::canonical(),
+				'filtered'  => false,
+			);
+		}
 		if ( '' !== Dish_Pages::current_page() ) {
 			$dish = Dish_Pages::current_dish();
 			return array(
@@ -432,6 +439,9 @@ final class Seo {
 		}
 		if ( '' !== Fresh_Pages::current_page() ) {
 			return Fresh_Pages::description();
+		}
+		if ( '' !== Hotel_Pages::current_page() ) {
+			return Hotel_Pages::description();
 		}
 		if ( is_front_page() ) {
 			$tagline = (string) get_bloginfo( 'description' );

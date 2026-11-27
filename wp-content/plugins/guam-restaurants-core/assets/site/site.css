@@ -2122,6 +2122,41 @@
 	color: inherit;
 }
 
+/* Restaurants near your hotel. */
+.gr-hotel-index {
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+}
+
+.gr-hotel-index li {
+	flex-wrap: wrap;
+}
+
+.gr-hotel-index .gr-dish-index__count {
+	white-space: normal;
+}
+
+.gr-hotel-page .gr-section-title {
+	margin-top: 1.5rem;
+}
+
+.gr-hotel-page__distance {
+	font-weight: 600;
+	color: var(--gr-text, inherit);
+}
+
+.gr-hotel-page__chip-distance {
+	color: var(--gr-muted-text);
+	font-weight: 400;
+}
+
+.gr-pin--origin {
+	min-width: 2.1rem;
+	height: 2.1rem;
+	background: #b5462f;
+	font-size: 1rem;
+	z-index: 3;
+}
+
 /* New on Guam and This week on Guam. */
 .gr-fresh-page {
 	display: grid;
