@@ -1,6 +1,6 @@
 # Scheduled jobs
 
-The plugin runs eight jobs. Each one is a WP-CLI command, so a real server
+The plugin runs nine jobs. Each one is a WP-CLI command, so a real server
 cron can run it directly. WP-Cron is the fallback.
 
 | Job | Command | Window | Suggested crontab (UTC) |
@@ -14,14 +14,46 @@ cron can run it directly. WP-Cron is the fallback.
 | Newsletter draft (Monday 06:00 Guam time; never sends) | `wp guam-restaurants run-job newsletter` | weekly, plus 1 day grace | `0 20 * * 0` |
 | API spend report for last month (docs/monitoring.md §3) | `wp guam-restaurants run-job spend-report` | monthly, plus 3 days grace | `0 22 1 * *` (08:00 Guam on the 2nd) |
 | Uploaded photo cleanup: delete originals after 30 days and unconfirmed uploads after 24 hours | `wp guam-restaurants run-job photo-cleanup` | daily, plus 1 day grace | `20 5 * * *` (15:20 Guam) |
+| Broken links and closed places: website, menu and order links, and the Foursquare extract's closed places, to the review queue (below) | `wp guam-restaurants run-job link-sweep` | monthly, plus 3 days grace | `0 5 3 * *` (15:00 Guam on the 3rd) |
 
 `wp guam-restaurants jobs` prints the same table with the last success and
 the next deadline. Restaurants > Scheduled jobs shows it in the admin, and
 Restaurants > Import runs shows every run's counts, notes and errors.
 
+## Broken links and closed places (monthly)
+
+The `link-sweep` job looks for problems and sends each one to Restaurants >
+Review queue. It never changes a listing itself.
+
+- **Links checked:** each published, open restaurant's website, its
+  owner's menu links, and its order or reservation button while a premium
+  profile runs. Facebook and Instagram pages are skipped (their robots.txt
+  forbids automated access).
+- **How politely:** robots.txt is read first and respected (docs/data-sources.md
+  §8h); one request at a time, 2 seconds apart and 10 seconds apart for the
+  same site; at most 400 links a run, the longest-unchecked first.
+- **When a link is queued as "Broken link":** right away for a page that
+  is gone (HTTP 404 or 410); after two monthly sweeps in a row for anything
+  else (unknown domain, no answer, server error, certificate error). A site
+  that blocks automated checks (HTTP 403, 429...) is never queued.
+- **Review buttons:** "Remove link" takes it off the listing (logged as an
+  editor's change) and stops the OSM and Foursquare imports from adding the
+  same link back. "Keep link (it works)" stops asking about it for 180 days.
+  A queued link that works again is closed on the next sweep.
+- **Closed places:** a restaurant linked to Foursquare whose row in the
+  Foursquare extract has a closing date or a "closed" flag gets a "Closure
+  to approve" item. The sweep reads `GUAM_RESTAURANTS_FSQ_EXTRACT`, or
+  `/project/.cache/fsq-guam.jsonl` when it exists (`docker-compose.yml`
+  mounts `.cache` read-only into the WordPress container for this). A
+  rejected closure is not asked again unless the closing date changes. The
+  weekly OSM import and the monthly Google and Yelp status checks still
+  send their own closure items.
+- Each run is listed on Restaurants > Import runs as `link_sweep`, with
+  counts and a one-line summary.
+
 ## Turning jobs off and running them now
 
-Restaurants > Scheduled jobs (administrators) lists the eight jobs and the
+Restaurants > Scheduled jobs (administrators) lists the nine jobs and the
 twice-daily ratings refresh with how often each runs, its last success, its
 next run and its status. Each row has two buttons:
 
@@ -70,6 +102,7 @@ unset on a real host.
    0 7 * * *   cd /path/to/wordpress && wp guam-restaurants run-job health-check >> /var/log/guam-jobs.log 2>&1
    0 22 1 * *  cd /path/to/wordpress && wp guam-restaurants run-job spend-report >> /var/log/guam-jobs.log 2>&1
    20 5 * * *  cd /path/to/wordpress && wp guam-restaurants run-job photo-cleanup >> /var/log/guam-jobs.log 2>&1
+   0 5 3 * *   cd /path/to/wordpress && wp guam-restaurants run-job link-sweep >> /var/log/guam-jobs.log 2>&1
    15 17 * * * /path/to/bin/backup.sh >> /var/log/guam-backup.log 2>&1
    ```
 

@@ -239,6 +239,22 @@ final class Place_Mapper {
 	}
 
 	/**
+	 * What the row says about the place being closed: its closing date, or
+	 * a "closed" or "doesn't exist" flag; '' when it says neither.
+	 *
+	 * @param array<string, mixed> $row Row.
+	 * @return string
+	 */
+	public static function closed_statement( array $row ): string {
+		$date = trim( (string) ( $row['date_closed'] ?? '' ) );
+		if ( '' !== $date ) {
+			return 'date_closed ' . sanitize_text_field( $date );
+		}
+		$flags = array_values( array_intersect( array( 'closed', 'doesnt_exist' ), self::flags( $row ) ) );
+		return $flags ? 'flag ' . $flags[0] : '';
+	}
+
+	/**
 	 * Category labels; the extract writes a list, CSV exports a JSON or `|`-separated string.
 	 *
 	 * @param array<string, mixed> $row Row.

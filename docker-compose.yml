@@ -96,6 +96,8 @@ services:
       - ./wp-content/themes/guam-restaurants-theme:/var/www/html/wp-content/themes/guam-restaurants-theme
       # WooCommerce (premium profile checkout), downloaded by `make woocommerce`.
       - ./.cache/plugins/woocommerce:/var/www/html/wp-content/plugins/woocommerce
+      # The Foursquare extract (`make fsq-extract`), read by the monthly link sweep (docs/scheduling.md).
+      - ./.cache:/project/.cache:ro
       - ./docker/apache/compression.conf:/etc/apache2/conf-enabled/zz-guam-restaurants-compression.conf:ro
       - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/zz-guam-restaurants-uploads.ini:ro
       - ./docker/apache/local-https.conf:/etc/apache2/conf-enabled/zz-guam-restaurants-https.conf:ro

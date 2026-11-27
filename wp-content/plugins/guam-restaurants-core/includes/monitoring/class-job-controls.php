@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * The scheduled tasks an administrator controls on Restaurants > Scheduled
- * jobs: the eight jobs (Jobs) and the twice-daily ratings refresh.
+ * jobs: the jobs in Jobs::definitions() and the twice-daily ratings refresh.
  *
  * - Paused tasks keep no WP-Cron event, `run-job` from the server crontab
  *   skips them, and the health check does not report them. The pause is a
@@ -225,9 +225,7 @@ final class Job_Controls {
 		if ( ! isset( Jobs::definitions()[ $task ] ) ) {
 			return;
 		}
-		if ( function_exists( 'set_time_limit' ) && in_array( $task, array( Jobs::OSM, Jobs::DISCOVER ), true ) ) {
-			set_time_limit( 900 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- long import in a cron request.
-		}
+		Jobs::allow_long_run( $task );
 		Jobs::run( $task );
 	}
 

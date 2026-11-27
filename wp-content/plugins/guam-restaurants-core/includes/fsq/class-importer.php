@@ -14,6 +14,7 @@ use GuamRestaurants\Core\Database\Review_Queue;
 use GuamRestaurants\Core\Geo\Village_Locator;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
+use GuamRestaurants\Core\Monitoring\Link_Sweep;
 use GuamRestaurants\Core\Ratings\Matcher;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Tagging\Branch_Names;
@@ -346,6 +347,10 @@ final class Importer {
 		foreach ( self::FILL_FIELDS as $key => $logged ) {
 			$new = $record['meta'][ $key ];
 			if ( '' === $new || '' !== (string) get_post_meta( $post_id, $key, true ) ) {
+				continue;
+			}
+			// An administrator removed this website as broken (Monitoring\Link_Sweep).
+			if ( Restaurant_Meta::WEBSITE === $key && Link_Sweep::was_removed( $post_id, $new ) ) {
 				continue;
 			}
 			// A website field holding the Facebook page already covers that link.

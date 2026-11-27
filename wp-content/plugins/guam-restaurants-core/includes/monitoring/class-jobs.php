@@ -43,6 +43,9 @@ defined( 'ABSPATH' ) || exit;
  * - `photo-cleanup`: daily; deletes full-size originals of uploaded photos
  *   30 days after upload, and uploads whose email was never confirmed
  *   (Photos\Photo_Submissions::cleanup()).
+ * - `link-sweep`: monthly; checks website, menu and order links and the
+ *   Foursquare extract's closed places, and sends what it finds to the
+ *   review queue (Link_Sweep). It never changes a listing.
  *
  * Preferred: a real server cron runs `wp guam-restaurants run-job <job>`
  * (set GUAM_RESTAURANTS_CRON_MODE=server; docs/scheduling.md). Otherwise
@@ -65,6 +68,7 @@ final class Jobs {
 	public const NEWSLETTER      = 'newsletter';
 	public const SPEND_REPORT    = 'spend-report';
 	public const PHOTO_CLEANUP   = 'photo-cleanup';
+	public const LINK_SWEEP      = 'link-sweep';
 	public const MODE_SERVER     = 'server';
 	public const MODE_WP_CRON    = 'wp-cron';
 	public const HEALTH_MIN_HOUR = 20;
@@ -147,6 +151,14 @@ final class Jobs {
 				'grace'      => DAY_IN_SECONDS,
 				'recurrence' => 'daily',
 				'cron'       => '20 5 * * *',
+			),
+			self::LINK_SWEEP    => array(
+				'label'      => 'Broken links and closed places',
+				'source'     => Link_Sweep::RUN_SOURCE,
+				'interval'   => 31 * DAY_IN_SECONDS,
+				'grace'      => 3 * DAY_IN_SECONDS,
+				'recurrence' => self::MONTHLY,
+				'cron'       => '0 5 3 * *',
 			),
 		);
 	}
@@ -249,10 +261,25 @@ final class Jobs {
 		if ( self::HEALTH_CHECK === $job && self::ran_recently( $job, self::HEALTH_MIN_HOUR * HOUR_IN_SECONDS ) ) {
 			return;
 		}
-		if ( function_exists( 'set_time_limit' ) && in_array( $job, array( self::OSM, self::DISCOVER ), true ) ) {
-			set_time_limit( 900 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- long import in a cron request.
-		}
+		self::allow_long_run( $job );
 		self::run( $job );
+	}
+
+	/**
+	 * Raises the PHP time limit for the long jobs in a cron request.
+	 *
+	 * @param string $job Job.
+	 * @return void
+	 */
+	public static function allow_long_run( string $job ): void {
+		if ( ! function_exists( 'set_time_limit' ) ) {
+			return;
+		}
+		if ( in_array( $job, array( self::OSM, self::DISCOVER ), true ) ) {
+			set_time_limit( 900 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- long import in a cron request.
+		} elseif ( self::LINK_SWEEP === $job ) {
+			set_time_limit( 3600 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- polite, spaced-out requests take a while.
+		}
 	}
 
 	/**
@@ -260,7 +287,7 @@ final class Jobs {
 	 * a failed ingestion run, and returned.
 	 *
 	 * @param string $job Job.
-	 * @param array  $options Per-job options: `elements` (osm: use these instead of calling Overpass), `client` (osm: an Overpass_Client, for tests).
+	 * @param array  $options Per-job options: `elements` (osm: use these instead of calling Overpass), `client` (osm: an Overpass_Client, for tests), `sweep` (link-sweep: a Link_Sweep, for tests).
 	 * @return array{ok: bool, run_id: int|null, summary: string, error: string, result: array<string, mixed>}
 	 */
 	public static function run( string $job, array $options = array() ): array {
@@ -292,6 +319,9 @@ final class Jobs {
 				case self::PHOTO_CLEANUP:
 					$counts  = Photo_Submissions::cleanup();
 					$outcome = self::outcome( true, null, sprintf( 'deleted %d original(s) past 30 days and %d unconfirmed upload(s)', $counts['originals'], $counts['unconfirmed'] ), '', $counts );
+					break;
+				case self::LINK_SWEEP:
+					$outcome = self::run_link_sweep( $options );
 					break;
 				case self::NEWSLETTER:
 					$draft   = Newsletter::assemble( $options );
@@ -423,6 +453,19 @@ final class Jobs {
 		Alerts::closures_in_run( ucfirst( $source->source() ) . ' status check', $result['closed'], $result['queued'], $result['run_id'] );
 
 		return self::outcome( true, $result['run_id'], Status_Checker::notes( $source->source(), $result ), '', $result );
+	}
+
+	/**
+	 * The link sweep: broken links and Foursquare closures to the review queue.
+	 *
+	 * @param array<string, mixed> $options Options: `sweep` (a Link_Sweep, for tests).
+	 * @return array<string, mixed>
+	 */
+	private static function run_link_sweep( array $options ): array {
+		$sweep  = $options['sweep'] ?? Link_Sweep::from_config();
+		$result = $sweep->run();
+		Alerts::closures_in_run( 'link sweep (Foursquare)', $result['closures']['closed'], $result['closures']['queued'], $result['run_id'] );
+		return self::outcome( true, $result['run_id'], Link_Sweep::notes( $result ), '', $result );
 	}
 
 	/**

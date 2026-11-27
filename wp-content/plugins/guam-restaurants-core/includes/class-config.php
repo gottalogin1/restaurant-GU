@@ -83,6 +83,13 @@ final class Config {
 	public const YELP_STATUS_CHECKS = 'GUAM_RESTAURANTS_YELP_STATUS_CHECKS';
 
 	/**
+	 * Path to the Foursquare Open Source Places extract (`make fsq-extract`)
+	 * for the monthly link sweep's closure check. Empty uses
+	 * /project/.cache/fsq-guam.jsonl when it exists (Monitoring\Link_Sweep).
+	 */
+	public const FSQ_EXTRACT = 'GUAM_RESTAURANTS_FSQ_EXTRACT';
+
+	/**
 	 * MapLibre style URL for the map page and restaurant maps. Defaults to
 	 * OpenFreeMap (free, no key, commercial use allowed; Maps::DEFAULT_STYLE_URL).
 	 * Set a MapTiler or Stadia style URL (with its key) to switch providers.
