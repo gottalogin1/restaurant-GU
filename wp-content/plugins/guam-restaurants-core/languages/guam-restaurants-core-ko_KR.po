@@ -30,7 +30,8 @@ msgstr "상세 정보"
 #: includes/admin/class-local-events-screen.php:268
 #: includes/admin/class-review-queue-screen.php:1073
 #: includes/class-content-types.php:51
-#: includes/site/class-directory-view.php:348
+#: includes/site/class-buffets.php:514
+#: includes/site/class-directory-view.php:356
 #: includes/site/class-picker.php:261
 #: includes/site/class-related-links.php:137
 #: includes/site/class-truck-stops.php:239
@@ -41,7 +42,7 @@ msgstr "마을"
 #: includes/admin/class-review-queue-screen.php:1074
 #: includes/admin/class-tag-origins-box.php:59
 #: includes/class-content-types.php:57
-#: includes/site/class-directory-view.php:349
+#: includes/site/class-directory-view.php:357
 #: includes/site/class-picker.php:262
 msgid "Mall"
 msgstr "몰"
@@ -141,15 +142,15 @@ msgstr "신규"
 
 #: includes/advertising/class-leads.php:191
 #: includes/advertising/class-page-content.php:129
-#: includes/owners/class-dashboard.php:333
+#: includes/owners/class-dashboard.php:338
 #: includes/premium/class-admin.php:43
 msgid "Premium profile"
 msgstr "프리미엄 프로필"
 
 #: includes/advertising/class-page-content.php:127
-#: includes/owners/class-dashboard.php:444
+#: includes/owners/class-dashboard.php:449
 #: includes/site/class-blocks.php:581
-#: includes/site/class-directory-view.php:351
+#: includes/site/class-directory-view.php:359
 msgid "Price"
 msgstr "가격"
 
@@ -317,7 +318,7 @@ msgid "Year"
 msgstr "연도"
 
 #: includes/awards/class-pages.php:498
-#: includes/owners/class-dashboard.php:312
+#: includes/owners/class-dashboard.php:317
 msgid "Placement"
 msgstr "순위·결과"
 
@@ -375,11 +376,11 @@ msgstr "식당"
 
 #: includes/class-content-types.php:63
 #: includes/site/class-blocks.php:576
-#: includes/site/class-directory-view.php:350
+#: includes/site/class-directory-view.php:358
 msgid "Cuisine"
 msgstr "요리"
 
-#: includes/class-structured-data.php:116
+#: includes/class-structured-data.php:123
 msgid "Restaurants on Guam"
 msgstr "괌의 식당"
 
@@ -396,7 +397,7 @@ msgid "Owner or manager: remove this listing"
 msgstr "소유자 또는 관리자: 등록 삭제"
 
 #: includes/corrections/class-corrections.php:98
-#: includes/owners/class-dashboard.php:388
+#: includes/owners/class-dashboard.php:393
 #: includes/site/class-blocks.php:657
 msgid "Opening hours"
 msgstr "영업시간"
@@ -841,7 +842,7 @@ msgid "About a different business."
 msgstr "다른 업체에 관한 내용."
 
 #: includes/highlights/class-policy.php:80
-#: includes/owners/class-owner-content.php:496
+#: includes/owners/class-owner-content.php:511
 #: includes/photos/class-photo-gallery.php:101
 msgid "From the owner"
 msgstr "소유자 소개"
@@ -923,23 +924,23 @@ msgstr "영업 재개"
 msgid "Suggest a correction"
 msgstr "정정 제안"
 
-#: includes/owners/class-dashboard.php:72
+#: includes/owners/class-dashboard.php:73
 #: includes/saved/class-view.php:406
 msgid "My restaurant"
 msgstr "내 식당"
 
-#: includes/owners/class-dashboard.php:393
+#: includes/owners/class-dashboard.php:398
 #: includes/site/class-blocks.php:650
 #: assets/site/hours.js:72
 msgid "Open 24 hours"
 msgstr "24시간 영업"
 
-#: includes/owners/class-dashboard.php:522
+#: includes/owners/class-dashboard.php:540
 #: includes/photos/class-photo-gallery.php:85
 msgid "Photos"
 msgstr "사진"
 
-#: includes/owners/class-owner-content.php:277
+#: includes/owners/class-owner-content.php:292
 #: includes/site/class-blocks.php:520
 msgid "Menu"
 msgstr "메뉴"
@@ -1385,12 +1386,14 @@ msgstr "링크에는 최근 저장한 식당 %s곳만 표시되며, 회원님에
 
 #: includes/dishes/class-dish-pages.php:340
 #: includes/saved/class-view.php:298
+#: includes/site/class-buffets.php:567
 #: includes/site/class-new-places.php:263
 msgid "Show the list as"
 msgstr "목록 보기 방식"
 
 #: includes/dishes/class-dish-pages.php:341
 #: includes/saved/class-view.php:299
+#: includes/site/class-buffets.php:568
 #: includes/site/class-directory-view.php:120
 #: includes/site/class-new-places.php:264
 #: blocks/site-editor/editor.js:69
@@ -1400,6 +1403,7 @@ msgstr "목록"
 
 #: includes/dishes/class-dish-pages.php:342
 #: includes/saved/class-view.php:300
+#: includes/site/class-buffets.php:569
 #: includes/site/class-directory-view.php:121
 #: includes/site/class-new-places.php:265
 #: includes/site/class-pages.php:73
@@ -1726,145 +1730,147 @@ msgstr "\"영업 중\"은 괌 시간 기준이며, 영업시간을 알고 있는
 msgid "Open late means open at 10 pm tonight, Guam time, and lists only restaurants whose hours we have."
 msgstr "\"늦게까지 영업\"은 오늘 밤 10시(괌 시간)에 영업 중이라는 뜻이며, 영업시간을 알고 있는 식당만 표시합니다."
 
-#: includes/site/class-directory-view.php:200
+#: includes/site/class-directory-view.php:207
 msgid "Clear all filters"
 msgstr "모든 필터 지우기"
 
-#: includes/site/class-directory-view.php:227
+#: includes/site/class-directory-view.php:234
 msgid "(remove)"
 msgstr "(삭제)"
 
 #. translators: %s: the words the visitor typed, for example "Tumon".
-#: includes/site/class-directory-view.php:246
+#: includes/site/class-directory-view.php:253
 #, php-format
 msgid "(%s)"
 msgstr "(%s)"
 
-#: includes/site/class-directory-view.php:254
-#: includes/site/class-directory-view.php:366
+#: includes/site/class-directory-view.php:261
+#: includes/site/class-directory-view.php:374
 #: includes/site/class-picker.php:308
 msgid "Open now"
 msgstr "영업 중"
 
-#: includes/site/class-directory-view.php:255
-#: includes/site/class-directory-view.php:367
+#: includes/site/class-directory-view.php:262
+#: includes/site/class-directory-view.php:375
 msgid "Open late"
 msgstr "늦게까지 영업"
 
-#: includes/site/class-directory-view.php:257
-#: includes/site/class-directory-view.php:369
+#: includes/site/class-directory-view.php:265
+#: includes/site/class-directory-view.php:378
 msgid "Award winners"
 msgstr "수상 식당"
 
 #. translators: %s: keywords searched for.
-#: includes/site/class-directory-view.php:270
+#: includes/site/class-directory-view.php:278
 #, php-format
 msgid "Words: “%s”"
 msgstr "검색어: \"%s\""
 
 #. translators: %s: what the visitor typed.
-#: includes/site/class-directory-view.php:280
+#: includes/site/class-directory-view.php:288
 #, php-format
 msgid "We read “%s” as:"
 msgstr "\"%s\"을(를) 다음과 같이 해석했습니다:"
 
-#: includes/site/class-directory-view.php:284
+#: includes/site/class-directory-view.php:292
 msgid "Search the exact words instead"
 msgstr "입력한 단어 그대로 검색"
 
-#: includes/site/class-directory-view.php:287
+#: includes/site/class-directory-view.php:295
 msgid "Filters:"
 msgstr "필터:"
 
-#: includes/site/class-directory-view.php:291
+#: includes/site/class-directory-view.php:299
 msgid "Filters in use"
 msgstr "사용 중인 필터"
 
-#: includes/site/class-directory-view.php:296
+#: includes/site/class-directory-view.php:304
 msgid "Clear all"
 msgstr "모두 지우기"
 
-#: includes/site/class-directory-view.php:315
+#: includes/site/class-directory-view.php:323
 msgid "Previous"
 msgstr "이전"
 
 #. translators: %s: page number.
-#: includes/site/class-directory-view.php:327
+#: includes/site/class-directory-view.php:335
 #, php-format
 msgid "Page %s"
 msgstr "%s페이지"
 
-#: includes/site/class-directory-view.php:331
+#: includes/site/class-directory-view.php:339
 msgid "Next"
 msgstr "다음"
 
-#: includes/site/class-directory-view.php:333
+#: includes/site/class-directory-view.php:341
 msgid "Results pages"
 msgstr "결과 페이지"
 
 #. translators: 1: price level, 2: highest level.
-#: includes/site/class-directory-view.php:378
+#: includes/site/class-directory-view.php:387
 #: includes/site/class-picker.php:272
 #: includes/site/class-restaurant-view.php:133
 #, php-format
 msgid "Price level %1$d of %2$d"
 msgstr "가격대 %1$d/%2$d"
 
-#: includes/site/class-directory-view.php:402
+#: includes/site/class-directory-view.php:411
 msgid "Name (A to Z)"
 msgstr "이름(A~Z)"
 
-#: includes/site/class-directory-view.php:403
+#: includes/site/class-directory-view.php:412
 #: blocks/site-editor/editor.js:99
 msgid "Newest listings"
 msgstr "최신 등록순"
 
-#: includes/site/class-directory-view.php:404
+#: includes/site/class-buffets.php:513
+#: includes/site/class-directory-view.php:413
 msgid "Price (low to high)"
 msgstr "가격(낮은 순)"
 
-#: includes/site/class-directory-view.php:405
+#: includes/site/class-directory-view.php:414
 msgid "Price (high to low)"
 msgstr "가격(높은 순)"
 
-#: includes/site/class-directory-view.php:408
+#: includes/site/class-directory-view.php:417
 msgid "Best match"
 msgstr "관련도순"
 
-#: includes/site/class-directory-view.php:417
+#: includes/site/class-buffets.php:521
+#: includes/site/class-directory-view.php:426
 msgid "Sort by"
 msgstr "정렬"
 
-#: includes/site/class-directory-view.php:434
+#: includes/site/class-directory-view.php:443
 msgid "Filter restaurants"
 msgstr "식당 필터"
 
-#: includes/site/class-directory-view.php:435
+#: includes/site/class-directory-view.php:444
 msgid "Search by name, dish or what you feel like"
 msgstr "식당 이름, 요리, 먹고 싶은 것으로 검색(영어)"
 
-#: includes/site/class-directory-view.php:442
+#: includes/site/class-directory-view.php:451
 msgid "More filters"
 msgstr "필터 더 보기"
 
-#: includes/site/class-directory-view.php:445
+#: includes/site/class-directory-view.php:454
 msgid "Quick filters"
 msgstr "빠른 필터"
 
-#: includes/site/class-directory-view.php:448
+#: includes/site/class-directory-view.php:457
 msgid "Show results"
 msgstr "결과 보기"
 
-#: includes/site/class-directory-view.php:450
+#: includes/site/class-directory-view.php:459
 msgid "Clear filters"
 msgstr "필터 지우기"
 
-#: includes/site/class-directory-view.php:451
+#: includes/site/class-directory-view.php:460
 msgid "Try “cheap Korean open late in Tumon”"
 msgstr "예: \"cheap Korean open late in Tumon\"(영어)"
 
 #. translators: %d: number of selected options.
-#: includes/site/class-directory-view.php:548
+#: includes/site/class-directory-view.php:557
 #: includes/site/class-picker.php:300
 #: assets/site/directory.js:123
 #: assets/site/picker.js:53
@@ -2668,7 +2674,7 @@ msgstr ""
 #: includes/admin/class-scheduled-jobs-screen.php:154
 #: includes/ads/class-admin.php:56
 #: includes/billing/class-admin.php:245
-#: includes/owners/class-dashboard.php:312
+#: includes/owners/class-dashboard.php:317
 msgid "Runs"
 msgstr ""
 
@@ -3455,7 +3461,7 @@ msgid "Serving today"
 msgstr ""
 
 #: includes/ads/class-admin.php:82
-#: includes/owners/class-dashboard.php:317
+#: includes/owners/class-dashboard.php:322
 msgid "open-ended"
 msgstr ""
 
@@ -3514,7 +3520,7 @@ msgid "Image description (alt text)"
 msgstr ""
 
 #: includes/ads/class-admin.php:194
-#: includes/owners/class-dashboard.php:371
+#: includes/owners/class-dashboard.php:376
 msgid "Link"
 msgstr ""
 
@@ -5211,6 +5217,7 @@ msgid "About"
 msgstr ""
 
 #: includes/corrections/class-corrections.php:367
+#: includes/site/class-buffets.php:630
 #: includes/site/class-truck-stops.php:262
 msgid "From"
 msgstr ""
@@ -5335,6 +5342,7 @@ msgstr "%s(으)로"
 
 #. translators: %s: number of places.
 #: includes/dishes/class-dish-pages.php:431
+#: includes/site/class-buffets.php:560
 #: includes/site/class-new-places.php:198
 #, php-format
 msgid "%s place"
@@ -5641,7 +5649,7 @@ msgid "For example: The restaurant paid for this meal. Shown with the note."
 msgstr ""
 
 #: includes/highlights/class-submit-screen.php:240
-#: includes/owners/class-dashboard.php:530
+#: includes/owners/class-dashboard.php:548
 msgid "Waiting for approval"
 msgstr ""
 
@@ -5662,8 +5670,9 @@ msgid "Sent. An administrator will check it before it appears."
 msgstr ""
 
 #: includes/monitoring/class-job-controls.php:57
+#: includes/site/class-buffets.php:280
 msgid "Daily"
-msgstr ""
+msgstr "매일"
 
 #: includes/monitoring/class-job-controls.php:58
 msgid "Weekly"
@@ -5919,314 +5928,314 @@ msgstr ""
 msgid "SendFox returned HTTP %1$d. %2$s"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:142
-#: includes/owners/class-owner-content.php:107
+#: includes/owners/class-dashboard.php:143
+#: includes/owners/class-owner-content.php:110
 msgid "Only the verified owner of this restaurant can change it."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:185
+#: includes/owners/class-dashboard.php:189
 msgid "Nothing changed."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:187
+#: includes/owners/class-dashboard.php:191
 msgid "Saved. Your new photo will appear on your listing after an administrator approves it."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:189
+#: includes/owners/class-dashboard.php:193
 msgid "Saved. The change is live on your listing."
 msgstr ""
 
 #. translators: %d: maximum.
-#: includes/owners/class-dashboard.php:209
+#: includes/owners/class-dashboard.php:213
 #, php-format
 msgid "You can have up to %d photos. Remove one first."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:212
+#: includes/owners/class-dashboard.php:216
 msgid "Photos must be 5 MB or smaller."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:216
+#: includes/owners/class-dashboard.php:220
 msgid "Upload a JPEG, PNG or WebP image."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:219
+#: includes/owners/class-dashboard.php:223
 msgid "Describe the photo in a few words, for people who cannot see it."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:254
+#: includes/owners/class-dashboard.php:258
 msgid "No restaurant is linked to your account yet."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:270
+#: includes/owners/class-dashboard.php:274
 msgid "View your listing"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:270
+#: includes/owners/class-dashboard.php:274
 msgid "Reply to reviews or add an owner quote"
 msgstr ""
 
 #. translators: 1: start date, 2: end date.
-#: includes/owners/class-dashboard.php:295
+#: includes/owners/class-dashboard.php:300
 #, php-format
 msgid "Last 30 days (%1$s to %2$s, Guam time)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:296
+#: includes/owners/class-dashboard.php:301
 msgid "Last 30 days"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:296
+#: includes/owners/class-dashboard.php:301
 msgid "The 30 days before"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:298
+#: includes/owners/class-dashboard.php:303
 msgid "Listing views"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:299
+#: includes/owners/class-dashboard.php:304
 msgid "Clicks to your website"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:300
+#: includes/owners/class-dashboard.php:305
 msgid "Taps on your phone number"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:305
+#: includes/owners/class-dashboard.php:310
 msgid "Counted in visitors' browsers; bots are left out and nothing about visitors is stored. Counting started when this feature was installed."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:307
+#: includes/owners/class-dashboard.php:312
 msgid "Your Sponsored placements"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:309
+#: includes/owners/class-dashboard.php:314
 msgid "No Sponsored placements are linked to this restaurant."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:312
+#: includes/owners/class-dashboard.php:317
 msgid "Impressions (30 days)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:312
+#: includes/owners/class-dashboard.php:317
 msgid "Clicks (30 days)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:312
+#: includes/owners/class-dashboard.php:317
 msgid "Click-through rate"
 msgstr ""
 
 #. translators: %s: date.
-#: includes/owners/class-dashboard.php:337
+#: includes/owners/class-dashboard.php:342
 #, php-format
 msgid "Active until %s."
 msgstr ""
 
 #. translators: %s: date.
-#: includes/owners/class-dashboard.php:337
+#: includes/owners/class-dashboard.php:342
 msgid "It does not renew by itself; we email you 14 and 3 days before it ends."
 msgstr ""
 
 #. translators: %d: number of photos.
-#: includes/owners/class-dashboard.php:340
+#: includes/owners/class-dashboard.php:345
 #, php-format
 msgid "A premium profile adds a call-to-action button (such as \"Order online\" or \"Reserve a table\"), up to %d photos, and keeps other restaurants' Sponsored placements off your page. It does not change ratings, awards or where your restaurant appears in lists."
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/owners/class-dashboard.php:350
+#: includes/owners/class-dashboard.php:355
 #, php-format
 msgid "Add time: %s"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/owners/class-dashboard.php:350
+#: includes/owners/class-dashboard.php:355
 #, php-format
 msgid "Buy: %s"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:354
+#: includes/owners/class-dashboard.php:359
 msgid "You pay on the checkout page. New time starts the day after your current end date."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:356
+#: includes/owners/class-dashboard.php:361
 msgid "Your orders and receipts"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:360
+#: includes/owners/class-dashboard.php:365
 msgid "Premium profiles are not on sale online yet. Reply to any email from us to ask about one."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:366
+#: includes/owners/class-dashboard.php:371
 msgid "Call-to-action button"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:367
+#: includes/owners/class-dashboard.php:372
 msgid "Button"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:367
+#: includes/owners/class-dashboard.php:372
 msgid "No button"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:372
+#: includes/owners/class-dashboard.php:377
 msgid "Save button"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:389
+#: includes/owners/class-dashboard.php:394
 msgid "24-hour clock, Guam time. Separate split shifts with a comma, e.g. 11:00-14:00, 17:00-21:00. Leave a day empty when closed."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:393
+#: includes/owners/class-dashboard.php:398
 msgid "Open every day, all day"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:394
+#: includes/owners/class-dashboard.php:399
 msgid "Note (e.g. holiday hours)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:396
+#: includes/owners/class-dashboard.php:401
 msgid "Save hours"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:407
+#: includes/owners/class-dashboard.php:412
 msgid "Menu links"
 msgstr ""
 
 #. translators: %d: row number.
-#: includes/owners/class-dashboard.php:413
+#: includes/owners/class-dashboard.php:418
 #, php-format
 msgid "Link %d"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:415
+#: includes/owners/class-dashboard.php:420
 msgid "Label, e.g. Lunch menu"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:422
+#: includes/owners/class-dashboard.php:427
 msgid "Save menu links"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:433
+#: includes/owners/class-dashboard.php:438
 msgid "Menu dishes"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:434
+#: includes/owners/class-dashboard.php:439
 msgid "Dishes from your menu, shown under \"Popular dishes\" on your listing as \"On the menu\". Dishes that visitors photograph or name in their reviews are listed first, by how many visitors did; you can list dishes but not rate them, and the order is not for sale. Do not call anything \"Featured\", \"Top pick\" or \"Recommended\"."
 msgstr ""
 
 #. translators: %d: row number.
-#: includes/owners/class-dashboard.php:439
+#: includes/owners/class-dashboard.php:444
 #, php-format
 msgid "Dish %d"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:441
+#: includes/owners/class-dashboard.php:446
 msgid "Name, e.g. Chicken kelaguen"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:447
+#: includes/owners/class-dashboard.php:452
 msgid "Short description (optional)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:453
+#: includes/owners/class-dashboard.php:458
 msgid "Save menu dishes"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:464
-#: includes/owners/class-owner-content.php:508
+#: includes/owners/class-dashboard.php:469
+#: includes/owners/class-owner-content.php:523
 msgid "Specials"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:465
+#: includes/owners/class-dashboard.php:470
 msgid "Shown on your listing as \"From the owner\" until the end date. Do not mention awards or call anything \"Featured\", \"Top pick\" or \"Recommended\"."
 msgstr ""
 
 #. translators: %d: row number.
-#: includes/owners/class-dashboard.php:470
+#: includes/owners/class-dashboard.php:475
 #, php-format
 msgid "Special %d"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:472
+#: includes/owners/class-dashboard.php:477
 msgid "Title, e.g. Weekday lunch set"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:476
+#: includes/owners/class-dashboard.php:481
 msgid "Details (optional)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:478
+#: includes/owners/class-dashboard.php:483
 msgid "Ends (optional)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:483
+#: includes/owners/class-dashboard.php:488
 msgid "Save specials"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:529
+#: includes/owners/class-dashboard.php:547
 msgid "Keep"
 msgstr ""
 
 #. translators: %d: maximum photos.
-#: includes/owners/class-dashboard.php:538
+#: includes/owners/class-dashboard.php:556
 #, php-format
 msgid "Add a photo (JPEG, PNG or WebP, up to 5 MB; %d photos at most). Use only photos you took or have the right to use."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:539
+#: includes/owners/class-dashboard.php:557
 msgid "Describe the photo (alt text)"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:542
+#: includes/owners/class-dashboard.php:560
 msgid "Save photos"
 msgstr ""
 
-#: includes/owners/class-owner-content.php:225
+#: includes/owners/class-owner-content.php:240
 msgid "Write hours like 11:00-14:00, 17:00-21:00 (24-hour clock), or leave a day empty for closed."
 msgstr ""
 
 #. translators: %d: maximum.
-#: includes/owners/class-owner-content.php:283
+#: includes/owners/class-owner-content.php:298
 #, php-format
 msgid "Add at most %d menu links."
 msgstr ""
 
 #. translators: %d: maximum.
-#: includes/owners/class-owner-content.php:325
+#: includes/owners/class-owner-content.php:340
 #, php-format
 msgid "Add at most %d dishes."
 msgstr ""
 
-#: includes/owners/class-owner-content.php:350
+#: includes/owners/class-owner-content.php:365
 msgid "Use a valid end date for each special, or leave it empty."
 msgstr ""
 
 #. translators: %d: maximum.
-#: includes/owners/class-owner-content.php:369
+#: includes/owners/class-owner-content.php:384
 #, php-format
 msgid "Add at most %d specials."
 msgstr ""
 
-#: includes/owners/class-owner-content.php:384
+#: includes/owners/class-owner-content.php:399
 msgid "The call-to-action button is part of a premium profile."
 msgstr ""
 
-#: includes/owners/class-owner-content.php:392
+#: includes/owners/class-owner-content.php:407
 msgid "Choose a button label and enter a web address starting with https://."
 msgstr ""
 
 #. translators: %s: date.
-#: includes/owners/class-owner-content.php:512
+#: includes/owners/class-owner-content.php:527
 #, php-format
 msgid "Until %s"
 msgstr ""
 
-#: includes/owners/class-owner-content.php:527
+#: includes/owners/class-owner-content.php:542
 msgid "Added by the restaurant's verified owner. This restaurant pays for a premium profile, which adds this section's button and extra photos. It does not change ratings, awards or where the restaurant appears in lists."
 msgstr ""
 
-#: includes/owners/class-owner-content.php:528
+#: includes/owners/class-owner-content.php:543
 msgid "Added by the restaurant's verified owner. It does not change ratings, awards or where the restaurant appears in lists."
 msgstr ""
 
@@ -6464,60 +6473,62 @@ msgstr "'%s 영업 중'은 괌 시간 기준이며, 영업시간이 확인된 �
 msgid "Breakfast lists restaurants open by 8 am on at least one day, going by their listed hours."
 msgstr "'아침 식사'는 등록된 영업시간 기준으로 적어도 하루는 오전 8시까지 문을 여는 식당을 보여 줍니다."
 
-#: includes/site/class-directory-view.php:256
-#: includes/site/class-directory-view.php:368
+#: includes/site/class-buffets.php:71
+#: includes/site/class-directory-view.php:263
+#: includes/site/class-directory-view.php:376
 msgid "Breakfast"
 msgstr "아침 식사"
 
 #. translators: %s: day and time, for example "Saturday at 7:30 am".
-#: includes/site/class-directory-view.php:266
+#: includes/site/class-directory-view.php:274
 #, php-format
 msgid "Open %s"
 msgstr "%s 영업 중"
 
-#: includes/site/class-directory-view.php:485
+#: includes/site/class-directory-view.php:494
 msgid "Choose a day"
 msgstr "요일 선택"
 
-#: includes/site/class-directory-view.php:486
+#: includes/site/class-directory-view.php:495
 msgid "Today"
 msgstr "오늘"
 
-#: includes/site/class-directory-view.php:487
+#: includes/site/class-directory-view.php:496
 msgid "Tomorrow"
 msgstr "내일"
 
-#: includes/site/class-directory-view.php:489
+#: includes/site/class-directory-view.php:498
 msgid "Choose a time"
 msgstr "시간 선택"
 
-#: includes/site/class-directory-view.php:506
+#: includes/site/class-directory-view.php:515
 msgid "Open at"
 msgstr "영업 시간 지정"
 
-#: includes/site/class-directory-view.php:507
+#: includes/site/class-directory-view.php:516
 msgid "Day"
 msgstr "요일"
 
-#: includes/site/class-directory-view.php:510
+#: includes/site/class-buffets.php:641
+#: includes/site/class-directory-view.php:519
 #: includes/site/class-truck-stops.php:278
 msgid "Time"
 msgstr "시간"
 
-#: includes/site/class-directory-view.php:513
+#: includes/site/class-directory-view.php:522
 msgid "Guam time, by listed hours. Choose both a day and a time."
 msgstr "괌 시간, 등록된 영업시간 기준입니다. 요일과 시간을 모두 선택하세요."
 
-#: includes/site/class-filters.php:292
+#: includes/site/class-filters.php:301
 msgid "today"
 msgstr "오늘"
 
-#: includes/site/class-filters.php:293
+#: includes/site/class-filters.php:302
 msgid "tomorrow"
 msgstr "내일"
 
 #. translators: 1: day, for example "Saturday" or "today", 2: time, for example "7:30 am".
-#: includes/site/class-filters.php:297
+#: includes/site/class-filters.php:306
 #, php-format
 msgid "%1$s at %2$s"
 msgstr "%1$s %2$s"
@@ -6852,6 +6863,7 @@ msgid "Village and place"
 msgstr ""
 
 #: includes/admin/class-local-events-screen.php:172
+#: includes/site/class-buffets.php:640
 msgid "Days"
 msgstr ""
 
@@ -6925,14 +6937,14 @@ msgid "Only what the owner told us, or what the restaurant posted itself. Owners
 msgstr ""
 
 #: includes/admin/class-special-hours-box.php:59
-#: includes/owners/class-dashboard.php:493
+#: includes/owners/class-dashboard.php:498
 #: includes/site/class-special-hours.php:426
 #: includes/site/class-this-week.php:241
 msgid "Holiday and special hours"
 msgstr "공휴일·특별 영업시간"
 
 #: includes/admin/class-special-hours-box.php:61
-#: includes/owners/class-dashboard.php:506
+#: includes/owners/class-dashboard.php:511
 msgid "Food truck and pop-up stops"
 msgstr ""
 
@@ -6955,23 +6967,19 @@ msgstr "이번 주 괌"
 msgid "New on Guam"
 msgstr "괌의 새 식당"
 
-#: includes/owners/class-dashboard.php:282
-msgid "You can change your hours, holiday hours, menu links, menu dishes, specials, stops and photos here. Ratings, awards, the listing's open or closed history and reviews are not editable by owners; to report a mistake in them, contact us."
-msgstr ""
-
-#: includes/owners/class-dashboard.php:494
+#: includes/owners/class-dashboard.php:499
 msgid "For a date when you close or keep other hours, such as Christmas, Liberation Day or your village fiesta. On that date these hours replace your weekly hours, including in \"Open now\". Past dates disappear by themselves; clear a date to remove it."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:496
+#: includes/owners/class-dashboard.php:501
 msgid "Save holiday hours"
 msgstr ""
 
-#: includes/owners/class-dashboard.php:507
+#: includes/owners/class-dashboard.php:512
 msgid "If you move around, list where you will be. Stops show on your listing and on the This week on Guam page, by date and time. Choose Weekly to repeat a stop on the same day each week."
 msgstr ""
 
-#: includes/owners/class-dashboard.php:509
+#: includes/owners/class-dashboard.php:514
 msgid "Save stops"
 msgstr ""
 
@@ -7242,6 +7250,7 @@ msgid "Weekly for %d week"
 msgid_plural "Weekly for %d weeks"
 msgstr[0] ""
 
+#: includes/site/class-buffets.php:632
 #: includes/site/class-truck-stops.php:264
 msgid "To"
 msgstr ""
@@ -7264,3 +7273,257 @@ msgstr "휴무"
 #: includes/site/class-special-hours.php:403
 msgid "F j, Y"
 msgstr "Y년 n월 j일"
+
+#: includes/admin/class-buffet-box.php:45
+#: includes/owners/class-dashboard.php:524
+msgid "Buffet or all-you-can-eat"
+msgstr ""
+
+#: includes/admin/class-buffet-box.php:56
+msgid "Only what the restaurant publishes itself or what the owner told us. Give the adult price per person before service charge. Owners can also set this in their dashboard; saving here marks it as checked today."
+msgstr ""
+
+#: includes/admin/class-buffet-box.php:75
+msgid "The buffet was not saved:"
+msgstr ""
+
+#: includes/owners/class-dashboard.php:287
+msgid "You can change your hours, holiday hours, menu links, menu dishes, specials, stops, buffet and photos here. Ratings, awards, the listing's open or closed history and reviews are not editable by owners; to report a mistake in them, contact us."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:525
+msgid "If you serve a buffet or all-you-can-eat, list each meal with its days, times and the adult price per person before service charge. Your listing shows them, and you appear on the Buffets page, sorted by price or village. Choose No buffet to remove it. Saving again tells visitors the prices were checked today."
+msgstr ""
+
+#: includes/owners/class-dashboard.php:527
+msgid "Save buffet"
+msgstr ""
+
+#: includes/site/class-buffets.php:59
+msgid "Buffet"
+msgstr "뷔페"
+
+#: includes/site/class-buffets.php:60
+msgid "All you can eat"
+msgstr "무한리필"
+
+#: includes/site/class-buffets.php:72
+msgid "Brunch"
+msgstr "브런치"
+
+#: includes/site/class-buffets.php:73
+msgid "Lunch"
+msgstr "점심"
+
+#: includes/site/class-buffets.php:74
+msgid "Dinner"
+msgstr "저녁"
+
+#: includes/site/class-buffets.php:75
+msgid "All day"
+msgstr "종일"
+
+#: includes/site/class-buffets.php:86
+msgctxt "short day name"
+msgid "Mon"
+msgstr "월"
+
+#: includes/site/class-buffets.php:87
+msgctxt "short day name"
+msgid "Tue"
+msgstr "화"
+
+#: includes/site/class-buffets.php:88
+msgctxt "short day name"
+msgid "Wed"
+msgstr "수"
+
+#: includes/site/class-buffets.php:89
+msgctxt "short day name"
+msgid "Thu"
+msgstr "목"
+
+#: includes/site/class-buffets.php:90
+msgctxt "short day name"
+msgid "Fri"
+msgstr "금"
+
+#: includes/site/class-buffets.php:91
+msgctxt "short day name"
+msgid "Sat"
+msgstr "토"
+
+#: includes/site/class-buffets.php:92
+msgctxt "short day name"
+msgid "Sun"
+msgstr "일"
+
+#: includes/site/class-buffets.php:111
+msgid "Choose Buffet or All you can eat."
+msgstr ""
+
+#: includes/site/class-buffets.php:125
+msgid "Choose the meal for each buffet row."
+msgstr ""
+
+#: includes/site/class-buffets.php:129
+msgid "Tick at least one day for each buffet row."
+msgstr ""
+
+#: includes/site/class-buffets.php:135
+msgid "Give both a start and an end time, like 17:00 and 21:00 (24-hour clock), or leave both empty."
+msgstr ""
+
+#: includes/site/class-buffets.php:140
+msgid "Write the adult price per person as a number, like 45 or 45.50, or leave it empty."
+msgstr ""
+
+#. translators: %d: maximum.
+#: includes/site/class-buffets.php:153
+#, php-format
+msgid "List at most %d buffet rows."
+msgstr ""
+
+#. translators: %s: price, for example "$45".
+#: includes/site/class-buffets.php:322
+#, php-format
+msgid "%s per adult"
+msgstr "성인 1인 %s"
+
+#: includes/site/class-buffets.php:323
+msgid "price not listed"
+msgstr "가격 정보 없음"
+
+#. translators: %s: date.
+#: includes/site/class-buffets.php:337
+msgid "From the owner."
+msgstr "업주가 제공한 정보입니다."
+
+#. translators: %s: date.
+#: includes/site/class-buffets.php:337
+#, php-format
+msgid "From the owner, updated %s."
+msgstr "업주가 제공한 정보입니다(%s 업데이트)."
+
+#. translators: 1: website the facts came from, linked, for example "hiltonguamresort.com", 2: date.
+#: includes/site/class-buffets.php:342
+#, php-format
+msgid "From %1$s."
+msgstr "출처: %1$s."
+
+#. translators: 1: website the facts came from, linked, for example "hiltonguamresort.com", 2: date.
+#: includes/site/class-buffets.php:342
+#, php-format
+msgid "From %1$s, checked %2$s."
+msgstr "출처: %1$s(%2$s 확인)."
+
+#. translators: %s: date.
+#: includes/site/class-buffets.php:345
+msgid "Checked by our editors."
+msgstr "편집팀이 확인했습니다."
+
+#. translators: %s: date.
+#: includes/site/class-buffets.php:345
+#, php-format
+msgid "Checked by our editors %s."
+msgstr "편집팀이 %s에 확인했습니다."
+
+#: includes/site/class-buffets.php:347
+msgid "Prices and days change, so check before you go."
+msgstr "가격과 운영 요일은 바뀔 수 있으니 방문 전에 확인하세요."
+
+#: includes/site/class-buffets.php:372
+msgid "More buffets on Guam"
+msgstr "괌의 다른 뷔페"
+
+#: includes/site/class-buffets.php:479
+msgid "Buffets and all-you-can-eat on Guam"
+msgstr "괌의 뷔페와 무한리필"
+
+#: includes/site/class-buffets.php:507
+msgid "Run a buffet that is missing or out of date? Verified owners can set their buffet days and prices from their dashboard, or tell us through Suggest a correction."
+msgstr "빠져 있거나 정보가 오래된 뷔페를 운영하시나요? 인증된 업주는 대시보드에서 운영 요일과 가격을 설정할 수 있으며, 수정 제안으로 알려 주셔도 됩니다."
+
+#: includes/site/class-buffets.php:509
+msgid "No buffets recorded yet."
+msgstr "아직 등록된 뷔페가 없습니다."
+
+#. translators: 1: Buffet or All you can eat, 2: price, for example "$30".
+#: includes/site/class-buffets.php:544
+#, php-format
+msgid "%1$s from %2$s per adult"
+msgstr "%1$s 성인 1인 %2$s부터"
+
+#: includes/site/class-buffets.php:554
+msgid "Village not known"
+msgstr "마을 정보 없음"
+
+#: includes/site/class-buffets.php:572
+msgid "Map of these places"
+msgstr "이곳들의 지도"
+
+#: includes/site/class-buffets.php:593
+msgid "No buffet"
+msgstr ""
+
+#: includes/site/class-buffets.php:599
+msgid "Serves"
+msgstr ""
+
+#: includes/site/class-buffets.php:614
+#: includes/site/class-buffets.php:626
+#: includes/site/class-buffets.php:639
+msgid "Meal"
+msgstr ""
+
+#: includes/site/class-buffets.php:634
+msgid "Adult price per person, in dollars"
+msgstr ""
+
+#: includes/site/class-buffets.php:642
+msgid "Adult price per person"
+msgstr ""
+
+#: includes/site/class-buffets.php:647
+msgid "Note (optional)"
+msgstr ""
+
+#: includes/site/class-buffets.php:651
+msgid "e.g. Kids 5 to 11 half price. 10% service charge."
+msgstr ""
+
+#: includes/site/class-buffets.php:656
+msgid "Where these facts come from (the restaurant's own page; leave empty if the owner told you)"
+msgstr ""
+
+#. translators: %s: date.
+#: includes/site/class-buffets.php:663
+#, php-format
+msgid "Last saved %s. Saving again marks the facts as checked today."
+msgstr ""
+
+#: includes/site/class-directory-view.php:201
+msgid "every buffet by price"
+msgstr "가격순 전체 뷔페"
+
+#: includes/site/class-directory-view.php:264
+#: includes/site/class-directory-view.php:377
+msgid "Buffets"
+msgstr "뷔페"
+
+#. translators: %s: number of places.
+#: includes/site/class-buffets.php:491
+#, php-format
+msgid "%s Guam place with a buffet or all-you-can-eat, from hotel breakfasts to Sunday brunch, with the price per person and the days served."
+msgid_plural "%s Guam places with a buffet or all-you-can-eat, from hotel breakfasts to Sunday brunch, with the price per person and the days served."
+msgstr[0] "호텔 조식부터 선데이 브런치까지, 뷔페나 무한리필이 있는 괌의 식당 %s곳. 1인 가격과 운영 요일을 함께 소개합니다."
+
+#: includes/site/class-buffets.php:506
+msgid "Hotel buffets, Sunday brunches, Korean BBQ and other places where you pay once per person and eat as much as you like. Prices are for one adult, as the owner or the restaurant's published page gives them; most places add a service charge. Sorted by price or by village, never by rating; nothing paid changes the order."
+msgstr "호텔 뷔페, 선데이 브런치, 한국식 고기구이 등 1인 요금으로 원하는 만큼 먹을 수 있는 곳입니다. 가격은 성인 1인 기준이며 업주나 식당이 공개한 페이지를 따릅니다. 대부분 봉사료가 추가됩니다. 가격이나 마을 순으로 정렬하며 평점으로는 정렬하지 않습니다. 광고비로 순서가 바뀌지 않습니다."
+
+#. translators: %s: "every buffet by price", linked.
+#: includes/site/class-directory-view.php:200
+#, php-format
+msgid "Buffets lists places with a buffet or all-you-can-eat, as their owners or the restaurants' published pages tell us. See %s."
+msgstr "\"뷔페\"에는 업주나 식당이 공개한 페이지에 따라 뷔페나 무한리필이 있는 곳이 표시됩니다. %s도 확인해 보세요."

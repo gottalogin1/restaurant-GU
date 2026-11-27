@@ -51,6 +51,7 @@ final class Rest_Controller {
 			'late'    => array( 'type' => 'string' ),
 			'at'      => array( 'type' => 'string' ),
 			'meal'    => array( 'type' => 'string' ),
+			'buffet'  => array( 'type' => 'string' ),
 			'sort'    => array( 'type' => 'string' ),
 			'page'    => array(
 				'type'    => 'integer',

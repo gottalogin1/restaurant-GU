@@ -17,7 +17,7 @@
 	var settings = window.guamRestaurantsDirectory || {};
 	var i18n = window.wp && window.wp.i18n;
 	var MULTI = [ 'village', 'mall', 'cuisine', 'price' ];
-	var FLAGS = [ 'award', 'open', 'late', 'meal' ];
+	var FLAGS = [ 'award', 'open', 'late', 'meal', 'buffet' ];
 
 	function params( form ) {
 		var out = new URLSearchParams();
