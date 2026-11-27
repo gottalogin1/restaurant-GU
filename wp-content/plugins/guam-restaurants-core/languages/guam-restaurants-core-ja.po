@@ -28,12 +28,13 @@ msgstr "出典"
 msgid "Details"
 msgstr "詳細"
 
+#: includes/admin/class-hotels-screen.php:235
 #: includes/admin/class-local-events-screen.php:268
 #: includes/admin/class-review-queue-screen.php:1073
 #: includes/class-content-types.php:51
 #: includes/site/class-directory-view.php:348
 #: includes/site/class-picker.php:261
-#: includes/site/class-related-links.php:137
+#: includes/site/class-related-links.php:138
 #: includes/site/class-specials-page.php:275
 #: includes/site/class-truck-stops.php:239
 #: includes/site/class-truck-stops.php:269
@@ -382,7 +383,7 @@ msgstr "レストラン"
 msgid "Cuisine"
 msgstr "料理"
 
-#: includes/class-structured-data.php:116
+#: includes/class-structured-data.php:124
 msgid "Restaurants on Guam"
 msgstr "グアムのレストラン"
 
@@ -844,7 +845,7 @@ msgid "About a different business."
 msgstr "別の店についての内容。"
 
 #: includes/highlights/class-policy.php:80
-#: includes/owners/class-owner-content.php:476
+#: includes/owners/class-owner-content.php:480
 #: includes/photos/class-photo-gallery.php:101
 msgid "From the owner"
 msgstr "オーナーより"
@@ -1388,6 +1389,7 @@ msgstr "リンクには、最近保存した %s 件のレストランだけが�
 
 #: includes/dishes/class-dish-pages.php:340
 #: includes/saved/class-view.php:298
+#: includes/site/class-hotel-pages.php:354
 #: includes/site/class-new-places.php:263
 msgid "Show the list as"
 msgstr "リストの表示方法"
@@ -1395,6 +1397,7 @@ msgstr "リストの表示方法"
 #: includes/dishes/class-dish-pages.php:341
 #: includes/saved/class-view.php:299
 #: includes/site/class-directory-view.php:120
+#: includes/site/class-hotel-pages.php:355
 #: includes/site/class-new-places.php:264
 #: blocks/site-editor/editor.js:69
 #: blocks/site-editor/editor.js:121
@@ -1404,6 +1407,7 @@ msgstr "リスト"
 #: includes/dishes/class-dish-pages.php:342
 #: includes/saved/class-view.php:300
 #: includes/site/class-directory-view.php:121
+#: includes/site/class-hotel-pages.php:356
 #: includes/site/class-new-places.php:265
 #: includes/site/class-pages.php:73
 msgid "Map"
@@ -1652,6 +1656,7 @@ msgid "Restaurant details include data %1$s, available under the %2$s."
 msgstr "レストランの情報には %1$s のデータが含まれ、%2$s の下で利用できます。"
 
 #: includes/site/class-blocks.php:860
+#: includes/site/class-hotel-pages.php:435
 msgid "© OpenStreetMap contributors"
 msgstr "© OpenStreetMap contributors"
 
@@ -2082,34 +2087,34 @@ msgid "Popular cuisines in %s"
 msgstr "%s で人気の料理"
 
 #. translators: %s: mall.
-#: includes/site/class-related-links.php:139
+#: includes/site/class-related-links.php:140
 #, php-format
 msgid "Cuisines at %s"
 msgstr "%s の料理"
 
 #. translators: %s: cuisine.
-#: includes/site/class-related-links.php:144
+#: includes/site/class-related-links.php:145
 #, php-format
 msgid "Where to find %s food"
 msgstr "%sが食べられるお店"
 
-#: includes/site/class-related-links.php:150
+#: includes/site/class-related-links.php:151
 msgid "Related cuisines"
 msgstr "関連する料理"
 
 #. translators: 1: cuisine, 2: village.
-#: includes/site/class-related-links.php:175
+#: includes/site/class-related-links.php:176
 #, php-format
 msgid "More %1$s restaurants in %2$s"
 msgstr "%2$s のその他の%1$sのお店"
 
 #. translators: %s: village.
-#: includes/site/class-related-links.php:177
+#: includes/site/class-related-links.php:178
 #, php-format
 msgid "More restaurants in %s"
 msgstr "%s のその他のレストラン"
 
-#: includes/site/class-related-links.php:192
+#: includes/site/class-related-links.php:193
 msgid "Browse"
 msgstr "探す"
 
@@ -2200,26 +2205,26 @@ msgid "Page %d"
 msgstr "%d ページ"
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:413
+#: includes/site/class-seo.php:420
 #, php-format
 msgid "%1$s: %2$s, Guam. Hours, map, awards and reviews."
 msgstr "%1$s：%2$s、グアム。営業時間、地図、受賞歴、レビュー。"
 
 #. translators: 1: restaurant name, 2: cuisine and place.
-#: includes/site/class-seo.php:413
+#: includes/site/class-seo.php:420
 #, php-format
 msgid "%1$s, Guam. Hours, map, awards and reviews."
 msgstr "%1$s、グアム。営業時間、地図、受賞歴、レビュー。"
 
-#: includes/site/class-seo.php:425
+#: includes/site/class-seo.php:432
 msgid "Find restaurants across Guam by village, mall, cuisine and price, with hours, awards and reviews."
 msgstr "村、モール、料理、価格でグアム全域のレストランを探せます。営業時間、受賞歴、レビュー付き。"
 
-#: includes/site/class-seo.php:428
+#: includes/site/class-seo.php:435
 msgid "Restaurant award results recorded on this site, each with a link to where it was published."
 msgstr "このサイトに記録されたレストランの受賞結果。それぞれ発表元へのリンク付き。"
 
-#: includes/site/class-seo.php:438
+#: includes/site/class-seo.php:448
 msgid "Find a place to eat on Guam: search restaurants by name or dish, or browse by village, mall and cuisine."
 msgstr "グアムで食事の場所を探そう：店名や料理で検索、または村、モール、料理から探せます。"
 
@@ -2553,7 +2558,7 @@ msgstr "（今日）"
 
 #: assets/site/map.js:56
 #: assets/site/map.js:70
-#: assets/site/map.js:244
+#: assets/site/map.js:257
 msgid "The map could not load right now."
 msgstr "現在、地図を読み込めません。"
 
@@ -3371,6 +3376,7 @@ msgstr ""
 msgid "Only administrators can update website follow-ups."
 msgstr ""
 
+#: includes/admin/class-hotels-screen.php:138
 #: includes/admin/class-website-followup-screen.php:235
 msgid "Saved."
 msgstr ""
@@ -3994,7 +4000,9 @@ msgid "You have sent several messages recently. Please try again later."
 msgstr ""
 
 #. translators: 1: business name, 2: contact name.
+#. translators: 1: hotel name, 2: distance, for example "350 m".
 #: includes/advertising/class-leads.php:378
+#: includes/site/class-related-links.php:240
 #, php-format
 msgid "%1$s (%2$s)"
 msgstr ""
@@ -6198,11 +6206,11 @@ msgstr ""
 msgid "Until %s"
 msgstr "%s まで"
 
-#: includes/owners/class-owner-content.php:497
+#: includes/owners/class-owner-content.php:501
 msgid "Added by the restaurant's verified owner. This restaurant pays for a premium profile, which adds this section's button and extra photos. It does not change ratings, awards or where the restaurant appears in lists."
 msgstr ""
 
-#: includes/owners/class-owner-content.php:498
+#: includes/owners/class-owner-content.php:502
 msgid "Added by the restaurant's verified owner. It does not change ratings, awards or where the restaurant appears in lists."
 msgstr ""
 
@@ -6804,10 +6812,13 @@ msgstr ""
 msgid "%s: give the date, village, patron saint and source link."
 msgstr ""
 
+#: includes/admin/class-hotels-screen.php:126
+#: includes/admin/class-hotels-screen.php:150
 #: includes/admin/class-local-events-screen.php:129
 msgid "Sorry, you are not allowed to do that."
 msgstr ""
 
+#: includes/admin/class-hotels-screen.php:138
 #: includes/admin/class-local-events-screen.php:143
 msgid "Nothing was saved."
 msgstr ""
@@ -6873,6 +6884,7 @@ msgstr ""
 msgid "Patron saint or feast"
 msgstr ""
 
+#: includes/admin/class-hotels-screen.php:265
 #: includes/admin/class-local-events-screen.php:206
 msgid "Source link"
 msgstr ""
@@ -7246,7 +7258,7 @@ msgid "F j, Y"
 msgstr "Y年n月j日"
 
 #: includes/owners/class-dashboard.php:467
-#: includes/owners/class-owner-content.php:451
+#: includes/owners/class-owner-content.php:455
 #: includes/site/class-specials-page.php:250
 msgid "Specials and happy hours"
 msgstr "お得情報とハッピーアワー"
@@ -7283,7 +7295,7 @@ msgstr ""
 msgid "Save specials and happy hours"
 msgstr ""
 
-#: includes/owners/class-owner-content.php:451
+#: includes/owners/class-owner-content.php:455
 msgid "More specials and happy hours on Guam"
 msgstr "グアムのその他のお得情報とハッピーアワー"
 
@@ -7429,3 +7441,244 @@ msgstr "今後7日間のお得情報やハッピーアワーはまだありま�
 #: includes/site/class-specials-page.php:297
 msgid "No specials or happy hours are listed for today yet. Try Next 7 days."
 msgstr "今日のお得情報やハッピーアワーはまだありません。「今後7日間」もご覧ください。"
+
+#: includes/admin/class-hotels-screen.php:53
+#: includes/admin/class-hotels-screen.php:54
+#: includes/admin/class-hotels-screen.php:199
+msgid "Hotels"
+msgstr ""
+
+#. translators: %s: hotel name.
+#: includes/admin/class-hotels-screen.php:111
+#, php-format
+msgid "%s: give a latitude and longitude on Guam (for example 13.5167 and 144.8051) and the link to where the location came from."
+msgstr ""
+
+#. translators: 1: created, 2: updated, 3: unchanged, 4: removed, 5: hotels with a page.
+#: includes/admin/class-hotels-screen.php:161
+#, php-format
+msgid "Loaded from OpenStreetMap: %1$d new, %2$d updated, %3$d unchanged, %4$d removed. %5$d hotels have a page."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:172
+msgid "OpenStreetMap did not answer. Try again in a few minutes, or run: wp guam-restaurants hotels import"
+msgstr ""
+
+#. translators: 1: number of places, 2: kilometres.
+#: includes/admin/class-hotels-screen.php:210
+#, php-format
+msgid "Each hotel with at least %1$d places to eat within %2$s km gets a \"Restaurants near\" page, listing places nearest first. Hide a hotel to take its page down."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:216
+msgid "See the hotel list"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:224
+msgid "Load hotels from OpenStreetMap"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:227
+msgid "Not loaded yet. Run this once, then every few months."
+msgstr ""
+
+#. translators: %s: date and time.
+#: includes/admin/class-hotels-screen.php:229
+#, php-format
+msgid "Last loaded %s (UTC)."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Hotel"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Places within walking distance"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+#: includes/site/class-hotel-pages.php:335
+msgid "A short drive away"
+msgstr "車ですぐ"
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Page"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+msgid "Location from"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:235
+#: includes/admin/class-hotels-screen.php:253
+msgid "Hide"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:238
+msgid "No hotels yet. Load them from OpenStreetMap above."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:249
+msgid "View"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:249
+msgid "Hidden"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:249
+msgid "Too few places"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:250
+msgid "Added by hand"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:254
+msgid "Remove"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:259
+msgid "Add a hotel OpenStreetMap lacks"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:259
+msgid "Give the hotel's latitude and longitude and the link to where they came from. Better still, add the hotel to OpenStreetMap and load the list again."
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:262
+msgid "Hotel name"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:263
+msgid "Latitude"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:264
+msgid "Longitude"
+msgstr ""
+
+#: includes/admin/class-hotels-screen.php:267
+msgid "Save hotels"
+msgstr ""
+
+#. translators: %s: hotel name, for example "Hotel Nikko Guam".
+#: includes/site/class-hotel-pages.php:202
+msgid "Restaurants near your hotel on Guam"
+msgstr "グアムのホテル周辺のレストラン"
+
+#. translators: %s: hotel name, for example "Hotel Nikko Guam".
+#. translators: %s: hotel name.
+#: includes/site/class-hotel-pages.php:202
+#: includes/site/class-hotel-pages.php:350
+#, php-format
+msgid "Restaurants near %s"
+msgstr "%s周辺のレストラン"
+
+#: includes/site/class-hotel-pages.php:213
+msgid "Pick your hotel to see the places to eat within walking distance and a short drive away, nearest first, with a map."
+msgstr "ホテルを選ぶと、徒歩圏内と車ですぐの飲食店を近い順に地図付きで表示します。"
+
+#. translators: 1: number of places within walking distance, 2: hotel name, 3: number of places a short drive away.
+#: includes/site/class-hotel-pages.php:218
+#, php-format
+msgid "%1$s places to eat within walking distance of %2$s and %3$s more a short drive away, nearest first, with a map."
+msgstr "%2$sから徒歩圏内の飲食店%1$s軒と、車ですぐの%3$s軒を近い順に地図付きで紹介します。"
+
+#. translators: %s: number of places.
+#: includes/site/class-hotel-pages.php:275
+#, php-format
+msgid "%s place within walking distance"
+msgid_plural "%s places within walking distance"
+msgstr[0] "徒歩圏内に%s軒"
+
+#: includes/site/class-hotel-pages.php:289
+msgid "Elsewhere on Guam"
+msgstr "グアムのその他の地域"
+
+#: includes/site/class-hotel-pages.php:292
+msgid "No hotels yet. They appear here once hotel locations are loaded."
+msgstr "まだホテルがありません。ホテルの位置情報が読み込まれるとここに表示されます。"
+
+#: includes/site/class-hotel-pages.php:298
+msgid "Staying on Guam? Pick your hotel to see the places to eat you can walk to, then the ones a short drive away, nearest first."
+msgstr "グアムにご滞在ですか?ホテルを選ぶと、歩いて行ける飲食店、次に車ですぐの飲食店を近い順に表示します。"
+
+#: includes/site/class-hotel-pages.php:324
+msgid "Within walking distance"
+msgstr "徒歩圏内"
+
+#. translators: 1: number of places, 2: walking minutes.
+#: includes/site/class-hotel-pages.php:327
+#, php-format
+msgid "%1$s place within about %2$s minutes on foot"
+msgid_plural "%1$s places within about %2$s minutes on foot"
+msgstr[0] "徒歩約%2$s分以内に%1$s軒"
+
+#. translators: 1: number of places, 2: distance in kilometres.
+#: includes/site/class-hotel-pages.php:338
+#, php-format
+msgid "%1$s place within %2$s km"
+msgid_plural "%1$s places within %2$s km"
+msgstr[0] "%2$s km以内に%1$s軒"
+
+#: includes/site/class-hotel-pages.php:348
+msgid "All hotels"
+msgstr "すべてのホテル"
+
+#: includes/site/class-hotel-pages.php:351
+msgid "Nearest first, by straight-line distance from the hotel. Walking times are estimates, so check the route before you set out. Sponsors cannot change the order."
+msgstr "ホテルからの直線距離で近い順に並べています。徒歩時間は目安なので、出発前に道順をご確認ください。スポンサーが順番を変えることはできません。"
+
+#: includes/site/class-hotel-pages.php:362
+msgid "Map of the hotel and these restaurants"
+msgstr "ホテルとこれらの飲食店の地図"
+
+#. translators: 1: distance, for example "350 m", 2: walking minutes.
+#: includes/site/class-hotel-pages.php:383
+#, php-format
+msgid "%1$s away · about %2$s minute walk"
+msgid_plural "%1$s away · about %2$s minute walk"
+msgstr[0] "%1$s・徒歩約%2$s分"
+
+#. translators: %s: distance, for example "2.1 km".
+#: includes/site/class-hotel-pages.php:385
+#, php-format
+msgid "%s away"
+msgstr "%s先"
+
+#: includes/site/class-hotel-pages.php:421
+msgid "Other hotels nearby"
+msgstr "近くのほかのホテル"
+
+#: includes/site/class-hotel-pages.php:434
+msgid "Hotel names and locations:"
+msgstr "ホテル名と位置:"
+
+#. translators: %s: distance in metres.
+#: includes/site/class-hotels.php:500
+#, php-format
+msgid "%s m"
+msgstr "%s m"
+
+#. translators: %s: distance in kilometres.
+#: includes/site/class-hotels.php:503
+#, php-format
+msgid "%s km"
+msgstr "%s km"
+
+#. translators: %s: hotel name.
+#: includes/site/class-related-links.php:211
+#, php-format
+msgid "Near %s"
+msgstr "%s周辺"
+
+#. translators: %s: village.
+#: includes/site/class-related-links.php:217
+#, php-format
+msgid "Restaurants near hotels in %s"
+msgstr "%sのホテル周辺のレストラン"
+
+#: includes/site/class-related-links.php:244
+msgid "Hotels within walking distance"
+msgstr "徒歩圏内のホテル"

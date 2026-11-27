@@ -39,6 +39,7 @@ return array(
 	'Pick for me'                 => 'お店を選んで',
 	'Specials'                    => 'お得情報',
 	'This week'                   => '今週',
+	'Near your hotel'             => 'ホテル周辺',
 	'New and closed'              => '開店・閉店',
 	'Awards'                      => '受賞歴',
 	'Dishes'                      => '料理',

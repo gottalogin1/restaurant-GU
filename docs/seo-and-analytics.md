@@ -205,6 +205,19 @@ those profiles.
   links both. Village pages show the next village fiesta with its source.
   Holiday hours change Open now, Open late and Open at on those dates.
   Sources: `docs/data-sources.md` §8d.
+- **Restaurants near your hotel** (added 2026-11-27, English audience idea
+  E6, comparison addition 21). `/restaurants-near/` lists hotels by village
+  and `/restaurants-near/{hotel}/` lists places within 1 km ("within walking
+  distance", with an estimated walk time) and then 1 to 3 km ("a short drive
+  away"), nearest first by straight-line distance, with a map that marks the
+  hotel and an `ItemList`. A hotel needs 5 places within 3 km for a page
+  (the same 5-place rule); otherwise, or when hidden, its URL is a 404.
+  Pages are in the `pages` sitemap and the ja/ko sitemaps, the header has a
+  "Near your hotel" link, village pages link their hotels and restaurant
+  pages link hotels within walking distance. Order is distance only, never
+  paid. Hotels in Tumon share many places, so their lists overlap; each page
+  is ordered from its own hotel and links the other hotels nearby.
+  Sources: `docs/data-sources.md` §8e.
 - The full plan, with what comes next, is the SEO plan doc
   (https://claude.ai/artifact/JcXSSwwXHeqLCb91Ye8ZYC).
 
