@@ -36,7 +36,8 @@ defined( 'ABSPATH' ) || exit;
  *   WooCommerce (Commerce\Woo_Checkout) and, while it runs, the
  *   call-to-action form.
  * - Forms for the owner fields (Owner_Content): hours, holiday and
- *   special hours, menu links, specials, truck and pop-up stops, and photos.
+ *   special hours, menu links, specials and happy hours, truck and pop-up
+ *   stops, and photos.
  * - A link to reply to reviews (Highlights > Write).
  *
  * Every number is a total; nothing identifies a visitor.
@@ -454,33 +455,70 @@ final class Dashboard {
 	}
 
 	/**
-	 * Specials form.
+	 * Specials and happy hours form: the saved ones, then empty rows.
 	 *
 	 * @param int $restaurant Restaurant.
 	 * @return void
 	 */
 	private static function render_specials_form( int $restaurant ): void {
-		$specials = Owner_Content::get( $restaurant )['specials'];
-		self::form_open( $restaurant, 'specials', __( 'Specials', 'guam-restaurants-core' ) );
-		echo '<p class="description">' . esc_html__( 'Shown on your listing as "From the owner" until the end date. Do not mention awards or call anything "Featured", "Top pick" or "Recommended".', 'guam-restaurants-core' ) . '</p><table class="form-table" role="presentation"><tbody>';
-		for ( $i = 0; $i < Owner_Content::MAX_SPECIALS; $i++ ) {
+		$specials = Specials::all( $restaurant );
+		$count    = min( Specials::MAX, max( 3, count( $specials ) + 2 ) );
+		$names    = Restaurant_View::day_names();
+		self::form_open( $restaurant, 'specials', __( 'Specials and happy hours', 'guam-restaurants-core' ) );
+		printf(
+			'<p class="description">%1$s</p><p class="description">%2$s</p>',
+			esc_html__( 'Shown on your listing and on the Specials page. Pick the days and times it runs (Guam time); leave the days empty for every day, and the times empty for all day. A happy hour needs times. Past end dates disappear by themselves; clear a title to remove one.', 'guam-restaurants-core' ),
+			esc_html__( 'Do not mention awards or call anything "Featured", "Top pick" or "Recommended".', 'guam-restaurants-core' )
+		);
+		echo '<table class="form-table" role="presentation"><tbody>';
+		for ( $i = 0; $i < $count; $i++ ) {
+			$special = $specials[ $i ] ?? array(
+				'kind'    => Specials::KIND_SPECIAL,
+				'title'   => '',
+				'details' => '',
+				'days'    => array(),
+				'from'    => '',
+				'to'      => '',
+				'starts'  => '',
+				'ends'    => '',
+			);
+			$kinds   = '';
+			foreach ( Specials::kind_labels() as $kind => $label ) {
+				$kinds .= sprintf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $kind ), selected( $special['kind'], $kind, false ), esc_html( $label ) );
+			}
+			$days = '';
+			foreach ( $names as $day => $name ) {
+				$days .= sprintf( '<span style="display:inline-block;margin-right:1.25rem"><label><input type="checkbox" name="specials[%1$d][days][]" value="%2$s"%3$s> %4$s</label></span>', (int) $i, esc_attr( $day ), checked( in_array( $day, $special['days'], true ), true, false ), esc_html( $name ) );
+			}
 			printf(
-				'<tr><th scope="row">%1$s</th><td><input type="text" class="regular-text" name="specials[%2$d][title]" placeholder="%3$s" maxlength="%4$d" value="%5$s"><br><textarea class="large-text" rows="2" name="specials[%2$d][details]" maxlength="%6$d" placeholder="%7$s">%8$s</textarea><br><label>%9$s <input type="date" name="specials[%2$d][ends]" value="%10$s"></label></td></tr>',
+				'<tr><th scope="row">%1$s</th><td><p><select name="specials[%2$d][kind]" aria-label="%3$s">%4$s</select> <input type="text" class="regular-text" name="specials[%2$d][title]" placeholder="%5$s" maxlength="%6$d" value="%7$s" aria-label="%8$s"></p><p><textarea class="large-text" rows="2" name="specials[%2$d][details]" maxlength="%9$d" placeholder="%10$s" aria-label="%11$s">%12$s</textarea></p><fieldset><legend>%13$s</legend>%14$s</fieldset><p><label>%15$s <input type="time" name="specials[%2$d][from]" value="%16$s"></label> <label>%17$s <input type="time" name="specials[%2$d][to]" value="%18$s"></label></p><p><label>%19$s <input type="date" name="specials[%2$d][starts]" value="%20$s"></label> <label>%21$s <input type="date" name="specials[%2$d][ends]" value="%22$s"></label></p></td></tr>',
 				/* translators: %d: row number. */
 				esc_html( sprintf( __( 'Special %d', 'guam-restaurants-core' ), $i + 1 ) ),
 				(int) $i,
-				esc_attr__( 'Title, e.g. Weekday lunch set', 'guam-restaurants-core' ),
-				(int) Owner_Content::MAX_TITLE,
-				esc_attr( (string) ( $specials[ $i ]['title'] ?? '' ) ),
-				(int) Owner_Content::MAX_DETAILS,
-				esc_attr__( 'Details (optional)', 'guam-restaurants-core' ),
-				esc_textarea( (string) ( $specials[ $i ]['details'] ?? '' ) ),
+				esc_attr__( 'Type', 'guam-restaurants-core' ),
+				$kinds, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped while built.
+				esc_attr__( 'Title, e.g. Weekday lunch set or $3 draft beer', 'guam-restaurants-core' ),
+				(int) Specials::MAX_TITLE,
+				esc_attr( $special['title'] ),
+				esc_attr__( 'Title', 'guam-restaurants-core' ),
+				(int) Specials::MAX_DETAILS,
+				esc_attr__( 'Details (optional), e.g. prices or what is included', 'guam-restaurants-core' ),
+				esc_attr__( 'Details', 'guam-restaurants-core' ),
+				esc_textarea( $special['details'] ),
+				esc_html__( 'Days (none checked = every day)', 'guam-restaurants-core' ),
+				$days, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped while built.
+				esc_html__( 'From', 'guam-restaurants-core' ),
+				esc_attr( $special['from'] ),
+				esc_html__( 'To', 'guam-restaurants-core' ),
+				esc_attr( $special['to'] ),
+				esc_html__( 'Starts (optional)', 'guam-restaurants-core' ),
+				esc_attr( $special['starts'] ),
 				esc_html__( 'Ends (optional)', 'guam-restaurants-core' ),
-				esc_attr( (string) ( $specials[ $i ]['ends'] ?? '' ) )
+				esc_attr( $special['ends'] )
 			);
 		}
 		echo '</tbody></table>';
-		self::form_close( __( 'Save specials', 'guam-restaurants-core' ) );
+		self::form_close( __( 'Save specials and happy hours', 'guam-restaurants-core' ) );
 	}
 
 	/**
