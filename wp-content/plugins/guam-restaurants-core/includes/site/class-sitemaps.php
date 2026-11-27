@@ -12,6 +12,7 @@ use GuamRestaurants\Core\Awards\Repository as Awards;
 use GuamRestaurants\Core\Content_Types;
 use GuamRestaurants\Core\Dishes\Dish_Index;
 use GuamRestaurants\Core\Dishes\Dish_Pages;
+use GuamRestaurants\Core\Dishes\Glossary;
 use GuamRestaurants\Core\Translation\Languages;
 use GuamRestaurants\Core\Translation\Source_Text;
 
@@ -108,7 +109,7 @@ final class Sitemaps {
 	}
 
 	/**
-	 * Dish, cuisine-in-village, New on Guam, This week and awards pages, in English.
+	 * The food glossary, dish, cuisine-in-village, New on Guam, This week and awards pages, in English.
 	 *
 	 * @return array<int, array{loc: string}>
 	 */
@@ -121,6 +122,7 @@ final class Sitemaps {
 				$list[] = array( 'loc' => Dish_Pages::url( (string) $slug ) );
 			}
 		}
+		$list[] = array( 'loc' => Glossary::url() );
 		foreach ( Cuisine_Villages::all() as $pair ) {
 			$village = get_term( $pair['village'], Content_Types::TAX_VILLAGE );
 			$cuisine = get_term( $pair['cuisine'], Content_Types::TAX_CUISINE );

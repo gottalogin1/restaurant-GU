@@ -285,10 +285,9 @@ final class Seo {
 			);
 		}
 		if ( '' !== Dish_Pages::current_page() ) {
-			$dish = Dish_Pages::current_dish();
 			return array(
-				'title'     => Dish_Pages::title( $dish ),
-				'canonical' => Dish_Pages::url( null === $dish ? '' : $dish['slug'] ),
+				'title'     => Dish_Pages::current_title(),
+				'canonical' => Dish_Pages::current_url(),
 				'filtered'  => false,
 			);
 		}

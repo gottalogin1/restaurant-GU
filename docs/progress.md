@@ -378,3 +378,9 @@ Legal and code:
 - Docs: data-sources.md §8d (sources registered, §11 URL list), plugins.md (Squirrly setup beside Yoast, menu names unverified), seo-and-analytics.md §2 step 9 and §4.
 - Checked: PHPCS clean; PHPUnit 565 tests pass (14 new in fresh-content-test.php; two sitemap tests updated for the new pages); local pages /this-week/, /new/, /ja/this-week/, /ko/new/, village pages and a 404 month checked.
 - Remaining: add the 2027 fiesta dates when Guampedia publishes them; re-check market hours every few months; core language packs on the live site for weekday and month names (docs/translation.md §6); Squirrly menu names to be checked once installed.
+
+## CHamoru food glossary (English audience idea E26), 2026-11-26
+- Requested by Sanjay (2026-11-26, "22 and 26"): one glossary page of about 25 local food words, in our own words, each linked to its dish page, in English, Japanese and Korean, linked from every dish page. English drafts for approval: Claude Doc "CHamoru food glossary for approval" (https://claude.ai/artifact/9NHWy5qbwC1KP87dgzHcKt).
+- Done: `data/glossary.php` (25 entries, A to Z, each with its source), `Dishes\Glossary` and a third `Dish_Pages` page at `/dishes/glossary/` (rewrite rule before the dish rule, `ROUTES_VERSION` 2). Entries link to their dish page only when `Dish_Index` has one; dish pages link to their own entry ("What is Kelaguen?") or to the top of the glossary, and the dish list links to it too. Own title, canonical, meta description, DefinedTermSet structured data and a sitemap entry (also under /ja/ and /ko/). Terms stay in CHamoru; definitions and 8 interface strings translated (dictionary and PO files). Sources in [data-sources.md](data-sources.md) §8e and §11.
+- Checked: see the PR for PHPUnit and PHPCS results. Screenshots: `/mnt/project-files/screenshots/food-glossary/`.
+- Remaining: ship only after Sanjay approves the English entries; update ja/ko for any entry he changes.

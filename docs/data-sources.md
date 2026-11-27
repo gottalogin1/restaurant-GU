@@ -695,6 +695,34 @@ hand or by owners; nothing here is imported or scraped.
 | Stars and Stripes Guam | <https://guam.stripes.com/travel/guam-marketplaces-full-of-life-energy-fun.html> | Mangilao Night Market and Dededo Flea Market days, hours and places |
 | Guam Daily Post | <https://www.postguam.com/news/local/food-trucks-lose-frequented-spots-at-skinner-plaza/image_251e21c8-79c0-11ec-ba48-17ee25a73e97.html> | Checked, not used: a 2022 story on food trucks leaving Skinner Plaza, with no current schedule. Truck stops come from owners instead. |
 
+## 8e. Food glossary (added 2026-11-26)
+
+The CHamoru food glossary (`/dishes/glossary/`, English audience idea E26)
+has 25 short entries in `data/glossary.php`, with Japanese and Korean
+definitions in `data/translations/*.php`. The text is our own words
+(CLAUDE.md rule 3); the facts in it (what a dish is, how it is made, what a
+word means) come from the pages below, which were read by hand on
+2026-11-26, not fetched by an import. Each entry shows its source link on
+the page. Entries name no restaurants and give no counts. Pages already
+registered in §8c (Guampedia kelaguen, red rice, kådon pika, empanåda,
+lumpia, tinaktak, titiyas, latiya and fiesta table pages, Annie's Chamorro
+Kitchen and Stars and Stripes Guam) are used again.
+
+| Source | URL |
+|---|---|
+| Guampedia | <https://www.guampedia.com/chalakiles-recipe/> |
+| Guampedia | <https://www.guampedia.com/bonelos-aga-recipe/> |
+| Guampedia | <https://www.guampedia.com/bonelos-dago-recipe/> |
+| Guampedia | <https://www.guampedia.com/tamales-gisu-red-and-white-tamale/> |
+| Guampedia | <https://www.guampedia.com/estufao-recipe/> |
+| Guampedia | <https://www.guampedia.com/gollai-hagon-suni-taro-leaves-in-coconut-cream/> |
+| Guampedia | <https://www.guampedia.com/gollai-appan-starchy-vegetables-in-reduced-coconut-cream/> |
+| Wikipedia | <https://en.wikipedia.org/wiki/Guyuria> |
+| Wikipedia | <https://en.wikipedia.org/wiki/Kalamai_(dessert)> |
+| National Park Service (War in the Pacific NHP) | <https://home.nps.gov/wapa/learn/nature/breadfruit.htm> |
+| University of Guam Cooperative Extension | <https://www.uog.edu/_resources/files/extension/publications/Achiote.pdf> |
+| Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/events/festivals/donne-festival/> |
+
 ## 9. Data policy table
 
 | Data | Source | Policy | Expiry / refresh |
@@ -833,6 +861,20 @@ in `docs/seo-and-analytics.md` and `docs/monetization.md` §8.
 | <https://guam.stripes.com/food-drink/'buy-local'-at-guam's-agat-tuesday-night-market.html> | Read 2026-10-27 (fiestas and markets) |
 | <https://guam.stripes.com/travel/guam-marketplaces-full-of-life-energy-fun.html> | Read 2026-10-27 (fiestas and markets) |
 | <https://www.postguam.com/news/local/food-trucks-lose-frequented-spots-at-skinner-plaza/image_251e21c8-79c0-11ec-ba48-17ee25a73e97.html> | Read 2026-10-27 (fiestas and markets) |
+| <https://www.guampedia.com/chalakiles-recipe/> | Read 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/bonelos-aga-recipe/> | Read 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/bonelos-dago-recipe/> | Read 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/tamales-gisu-red-and-white-tamale/> | Read 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/estufao-recipe/> | Read 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/gollai-hagon-suni-taro-leaves-in-coconut-cream/> | Read 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/gollai-appan-starchy-vegetables-in-reduced-coconut-cream/> | Read 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/finadenne-dipping-sauce/> | Read again 2026-11-26 (food glossary) |
+| <https://www.guampedia.com/chamorro-food/fiesta-table-overview/> | Read again 2026-11-26 (food glossary) |
+| <https://en.wikipedia.org/wiki/Guyuria> | Read 2026-11-26 (food glossary) |
+| <https://en.wikipedia.org/wiki/Kalamai_(dessert)> | Read 2026-11-26 (food glossary) |
+| <https://home.nps.gov/wapa/learn/nature/breadfruit.htm> | Read 2026-11-26 (food glossary) |
+| <https://www.uog.edu/_resources/files/extension/publications/Achiote.pdf> | Read 2026-11-26 (food glossary) |
+| <https://www.visitguam.com/events/festivals/donne-festival/> | Read 2026-11-26 (food glossary) |
 
 ## 12. To do before the first import
 
