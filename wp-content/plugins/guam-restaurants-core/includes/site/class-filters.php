@@ -30,6 +30,8 @@ defined( 'ABSPATH' ) || exit;
  *   JavaScript the form sends the two halves as `at_day` and `at_time`.
  * - `meal=breakfast` keeps restaurants open by 8 am on at least one day,
  *   going by their listed hours (BREAKFAST_MINUTE).
+ * - `buffet=yes` keeps restaurants with a buffet or all-you-can-eat
+ *   (Buffets).
  * - `q` is a plain-language search: Query_Parser turns the phrases it
  *   knows ("cheap Korean open late in Tumon") into the filters above and
  *   leaves the other words as a keyword search. What it read is kept in
@@ -47,6 +49,7 @@ final class Filters {
 	public const LATE   = 'late';
 	public const AT     = 'at';
 	public const MEAL   = 'meal';
+	public const BUFFET = 'buffet';
 	public const SORT   = 'sort';
 	public const WHERE  = 'where';
 
@@ -57,6 +60,7 @@ final class Filters {
 	public const OPEN_NOW       = 'now';
 	public const LATE_TONIGHT   = 'tonight';
 	public const MEAL_BREAKFAST = 'breakfast';
+	public const BUFFET_YES     = 'yes';
 
 	/**
 	 * "Breakfast" means open at this minute of the day (8:00 am) on at least one day.
@@ -86,7 +90,7 @@ final class Filters {
 	/**
 	 * Empty filters.
 	 *
-	 * @return array{q: string, facets: array<string, string[]>, award: bool, open: bool, late: bool, at: string, breakfast: bool, sort: string, page: int, read: array{text: string, matches: array<int, array{type: string, value: string, phrase: string}>}|null}
+	 * @return array{q: string, facets: array<string, string[]>, award: bool, open: bool, late: bool, at: string, breakfast: bool, buffet: bool, sort: string, page: int, read: array{text: string, matches: array<int, array{type: string, value: string, phrase: string}>}|null}
 	 */
 	public static function defaults(): array {
 		return array(
@@ -97,6 +101,7 @@ final class Filters {
 			'late'      => false,
 			'at'        => '',
 			'breakfast' => false,
+			'buffet'    => false,
 			'sort'      => '',
 			'page'      => 1,
 			'read'      => null,
@@ -153,11 +158,12 @@ final class Filters {
 		$filters['open']  = self::OPEN_NOW === ( $params[ self::OPEN ] ?? '' ) || '1' === ( $params[ self::OPEN ] ?? '' );
 		$filters['late']  = self::LATE_TONIGHT === ( $params[ self::LATE ] ?? '' ) || '1' === ( $params[ self::LATE ] ?? '' );
 		if ( $parsed ) {
-			foreach ( array( 'award', 'open', 'late', 'breakfast' ) as $flag ) {
+			foreach ( array( 'award', 'open', 'late', 'breakfast', 'buffet' ) as $flag ) {
 				$filters[ $flag ] = $filters[ $flag ] || $parsed[ $flag ];
 			}
 		}
 		$filters['breakfast'] = $filters['breakfast'] || self::MEAL_BREAKFAST === ( $params[ self::MEAL ] ?? '' );
+		$filters['buffet']    = $filters['buffet'] || in_array( $params[ self::BUFFET ] ?? '', array( self::BUFFET_YES, '1' ), true );
 
 		$at = isset( $params[ self::AT ] ) && is_scalar( $params[ self::AT ] ) ? (string) $params[ self::AT ] : '';
 		if ( '' === $at && isset( $params[ self::AT_DAY ], $params[ self::AT_TIME ] ) && is_scalar( $params[ self::AT_DAY ] ) && is_scalar( $params[ self::AT_TIME ] ) ) {
@@ -221,6 +227,9 @@ final class Filters {
 		}
 		if ( ! empty( $filters['breakfast'] ) ) {
 			$params[ self::MEAL ] = self::MEAL_BREAKFAST;
+		}
+		if ( ! empty( $filters['buffet'] ) ) {
+			$params[ self::BUFFET ] = self::BUFFET_YES;
 		}
 		if ( '' !== (string) $filters['sort'] ) {
 			$params[ self::SORT ] = (string) $filters['sort'];

@@ -1,6 +1,6 @@
 <?php
 /**
- * Routes for the pages that change by themselves: New on Guam and This week.
+ * Routes for the pages that change by themselves (New on Guam, This week) and the buffets page.
  *
  * @package GuamRestaurants\Core
  */
@@ -17,6 +17,8 @@ defined( 'ABSPATH' ) || exit;
  * - /this-week/ : the next seven days of markets, truck stops, village
  *   fiestas and holiday hours (This_Week).
  * - /specials/ : specials and happy hours posted by owners (Specials_Page).
+ * - /buffets/ : buffets and all-you-can-eat, by price or by village
+ *   (Buffets).
  *
  * The /ja/ and /ko/ copies come from the language router as for every
  * other page.
@@ -29,10 +31,10 @@ final class Fresh_Pages {
 	/**
 	 * Bump when the rewrite rules change so they are flushed once.
 	 */
-	public const ROUTES_VERSION = '2';
+	public const ROUTES_VERSION = '3';
 	public const ROUTES_OPTION  = 'guam_restaurants_fresh_routes';
 
-	public const PAGES = array( 'new', 'new-month', 'week', 'specials' );
+	public const PAGES = array( 'new', 'new-month', 'week', 'specials', 'buffets' );
 
 	/**
 	 * Hooks registration.
@@ -72,6 +74,7 @@ final class Fresh_Pages {
 		add_rewrite_rule( '^new/(\d{4}-\d{2})/?$', 'index.php?' . self::QUERY_VAR . '=new-month&' . self::MONTH_QUERY_VAR . '=$matches[1]', 'top' );
 		add_rewrite_rule( '^this-week/?$', 'index.php?' . self::QUERY_VAR . '=week', 'top' );
 		add_rewrite_rule( '^specials/?$', 'index.php?' . self::QUERY_VAR . '=specials', 'top' );
+		add_rewrite_rule( '^buffets/?$', 'index.php?' . self::QUERY_VAR . '=buffets', 'top' );
 	}
 
 	/**
@@ -100,13 +103,16 @@ final class Fresh_Pages {
 	}
 
 	/**
-	 * URL of a page: `new` (optionally with a month), `week` or `specials`.
+	 * URL of a page: `new` (optionally with a month), `week`, `specials` or `buffets`.
 	 *
 	 * @param string $page  Page.
 	 * @param string $month YYYY-MM, for a month of New on Guam.
 	 * @return string
 	 */
 	public static function url( string $page, string $month = '' ): string {
+		if ( 'buffets' === $page ) {
+			return get_option( 'permalink_structure' ) ? home_url( '/buffets/' ) : add_query_arg( self::QUERY_VAR, 'buffets', home_url( '/' ) );
+		}
 		if ( get_option( 'permalink_structure' ) ) {
 			if ( 'week' === $page ) {
 				return home_url( '/this-week/' );
@@ -208,6 +214,8 @@ final class Fresh_Pages {
 				return This_Week::title();
 			case 'specials':
 				return Specials_Page::title();
+			case 'buffets':
+				return Buffets::title();
 			default:
 				return New_Places::title( self::current_month() );
 		}
@@ -224,6 +232,8 @@ final class Fresh_Pages {
 				return This_Week::description();
 			case 'specials':
 				return Specials_Page::description();
+			case 'buffets':
+				return Buffets::description();
 			default:
 				return New_Places::description( self::current_month() );
 		}
@@ -236,22 +246,30 @@ final class Fresh_Pages {
 	 */
 	public static function canonical(): string {
 		$page = self::current_page();
-		return in_array( $page, array( 'week', 'specials' ), true ) ? self::url( $page ) : self::url( 'new', self::current_month() );
+		return in_array( $page, array( 'week', 'specials', 'buffets' ), true ) ? self::url( $page ) : self::url( 'new', self::current_month() );
 	}
 
 	/**
-	 * Whether search engines should index the current page: a month needs
-	 * Cuisine_Villages::MIN_PLACES places, as cuisine-in-village pages do,
-	 * and Specials needs as many restaurants with specials (a filtered
-	 * view is never indexed).
+	 * Whether search engines should index the current page: a month and the
+	 * buffets page need Cuisine_Villages::MIN_PLACES places, as
+	 * cuisine-in-village pages do, and Specials needs as many restaurants
+	 * with specials. A filtered view of Specials is never indexed, and the
+	 * buffets page sorted by village is a copy of the same list, so only the
+	 * price order is indexed.
 	 *
 	 * @return bool
 	 */
 	public static function indexable(): bool {
-		if ( 'specials' === self::current_page() ) {
-			return ! Specials_Page::is_filtered() && Specials_Page::indexable();
+		switch ( self::current_page() ) {
+			case 'new-month':
+				return count( New_Places::in_month( self::current_month() ) ) >= Cuisine_Villages::MIN_PLACES;
+			case 'specials':
+				return ! Specials_Page::is_filtered() && Specials_Page::indexable();
+			case 'buffets':
+				return 'price' === Buffets::current_sort() && count( Buffets::places() ) >= Cuisine_Villages::MIN_PLACES;
+			default:
+				return true;
 		}
-		return 'new-month' !== self::current_page() || count( New_Places::in_month( self::current_month() ) ) >= Cuisine_Villages::MIN_PLACES;
 	}
 
 	/**
@@ -267,14 +285,17 @@ final class Fresh_Pages {
 				return Specials_Page::render();
 			case 'new-month':
 				return New_Places::render_month( self::current_month() );
+			case 'buffets':
+				return Buffets::render_page();
 			default:
 				return New_Places::render_index();
 		}
 	}
 
 	/**
-	 * Pages for the sitemap: This week, Specials once it is indexable, New
-	 * on Guam and its indexable months.
+	 * Pages for the sitemap: This week, Specials once it is indexable, the
+	 * buffets page once it has enough places, New on Guam and its indexable
+	 * months.
 	 *
 	 * @return array<int, array{loc: string}>
 	 */
@@ -282,6 +303,9 @@ final class Fresh_Pages {
 		$list = array( array( 'loc' => self::url( 'week' ) ) );
 		if ( Specials_Page::indexable() ) {
 			$list[] = array( 'loc' => self::url( 'specials' ) );
+		}
+		if ( count( Buffets::places() ) >= Cuisine_Villages::MIN_PLACES ) {
+			$list[] = array( 'loc' => self::url( 'buffets' ) );
 		}
 		$months = New_Places::months();
 		if ( $months ) {

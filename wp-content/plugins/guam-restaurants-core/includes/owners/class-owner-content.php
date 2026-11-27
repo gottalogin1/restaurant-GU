@@ -18,6 +18,7 @@ use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Assets;
+use GuamRestaurants\Core\Site\Buffets;
 use GuamRestaurants\Core\Site\Clock;
 use GuamRestaurants\Core\Site\Fresh_Pages;
 use GuamRestaurants\Core\Site\Special_Hours;
@@ -43,6 +44,8 @@ defined( 'ABSPATH' ) || exit;
  * - `special_hours`: holiday and special hours by date (Site\Special_Hours).
  * - `truck_stops`: where a food truck or pop-up will be, by date
  *   (Site\Truck_Stops).
+ * - `buffet`: whether they serve a buffet or all-you-can-eat, with the
+ *   meals, days, times and adult price per person (Site\Buffets).
  * - `photos`: up to eight images they uploaded (gr_owner_photos), or
  *   Premium::MAX_PHOTOS while a premium profile runs.
  * - `cta`: a call-to-action button, only while a premium profile runs
@@ -67,7 +70,7 @@ final class Owner_Content {
 	public const SPECIALS    = 'gr_specials';
 	public const PHOTOS      = 'gr_owner_photos';
 
-	public const FIELDS = array( 'hours', 'menu_links', 'menu_dishes', 'specials', 'special_hours', 'truck_stops', 'photos', 'cta' );
+	public const FIELDS = array( 'hours', 'menu_links', 'menu_dishes', 'specials', 'special_hours', 'truck_stops', 'buffet', 'photos', 'cta' );
 
 	public const MAX_LINKS       = 5;
 	public const MAX_MENU_DISHES = 15;
@@ -162,6 +165,14 @@ final class Owner_Content {
 				$values[ Truck_Stops::META ] = $stops;
 			}
 		}
+		$buffet = null;
+		if ( array_key_exists( 'buffet', $input ) ) {
+			$buffet = Buffets::from_input( (array) $input['buffet'], 'owner' );
+			if ( is_wp_error( $buffet ) ) {
+				$errors->merge_from( $buffet );
+				$buffet = null;
+			}
+		}
 		if ( array_key_exists( 'photos', $input ) ) {
 			$values[ self::PHOTOS ] = self::photos_from_input( (array) $input['photos'], $restaurant_id, $user_id );
 		}
@@ -192,6 +203,10 @@ final class Owner_Content {
 				}
 			}
 		);
+		// The buffet keeps its own change rules (a re-save only moves its checked date).
+		if ( null !== $buffet && Buffets::save( $restaurant_id, $buffet, 'owner' ) ) {
+			$changed[] = Buffets::META;
+		}
 		if ( $changed ) {
 			clean_post_cache( $restaurant_id );
 		}

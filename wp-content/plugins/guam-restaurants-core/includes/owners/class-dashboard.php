@@ -18,6 +18,7 @@ use GuamRestaurants\Core\Photos\Photo_Submissions;
 use GuamRestaurants\Core\Premium\Premium;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Site\Restaurant_View;
+use GuamRestaurants\Core\Site\Buffets;
 use GuamRestaurants\Core\Site\Special_Hours;
 use GuamRestaurants\Core\Site\Truck_Stops;
 use GuamRestaurants\Core\Vocabulary;
@@ -163,6 +164,9 @@ final class Dashboard {
 			case 'truck_stops':
 				$input['truck_stops'] = isset( $_POST['truck_stops'] ) && is_array( $_POST['truck_stops'] ) ? wp_unslash( $_POST['truck_stops'] ) : array();
 				break;
+			case 'buffet':
+				$input['buffet'] = isset( $_POST['buffet'] ) && is_array( $_POST['buffet'] ) ? wp_unslash( $_POST['buffet'] ) : array();
+				break;
 			case 'cta':
 				$input['cta'] = array(
 					'action' => isset( $_POST['cta_action'] ) ? sanitize_key( wp_unslash( $_POST['cta_action'] ) ) : '',
@@ -278,9 +282,10 @@ final class Dashboard {
 		self::render_dishes_form( $restaurant );
 		self::render_specials_form( $restaurant );
 		self::render_truck_stops_form( $restaurant );
+		self::render_buffet_form( $restaurant );
 		self::render_photos_form( $restaurant, $user_id );
 
-		echo '<p class="description">' . esc_html__( 'You can change your hours, holiday hours, menu links, menu dishes, specials, stops and photos here. Ratings, awards, the listing\'s open or closed history and reviews are not editable by owners; to report a mistake in them, contact us.', 'guam-restaurants-core' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'You can change your hours, holiday hours, menu links, menu dishes, specials, stops, buffet and photos here. Ratings, awards, the listing\'s open or closed history and reviews are not editable by owners; to report a mistake in them, contact us.', 'guam-restaurants-core' ) . '</p>';
 		echo '</div>';
 	}
 
@@ -545,6 +550,19 @@ final class Dashboard {
 		echo '<p class="description">' . esc_html__( 'If you move around, list where you will be. Stops show on your listing and on the This week on Guam page, by date and time. Choose Weekly to repeat a stop on the same day each week.', 'guam-restaurants-core' ) . '</p>';
 		echo Truck_Stops::form_rows( $restaurant, 'truck_stops' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped while built.
 		self::form_close( __( 'Save stops', 'guam-restaurants-core' ) );
+	}
+
+	/**
+	 * Buffet and all-you-can-eat form.
+	 *
+	 * @param int $restaurant Restaurant.
+	 * @return void
+	 */
+	private static function render_buffet_form( int $restaurant ): void {
+		self::form_open( $restaurant, 'buffet', __( 'Buffet or all-you-can-eat', 'guam-restaurants-core' ) );
+		echo '<p class="description">' . esc_html__( 'If you serve a buffet or all-you-can-eat, list each meal with its days, times and the adult price per person before service charge. Your listing shows them, and you appear on the Buffets page, sorted by price or village. Choose No buffet to remove it. Saving again tells visitors the prices were checked today.', 'guam-restaurants-core' ) . '</p>';
+		echo Buffets::form_fields( $restaurant, 'buffet' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped while built.
+		self::form_close( __( 'Save buffet', 'guam-restaurants-core' ) );
 	}
 
 	/**

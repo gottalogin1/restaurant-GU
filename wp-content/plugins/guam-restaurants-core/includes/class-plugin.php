@@ -127,6 +127,7 @@ final class Plugin {
 		Admin\Tag_Origins_Box::register();
 		Photos\Website_Photo_Box::register();
 		Admin\Special_Hours_Box::register();
+		Admin\Buffet_Box::register();
 		Admin\Local_Events_Screen::register();
 		Admin\Hotels_Screen::register();
 		Photos\Agreement::register();

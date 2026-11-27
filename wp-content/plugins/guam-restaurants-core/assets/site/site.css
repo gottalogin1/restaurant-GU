@@ -2360,6 +2360,57 @@
 	margin: 0.25rem 0 0;
 }
 
+/* Buffet and all-you-can-eat: under the hours and on the Buffets page cards. */
+.gr-buffet {
+	margin-top: 1rem;
+}
+
+.gr-buffet__title {
+	font-size: 1rem;
+	margin: 0 0 0.25rem;
+}
+
+.gr-buffet__sessions {
+	margin: 0;
+	padding-inline-start: 1.25rem;
+}
+
+.gr-buffet__meal,
+.gr-buffet__lead {
+	font-weight: 600;
+}
+
+.gr-buffet__note,
+.gr-buffet__source,
+.gr-buffet__more {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	margin: 0.25rem 0 0;
+}
+
+.gr-buffet--card {
+	margin-top: 0.5rem;
+	font-size: 0.9rem;
+}
+
+.gr-buffet--card .gr-buffet__lead {
+	margin: 0 0 0.25rem;
+}
+
+.gr-buffets__sort .gr-chip[aria-current] {
+	background: var(--gr-primary);
+	border-color: var(--gr-primary);
+	color: var(--gr-on-primary);
+}
+
+.gr-buffets__sort {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0 0 1rem;
+}
+
 /* Fiesta dates on village pages. */
 .gr-fiestas {
 	margin-top: 1rem;
