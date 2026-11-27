@@ -32,7 +32,7 @@ that page. Re-check before building an importer.
 | Restaurant websites (photos) | **Use with limits** | Only with the owner's permission, recorded on the restaurant (§8a). Photos on a website belong to whoever took them. |
 | Page intro facts (Guampedia, Visit Guam, Guam Daily Post, Wikipedia and others) | **Use** | Facts only, in our own words, with each source listed. See §8c. |
 | Village fiesta dates (Guampedia) and weekly food markets (Visit Guam, Stars and Stripes Guam) | **Use** | Facts only (date, village, patron saint; market day, hours, place) with the source link shown beside each one. Truck stops and holiday hours come from owners. See §8d. |
-| Buffet days, hours and prices (hotel and restaurant pages, their OpenTable and TableCheck listings) | **Use** | Facts only, with the source link and checked date shown on the listing; owners and editors can update them. See §8e. |
+| Buffet days, hours and prices (hotel and restaurant pages, their OpenTable and TableCheck listings) | **Use** | Facts only, with the source link and checked date shown on the listing; owners and editors can update them. See §8f. |
 | Japanese and Korean translations (first party, not a data source) | **Use** | Our own interface and page text translated with AI (Claude) during development and shipped with the plugin; no translation service is called. Google, Yelp and Foursquare content is never translated. See §8b. |
 
 **Collection method (2026-10-10).** Data comes through the official APIs
@@ -696,7 +696,23 @@ hand or by owners; nothing here is imported or scraped.
 | Stars and Stripes Guam | <https://guam.stripes.com/travel/guam-marketplaces-full-of-life-energy-fun.html> | Mangilao Night Market and Dededo Flea Market days, hours and places |
 | Guam Daily Post | <https://www.postguam.com/news/local/food-trucks-lose-frequented-spots-at-skinner-plaza/image_251e21c8-79c0-11ec-ba48-17ee25a73e97.html> | Checked, not used: a 2022 story on food trucks leaving Skinner Plaza, with no current schedule. Truck stops come from owners instead. |
 
-## 8e. Buffets and all-you-can-eat (added 2026-11-26)
+## 8e. Hotels for "Restaurants near" pages (added 2026-11-27)
+
+The `/restaurants-near/` pages (English audience idea E6, comparison
+addition 21) need hotel names and locations. They come from OpenStreetMap,
+the same source as §1, under the same ODbL terms: the pages credit
+"© OpenStreetMap contributors" with a link to the copyright page.
+
+| | |
+|---|---|
+| What is read | `tourism=hotel` with a `name` inside Guam's bounding box: name (`name:en` first), OSM id, and the point (nodes) or center (ways and relations). Nothing else is stored. |
+| How | `wp guam-restaurants hotels import` (or the button on Restaurants > Hotels): one Overpass request with the §1 usage rules (identifying user agent, retries, fallback instance). `--input=<file>` reads a saved response. Idempotent; counts go to Import runs as source `osm-hotels`. |
+| Stored | Option `guam_restaurants_hotels`: name, OSM id, lat/lng, village (Census polygons, §6), hidden flag, source link. Hotels gone from OSM are removed on the next import; hidden ones stay hidden. |
+| Added by hand | An administrator can add a hotel OSM lacks, with latitude, longitude and the source link for them. Better: add it to OSM and import again. |
+| Not tested here | Overpass is blocked from the cloud container, so the hotel query has only run against test data. The first real run is on the local or live site. |
+| Not used | Hotel lists on tourism and booking sites. |
+
+## 8f. Buffets and all-you-can-eat (added 2026-11-26)
 
 English audience idea E22. Each place's buffet facts (kind, meals, days,
 times, adult price per person, a short note) are stored in `gr_buffet` and

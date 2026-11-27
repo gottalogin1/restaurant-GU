@@ -1,7 +1,7 @@
 <?php
 /**
  * Buffets and all-you-can-eat, researched by hand from each restaurant's
- * own or booking page (CLAUDE.md rules 1 to 3; docs/data-sources.md §8e).
+ * own or booking page (CLAUDE.md rules 1 to 3; docs/data-sources.md §8f).
  *
  * Applied once by the 2026-11-26-buffet-research migration and again by
  * `wp guam-restaurants buffets apply`. A row goes onto the published
