@@ -15,6 +15,7 @@ use GuamRestaurants\Core\Discovery\Places_Client;
 use GuamRestaurants\Core\Http\Retrying_Client;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Closures;
+use GuamRestaurants\Core\Monitoring\Link_Sweep;
 use GuamRestaurants\Core\Names;
 use GuamRestaurants\Core\Ratings\Budget;
 use GuamRestaurants\Core\Ratings\Pricing;
@@ -28,7 +29,8 @@ use GuamRestaurants\Core\Vocabulary;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Pending review items. Administrators approve or reject closures and
+ * Pending review items. Administrators approve or reject closures,
+ * remove or keep links the monthly link sweep found broken, and
  * merge or separate probable duplicates, and close correction and listing
  * requests with a private note; other item types can be dismissed once
  * handled by hand. Only administrators see the screen, so every
@@ -508,7 +510,7 @@ final class Review_Queue_Screen {
 	 * Applies a decision to an item.
 	 *
 	 * @param int    $item_id  Item.
-	 * @param string $decision approve_closure, reject_closure, merge, not_duplicate, request_done, request_decline or dismiss.
+	 * @param string $decision approve_closure, reject_closure, remove_link, keep_link, merge, not_duplicate, request_done, request_decline or dismiss.
 	 * @param int    $user_id  Administrator.
 	 * @param string $note     Private note, kept with correction and listing requests.
 	 * @return bool
@@ -525,6 +527,10 @@ final class Review_Queue_Screen {
 					return Closures::approve( $item_id, $user_id );
 				case 'reject_closure':
 					return Closures::reject( $item_id, $user_id );
+				case 'remove_link':
+					return Link_Sweep::remove_link( $item_id, $user_id );
+				case 'keep_link':
+					return Link_Sweep::keep_link( $item_id, $user_id );
 				case 'merge':
 					if ( 'duplicate' !== $item['type'] ) {
 						return false;
@@ -894,6 +900,25 @@ final class Review_Queue_Screen {
 		} elseif ( 'village_unresolved' === $item['type'] || 'mall_unresolved' === $item['type'] ) {
 			echo '<p><em>' . esc_html__( 'Not linked to a restaurant. Set the village on the restaurant itself, then tick this row to mark it handled.', 'guam-restaurants-core' ) . '</em></p>';
 		}
+		if ( Link_Sweep::QUEUE_TYPE === $item['type'] ) {
+			self::render_broken_link( $payload );
+			return;
+		}
+		if ( 'closure_signal' === $item['type'] && '' !== (string) ( $payload['statement'] ?? '' ) ) {
+			printf(
+				'<p>%s</p>',
+				esc_html(
+					sprintf(
+						/* translators: 1: source, 2: what the source says, for example "date_closed 2025-03-01", 3: date. */
+						__( '%1$s lists it as closed (%2$s), seen %3$s UTC.', 'guam-restaurants-core' ),
+						'fsq_os' === $item['source'] ? __( 'Foursquare Open Source Places', 'guam-restaurants-core' ) : (string) $item['source'],
+						(string) $payload['statement'],
+						(string) ( $payload['last_signal_at'] ?? '' )
+					)
+				)
+			);
+			return;
+		}
 		if ( 'closure_signal' === $item['type'] ) {
 			printf(
 				'<p>%s</p>',
@@ -925,6 +950,44 @@ final class Review_Queue_Screen {
 			echo '<li><code>' . esc_html( (string) $key ) . '</code>: ' . esc_html( is_scalar( $value ) || null === $value ? (string) $value : (string) wp_json_encode( $value ) ) . '</li>';
 		}
 		echo '</ul>';
+	}
+
+	/**
+	 * A link the monthly sweep found broken: which one, what went wrong and since when.
+	 *
+	 * @param array<string, mixed> $payload Payload.
+	 * @return void
+	 */
+	private static function render_broken_link( array $payload ): void {
+		$fields = array(
+			'website' => __( 'Website', 'guam-restaurants-core' ),
+			'menu'    => __( 'Menu link', 'guam-restaurants-core' ),
+			'cta'     => __( 'Button link', 'guam-restaurants-core' ),
+		);
+		$field  = (string) ( $payload['field'] ?? '' );
+		$link   = (string) ( $payload['link'] ?? '' );
+		echo '<p style="margin:.3em 0"><strong>' . esc_html( $fields[ $field ] ?? $field ) . '</strong>';
+		if ( 'website' !== $field && '' !== (string) ( $payload['label'] ?? '' ) ) {
+			echo ' (' . esc_html( (string) $payload['label'] ) . ')';
+		}
+		echo ': ' . ( wp_http_validate_url( $link ) ? '<a href="' . esc_url( $link ) . '" target="_blank" rel="noopener noreferrer nofollow">' . esc_html( $link ) . '</a>' : '<code>' . esc_html( $link ) . '</code>' ) . '</p>';
+		printf(
+			'<p style="margin:.3em 0">%s</p>',
+			esc_html(
+				sprintf(
+					/* translators: 1: what went wrong, 2: number of monthly checks, 3: first date, 4: last date. */
+					_n( 'Problem: %1$s. Failed %2$d monthly check (%3$s to %4$s UTC).', 'Problem: %1$s. Failed %2$d monthly checks in a row (%3$s to %4$s UTC).', max( 1, (int) ( $payload['checks'] ?? 1 ) ), 'guam-restaurants-core' ),
+					(string) ( $payload['problem'] ?? '' ),
+					max( 1, (int) ( $payload['checks'] ?? 1 ) ),
+					(string) ( $payload['first_failed_at'] ?? '' ),
+					(string) ( $payload['last_failed_at'] ?? '' )
+				)
+			)
+		);
+		if ( ! empty( $payload['domain_gone'] ) ) {
+			echo '<p style="margin:.3em 0"><em>' . esc_html__( 'The web address no longer exists. That can mean the place closed: check before removing only the link.', 'guam-restaurants-core' ) . '</em></p>';
+		}
+		echo '<p style="margin:.3em 0" class="description">' . esc_html__( 'Open the link yourself first: some sites only fail for automated checks. "Remove link" takes it off the listing and stops imports from adding it back; if it came from OpenStreetMap, fix it there too.', 'guam-restaurants-core' ) . '</p>';
 	}
 
 	/**
@@ -1219,6 +1282,12 @@ final class Review_Queue_Screen {
 					'reject_closure'  => __( 'Reject: still open', 'guam-restaurants-core' ),
 				);
 				break;
+			case Link_Sweep::QUEUE_TYPE:
+				$buttons = array(
+					'remove_link' => __( 'Remove link', 'guam-restaurants-core' ),
+					'keep_link'   => __( 'Keep link (it works)', 'guam-restaurants-core' ),
+				);
+				break;
 			case 'duplicate':
 				$buttons = array(
 					'merge'         => __( 'Merge', 'guam-restaurants-core' ),
@@ -1263,6 +1332,7 @@ final class Review_Queue_Screen {
 			'duplicate'          => __( 'Possible duplicate', 'guam-restaurants-core' ),
 			'correction'         => __( 'Correction', 'guam-restaurants-core' ),
 			'listing_request'    => __( 'Owner listing request', 'guam-restaurants-core' ),
+			'broken_link'        => __( 'Broken link', 'guam-restaurants-core' ),
 		);
 		return $labels[ $type ] ?? $type;
 	}

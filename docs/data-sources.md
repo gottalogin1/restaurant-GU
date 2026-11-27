@@ -404,6 +404,10 @@ schema <https://docs.foursquare.com/data-products/docs/places-os-data-schema>
 - In use since 2026-10-19: `make fsq-extract` (bin/fsq-extract-guam.py,
   DuckDB) writes Guam's rows to `.cache/fsq-guam.jsonl`, and
   `wp guam-restaurants import-fsq` imports them (docs/run-fsq-import.md).
+- Since 2026-11-27 the monthly link sweep (§8h) also reads the same file:
+  a restaurant linked to a row with `date_closed` or a `closed` /
+  `doesnt_exist` flag gets a closure item in the review queue. Nothing new
+  is downloaded or stored.
 
 ## 4c. Guam yellow pages (Guam Phone Book)
 
@@ -770,6 +774,33 @@ Kitchen and Stars and Stripes Guam) are used again.
 | National Park Service (War in the Pacific NHP) | <https://home.nps.gov/wapa/learn/nature/breadfruit.htm> |
 | University of Guam Cooperative Extension | <https://www.uog.edu/_resources/files/extension/publications/Achiote.pdf> |
 | Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/events/festivals/donne-festival/> |
+## 8h. Restaurants' own websites, menu and order links (added 2026-11-27)
+
+The monthly link sweep (`wp guam-restaurants run-job link-sweep`,
+`Monitoring\Link_Sweep`, docs/scheduling.md) checks that the website, the
+owner's menu links and the premium order or reservation button on each
+published listing still open. These links already come from OSM, the
+Foursquare extract or the owner; the sweep adds no new source of facts.
+
+- **Robots rules.** Before any page on a site, it reads that site's
+  `robots.txt` (once per run) and skips pages the file disallows for our
+  user agent (`GUAM_RESTAURANTS_USER_AGENT`, default
+  `guam-restaurants-core/<version> (+site address)`) or for `*`, following
+  RFC 9309 <https://www.rfc-editor.org/rfc/rfc9309>: a missing file (HTTP
+  4xx) allows everything; a file that answers 5xx or 429 disallows
+  everything.
+- **Not checked at all:** Facebook and Instagram pages, whose robots.txt
+  files forbid automated access (<https://www.facebook.com/robots.txt>,
+  <https://www.instagram.com/robots.txt>); addresses on private networks.
+- **Polite rate.** One request at a time, 2 seconds apart and 10 seconds
+  apart for the same site; a HEAD request first and one GET only if HEAD
+  fails; at most 400 links a run, so a run takes well under an hour.
+- **Stored:** only our own result per link (date checked, verdict, HTTP
+  status, a short reason) in hidden post meta. No page content is kept.
+- **Output:** review queue items only (`broken_link`, or `closure_signal`
+  from the Foursquare extract). Nothing on the public site changes until an
+  administrator decides.
+
 ## 9. Data policy table
 
 | Data | Source | Policy | Expiry / refresh |

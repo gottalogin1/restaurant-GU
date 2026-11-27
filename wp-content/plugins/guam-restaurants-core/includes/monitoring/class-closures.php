@@ -32,6 +32,11 @@ final class Closures {
 	public const STREAK_META = '_gr_closure_checks';
 
 	/**
+	 * Source => the statement an administrator rejected (record_statement()).
+	 */
+	public const REJECTED_META = '_gr_closure_rejected';
+
+	/**
 	 * Consecutive closed checks needed before an administrator is asked.
 	 */
 	public const CHECKS_NEEDED = 2;
@@ -117,6 +122,46 @@ final class Closures {
 	}
 
 	/**
+	 * Records a source's explicit statement that a restaurant closed, such
+	 * as a closing date in the Foursquare Open Source Places data. Unlike an
+	 * absence or a status lookup, a dated statement does not change from
+	 * one check to the next, so it is queued on the first check. The same
+	 * statement is not queued again after an administrator rejected it; a
+	 * new one (for example a different closing date) is.
+	 *
+	 * @param int                  $restaurant_id Restaurant.
+	 * @param string               $source        Source (one of Vocabulary::REVIEW_QUEUE_SOURCES).
+	 * @param string               $statement     What the source says, for example `date_closed 2025-03-01`.
+	 * @param int|null             $run_id        Ingestion run.
+	 * @param array<string, mixed> $evidence      Extra payload (our own data or the source's ID only).
+	 * @return bool Whether an item was queued.
+	 */
+	public static function record_statement( int $restaurant_id, string $source, string $statement, ?int $run_id = null, array $evidence = array() ): bool {
+		if ( '' === $statement || 'permanently_closed' === get_post_meta( $restaurant_id, Restaurant_Meta::STATUS, true ) || self::pending_item( $restaurant_id ) ) {
+			return false;
+		}
+		$rejected = get_post_meta( $restaurant_id, self::REJECTED_META, true );
+		if ( is_array( $rejected ) && ( $rejected[ $source ] ?? null ) === $statement ) {
+			return false;
+		}
+		$now = current_time( 'mysql', true );
+		return Review_Queue::enqueue(
+			'closure_signal',
+			array(
+				'proposed_status' => 'permanently_closed',
+				'checks'          => 1,
+				'statement'       => $statement,
+				'first_signal_at' => $now,
+				'last_signal_at'  => $now,
+			) + $evidence,
+			$source,
+			$restaurant_id,
+			null,
+			$run_id
+		) > 0;
+	}
+
+	/**
 	 * Approves a closure item: sets the status to permanently closed, with
 	 * the closing month, and logs it as an administrator's edit.
 	 *
@@ -150,7 +195,8 @@ final class Closures {
 
 	/**
 	 * Rejects a closure item and resets the check counts, so the next two
-	 * checks must agree again before an administrator is asked.
+	 * checks must agree again before an administrator is asked. A rejected
+	 * statement (record_statement()) is remembered, so it is not asked again.
 	 *
 	 * @param int $item_id Review queue item.
 	 * @param int $user_id User.
@@ -158,8 +204,20 @@ final class Closures {
 	 * @throws \RuntimeException When the item is not a pending closure.
 	 */
 	public static function reject( int $item_id, int $user_id ): bool {
-		$item = self::item( $item_id );
-		delete_post_meta( (int) $item['restaurant_id'], self::STREAK_META );
+		$item          = self::item( $item_id );
+		$restaurant_id = (int) $item['restaurant_id'];
+		$payload       = json_decode( (string) $item['payload'], true );
+		Change_Tracker::suppress(
+			static function () use ( $restaurant_id, $item, $payload ) {
+				delete_post_meta( $restaurant_id, self::STREAK_META );
+				if ( is_array( $payload ) && '' !== (string) ( $payload['statement'] ?? '' ) ) {
+					$rejected                    = get_post_meta( $restaurant_id, self::REJECTED_META, true );
+					$rejected                    = is_array( $rejected ) ? $rejected : array();
+					$rejected[ $item['source'] ] = (string) $payload['statement'];
+					update_post_meta( $restaurant_id, self::REJECTED_META, $rejected );
+				}
+			}
+		);
 		return Review_Queue::resolve( $item_id, 'rejected', $user_id );
 	}
 

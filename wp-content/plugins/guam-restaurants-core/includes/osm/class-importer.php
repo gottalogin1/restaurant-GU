@@ -16,6 +16,7 @@ use GuamRestaurants\Core\Geo\Village_Locator;
 use GuamRestaurants\Core\Mall_Verification;
 use GuamRestaurants\Core\Monitoring\Change_Tracker;
 use GuamRestaurants\Core\Monitoring\Closures;
+use GuamRestaurants\Core\Monitoring\Link_Sweep;
 use GuamRestaurants\Core\Names;
 use GuamRestaurants\Core\Restaurant_Meta;
 use GuamRestaurants\Core\Tagging\Branch_Names;
@@ -514,6 +515,10 @@ final class Importer {
 			}
 			$old = get_post_meta( $post_id, $key, true );
 			if ( Restaurant_Meta::HOURS === $key && is_array( $old ) && in_array( $old['source'] ?? '', array( 'owner', 'manual' ), true ) ) {
+				continue;
+			}
+			// An administrator removed this website as broken (Monitoring\Link_Sweep).
+			if ( Restaurant_Meta::WEBSITE === $key && Link_Sweep::was_removed( $post_id, (string) $new ) ) {
 				continue;
 			}
 			if ( $old !== $new ) {
