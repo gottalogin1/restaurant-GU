@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * Everything is a database filter on indexed columns: taxonomy clauses use
  * the term relationship keys, "open now", "open late", "open at" and
- * "breakfast" the gr_open_hours index, "award
+ * "breakfast" the gr_open_hours index, "buffet" the postmeta key, "award
  * winner" the awards table's restaurant key, and the closed check the
  * postmeta (post_id, meta_key) key. Ranking is plain (name, date, price or
  * search relevance); nothing paid takes part in it (CLAUDE.md rule 5).
@@ -172,6 +172,7 @@ final class Directory_Query {
 			'late_at'    => ! empty( $filters['late'] ) ? Clock::late_minute() : null,
 			'chosen_at'  => Filters::at_minute( (string) ( $filters['at'] ?? '' ) ),
 			'breakfast'  => ! empty( $filters['breakfast'] ),
+			'buffet'     => ! empty( $filters['buffet'] ),
 			'price_sort' => in_array( $sort, array( 'price_asc', 'price_desc' ), true ) ? $sort : '',
 		);
 
@@ -260,6 +261,12 @@ final class Directory_Query {
 		}
 		if ( ! empty( $extra['breakfast'] ) ) {
 			$clauses['where'] .= ' AND ' . Open_Hours::open_any_day_sql( Filters::BREAKFAST_MINUTE, $posts );
+		}
+		if ( ! empty( $extra['buffet'] ) ) {
+			$clauses['where'] .= $wpdb->prepare(
+				" AND EXISTS (SELECT 1 FROM {$wpdb->postmeta} gr_buffet WHERE gr_buffet.post_id = {$posts}.ID AND gr_buffet.meta_key = %s)",
+				Buffets::META
+			);
 		}
 		if ( ! empty( $extra['price_sort'] ) ) {
 			$rank               = $wpdb->prepare(

@@ -32,6 +32,7 @@ that page. Re-check before building an importer.
 | Restaurant websites (photos) | **Use with limits** | Only with the owner's permission, recorded on the restaurant (§8a). Photos on a website belong to whoever took them. |
 | Page intro facts (Guampedia, Visit Guam, Guam Daily Post, Wikipedia and others) | **Use** | Facts only, in our own words, with each source listed. See §8c. |
 | Village fiesta dates (Guampedia) and weekly food markets (Visit Guam, Stars and Stripes Guam) | **Use** | Facts only (date, village, patron saint; market day, hours, place) with the source link shown beside each one. Truck stops and holiday hours come from owners. See §8d. |
+| Buffet days, hours and prices (hotel and restaurant pages, their OpenTable and TableCheck listings) | **Use** | Facts only, with the source link and checked date shown on the listing; owners and editors can update them. See §8f. |
 | Japanese and Korean translations (first party, not a data source) | **Use** | Our own interface and page text translated with AI (Claude) during development and shipped with the plugin; no translation service is called. Google, Yelp and Foursquare content is never translated. See §8b. |
 
 **Collection method (2026-10-10).** Data comes through the official APIs
@@ -695,7 +696,54 @@ hand or by owners; nothing here is imported or scraped.
 | Stars and Stripes Guam | <https://guam.stripes.com/travel/guam-marketplaces-full-of-life-energy-fun.html> | Mangilao Night Market and Dededo Flea Market days, hours and places |
 | Guam Daily Post | <https://www.postguam.com/news/local/food-trucks-lose-frequented-spots-at-skinner-plaza/image_251e21c8-79c0-11ec-ba48-17ee25a73e97.html> | Checked, not used: a 2022 story on food trucks leaving Skinner Plaza, with no current schedule. Truck stops come from owners instead. |
 
-## 8e. Food glossary (added 2026-11-26)
+## 8e. Hotels for "Restaurants near" pages (added 2026-11-27)
+
+The `/restaurants-near/` pages (English audience idea E6, comparison
+addition 21) need hotel names and locations. They come from OpenStreetMap,
+the same source as §1, under the same ODbL terms: the pages credit
+"© OpenStreetMap contributors" with a link to the copyright page.
+
+| | |
+|---|---|
+| What is read | `tourism=hotel` with a `name` inside Guam's bounding box: name (`name:en` first), OSM id, and the point (nodes) or center (ways and relations). Nothing else is stored. |
+| How | `wp guam-restaurants hotels import` (or the button on Restaurants > Hotels): one Overpass request with the §1 usage rules (identifying user agent, retries, fallback instance). `--input=<file>` reads a saved response. Idempotent; counts go to Import runs as source `osm-hotels`. |
+| Stored | Option `guam_restaurants_hotels`: name, OSM id, lat/lng, village (Census polygons, §6), hidden flag, source link. Hotels gone from OSM are removed on the next import; hidden ones stay hidden. |
+| Added by hand | An administrator can add a hotel OSM lacks, with latitude, longitude and the source link for them. Better: add it to OSM and import again. |
+| Not tested here | Overpass is blocked from the cloud container, so the hotel query has only run against test data. The first real run is on the local or live site. |
+| Not used | Hotel lists on tourism and booking sites. |
+
+## 8f. Buffets and all-you-can-eat (added 2026-11-26)
+
+English audience idea E22. Each place's buffet facts (kind, meals, days,
+times, adult price per person, a short note) are stored in `gr_buffet` and
+shown on the listing with their source and the date they were checked.
+Owners and editors can change them; nothing is imported or scraped.
+
+| | |
+|---|---|
+| First list | `data/buffets.php`: 14 places read by hand on 2026-11-26 and 27, 10 with prices. Each row keeps the page it came from; prices are copied as facts, the notes are our own words. Applied by migration `2026-11-26-buffet-research` and `wp guam-restaurants buffets apply`, matched by name within the village; facts an owner or editor set are never replaced. |
+| Owner input | Verified owners set the same fields from their dashboard. Shown as "From the owner, updated (date)". |
+| Editor input | The restaurant screen's "Buffet or all-you-can-eat" box, with a source address shown on the listing. |
+| Not used | Review-site prices (Wanderlog, Tripadvisor reviews), undated agency lists, expired promotions. Korean BBQ all-you-can-eat places could not be confirmed from a page the restaurant publishes (their pages are on Facebook, which blocks automated reading), so none ship; owners or editors can add them. |
+
+| Source | URL | Use |
+|---|---|---|
+| Hilton Guam Resort & Spa | <https://www.hiltonguamresort.com/dining-venues/islander-terrace> | Islander Terrace: buffet days, hours, adult prices |
+| Dusit Thani Guam Resort | <https://www.dusit.com/dusitthani-guamresort/dining/aqua/> | Aqua: buffet days, hours, adult prices |
+| Lotte Hotel Guam | <https://lottehotel.com/guam-hotel/en/dining/restaurant-la-seine.html> | La Seine: hours, breakfast price (dinner prices are monthly, not used) |
+| OpenTable (restaurant's own listing) | <https://www.opentable.com/r/taste-tamuning> | Taste (Westin): buffet days, hours, adult prices |
+| TableCheck (Hyatt's booking page) | <https://www.tablecheck.com/en/shops/hyatt-regency-guam-cafe-kitchen/reserve> | Café Kitchen: breakfast buffet hours and price |
+| TableCheck (Hyatt's booking page) | <https://www.tablecheck.com/en/shops/hyatt-regency-guam-niji/reserve> | Niji: buffet days, hours, adult prices |
+| The Tsubaki Tower | <https://tsubakitower.kenhotels.com/dining/casa-oceano/> | Casa Oceano: hours, closed days, adult prices |
+| OpenTable (restaurant's own listing) | <https://www.opentable.com/r/the-palm-cafe-tumon> | The Palm Café (Dusit Beach Resort): buffet days, hours, adult prices |
+| Crowne Plaza Resort Guam | <https://guam.crowneplaza.com/offers/august2026/> | The Terrace: buffet days, hours, adult prices (August 2026 offers page; the restaurant page gives hours only) |
+| OpenTable (restaurant's own listing) | <https://www.opentable.com/r/prego-barbecue-tamuning> | Prego (Westin): weekday lunch buffet hours and price |
+| Hotel Nikko Guam | <https://en.nikkoguam.com/restaurant/magellan/> | Magellan: buffet days and hours (no price published) |
+| Hotel Nikko Guam | <https://en.nikkoguam.com/restaurant/toh_lee/> | Toh-Lee: buffet days and hours (no price published) |
+| TableCheck (RIHGA's booking page) | <https://www.tablecheck.com/rihga-royal-laguna-guam-la-cascata/reserve> | La Cascata: buffet days and hours (no price published) |
+| Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/listing/ban-thai/3063/> | Ban Thai: lunch buffet and Sunday brunch days and hours (no price published) |
+
+## 8g. Food glossary (added 2026-11-26)
 
 The CHamoru food glossary (`/dishes/glossary/`, English audience idea E26)
 has 25 short entries in `data/glossary.php`, with Japanese and Korean
@@ -722,7 +770,6 @@ Kitchen and Stars and Stripes Guam) are used again.
 | National Park Service (War in the Pacific NHP) | <https://home.nps.gov/wapa/learn/nature/breadfruit.htm> |
 | University of Guam Cooperative Extension | <https://www.uog.edu/_resources/files/extension/publications/Achiote.pdf> |
 | Visit Guam (Guam Visitors Bureau) | <https://www.visitguam.com/events/festivals/donne-festival/> |
-
 ## 9. Data policy table
 
 | Data | Source | Policy | Expiry / refresh |
@@ -875,6 +922,34 @@ in `docs/seo-and-analytics.md` and `docs/monetization.md` §8.
 | <https://home.nps.gov/wapa/learn/nature/breadfruit.htm> | Read 2026-11-26 (food glossary) |
 | <https://www.uog.edu/_resources/files/extension/publications/Achiote.pdf> | Read 2026-11-26 (food glossary) |
 | <https://www.visitguam.com/events/festivals/donne-festival/> | Read 2026-11-26 (food glossary) |
+| <https://www.hiltonguamresort.com/dining-venues/islander-terrace> | Read 2026-11-26 (buffets): used |
+| <https://www.dusit.com/dusitthani-guamresort/dining/aqua/> | Read 2026-11-26 (buffets): used |
+| <https://lottehotel.com/guam-hotel/en/dining/restaurant-la-seine.html> | Read 2026-11-26 (buffets): used |
+| <https://www.opentable.com/r/taste-tamuning> | Read 2026-11-26 (buffets): used |
+| <https://www.tablecheck.com/en/shops/hyatt-regency-guam-cafe-kitchen/reserve> | Read 2026-11-26 (buffets): used |
+| <https://www.tablecheck.com/en/shops/hyatt-regency-guam-niji/reserve> | Read 2026-11-26 (buffets): used |
+| <https://tsubakitower.kenhotels.com/dining/casa-oceano/> | Read 2026-11-26 (buffets): used |
+| <https://www.opentable.com/r/the-palm-cafe-tumon> | Read 2026-11-26 (buffets): used |
+| <https://guam.crowneplaza.com/offers/august2026/> | Read 2026-11-26 (buffets): used |
+| <https://www.opentable.com/r/prego-barbecue-tamuning> | Read 2026-11-26 (buffets): used |
+| <https://en.nikkoguam.com/restaurant/magellan/> | Read 2026-11-26 (buffets): used |
+| <https://en.nikkoguam.com/restaurant/toh_lee/> | Read 2026-11-26 (buffets): used |
+| <https://www.tablecheck.com/rihga-royal-laguna-guam-la-cascata/reserve> | Read 2026-11-26 (buffets): used |
+| <https://www.visitguam.com/listing/ban-thai/3063/> | Read 2026-11-26 (buffets): used |
+| <https://guam.crowneplaza.com/restaurant/the-terrace/> | Read 2026-11-26 (buffets): hours, no prices |
+| <https://www.visitguam.com/listing/islander-terrace/357/> | Read 2026-11-26 (buffets): older Islander Terrace prices that disagree with Hilton's page; not used |
+| <https://www.visitguam.com/listing/islander-terrace/1725/> | Read 2026-11-26 (buffets): older Islander Terrace prices; not used |
+| <https://guamportal.com/blog/discover-the-best-guam-buffet-prices-and-indulge-in-mouthwatering-delights> | Read 2026-11-26 (buffets): generic, unverifiable names and prices; not used |
+| <https://www.hyatt.com/hyatt-regency/en-US/guamh-hyatt-regency-guam/dining> | Read 2026-11-26 (buffets): Café Kitchen and Niji hours, no prices |
+| <https://www.marriott.com/en-us/hotels/gumwi-the-westin-resort-guam/dining/> | Read 2026-11-26 (buffets): Taste hours, no prices |
+| <https://www.visitguam.com/listing/la-cascata/365/> | Read 2026-11-26 (buffets): average prices only; not used |
+| <https://www.opentable.com/r/la-seine-restaurant-guam-tamuning> | Read 2026-11-26 (buffets): days differ from Lotte's page; Lotte's used |
+| <https://guam.stripes.com/travel/crowne-plaza-resort-guam.html> | Read 2026-11-26 (buffets): January 2026 promotion, expired; not used |
+| <https://www.guam.co.kr/en/restaurant/category/buffet> | Read 2026-11-26 (buffets): undated travel-agency list; not used |
+| <https://v12025.guambusinessmagazine.com/never-too-much-brunch-top-restaurants-on-guam-invite-you-to-indulge-in-their-most-abundant-culinary-presentation-of-the-week/> | Read 2026-11-26 (buffets): 2015 brunch prices, stale; not used |
+| <https://www.dusit.com/dusitthani-guamresort/ja/dining/soi/2026-soi-dinner-buffet-aug-nov-2/> | Read 2026-11-26 (buffets): Soi monthly Thai buffet, ends November 2026; not used |
+| <https://www.opentable.com/r/rootz-hills-grillhouse-tumon> | Read 2026-11-27 (buffets): no buffet on the listing; not used |
+| <https://www.facebook.com/guambuga/> | Not read: Facebook disallows automated fetching (Korean BBQ check) |
 
 ## 12. To do before the first import
 

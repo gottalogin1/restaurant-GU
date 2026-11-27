@@ -74,6 +74,12 @@ final class Migrations {
 				}
 				Intro::fill();
 			},
+			// English audience idea E22: the first hand-researched buffets (data/buffets.php)
+			// go onto the places they name. Facts an owner or editor already set are kept;
+			// `wp guam-restaurants buffets apply` runs it again after an import.
+			'2026-11-26-buffet-research'         => static function (): void {
+				\GuamRestaurants\Core\Site\Buffets::apply_research();
+			},
 		);
 	}
 

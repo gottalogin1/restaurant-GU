@@ -109,7 +109,7 @@ final class Sitemaps {
 	}
 
 	/**
-	 * The food glossary, dish, cuisine-in-village, New on Guam, This week and awards pages, in English.
+	 * The food glossary, dish, cuisine-in-village, New on Guam, This week, hotel and awards pages, in English.
 	 *
 	 * @return array<int, array{loc: string}>
 	 */
@@ -130,7 +130,7 @@ final class Sitemaps {
 				$list[] = array( 'loc' => Cuisine_Villages::url( $village, $cuisine ) );
 			}
 		}
-		$list       = array_merge( $list, Fresh_Pages::sitemap_pages() );
+		$list       = array_merge( $list, Fresh_Pages::sitemap_pages(), Hotel_Pages::sitemap_pages() );
 		$categories = Awards::categories();
 		if ( $categories ) {
 			$list[] = array( 'loc' => Award_Pages::url( 'archive' ) );

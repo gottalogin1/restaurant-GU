@@ -80,6 +80,19 @@ final class Overpass_Client {
 	}
 
 	/**
+	 * The Overpass QL query for named hotels (Site\Hotels), with centers for
+	 * ways and relations. Much smaller than the restaurant query.
+	 *
+	 * @return string
+	 */
+	public static function hotels_query(): string {
+		$bbox = implode( ',', self::GUAM_BBOX );
+		return "[out:json][timeout:90];\n"
+			. "nwr[\"tourism\"=\"hotel\"][\"name\"]({$bbox});\n"
+			. "out center tags;\n";
+	}
+
+	/**
 	 * Instances to try, in order: the main one, then the fallback.
 	 *
 	 * @return string[]
@@ -97,10 +110,11 @@ final class Overpass_Client {
 	 * Runs the query, moving to the fallback instance only after the main
 	 * one has failed every retry or returned an unusable response.
 	 *
+	 * @param string|null $query Overpass QL; defaults to query().
 	 * @return array{elements: array<int, array<string, mixed>>, raw: string}
 	 * @throws Request_Failed When every instance fails; carries every attempt, by host.
 	 */
-	public function fetch(): array {
+	public function fetch( ?string $query = null ): array {
 		$this->attempt_log = array();
 		$error             = null;
 
@@ -115,7 +129,7 @@ final class Overpass_Client {
 						'method'     => 'POST',
 						'timeout'    => 200,
 						'user-agent' => Config::user_agent(),
-						'body'       => array( 'data' => self::query() ),
+						'body'       => array( 'data' => $query ?? self::query() ),
 					)
 				);
 				$elements = self::decode( $response['body'] );

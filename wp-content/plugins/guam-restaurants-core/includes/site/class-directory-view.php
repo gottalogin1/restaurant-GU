@@ -194,6 +194,13 @@ final class Directory_View {
 		if ( ! empty( $filters['breakfast'] ) ) {
 			$out .= '<p class="gr-directory__note">' . esc_html__( 'Breakfast lists restaurants open by 8 am on at least one day, going by their listed hours.', 'guam-restaurants-core' ) . '</p>';
 		}
+		if ( ! empty( $filters['buffet'] ) ) {
+			$out .= '<p class="gr-directory__note">' . sprintf(
+				/* translators: %s: "every buffet by price", linked. */
+				esc_html__( 'Buffets lists places with a buffet or all-you-can-eat, as their owners or the restaurants\' published pages tell us. See %s.', 'guam-restaurants-core' ),
+				'<a href="' . esc_url( Fresh_Pages::url( 'buffets' ) ) . '">' . esc_html__( 'every buffet by price', 'guam-restaurants-core' ) . '</a>'
+			) . '</p>';
+		}
 		if ( '' !== $cards ) {
 			$out .= '<ul class="gr-cards" role="list">' . $cards . '</ul>';
 		} elseif ( '' === $active && Filters::is_filtered( $filters, $locked ) ) {
@@ -254,6 +261,7 @@ final class Directory_View {
 			'open'      => __( 'Open now', 'guam-restaurants-core' ),
 			'late'      => __( 'Open late', 'guam-restaurants-core' ),
 			'breakfast' => __( 'Breakfast', 'guam-restaurants-core' ),
+			'buffet'    => __( 'Buffets', 'guam-restaurants-core' ),
 			'award'     => __( 'Award winners', 'guam-restaurants-core' ),
 		);
 		foreach ( $flags as $flag => $label ) {
@@ -366,6 +374,7 @@ final class Directory_View {
 		$chips   = self::chip( Filters::OPEN, Filters::OPEN_NOW, ! empty( $filters['open'] ), esc_html__( 'Open now', 'guam-restaurants-core' ) )
 			. self::chip( Filters::LATE, Filters::LATE_TONIGHT, ! empty( $filters['late'] ), esc_html__( 'Open late', 'guam-restaurants-core' ) )
 			. self::chip( Filters::MEAL, Filters::MEAL_BREAKFAST, ! empty( $filters['breakfast'] ), esc_html__( 'Breakfast', 'guam-restaurants-core' ) )
+			. self::chip( Filters::BUFFET, Filters::BUFFET_YES, ! empty( $filters['buffet'] ), esc_html__( 'Buffets', 'guam-restaurants-core' ) )
 			. self::chip( Filters::AWARD, Filters::AWARD_WINNER, ! empty( $filters['award'] ), esc_html__( 'Award winners', 'guam-restaurants-core' ) );
 		if ( ! isset( $locked['price'] ) ) {
 			foreach ( self::facet_terms( Content_Types::TAX_PRICE ) as $term ) {

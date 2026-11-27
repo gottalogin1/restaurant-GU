@@ -1,6 +1,6 @@
 <?php
 /**
- * Page template for New on Guam and This week on Guam.
+ * Page template for New on Guam, This week on Guam and Specials.
  *
  * Uses the active block theme's header and footer template parts; the
  * content comes from Site\Fresh_Pages.

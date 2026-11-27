@@ -101,6 +101,7 @@ final class Plugin {
 		Site\Open_Hours::register();
 		Site\Special_Hours::register();
 		Site\Fresh_Pages::register();
+		Site\Hotel_Pages::register();
 		Site\Rest_Controller::register();
 		Site\Pages::register();
 		Site\Picker::register();
@@ -126,7 +127,9 @@ final class Plugin {
 		Admin\Tag_Origins_Box::register();
 		Photos\Website_Photo_Box::register();
 		Admin\Special_Hours_Box::register();
+		Admin\Buffet_Box::register();
 		Admin\Local_Events_Screen::register();
+		Admin\Hotels_Screen::register();
 		Photos\Agreement::register();
 		Photos\Photo_Gallery::register();
 		Photos\Photo_Rest_Controller::register();
@@ -147,6 +150,7 @@ final class Plugin {
 			Cli\Premium_Commands::register();
 			Cli\Operations_Commands::register();
 			Cli\Translation_Commands::register();
+			Cli\Hotel_Commands::register();
 		}
 	}
 

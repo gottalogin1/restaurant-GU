@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
  * Reads a typed search with fixed word lists, no outside service: the
  * site's own villages (names, aliases and the spellings below), visible
  * malls, cuisines (names and the words below), price words, "open now",
- * "open late", "breakfast" and "award winners". Each phrase it knows
+ * "open late", "breakfast", "buffet" and "award winners". Each phrase it knows
  * becomes the same filter the form offers; words it does not know stay a
  * keyword search.
  * Filler words ("in", "food", "place") are dropped only when something
@@ -124,6 +124,11 @@ final class Query_Parser {
 	 * burritos"), so it stays in the keyword search.
 	 */
 	public const BREAKFAST_WORDS = array( 'for breakfast', 'open for breakfast', 'breakfast place', 'breakfast places', 'breakfast spot', 'breakfast spots', 'early breakfast' );
+
+	/**
+	 * "Korean BBQ all you can eat", "buffet in Tumon", "AYCE sushi".
+	 */
+	public const BUFFET_WORDS = array( 'buffet', 'buffets', 'all you can eat', 'all-you-can-eat', 'ayce', 'eat all you can', 'unlimited bbq', 'unlimited korean bbq', 'brunch buffet', 'buffet brunch' );
 
 	public const AWARD_WORDS = array( 'award winning', 'award winner', 'award winners', 'award', 'awards', 'awarded', 'prize winning' );
 
@@ -248,7 +253,7 @@ final class Query_Parser {
 	 * Reads a search.
 	 *
 	 * @param string $text Search text.
-	 * @return array{facets: array<string, string[]>, open: bool, late: bool, breakfast: bool, award: bool, search: string, matches: array<int, array{type: string, value: string, phrase: string}>}
+	 * @return array{facets: array<string, string[]>, open: bool, late: bool, breakfast: bool, buffet: bool, award: bool, search: string, matches: array<int, array{type: string, value: string, phrase: string}>}
 	 *         Filters found, the words left over (as typed) and what each phrase was read as.
 	 */
 	public static function parse( string $text ): array {
@@ -257,6 +262,7 @@ final class Query_Parser {
 			'open'      => false,
 			'late'      => false,
 			'breakfast' => false,
+			'buffet'    => false,
 			'award'     => false,
 			'search'    => trim( $text ),
 			'matches'   => array(),
@@ -505,6 +511,9 @@ final class Query_Parser {
 		}
 		foreach ( self::BREAKFAST_WORDS as $phrase ) {
 			$add( $phrase, 'breakfast', true );
+		}
+		foreach ( self::BUFFET_WORDS as $phrase ) {
+			$add( $phrase, 'buffet', true );
 		}
 		foreach ( self::AWARD_WORDS as $phrase ) {
 			$add( $phrase, 'award', true );
