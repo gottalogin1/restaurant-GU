@@ -1192,14 +1192,9 @@
 }
 
 /* From the owner (Owners\Owner_Content) */
-.gr-owner__menus,
-.gr-owner__specials {
+.gr-owner__menus {
 	padding-left: 1.25rem;
 }
-.gr-owner__specials li + li {
-	margin-top: 0.5rem;
-}
-.gr-owner__ends,
 .gr-owner__note {
 	color: var(--gr-muted-text);
 	font-size: 0.875em;
@@ -2217,6 +2212,122 @@
 .gr-week__empty,
 .gr-week__owners {
 	margin: 0;
+}
+
+/* Specials and happy hours (Site\Specials_Page; also in the owner block). */
+.gr-specials__filters {
+	display: grid;
+	gap: 0.5rem;
+}
+
+.gr-specials__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.gr-chip--current {
+	background: var(--gr-primary);
+	border-color: var(--gr-primary);
+	color: var(--gr-on-primary);
+}
+
+.gr-specials__village {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.gr-specials__village select {
+	min-height: 2.5rem;
+	max-width: 100%;
+}
+
+.gr-specials__count {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	margin: 0;
+}
+
+.gr-specials__places {
+	display: grid;
+	gap: 0.75rem;
+}
+
+@media (min-width: 48rem) {
+	.gr-specials__places {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.gr-specials__place {
+	border: 1px solid var(--gr-border);
+	border-radius: var(--gr-radius);
+	background: var(--gr-card);
+	padding: 0.75rem 1rem;
+	min-width: 0;
+}
+
+.gr-specials__name {
+	font-size: 1.15rem;
+	margin: 0;
+}
+
+.gr-specials__where {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+	margin: 0.125rem 0 0;
+}
+
+.gr-specials__list {
+	list-style: none;
+	margin: 0.5rem 0 0;
+	padding: 0;
+	display: grid;
+	gap: 0.6rem;
+}
+
+.gr-special__kind,
+.gr-special__on-now {
+	display: inline-block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.6;
+	padding: 0 0.5rem;
+	border-radius: 999px;
+	border: 1px solid var(--gr-border);
+	background: var(--gr-surface);
+	vertical-align: 0.1em;
+}
+
+.gr-special__on-now {
+	background: var(--gr-primary);
+	border-color: var(--gr-primary);
+	color: var(--gr-on-primary);
+}
+
+.gr-special__when {
+	font-variant-numeric: tabular-nums;
+}
+
+.gr-special__dates,
+.gr-special__details {
+	color: var(--gr-muted-text);
+	font-size: 0.9rem;
+}
+
+.gr-special__details {
+	display: block;
+	overflow-wrap: anywhere;
+}
+
+.gr-owner__more {
+	margin: 0.5rem 0 0;
+	font-size: 0.9rem;
 }
 
 /* Holiday hours and truck stops under the weekly hours. */
